@@ -1,0 +1,6 @@
+[submodule "tools/vecap"]
+	path = tools/vecap
+	url = /miklip/integration/repositories/vecap.git
+[submodule "tools/climval"]
+	path = tools/climval
+	url = /miklip/integration/repositories/climval.git/
