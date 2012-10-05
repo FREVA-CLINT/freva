@@ -1,0 +1,36 @@
+#%Module1.0#####################################################################          
+##
+## CCMValDiag (climval) modulefile
+##
+#
+
+## Requirements:
+## Grads ?
+## R ?
+
+module-whatis   "vecap v0.1"
+
+proc ModulesHelp { } {
+    puts stderr "vecap 0.1"
+    puts stderr "\tVECAP - ...\n"
+}
+
+#only one version at a time!!
+conflict vecap
+
+#load required modules
+module load grads
+module load r
+
+#there'S no module for netcdf... so we will append the proper one here:
+set netcdf_dir "/sw/centos58-x64/netcdf-4.1.3-gccsys"
+append-path PATH "$netcdf_dir/bin"
+
+#now jump to the directory of the tool
+chdir "/miklip/integration/ESM/tools/VECAP/src"
+
+if {[module-info mode remove]} {
+    #removing... clean properly here if you need to
+    
+}
+

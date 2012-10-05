@@ -1,0 +1,31 @@
+#%Module1.0#####################################################################          
+##
+## CCMValDiag (climval) modulefile
+##
+#
+
+## Requirements:
+## Python 2.x
+## NCL v5.1
+
+module-whatis   "climval v3.0"
+
+proc ModulesHelp { } {
+    puts stderr "climval 3.0"
+    puts stderr "\tCLIMVAL - CCMVal Diagnostic Tool\n"
+}
+
+#only one version at a time!!
+conflict climval
+
+#load required modules
+module load python 
+module load ncl
+
+chdir "/miklip/integration/ESM/tools/CCMValDiag/3.0"
+
+if {[module-info mode remove]} {
+    #removing... clean properly here if you need to
+    
+}
+
