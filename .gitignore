@@ -1,0 +1,9 @@
+#skipp all python compiled files
+*.pyc
+
+#skip all eclipse and other IDE information
+#(never add them to the repo, this is "personal" and not project wide)
+.*
+
+#but let the git configure files through
+!.git*
