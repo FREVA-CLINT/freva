@@ -109,7 +109,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline', 'help', 'debug', 'multiversion'])
+        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion'])
         
         #defaults
         DEBUG = False
