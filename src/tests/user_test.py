@@ -7,7 +7,6 @@ import unittest
 import model.user as user
 import subprocess
 import os
-import copy
 
 class DummyUser(user.User):
     """Create a dummy User object that allows testing"""
@@ -47,32 +46,37 @@ class Test(unittest.TestCase):
         pass
     
     def testDummyUser(self):
+        """Be sure the dummy user is created as expected"""
         dummy_name='non-existing name'
         d_user = DummyUser(pw_name=dummy_name)
         self.assertEqual(dummy_name,d_user.getName())
 
-    def testCreation(self):
-        import getpass, os
+    def testGetters(self):
+        """Test the object creation and some basic return functions"""
+        self.assertEqual(Test.DUMMY_USER['pw_name'], self.user.getName())
+        self.assertEqual(Test.DUMMY_USER['pw_dir'], self.user.getUserHome())
+        self.assertEqual(int(Test.runCmd('id -u')), self.user.getUserID())
+        configDir = '/'.join([self.user.getUserHome(), user.User.BASE_DIR])
+        self.assertEqual(configDir, self.user.getUserConfigDir())
+        tool1Dir = '/'.join([self.user.getUserHome(), user.User.TOOL_DIR, 'tool1'])
+        #check we get the configuration directory of the given tool
+        self.assertEqual(tool1Dir, self.user.getUserToolConfigDir('tool1'))
+        #check we get the general directory of the tools (should be the parent of the previous one)
+        self.assertEqual(os.path.dirname(tool1Dir), self.user.getUserToolConfigDir(None))
         
-        test = self.user
-        
-        self.assertEqual(Test.DUMMY_USER['pw_name'], test.getName())
-        self.assertEqual(Test.DUMMY_USER['pw_dir'], test.getUserHome())
-        self.assertEqual(int(Test.runCmd('id -u')), test.getUserID())
-        configDir = '/'.join([test.getUserHome(), user.User.BASE_DIR])
-        self.assertEqual(configDir, test.getUserConfigDir())
-        
+    def testDirectoryCreation(self):
         #assure we have a temp directory as HOME for testing
         try: 
-            os.mkdir(test.getUserHome())
+            os.mkdir(self.user.getUserHome())
         except: 
             pass
+        configDir = self.user.getUserConfigDir()
         
         self.assertFalse(os.path.isdir(configDir))
-        test.prepareDir()
+        self.user.prepareDir()
         self.assertTrue(os.path.isdir(configDir))
-        print test.getUserConfigDir()
-        os.rmdir(test.getUserConfigDir())
+        print self.user.getUserConfigDir()
+        os.rmdir(self.user.getUserConfigDir())
         self.assertFalse(os.path.isdir(configDir))
         
         

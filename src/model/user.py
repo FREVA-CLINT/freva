@@ -8,6 +8,7 @@ import os
 
 class User(object):
     BASE_DIR = 'ESM'
+    TOOL_DIR = os.path.join(BASE_DIR,'tools')
     
     '''
     This Class encapsulates a user (configurations, etc)
@@ -25,6 +26,13 @@ class User(object):
     def getUserID(self):  return self._userdata.pw_uid
     def getUserHome(self):  return self._userdata.pw_dir
     def getUserConfigDir(self): return os.path.join(self.getUserHome(), User.BASE_DIR)
+    def getUserToolConfigDir(self, tool = None):
+        if tool is None:
+            #return the directory where the tool configuration files are stored
+            return os.path.join(self.getUserHome(), User.TOOL_DIR)
+        else:
+            #return the specific directory for the given tool            
+            return os.path.join(self.getUserHome(), User.TOOL_DIR, tool)
     
     def prepareDir(self):
         """Prepares the configuration directory for this user if it's not already been done."""
@@ -32,4 +40,6 @@ class User(object):
         if not os.path.isdir(self.getUserHome()):
             raise Exception("Can't create configuration, user HOME doesn't exist (%s)" % self.getUserHome())
         os.mkdir(self.getUserConfigDir())
+        
+        #os.mkdir(self.getUserToolConfigDir())
         
