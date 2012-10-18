@@ -23,19 +23,23 @@ class BaselineFile(object):
         self.dict = file_dict  
         
     def __repr__(self):
+        """returns the json representation of this object that can be use to create a copy."""
         return self.to_json()
     
+    def __str__(self):
+        """The string representation is the absolute path to the file."""
+        self.to_path()
+
     def to_json(self):
         return json.dumps(self.dict)
     
     def to_path(self):
-        #TODO: check if construction is complete ande therefore can succeed
+        #TODO: check if construction is complete and therefore can succeed
         result = [self.dict['root_dir']]
         for key in BaselineFile._get_baseline(self.baseline_nr)['parts_dir']:
             result.append(self.dict['parts'][key])
         return '/'.join(result).replace('//', '/')
     
-    #a test
     @staticmethod
     def from_path(path, baseline_nr=0):
         
@@ -68,6 +72,7 @@ class BaselineFile(object):
         bl_file = BaselineFile(result, baseline_nr=baseline_nr)
         
         return bl_file
+    
 
     @staticmethod
     def _get_baseline(baseline_nr):
