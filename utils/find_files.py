@@ -109,12 +109,13 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline', 'help', 'debug'])
+        args, lastargs = getopt.getopt(argv, "hd", ['baseline', 'help', 'debug', 'multiversion'])
         
         #defaults
+        DEBUG = False
         baseline = 0
-        DEBUG = True
-
+        latest=True
+        
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':        #This help
@@ -122,6 +123,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                 return 0
             elif flag == '--baseline':              #define which baseline to use [0.1.2]. default := 0
                 baseline = int(arg)
+            elif flag == '--multiversion':          #select not only the latest version but all of them
+                latest=False
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
         
@@ -142,11 +145,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             print "Searching string: ", search_dict
        
         #find the files 
-        files = mf.BaselineFile.search(baseline, **search_dict)
+        files = mf.BaselineFile.search(baseline, latest_version=latest, **search_dict)
 
         #display them
-        for file in files:
-            sys.stdout.write(str(file))
+        for f in files:
+            sys.stdout.write(str(f))
             sys.stdout.write('\n')
             sys.stdout.flush()
         

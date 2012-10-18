@@ -12,6 +12,8 @@ class BaselineFile(object):
         {
         "root_dir":"/gpfs_750/projects/CMIP5/data/",
         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+        "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+        "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
         "parts_time":"start_time-end_time",
         "defaults" : {"project":"cmip5", "institute":"MPI-M", "model":"MPI-ESM-LR"}
@@ -36,9 +38,36 @@ class BaselineFile(object):
     def to_path(self):
         #TODO: check if construction is complete and therefore can succeed
         result = [self.dict['root_dir']]
-        for key in BaselineFile._get_baseline(self.baseline_nr)['parts_dir']:
+        for key in self.get_baseline()['parts_dir']:
             result.append(self.dict['parts'][key])
         return '/'.join(result).replace('//', '/')
+    
+    def to_dataset(self, versioned=False):
+        """Extract the dataset name (DRS) from the path"""
+        result = []
+        if versioned:
+            if not self.is_versioned():
+                raise Exception('baseline %s is not versioned!' % self.baseline_nr)
+            iter_parts = self.get_baseline()['parts_versioned_dataset']
+        else:  
+            iter_parts = self.get_baseline()['parts_dataset']
+            
+        for key in iter_parts:
+            result.append(self.dict['parts'][key])
+        return '.'.join(result)
+    
+    def is_versioned(self):
+        """If this baseline versions files"""
+        return 'parts_versioned_dataset' in self.get_baseline()
+    
+    def get_version(self):
+        """Return the *dataset* version from which this file is part of.
+        Returns None if the dataset is not versioned"""
+        if 'version' in self.dict:
+            return self.dict['version']
+        else:
+            return None
+        
     
     @staticmethod
     def from_path(path, baseline_nr=0):
@@ -73,7 +102,9 @@ class BaselineFile(object):
         
         return bl_file
     
-
+    def get_baseline(self):
+        return BaselineFile._get_baseline(self.baseline_nr)
+    
     @staticmethod
     def _get_baseline(baseline_nr):
         """Returns the Object representing the baseline given.
@@ -96,7 +127,7 @@ class BaselineFile(object):
         return BaselineFile.from_dict(json.loads(json_str), baseline_nr=baseline_nr)
     
     @staticmethod
-    def search(baseline_nr=0,**partial_dict):
+    def search(baseline_nr=0, latest_version=True, **partial_dict):
         """Search for files from the given parameters as part of the baseline names.
         returns := list of Matching Baseline files"""
         bl = BaselineFile._get_baseline(baseline_nr)
@@ -114,5 +145,14 @@ class BaselineFile(object):
         bl_files = []
         for path in glob.glob(local_path):
             bl_files.append(BaselineFile.from_path(path, baseline_nr))
-        #go to the system and get the list of files
+        
+        if latest_version:
+            datasets = {}
+            for blf in bl_files:
+                ds = blf.get_dataset(versioned=False)
+                if ds in datasets:
+                    if datasets[ds].get_version() > blf.get_version(): continue
+                datasets[ds] = blf
+            bl_files = datasets.values()
+        
         return bl_files
