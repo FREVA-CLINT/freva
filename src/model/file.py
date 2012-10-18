@@ -149,7 +149,7 @@ class BaselineFile(object):
         if latest_version:
             datasets = {}
             for blf in bl_files:
-                ds = blf.get_dataset(versioned=False)
+                ds = blf.to_dataset(versioned=False)
                 if ds in datasets:
                     if datasets[ds].get_version() > blf.get_version(): continue
                 datasets[ds] = blf
