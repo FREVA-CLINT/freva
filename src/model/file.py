@@ -28,7 +28,7 @@ class BaselineFile(object):
     
     def __str__(self):
         """The string representation is the absolute path to the file."""
-        self.to_path()
+        return self.to_path()
 
     def to_json(self):
         return json.dumps(self.dict)

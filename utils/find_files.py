@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.7
+#!/bin/env python
 # encoding: utf-8
 '''
 find_files -- find files from the miklip baselines
@@ -21,15 +21,13 @@ __version__ = 0.1
 __date__ = '2012-10-18'
 __updated__ = '2012-10-18'
 
-DEBUG = 1
-TESTRUN = 0
-PROFILE = 0
 
 class CLIError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
-    def __init__(self, msg):
+    def __init__(self, msg, show_help=True):
         super(CLIError).__init__(type(self))
-        self.msg = "E: %s" % msg
+        auto_doc()
+        self.msg = " %s" % msg
     def __str__(self):
         return self.msg
     def __unicode__(self):
@@ -61,16 +59,21 @@ def auto_doc(message=None):
 
     if message: message = ': ' + message
     else: message = ''
-    if results: print '%s [opt]%s\nopt:\n%s' % (script_name, message, '\n'.join(results))
+    if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
     else: print '%s %s' % (script_name, message)
+
+    print """
+The query is of the form key=value.
+
+For Example:
+    %s model=MPI-ESM-LR experiment=decadal2000 time_frequency=mon variable=tas
+""" % script_name
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
     if argv is None:
-        argv = sys.argv
-    else:
-        sys.argv.extend(argv)
+        argv = sys.argv[1:]
 
     program_name = os.path.basename(sys.argv[0])
     program_version = "v%s" % __version__
@@ -106,11 +109,12 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "h", ['help'])
+        args, lastargs = getopt.getopt(argv, "hd", ['baseline', 'help', 'debug'])
         
         #defaults
         baseline = 0
-        
+        DEBUG = True
+
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':        #This help
@@ -118,6 +122,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
                 return 0
             elif flag == '--baseline':              #define which baseline to use [0.1.2]. default := 0
                 baseline = int(arg)
+            elif flag == '-d' or flag == '--debug': #turn on debuging info
+                DEBUG = True
         
         #The search is done by the last args
         if len(lastargs) == 0:
@@ -134,9 +140,15 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
             
         if DEBUG:
             print "Searching string: ", search_dict
-        
+       
+        #find the files 
         files = mf.BaselineFile.search(baseline, **search_dict)
-        print '\n'.join(files)
+
+        #display them
+        for file in files:
+            sys.stdout.write(str(file))
+            sys.stdout.write('\n')
+            sys.stdout.flush()
         
     except getopt.error:
         print sys.exc_info()[:3]
@@ -147,18 +159,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
         ### handle keyboard interrupt ###
         return 0
     except Exception, e:
-        if DEBUG or TESTRUN:
+        if DEBUG or __name__ != "__main__":
             raise(e)
-        indent = len(program_name) * " "
-        sys.stderr.write(program_name + ": " + repr(e) + "\n")
-        sys.stderr.write(indent + "  for help use --help")
         return 2
 
 if __name__ == "__main__":
-    if DEBUG:
-        sys.argv.append("-h")
-        sys.argv.append("-v")
-    if TESTRUN:
-        import doctest
-        doctest.testmod()
     sys.exit(main())
