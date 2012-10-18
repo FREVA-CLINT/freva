@@ -1,0 +1,23 @@
+#%Module1.0#####################################################################          
+##
+## Evaluation System (evaluation_system) modulefile
+##
+#
+
+module-whatis   "evaluation_system v0.1"
+
+proc ModulesHelp { } {
+    puts stderr "evaluation_system 0.1"
+}
+
+#only one version at a time!!
+conflict evaluation_system
+
+#load required modules
+module load python
+
+#there's no module for netcdf... so we will append the proper one here:
+set evaluation_system_dir "/miklip/integration/evaluation_system"
+append-path PYTHONPATH "$evaluation_system_dir/src"
+
+
