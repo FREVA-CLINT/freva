@@ -154,6 +154,10 @@ class BaselineFile(object):
         search_dict = bl['defaults'].copy()
         search_dict.update(partial_dict)
         
+        #only baseline 0 is versioned
+        if latest_version and baseline_nr > 0:
+            latest_version = False
+        
         local_path = bl['root_dir']
         for key in BaselineFile._get_baseline(baseline_nr)['parts_dir']:
             if key in search_dict:
@@ -161,24 +165,27 @@ class BaselineFile(object):
             else:
                 local_path = os.path.join(local_path, "*")
         
-        bl_files = []
+        #if the latest version is not required we may use a generator and yield a value as soon as it is found
+        #If not we need to parse all until we can give the results out. We are not storing more than the latest
+        #version, but if we could assure a certain order we return values as soon as we are done with a dataset
+        datasets = {}
         for path in glob.iglob(local_path):
-            bl_files.append(BaselineFile.from_path(path, baseline_nr))
-
-        #To generate the latest version just store files by dataset overwriting those
-        #with a lesser version number        
-        if latest_version:
-            datasets = {}
-            for blf in bl_files:
+            blf = BaselineFile.from_path(path, baseline_nr)
+            if not latest_version:
+                yield blf
+            else:
+                #if not we need to check if the corresponding dataset version is recent
                 ds = blf.to_dataset(versioned=False)
-                if ds not in datasets:
+                if ds not in datasets or datasets[ds][0].get_version() < blf.get_version():
+                    #if none or a newer version is found, reinit the dataset list
                     datasets[ds] = [blf]
                 elif datasets[ds][0].get_version() == blf.get_version():
-                    #if same version, add to previous (we are gathering files 
+                    #if same version, add to previous (we are gathering multiple files per dataset) 
                     datasets[ds].append(blf)
-                elif datasets[ds][0].get_version() < blf.get_version():
-                    #if  more current version found, reinit the dataset list
-                    datasets[ds] = [blf]
-            bl_files = [v for sub in datasets.values() for v in sub]
+                
+        if latest_version:
+            #then return the results stored in datasets
+            for latest_version_file in [v for sub in datasets.values() for v in sub]:
+                yield latest_version_file
         
-        return bl_files
+        
