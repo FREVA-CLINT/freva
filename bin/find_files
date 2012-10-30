@@ -113,17 +113,16 @@ def main(argv=None): # IGNORE:C0111
                 auto_doc()
                 return 0
             elif flag == '--baseline':              #define which baseline to use [0.1.2]. default := 0
-                baseline = int(arg)
+                try:
+                    baseline = int(arg)
+                except:
+                    print "Can't parse baseline argument '%s'. It should be one of %s" % (arg, range(len(mf.BaselineFile.BASELINE)))
+                    return 1
             elif flag == '--multiversion':          #select not only the latest version but all of them
                 latest=False
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
         
-        #The search is done by the last args
-        if len(lastargs) == 0:
-                auto_doc()
-                return 1
-            
         search_dict = {}
         for arg in lastargs:
             if '=' not in arg:
@@ -133,8 +132,13 @@ def main(argv=None): # IGNORE:C0111
             search_dict[items[0]] = ''.join(items[1:])
             
         if DEBUG:
-            print "Searching string: ", search_dict
-       
+            sys.stderr.write("Searching string: %s\n" % search_dict)
+        if not search_dict and baseline == 0 and latest:
+            sys.stderr.write("This search will take a while, since we have to parse all files to get the atest version.\nTry constraining your query for faster results\n")
+
+        #flush stderr in case we have something pending
+        sys.stderr.flush()
+
         #find the files and display them
         for f in mf.BaselineFile.search(baseline, latest_version=latest, **search_dict):
             sys.stdout.write(str(f))
@@ -151,7 +155,8 @@ def main(argv=None): # IGNORE:C0111
         return 0
     except Exception, e:
         if DEBUG or __name__ != "__main__":
-            raise(e)
+            raise
+        else: print sys.exc_info()[:3]
         return 2
 
 if __name__ == "__main__":

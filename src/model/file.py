@@ -22,11 +22,11 @@ class BaselineFile(object):
         #baseline 1 data
         {
          "root_dir":"/miklip/global/prod/archive",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/variable/file_name".split('/'),
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "defaults" : {"project":"baseline1", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+         "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
          }
                 ]
 
@@ -94,7 +94,6 @@ class BaselineFile(object):
         path = os.path.realpath(path)
         bl = BaselineFile._get_baseline(baseline_nr)
     
-    
         #trim root_dir
         if not path.startswith(bl['root_dir'] + '/'):
             raise Exception("This file does not correspond to baseline %s" % baseline_nr)                                                         
@@ -115,6 +114,10 @@ class BaselineFile(object):
         #split file name
         ##(extract .nc before splitting)
         parts = result['parts']['file_name'][:-3].split('_')
+        if len(parts) == len( bl['parts_file_name']) - 1 \
+            and 'r0i0p0' in parts :
+            #no time
+            parts.append(None)
         for i in range(len(bl['parts_file_name'])):
             result['parts'][bl['parts_file_name'][i]] = parts[i]
         
@@ -164,7 +167,6 @@ class BaselineFile(object):
                 local_path = os.path.join(local_path, search_dict[key])
             else:
                 local_path = os.path.join(local_path, "*")
-        
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset
