@@ -6,6 +6,7 @@ Created on 20.09.2012
 import unittest
 import os
 import tempfile
+from tests.capture_std_streams import stderr
 from model.file import BaselineFile
 
 class Test(unittest.TestCase):
@@ -85,6 +86,16 @@ class Test(unittest.TestCase):
         self.assertNotEqual(result, None)
         print "found %s files" % len(result)
         
+    def test_search_wrong_constraints(self):
+        stderr.startCapturing()
+        stderr.reset()
+        generator = BaselineFile.search(non_existing_query_str='does not matter')
+        #assure we got an exception
+        self.failUnlessRaises(Exception, generator.next)
+        stderr.stopCapturing()
+        #assure we got a proper warning being displayed
+        self.assertTrue(stderr.getvalue().startswith('WARNING'))
+             
     def test_dataset(self):
         bl = BaselineFile.from_json(self.real_json)
         self.assertNotEqual(bl, None)

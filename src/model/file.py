@@ -6,6 +6,7 @@ Created on 20.09.2012
 import json
 import glob
 import os
+import sys
 
 class BaselineFile(object):
     BASELINE = [
@@ -152,21 +153,29 @@ class BaselineFile(object):
     @staticmethod
     def search(baseline_nr=0, latest_version=True, **partial_dict):
         """Search for files from the given parameters as part of the baseline names.
-        returns := list of Matching Baseline files"""
+        returns := Generator returning matching Baseline files"""
         bl = BaselineFile._get_baseline(baseline_nr)
         search_dict = bl['defaults'].copy()
         search_dict.update(partial_dict)
         
         #only baseline 0 is versioned
-        if latest_version and baseline_nr > 0:
+        if latest_version and (baseline_nr > 0 or 'version' in partial_dict):
             latest_version = False
         
         local_path = bl['root_dir']
-        for key in BaselineFile._get_baseline(baseline_nr)['parts_dir']:
+        for key in bl['parts_dir']:
             if key in search_dict:
                 local_path = os.path.join(local_path, search_dict[key])
+                del search_dict[key]    #remove it so we can see if all keys matched
             else:
                 local_path = os.path.join(local_path, "*")
+        
+        if search_dict:
+            #ok, there are typos or non existing constraints in the search.
+            #just report them to stderr
+            sys.stderr.write("WARNING: There where unused constraints: %s\n" % ','.join(search_dict))
+            raise Exception("Unknown parameter(s) %s\nFor Baseline %s try one of: %s" % 
+                            (','.join(search_dict), baseline_nr, ','.join(bl['parts_dir'])))
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset
