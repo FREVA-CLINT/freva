@@ -173,9 +173,10 @@ class BaselineFile(object):
         if search_dict:
             #ok, there are typos or non existing constraints in the search.
             #just report them to stderr
-            sys.stderr.write("WARNING: There where unused constraints: %s\n" % ','.join(search_dict))
-            raise Exception("Unknown parameter(s) %s\nFor Baseline %s try one of: %s" % 
-                            (','.join(search_dict), baseline_nr, ','.join(bl['parts_dir'])))
+            sys.stderr.write("WARNING: There where unused constraints: %s\nFor Baseline %s try one of: %s\n" % 
+                             (','.join(search_dict), baseline_nr, ','.join(bl['parts_dir'])))
+            raise Exception("Unknown parameter(s) %s" % 
+                            (','.join(search_dict)))
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset

@@ -134,7 +134,7 @@ def main(argv=None): # IGNORE:C0111
         if DEBUG:
             sys.stderr.write("Searching string: %s\n" % search_dict)
         if not search_dict and baseline == 0 and latest:
-            sys.stderr.write("This search will take a while, since we have to parse all files to get the atest version.\nTry constraining your query for faster results\n")
+            sys.stderr.write("This search will take a while, since we have to parse all files to get the latest version.\nTry constraining your query for faster results\n")
 
         #flush stderr in case we have something pending
         sys.stderr.flush()
