@@ -85,10 +85,10 @@ def auto_doc(message=None):
     else: print '%s %s' % (script_name, message)
 
     print """
-The query is of the form key=value.
+The query is of the form key=value. <value> might use *, ?, [seq] or [!seq] (see python glob).
 
 For Example:
-    %s model=MPI-ESM-LR experiment=decadal2000 time_frequency=mon variable=tas
+    %s model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
 """ % script_name
 
 def main(argv=None): # IGNORE:C0111
@@ -153,7 +153,7 @@ def main(argv=None): # IGNORE:C0111
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
-    except Exception, e:
+    except Exception:
         if DEBUG or __name__ != "__main__":
             raise
         else: print sys.exc_info()[:3]
