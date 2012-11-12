@@ -4,3 +4,6 @@
 [submodule "tools/climval"]
 	path = tools/climval
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/climval.git
+[submodule "tools/pca"]
+	path = tools/pca
+	url = ssh://miklip.dkrz.de/miklip/integration/repositories/pca.git
