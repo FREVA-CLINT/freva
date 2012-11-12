@@ -4,6 +4,31 @@
 ##
 #
 
+### BEGIN of general part ********
+#define some variables
+set modName [module-info name]
+set toolName [exec dirname $modName]
+set curMode [module-info mode]
+set isload [is-loaded $modName]
+set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
+if { [exec basename $toolPath] ne $toolName } {
+    #this is loaded from the evaluation_system module central location
+    #correct the path
+    set toolPath "$toolPath/tools/$toolName"
+}
+
+#set the default path to the bin directory
+append-path PATH "$toolPath/bin"
+
+#check if we have any howto.txt show it to the user
+set howToFile "$toolPath/doc/howto.txt"                                                   
+if { $curMode eq "load" && [file exists $howToFile] } {
+    puts stderr [exec cat $howToFile]
+}
+
+
+### END of general part ********
+
 module-whatis   "evaluation_system v0.1"
 
 proc ModulesHelp { } {
