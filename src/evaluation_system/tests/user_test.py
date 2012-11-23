@@ -4,7 +4,7 @@ Created on 04.10.2012
 @author: estani
 '''
 import unittest
-from model.user import User
+from evaluation_system.model.user import User
 import subprocess
 import os
 import tempfile
@@ -78,12 +78,16 @@ class Test(unittest.TestCase):
         print fp.read()
         fp.close()
         
-        #check configuration file readin
+        #check configuration file reading
         fp = open(cfg_file, 'w')
-        fp.write("[test2]\nkey1 = 42\n")
+        ##Note multi line values in the configuration file need to be indented...
+        fp.write("[test2]\nkey1 = 42\nkey2=Some\n\tmany\n\tlines=2\nkey3=%(key1)s0\n")
         fp.close()
         cnfg = d_user.reloadConfig()
-        self.assertTrue(cnfg.getint('test2', 'key1'))
+        self.assertTrue(cnfg.getint('test2', 'key1') == 42)
+        #...but the indentation disappears when returned directly
+        self.assertTrue(cnfg.get('test2', 'key2') == 'Some\nmany\nlines=2')
+        self.assertTrue(cnfg.getint('test2', 'key3') == 420)
         
         home = d_user.getUserHome()
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
@@ -97,6 +101,9 @@ class Test(unittest.TestCase):
         self.assertEqual(Test.DUMMY_USER['pw_name'], self.user.getName())
         self.assertTrue(self.user.getUserHome().startswith(tempfile.gettempdir()))
         self.assertEqual(int(Test.runCmd('id -u')), self.user.getUserID())
+        
+        db = self.user.getUserDB();
+        self.assertTrue(db is not None)
         baseDir = '/'.join([self.user.getUserHome(), User.BASE_DIR])
         self.assertEqual(baseDir, self.user.getUserBaseDir())
         tool1_cnfDir = os.path.join(baseDir, User.CONFIG_DIR, 'tool1')

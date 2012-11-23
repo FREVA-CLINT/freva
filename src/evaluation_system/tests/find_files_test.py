@@ -19,7 +19,7 @@ def loadlib(module_filepath):
                 module_name, module_file, module_filepath, py_source_description)
 
 #load the module from a non .py file
-find_files = loadlib('../../bin/find_files')
+find_files = loadlib('../../../bin/find_files')
     
 
 class Test(unittest.TestCase):

@@ -7,6 +7,7 @@ import pwd
 import os
 import sys
 from ConfigParser import SafeConfigParser as Config
+from evaluation_system.model.db import UserDB
 
 class User(object):
     '''
@@ -21,7 +22,7 @@ class User(object):
     
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
     EVAL_SYS_DEFAULT_CONFIG = os.path.normpath(os.path.dirname(sys.modules[__name__].__file__)+'/../../etc/system_default.config')
-    
+    EVAL_SYS_DB = os.path.join(CONFIG_DIR,'evaluation_system.db')
 
 
     def __init__(self, uid = None):
@@ -33,10 +34,16 @@ class User(object):
         self._userconfig = Config()
         #try to load teh configuration from the very first time.
         self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self._userdata.pw_dir, User.EVAL_SYS_CONFIG)])
-    
+        
+        self._db = UserDB(self)
+        
     def getUserConfig(self):
         """Returns user configuration object (ConfigParser)"""
         return self._userconfig
+    
+    def getUserDB(self):
+        """Returns the db abstraction for this user"""
+        return self._db
         
     def reloadConfig(self):
         """Reloads user configuration from disk"""

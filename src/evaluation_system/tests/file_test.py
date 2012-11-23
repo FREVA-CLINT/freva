@@ -6,8 +6,8 @@ Created on 20.09.2012
 import unittest
 import os
 import tempfile
-from tests.capture_std_streams import stderr
-from model.file import BaselineFile
+from evaluation_system.tests.capture_std_streams import stderr
+from evaluation_system.model.file import BaselineFile
 
 class Test(unittest.TestCase):
     
