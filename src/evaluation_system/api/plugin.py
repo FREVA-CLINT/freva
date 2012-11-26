@@ -22,7 +22,7 @@ class PluginAbstract(object):
         while being defined"""
         def __init__(self, name, bases, namespace):
             if name != 'PluginAbstract':
-                #there's a subclass
+                #This is a new subclass. We may register it on the fly now.
                 pass
                 return abc.ABCMeta.__init__(PluginAbstract, name, bases, namespace)
             return abc.ABCMeta.__init__(abc.ABCMeta, name, bases, namespace)

@@ -36,18 +36,17 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 import getopt
 
-import evaluation_system.model.file as mf
+import evaluation_system.api.plugin_manager as pm
 
-__all__ = []
 __version__ = 0.1
-__date__ = '2012-10-18'
-__updated__ = '2012-10-18'
+__date__ = '2012-11-26'
 
 
-class CLIError(Exception):
+
+class AnalyzeError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
     def __init__(self, msg, show_help=True):
-        super(CLIError).__init__(type(self))
+        super(AnalyzeError).__init__(type(self))
         auto_doc()
         self.msg = " %s" % msg
     def __str__(self):
@@ -55,11 +54,29 @@ class CLIError(Exception):
     def __unicode__(self):
         return self.msg
 
+def call(cmd_str):
+    from subprocess import Popen, PIPE
+    return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
+    
+def getEnvironment():
+    """Parses required variablems from the environment and return a dictionary of them"""
+    result = {}
+    console_size = call('stty size')[0]
+    if console_size:
+        rows, columns = console_size.strip().split()
+        rows, columns = int(rows), int(columns)
+    else:
+        rows, columns = 25, 80
+    
+    result['rows'] = rows
+    result['columns'] = columns
+    return result
+
 def auto_doc(message=None):
     import re, os
     script_file = sys.argv[0]
     script_name = os.path.basename(script_file)
-    #check if in unit tests
+    #check if in unit tests (runfiles.py is starting the unit test)
     if script_name == 'runfiles.py':
         print "No auto doc for unit test."
         return
@@ -85,11 +102,19 @@ def auto_doc(message=None):
     else: print '%s %s' % (script_name, message)
 
     print """
-The query is of the form key=value. <value> might use *, ?, [seq] or [!seq] (see python glob).
-
+Applies some analysis to the given data.
+ 
 For Example:
-    %s model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
+    %s --tool pca --tool_opts eofs=4,bias=False --input myfile.nc --outputdir /tmp/test
 """ % script_name
+
+def to_bool(bool_str):
+    if isinstance(bool_str, basestring) and bool_str: 
+        if bool_str.lower() in ['true', 't', '1']: return True
+        elif bool_str.lower() in ['false', 'f', '0']: return False
+        
+    #if here we couldn't parse it
+    raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -97,58 +122,70 @@ def main(argv=None): # IGNORE:C0111
     if argv is None:
         argv = sys.argv[1:]
 
-
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion'])
+        args, lastargs = getopt.getopt(argv, "hd", ['tool=', 'tool-opts=', 'list-tools',
+                                                    'help', 'input=', 'input_list=', 'output_dir=',
+                                                    ])
         
         #defaults
         DEBUG = False
-        baseline = 0
-        latest=True
+        help_opt=False
+        tool = None
+        input = []
+        env = getEnvironment()
         
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':        #This help
-                auto_doc()
+            if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
+                help_opt=True
+            elif flag == '--tool':              #define which tool should be used
+                tool=arg
+            elif flag == '--list-tools':        #show all available tools
+                import textwrap
+                #we just have to show the list and stop processing
+                name_width = 0
+                for key in pm.getPlugins():
+                    name_width = max(name_width, len(key))
+                offset = name_width + 2
+                for key, plugin in pm.getPlugins().items():
+                    lines = textwrap.wrap(plugin['description'], env['columns'] - offset)
+                    if len(lines) > 1:
+                        #multiline
+                        print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset +('\n' + ' '*offset).join(lines[1:]))
+                    else:
+                        print '%s: %s' % (plugin['name'], lines[0])
+                #done
                 return 0
-            elif flag == '--baseline':              #define which baseline to use [0.1.2]. default := 0
-                try:
-                    baseline = int(arg)
-                except:
-                    print "Can't parse baseline argument '%s'. It should be one of %s" % (arg, range(len(mf.BaselineFile.BASELINE)))
-                    return 1
-            elif flag == '--multiversion':          #select not only the latest version but all of them
-                latest=False
+            elif flag == '--input':             #input file (may be used multiple times)
+                input.append(arg)
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
-        
-        search_dict = {}
-        for arg in lastargs:
-            if '=' not in arg:
-                raise CLIError("Invalid format for query: %s" % arg)
-            
-            items = arg.split('=')
-            search_dict[items[0]] = ''.join(items[1:])
-            
-        if DEBUG:
-            sys.stderr.write("Searching string: %s\n" % search_dict)
-        if not search_dict and baseline == 0 and latest:
-            sys.stderr.write("This search will take a while, since we have to parse all files to get the latest version.\nTry constraining your query for faster results\n")
 
-        #flush stderr in case we have something pending
-        sys.stderr.flush()
-
-        #find the files and display them
-        for f in mf.BaselineFile.search(baseline, latest_version=latest, **search_dict):
-            sys.stdout.write(str(f))
-            sys.stdout.write('\n')
-            sys.stdout.flush()
         
+        
+        if help_opt:
+            if tool:
+                plugin = pm.getPlugin(tool.lower())
+                print plugin['plugin_class']().getHelp()
+                return 0
+            else:
+                auto_doc()
+                return 0
+        
+        
+        #get the plugin
+        if tool: 
+            plugin = pm.getPlugin(tool.lower())
+        else:
+            #if no tool selected display the help.
+            auto_doc()
+            return 0
+            
+            
     except getopt.error:
         print sys.exc_info()[:3]
         return 1
-    
 
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
