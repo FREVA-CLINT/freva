@@ -50,6 +50,10 @@ class Test(unittest.TestCase):
             #assure the tools are there and you can get them case insensitively
             analyze.main(['--help','--tool', name.lower()])
             analyze.main(['--help','--tool', name.upper()])
+            
+    def testPCA(self):
+        #assure the tools are there and you can get them case insensitively
+        analyze.main(['--tool', 'pca', 'input=sometest', 'eofs=4', 'normalize', 'variable=tas'])
          
 
 if __name__ == "__main__":

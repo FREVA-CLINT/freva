@@ -41,7 +41,14 @@ class PluginAbstract(object):
     def getHelp(self):
         """Return some help for the user"""
         raise NotImplementedError("This method must be implemented")
-
+    
+    @abc.abstractmethod
+    def parseArguments(self, opt_arr):
+        """Parse an array of strings and return a configuration dictionary.
+        The strings are of the type: ['key1=val1', 'key2']
+        Throw a configuration error if the attributes are not expected."""
+        raise NotImplementedError("This method must be implemented")
+    
     @abc.abstractmethod
     def setupConfiguration(self, config_dict = None, template = None, check_cfg = True):
         """Define the configuration required for processing this files. If a template was given,

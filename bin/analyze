@@ -108,13 +108,7 @@ For Example:
     %s --tool pca --tool_opts eofs=4,bias=False --input myfile.nc --outputdir /tmp/test
 """ % script_name
 
-def to_bool(bool_str):
-    if isinstance(bool_str, basestring) and bool_str: 
-        if bool_str.lower() in ['true', 't', '1']: return True
-        elif bool_str.lower() in ['false', 'f', '0']: return False
-        
-    #if here we couldn't parse it
-    raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
+
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -124,7 +118,7 @@ def main(argv=None): # IGNORE:C0111
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['tool=', 'tool-opts=', 'list-tools',
+        args, lastargs = getopt.getopt(argv, "hd", ['tool=', 'list-tools',
                                                     'help', 'input=', 'input_list=', 'output_dir=',
                                                     ])
         
@@ -177,12 +171,20 @@ def main(argv=None): # IGNORE:C0111
         #get the plugin
         if tool: 
             plugin = pm.getPlugin(tool.lower())
+            tool = plugin['plugin_class']()
+            tool_dict = tool.parseArguments(lastargs)
+            if DEBUG:
+                import json
+                print "Current configuration:"
+                print json.dumps(tool.setupConfiguration(**tool_dict), indent=4)
+            #now run the tool
+            tool.runTool(**tool_dict)
         else:
             #if no tool selected display the help.
             auto_doc()
             return 0
             
-            
+        
     except getopt.error:
         print sys.exc_info()[:3]
         return 1
