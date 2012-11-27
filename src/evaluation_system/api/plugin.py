@@ -13,6 +13,35 @@ from string import Template
 class ConfigurationError(Exception):
     pass
 
+class metadict(dict):
+    def __init__(self, compact_creation=False, *args, **kw):
+        self.metainfo = {}
+        if compact_creation:
+            #separate the special "value" in the first field from the dictionary in the second
+            super(metadict,self).__init__()
+            for key, values in kw.items():
+                if isinstance(values, tuple):
+                    self[key] = values[0]
+                    self.metainfo[key] = values[1]
+                else:
+                    self[key] = values
+        else:
+            super(metadict,self).__init__(*args, **kw)
+        
+        
+    def getMetadata(self, key):
+        if key in self.metainfo: return self.metainfo[key]
+        else: return None
+        
+    def setMetadata(self, key, meta_dict):
+        if key not in self: raise KeyError(key)
+        if key not in self.metainfo: self.metainfo[key] = {}
+        self.metainfo[key].update(meta_dict)
+    
+    def clearMetadata(self, key):
+        if key not in self: raise KeyError(key)
+        if key in self.metainfo: del self.metainfo[key]
+
 class PluginAbstract(object):
     """This is the base class for all plugins"""
     
@@ -42,17 +71,55 @@ class PluginAbstract(object):
         """Return some help for the user"""
         raise NotImplementedError("This method must be implemented")
     
+    def __to_bool(self, bool_str):
+        """Parses a string for a boolean value"""
+        if isinstance(bool_str, basestring) and bool_str: 
+            if bool_str.lower() in ['true', 't', '1']: return True
+            elif bool_str.lower() in ['false', 'f', '0']: return False
+            
+        #if here we couldn't parse it
+        raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
+        
     @abc.abstractmethod
-    def parseArguments(self, opt_arr):
+    def parseArguments(self, opt_arr, default_cfg_metadict={}):
         """Parse an array of strings and return a configuration dictionary.
         The strings are of the type: ['key1=val1', 'key2']
         Throw a configuration error if the attributes are not expected."""
-        raise NotImplementedError("This method must be implemented")
+        config = {}
+        
+        for option in opt_arr:            
+            parts = option.split('=')
+            if len(parts) == 1:
+                key, value = parts[0], 'true'
+            else:
+                key = parts[0]
+                #just in case there were multiple '=' characters
+                value = '='.join(parts[1:])
+            
+            if key in default_cfg_metadict:
+                meta = default_cfg_metadict.getMetadata(key)
+                if meta and 'type' in meta: key_type = meta['type']
+                else: key_type = type(default_cfg_metadict[key])
+                try:
+                    if key_type is type(None):
+                        raise ConfigurationError("Internal error at the API. Default arguments type missing.")
+                    config[key] = {
+                                int : int,
+                                bool : self.__to_bool,
+                                float: float,
+                                str: lambda s: s,
+                                }[key_type](value)
+                except ValueError:
+                    raise ConfigurationError("Can't parse value %s for option %s. Expected type: %s" % (value, key, key_type.__name__))
+            else:
+                raise ConfigurationError("Unknown parameter %s" % key)
+        return config
+        
     
     @abc.abstractmethod
     def setupConfiguration(self, config_dict = None, template = None, check_cfg = True):
         """Define the configuration required for processing this files. If a template was given,
-        the return value is a string containing the complete configuration. IF not the config_dict
+        the return value is a string containing the complete configuration. If not the config_dict
         will be returned but with all indirections being resolved. Eg:
         dict(a=1, b='1.txt', c='old_1.txt') == setpuConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
         
