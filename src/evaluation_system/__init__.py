@@ -3,8 +3,7 @@ import sys
 import evaluation_system.api.plugin as plugin
 
 #get the tools directory from the current one
-tools_dir = os.path.join(__file__[:-len('src/evaluation_system/__init__.py')-1],'tools')
-
+tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/__init__.py')-1],'tools')
 #all plugins modules will be dynamically loaded here.
 __plugin_modules__ = {}
 """Dictionary of modules holding the plugins"""

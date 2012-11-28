@@ -46,9 +46,10 @@ __updated__ = '2012-10-18'
 
 class CommandError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
-    def __init__(self, msg, show_help=True):
+    def __init__(self, msg, show_help=False):
         super(CommandError).__init__(type(self))
-        auto_doc()
+        if show_help: auto_doc()
+        else: print "Use --help for getting help."
         self.msg = " %s" % msg
     def __str__(self):
         return self.msg
@@ -164,7 +165,7 @@ def main(argv=None): # IGNORE:C0111
     except Exception:
         if DEBUG or __name__ != "__main__":
             raise
-        else: print sys.exc_info()[:3]
+        else: print "ERROR:",sys.exc_info()[1]
         return 2
 
 if __name__ == "__main__":
