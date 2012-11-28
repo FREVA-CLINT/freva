@@ -159,14 +159,16 @@ class DRSFile(object):
     def search(drs_structure=BASELINE0, latest_version=True, **partial_dict):
         """Search for files from the given parameters as part of the baseline names.
         returns := Generator returning matching Baseline files"""
+        
         bl = DRSFile._get_baseline(drs_structure)
         search_dict = bl['defaults'].copy()
         search_dict.update(partial_dict)
         
         #only baseline 0 is versioned
-        if latest_version and ('parts_versioned_dataset' in bl):
+        if latest_version and ('parts_versioned_dataset' not in bl):
             latest_version = False
-        
+            print >> sys.stderr, "No version information stored in structure thus latest version is inactive."
+
         local_path = bl['root_dir']
         for key in bl['parts_dir']:
             if key in search_dict:

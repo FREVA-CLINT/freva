@@ -101,7 +101,7 @@ def main(argv=None): # IGNORE:C0111
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion'
+        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion',
                                                     'observations', 'reanalysis'])
         
         #defaults
@@ -147,7 +147,7 @@ def main(argv=None): # IGNORE:C0111
 
         #flush stderr in case we have something pending
         sys.stderr.flush()
-
+        
         #find the files and display them
         for f in mf.DRSFile.search(drs_struct, latest_version=latest, **search_dict):
             sys.stdout.write(str(f))
