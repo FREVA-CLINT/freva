@@ -44,10 +44,10 @@ __date__ = '2012-10-18'
 __updated__ = '2012-10-18'
 
 
-class CLIError(Exception):
+class CommandError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
     def __init__(self, msg, show_help=True):
-        super(CLIError).__init__(type(self))
+        super(CommandError).__init__(type(self))
         auto_doc()
         self.msg = " %s" % msg
     def __str__(self):
@@ -100,47 +100,55 @@ def main(argv=None): # IGNORE:C0111
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion'])
+        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion'
+                                                    'observations', 'reanalysis'])
         
         #defaults
         DEBUG = False
         baseline = 0
         latest=True
-        
+        drs_struct=None
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':        #This help
+            if flag=='-h' or flag=='--help':        #    :This help
                 auto_doc()
                 return 0
-            elif flag == '--baseline':              #define which baseline to use [0.1.2]. default := 0
+            elif flag == '--baseline':              #<n> :search for baseline n data 
                 try:
                     baseline = int(arg)
+                    drs_struct = {0: mf.BASELINE0, 1:mf.BASELINE1}[baseline]
                 except:
-                    print "Can't parse baseline argument '%s'. It should be one of %s" % (arg, range(len(mf.BaselineFile.BASELINE)))
+                    print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
                     return 1
-            elif flag == '--multiversion':          #select not only the latest version but all of them
+            elif flag == '--observations':          #    :search for observational data
+                drs_struct = mf.OBSERVATIONS
+            elif flag == '--reanalysis':            #    :search for reanalysis data
+                drs_struct = mf.REANALYSIS
+            elif flag == '--multiversion':          #    :select not only the latest version but all of them
                 latest=False
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
         
+        if drs_struct is None:
+            raise CommandError('You must select a search type: --baseline n or --observational or --reanalysis')
         search_dict = {}
         for arg in lastargs:
             if '=' not in arg:
-                raise CLIError("Invalid format for query: %s" % arg)
+                raise CommandError("Invalid format for query: %s" % arg)
             
             items = arg.split('=')
             search_dict[items[0]] = ''.join(items[1:])
             
         if DEBUG:
             sys.stderr.write("Searching string: %s\n" % search_dict)
-        if not search_dict and baseline == 0 and latest:
+        if not search_dict and drs_struct == mf.BASELINE0 and latest:
             sys.stderr.write("This search will take a while, since we have to parse all files to get the latest version.\nTry constraining your query for faster results\n")
 
         #flush stderr in case we have something pending
         sys.stderr.flush()
 
         #find the files and display them
-        for f in mf.BaselineFile.search(baseline, latest_version=latest, **search_dict):
+        for f in mf.DRSFile.search(drs_struct, latest_version=latest, **search_dict):
             sys.stdout.write(str(f))
             sys.stdout.write('\n')
             sys.stdout.flush()

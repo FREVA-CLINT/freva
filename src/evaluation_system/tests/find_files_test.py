@@ -27,10 +27,10 @@ class Test(unittest.TestCase):
 
     def testName(self):
         #we expect an error if called without parameters
-        self.failUnlessRaises(find_files.CLIError, find_files.main, [''])
+        self.failUnlessRaises(find_files.CommandError, find_files.main, [''])
         
     def testSimpleSearch(self):
-        find_files.main(['model=MPI-ESM-LR', 'variable=tas', 'experiment=decadal2000', 
+        find_files.main(['--baseline','0', 'model=MPI-ESM-LR', 'variable=tas', 'experiment=decadal2000', 
                          'time_frequency=mon']);
          
         find_files.main(['--baseline', '1', 'model=MPI-ESM-LR', 'variable=tas', 'experiment=decadal2000', 

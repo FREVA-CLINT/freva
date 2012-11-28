@@ -7,7 +7,7 @@ import unittest
 import os
 import tempfile
 from evaluation_system.tests.capture_std_streams import stderr
-from evaluation_system.model.file import BaselineFile
+from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1
 
 class Test(unittest.TestCase):
     
@@ -29,13 +29,13 @@ class Test(unittest.TestCase):
         self.base0 = tempfile.mkdtemp('_baseline_0')
         self.base1 = tempfile.mkdtemp('_baseline_1')
         
-        BaselineFile.BASELINE[0]['root_dir'] = self.base0
-        BaselineFile.BASELINE[1]['root_dir'] = self.base1
+        DRSFile.DRS_STRUCTURE[BASELINE0]['root_dir'] = self.base0
+        DRSFile.DRS_STRUCTURE[BASELINE1]['root_dir'] = self.base1
         self.real_path_0 = self.base0 + '/cmip5/output1/MPI-M/MPI-ESM-LR/decadal1960/mon/land/Lmon/r1i1p1/v20111122/c3PftFrac/c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc'
         self.real_path_1 = self.base1 + '/baseline1/output/MPI-M/MPI-ESM-LR/asORAoERAa/day/atmos/pr/r1i1p1/pr_day_MPI-ESM-LR_asORAoERAa_r1i1p1_19600101-19691231.nc'
         self.real_dict = {'parts': {'cmor_table': 'Lmon', 'product': 'output1', 'realm': 'land', 'version': 'v20111122', 'institute': 'MPI-M', 'file_name': 'c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc', 'project': 'cmip5', 'time_frequency': 'mon', 'experiment': 'decadal1960', 'time': '196101-199012', 'variable': 'c3PftFrac', 'model': 'MPI-ESM-LR', 'ensemble': 'r1i1p1'}, 'root_dir': self.base0}
         self.real_json = '{"parts": {"cmor_table": "Lmon", "product": "output1", "realm": "land", "version": "v20111122", "institute": "MPI-M", "file_name": "c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc", "project": "cmip5", "time_frequency": "mon", "experiment": "decadal1960", "time": "196101-199012", "variable": "c3PftFrac", "model": "MPI-ESM-LR", "ensemble": "r1i1p1"}, "root_dir": "' + self.base0 + '"}'
-        self.baslinefile = BaselineFile(self.real_dict)
+        self.baslinefile = DRSFile(self.real_dict)
 
         
     def tearDown(self):
@@ -48,17 +48,17 @@ class Test(unittest.TestCase):
 
     def test_from_path(self):        
         print "Testing from path with path %s" % self.real_path_0
-        file_dict = BaselineFile.from_path(self.real_path_0)
+        file_dict = DRSFile.from_path(self.real_path_0)
         #check we have something
         self.assertNotEqual(file_dict, None)
         #check we have what we expect
         self.assertEqual(file_dict.dict, self.real_dict)
         
-        self.failUnlessRaises(Exception, BaselineFile.from_path, '/TEST' + self.real_path_0)
+        self.failUnlessRaises(Exception, DRSFile.from_path, '/TEST' + self.real_path_0)
 
     def test_from_dict(self):        
         print "Testing from dict with dict %s" % self.real_dict
-        file_dict = BaselineFile.from_dict(self.real_dict)
+        file_dict = DRSFile.from_dict(self.real_dict)
         #check we have something
         self.assertNotEqual(file_dict, None)
         #check we have what we expect
@@ -66,7 +66,7 @@ class Test(unittest.TestCase):
 
     def test_from_json(self):        
         print "Testing from json with json %s" % self.real_json
-        file_dict = BaselineFile.from_json(self.real_json)
+        file_dict = DRSFile.from_json(self.real_json)
         #check we have something
         self.assertNotEqual(file_dict, None)
         #check we have what we expect
@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
         self.assertEqual(path, self.real_path_0)
         
     def off_test_search(self):
-        result = BaselineFile.search(experiment='decadal1960', variable='tas')
+        result = DRSFile.search(experiment='decadal1960', variable='tas')
         #check we have something
         self.assertNotEqual(result, None)
         print "found %s files" % len(result)
@@ -89,7 +89,7 @@ class Test(unittest.TestCase):
     def test_search_wrong_constraints(self):
         stderr.startCapturing()
         stderr.reset()
-        generator = BaselineFile.search(non_existing_query_str='does not matter')
+        generator = DRSFile.search(non_existing_query_str='does not matter')
         #assure we got an exception
         self.failUnlessRaises(Exception, generator.next)
         stderr.stopCapturing()
@@ -97,14 +97,14 @@ class Test(unittest.TestCase):
         self.assertTrue(stderr.getvalue().startswith('WARNING'))
              
     def test_dataset(self):
-        bl = BaselineFile.from_json(self.real_json)
+        bl = DRSFile.from_json(self.real_json)
         self.assertNotEqual(bl, None)
         print "dataset (no version): %s " % bl.to_dataset()
         print "dataset (with version): %s " % bl.to_dataset(versioned=True)
         
     def test_eq(self):
-        f1 = BaselineFile.from_json(self.real_json)
-        f2 = BaselineFile.from_json(self.real_json)
+        f1 = DRSFile.from_json(self.real_json)
+        f2 = DRSFile.from_json(self.real_json)
         
         self.assertFalse(f1 is f2)
         self.assertTrue(f1 == f2)
@@ -123,10 +123,10 @@ class Test(unittest.TestCase):
             open(f, 'a').close()
             self.assertTrue(os.path.isfile(f), "can't create dummy file")
         #get all
-        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in BaselineFile.search(0, False, model='MPI-ESM-LR')]))
+        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in DRSFile.search(BASELINE0, False, model='MPI-ESM-LR')]))
         #get only the latest version (from the dataset! that means only f2a!
         #This is how datasets work d1 = f1a, f1b and then d2= f2a (it means f1a was updated and f1b *removed*)
-        self.assertItemEqual(set([f2a]), set([x.to_path() for x in BaselineFile.search(0, True, model='MPI-ESM-LR')]))
+        self.assertItemEqual(set([f2a]), set([x.to_path() for x in DRSFile.search(BASELINE0, True, model='MPI-ESM-LR')]))
             
     def test_search_baseline1(self):
         d1 = os.path.dirname(self.real_path_1)
@@ -142,11 +142,11 @@ class Test(unittest.TestCase):
             open(f, 'a').close()
             self.assertTrue(os.path.isfile(f), "can't create dummy file")
         #get all
-        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in BaselineFile.search(1, False, model='MPI-ESM-LR')]))
+        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in DRSFile.search(BASELINE1, False, model='MPI-ESM-LR')]))
         #There's no version stored in baseline 1, so the results should be the same
-        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in BaselineFile.search(1, True, model='MPI-ESM-LR')]))
+        self.assertItemEqual(set([f1a, f1b, f2a]), set([x.to_path() for x in DRSFile.search(BASELINE1, True, model='MPI-ESM-LR')]))
         #Check if we can find a specific file
-        self.assertItemEqual(set([f2a]), set([x.to_path() for x in BaselineFile.search(1, True, time_frequency='mon')]))
+        self.assertItemEqual(set([f2a]), set([x.to_path() for x in DRSFile.search(BASELINE1, True, time_frequency='mon')]))
     
 
 if __name__ == "__main__":
