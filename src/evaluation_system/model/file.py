@@ -21,7 +21,7 @@ class DRSFile(object):
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"cmip5", "institute":"MPI-M", "model":"MPI-ESM-LR"}
         },
@@ -30,10 +30,28 @@ class DRSFile(object):
          "root_dir":"/miklip/global/prod/archive",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
-         }
+         },
+         OBSERVATIONS : {
+         "root_dir":"/miklip/integration/data4miklip/observations",
+         "parts_dir":"project/product/institute/model/experiment/realm/variable/time_frequency/file_name".split('/'),
+         "parts_dataset":"project.institute.model.time_frequency".split('.'),
+         "parts_versioned_dataset":"project.institute.model.time_frequency.version".split('.'),
+         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "defaults" : {"project":"obs4MIPS", "product":"observations", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+         },
+         REANALYSIS : {
+         "root_dir":"/miklip/integration/data4miklip",
+         "parts_dir":"project/institute/model/experiment/time_frequency/realm/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "defaults" : {"project":"reanalysis"}
+        },
         }
 
     def __init__(self, file_dict=None, drs_structure=BASELINE0):
