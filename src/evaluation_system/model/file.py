@@ -35,22 +35,22 @@ class DRSFile(object):
          "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
          },
          OBSERVATIONS : {
-         "root_dir":"/miklip/integration/data4miklip/observations",
-         "parts_dir":"project/product/institute/model/experiment/realm/variable/time_frequency/file_name".split('/'),
-         "parts_dataset":"project.institute.model.time_frequency".split('.'),
-         "parts_versioned_dataset":"project.institute.model.time_frequency.version".split('.'),
-         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "root_dir":"/miklip/integration/data4miklip",
+         "parts_dir":"product/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
+         "parts_dataset":"project.institute.source.time_frequency".split('.'),
+         "parts_versioned_dataset":"project.institute.source.time_frequency.version".split('.'),
+         "parts_file_name":"variable-source-level-time".split('-'),
          "parts_time":"start_time-end_time",
-         "defaults" : {"project":"obs4MIPS", "product":"observations", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+         "defaults" : {"project":"obs4MIPS", "product":"observations", "data_structure":"grid"}
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/institute/model/experiment/time_frequency/realm/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
-         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/file_name".split('/'),
+         "parts_dataset":"project.institute.experiment.realm.time_frequency".split('.'),
+         "parts_versioned_dataset":"project.institute.experiment.realm.time_frequency.version".split('.'),
+         "parts_file_name":"variable-table-product-experiment-time".split('-'),
          "parts_time":"start_time-end_time",
-         "defaults" : {"project":"reanalysis"}
+         "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
         }
 
@@ -97,7 +97,10 @@ class DRSFile(object):
             iter_parts = self.get_baseline()['parts_dataset']
             
         for key in iter_parts:
-            result.append(self.dict['parts'][key])
+            if key in self.dict['parts']:
+                result.append(self.dict['parts'][key])
+            elif key in self.get_baseline()['defaults']:
+                result.append(self.get_baseline()['defaults'][key])
         return '.'.join(result)
     
     def is_versioned(self):
@@ -142,6 +145,9 @@ class DRSFile(object):
             and 'r0i0p0' in parts :
             #no time
             parts.append(None)
+        print path
+        print parts
+        print bl['parts_file_name']
         for i in range(len(bl['parts_file_name'])):
             result['parts'][bl['parts_file_name'][i]] = parts[i]
         
@@ -195,13 +201,14 @@ class DRSFile(object):
             else:
                 local_path = os.path.join(local_path, "*")
         
-        if search_dict:
+        #TODO: check if this is required... now we have different dataset name than directories...
+        #if search_dict:
             #ok, there are typos or non existing constraints in the search.
             #just report them to stderr
-            sys.stderr.write("WARNING: There where unused constraints: %s\nFor %s try one of: %s\n" % 
-                             (','.join(search_dict), drs_structure, ','.join(bl['parts_dir'])))
-            raise Exception("Unknown parameter(s) %s" % 
-                            (','.join(search_dict)))
+            #sys.stderr.write("WARNING: There where unused constraints: %s\nFor %s try one of: %s\n" % 
+            #                 (','.join(search_dict), drs_structure, ','.join(bl['parts_dir'])))
+            #raise Exception("Unknown parameter(s) %s" % 
+            #                (','.join(search_dict)))
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset
