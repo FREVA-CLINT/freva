@@ -6,7 +6,8 @@ Created on 20.09.2012
 import json
 import glob
 import os
-import sys
+import logging
+log = logging.getLogger(__name__)
 
 BASELINE0 = 'baseline 0'
 BASELINE1 = 'baseline 1'
@@ -21,7 +22,7 @@ class DRSFile(object):
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
-         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"cmip5", "institute":"MPI-M", "model":"MPI-ESM-LR"}
         },
@@ -30,7 +31,7 @@ class DRSFile(object):
          "root_dir":"/miklip/global/prod/archive",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable_table-model-experiment-ensemble-time".split('-'),
+         "parts_file_name":"variable-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
          },
@@ -145,9 +146,8 @@ class DRSFile(object):
             and 'r0i0p0' in parts :
             #no time
             parts.append(None)
-        print path
-        print parts
-        print bl['parts_file_name']
+            
+        log.debug("Path: %s\nFile_parts:%s\ndrs_structure_parts:%s", path, parts, bl['parts_file_name'])
         for i in range(len(bl['parts_file_name'])):
             result['parts'][bl['parts_file_name'][i]] = parts[i]
         
@@ -191,7 +191,7 @@ class DRSFile(object):
         #only baseline 0 is versioned
         if latest_version and ('parts_versioned_dataset' not in bl):
             latest_version = False
-            print >> sys.stderr, "No version information stored in structure thus latest version is inactive."
+            log.error("No version information stored in structure thus latest version is inactive.")
 
         local_path = bl['root_dir']
         for key in bl['parts_dir']:
@@ -201,14 +201,14 @@ class DRSFile(object):
             else:
                 local_path = os.path.join(local_path, "*")
         
-        #TODO: check if this is required... now we have different dataset name than directories...
-        #if search_dict:
+        #NOTE: We might have defaults for the datasets that are not appearing in the directories.
+        if set(search_dict) - set(bl['defaults']):
             #ok, there are typos or non existing constraints in the search.
-            #just report them to stderr
-            #sys.stderr.write("WARNING: There where unused constraints: %s\nFor %s try one of: %s\n" % 
-            #                 (','.join(search_dict), drs_structure, ','.join(bl['parts_dir'])))
-            #raise Exception("Unknown parameter(s) %s" % 
-            #                (','.join(search_dict)))
+            #which are not in the defaults. Those are "strange" to the selected structure.
+            log.warn("There where unused constraints: %s\nFor %s try one of: %s\n" % 
+                             (','.join(search_dict), drs_structure, ','.join(bl['parts_dir'])))
+            raise Exception("Unknown parameter(s) %s" % 
+                            (','.join(search_dict)))
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset

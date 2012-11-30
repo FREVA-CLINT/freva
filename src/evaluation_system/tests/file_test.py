@@ -9,6 +9,9 @@ import tempfile
 from evaluation_system.tests.capture_std_streams import stderr
 from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 class Test(unittest.TestCase):
     
     def assertItemEqual(self, iter1, iter2):
