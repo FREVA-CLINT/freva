@@ -9,18 +9,31 @@ import shlex
 import os
 import sys
 from string import Template
+from ConfigParser import SafeConfigParser
+from copy import deepcopy
 
 class ConfigurationError(Exception):
+    """Signals the configuration failed somehow."""
     pass
 
 class metadict(dict):
-    def __init__(self, compact_creation=False, *args, **kw):
+    """A dictionary extension for storing metadata along with the keys.
+    It behaves like a normal dictionary in all other cases."""
+    def __init__(self, *args, **kw):
+        """Creates a metadict dictionary. If the keyword 'compact_creation' is used the
+        entries will be given like: key1=(value1, dict1) or key2=value2
+        and dict1 is the dictionary attached to the key providing metadata."""
         self.metainfo = {}
+        compact_creation = kw.pop('compact_creation', False)
         if compact_creation:
             #separate the special "value" in the first field from the dictionary in the second
             super(metadict,self).__init__()
             for key, values in kw.items():
                 if isinstance(values, tuple):
+                    if len(values) != 2: 
+                        raise AttributeError("On compact creation a tuple with only 2 values is expected: (value, metadata)")
+                    if not isinstance(values[1],dict): 
+                        raise AttributeError("metadata entry must be a dictionary")
                     self[key] = values[0]
                     self.metainfo[key] = values[1]
                 else:
@@ -28,19 +41,25 @@ class metadict(dict):
         else:
             super(metadict,self).__init__(*args, **kw)
         
-        
+    def copy(self):
+        return deepcopy(self)
+    
     def getMetadata(self, key):
+        """Return the metadata allocated for the given key if any."""
         if key in self.metainfo: return self.metainfo[key]
         else: return None
         
-    def setMetadata(self, key, meta_dict):
+    def setMetadata(self, key, **meta_dict):
+        """Store/replace the metadata allocated for the given key."""
         if key not in self: raise KeyError(key)
         if key not in self.metainfo: self.metainfo[key] = {}
         self.metainfo[key].update(meta_dict)
     
     def clearMetadata(self, key):
+        """Clear all metadata allocated under the given key."""
         if key not in self: raise KeyError(key)
         if key in self.metainfo: del self.metainfo[key]
+        
 
 class PluginAbstract(object):
     """This is the base class for all plugins"""
@@ -80,11 +99,48 @@ class PluginAbstract(object):
         #if here we couldn't parse it
         raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
         
+    def _parseConfigStrValue(self, key, str_value, ref_dictionary=None, fail_on_missing=True):
+        """Try to parse a str_value that is a string into the most appropriate str_value according. 
+        The logic is as follows:
+        0) If there's no reference dictionary the str_value is returned as is.
+        1) if the ref_dictionary is a metadict and has a 'type' metadata attribute, that will be used for casting
+        2) if the ref_dictionary has a str_value for the key, the type of the ref_dictionary str_value would be used
+        3) if the key is not found in the reference ref_dictionary an exception will be thrown unless
+           `fail_on_missing` was set to `False`, in which case it will return str_value as it was. 
+        4) if the type results in NoneType an exception will be thrown"""
+        key_type = None
+        if ref_dictionary is None or (not fail_on_missing and key not in ref_dictionary):
+            #if there's no dictionary reference or the key is not in it and we are not failling
+            #just return the str_value 
+            return str_value 
+        if hasattr(ref_dictionary, 'getMetadata') and key in ref_dictionary:
+            meta = ref_dictionary.getMetadata(key)
+            if meta and 'type' in meta: key_type = meta['type']
+            
+        
+        #if no metadata is present infer from default str_value
+        if key_type is None: 
+            if key in ref_dictionary:
+                key_type = type(ref_dictionary[key])
+            else:
+                raise ConfigurationError("Unknown parameter %s" % key)
+        try:
+            if key_type is type(None):
+                raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
+            return key_type(str_value)
+        except ValueError:
+            raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type.__name__))
+        
     @abc.abstractmethod
-    def parseArguments(self, opt_arr, default_cfg_metadict={}):
+    def parseArguments(self, opt_arr, default_cfg=None):
         """Parse an array of strings and return a configuration dictionary.
         The strings are of the type: ['key1=val1', 'key2']
-        Throw a configuration error if the attributes are not expected."""
+        Parameters:
+        opt_arr:= string array with options to be parsed
+        default_cfg:=dict/metadict (optional)
+            If provided it's used to infer the type of the arguments and cast them.
+        See `_parseConfigStrValue` for more information on how the parsing is done.
+        """
         config = {}
         
         for option in opt_arr:            
@@ -95,24 +151,9 @@ class PluginAbstract(object):
                 key = parts[0]
                 #just in case there were multiple '=' characters
                 value = '='.join(parts[1:])
-            
-            if key in default_cfg_metadict:
-                meta = default_cfg_metadict.getMetadata(key)
-                if meta and 'type' in meta: key_type = meta['type']
-                else: key_type = type(default_cfg_metadict[key])
-                try:
-                    if key_type is type(None):
-                        raise ConfigurationError("Internal error at the API. Default arguments type missing.")
-                    config[key] = {
-                                int : int,
-                                bool : self.__to_bool,
-                                float: float,
-                                str: lambda s: s,
-                                }[key_type](value)
-                except ValueError:
-                    raise ConfigurationError("Can't parse value %s for option %s. Expected type: %s" % (value, key, key_type.__name__))
-            else:
-                raise ConfigurationError("Unknown parameter %s" % key)
+                
+            config[key] = self._parseConfigStrValue(key, value, ref_dictionary=default_cfg)
+
         return config
         
     
@@ -137,6 +178,10 @@ class PluginAbstract(object):
             the substituted configuration string
         """
         
+        if template and isinstance(template, basestring):
+            #be nice with whomever is implementing dice and accept normal strings
+            import string 
+            template = string.Template(template) 
         #accept a maximal recursion of 5 for resolving all tokens
         #5 is a definite number larger than any thinkable recursion for this case
         max_iter = 5
@@ -160,6 +205,52 @@ class PluginAbstract(object):
             return template.substitute(config_dict)
         else:
             return config_dict
+        
+    def _dictValuesToString(self, dictionary):
+        """Transform a dictionary into its representation. no recursion is been handled here, that should
+        be left to the implementing class to solve. The original dictionary is not transformed a copy is created
+        and returned.
+        Parameters
+        dictionary := The dictionary to transform"""
+        result = {}
+        for key, value in dictionary.items():
+            result[key] = repr(value)
+        return result
+    
+    def dictToConfig(self, config_dict={}, config_parser=None):
+        """Add the given configuration dictionary to a ConfigParser object.
+        The section is determined by the name of the implemnting class.
+        Parameters
+        confi_dict := configuration dict to be stored (default: {})
+        config_parser := config parser where this info is stored. If None is give a config parser is created (default: None)"""
+        if config_parser is None: config_parser = SafeConfigParser()
+        section = self.__class__.__name__
+        for key, value in config_dict.items():
+            config_parser.set(section, key, repr(value))
+        return config_parser
+    
+    def readFromConfigParser(self, config_parser, default_metadict=None):
+        section = self.__class__.__name__
+        #create a copy of metadict
+        if default_metadict is None:
+            keys = config_parser.options(section)
+            result = metadict()
+        else:
+            result = default_metadict.copy()
+            #we do this to avoid having problems with the "DEFAULT" section as it might define
+            #more options that what this plugin requires
+            keys = set(result).intersection(config_parser.options(section))
+        #update values as found in the configuration
+        for key in keys:
+            #parse the value as good as possible
+            result[key] = self._parseConfigStrValue(key, config_parser.get(section, key), ref_dictionary=default_metadict)
+        return result
+        
+        
+    def saveConfiguration(self, file_name, config_dict):
+        """Stores the given configuration to disk"""
+        pass
+        
     
     def _postTransformCfg(self, config_dict):
         """Allow plugins to give a final check or modification to the configuration before being issued"""
