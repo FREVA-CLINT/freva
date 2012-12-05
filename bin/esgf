@@ -71,13 +71,15 @@ def auto_doc(message=None):
     re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
     parsing=False
     results = []
+    from textwrap import TextWrapper
+    wrapper = TextWrapper(60, subsequent_indent=' '*22, drop_whitespace=False)
     for line in open(script_file, 'r'):
         if parsing:
             items = re_entries.match(line)
             if items:
                 flag, flag_opt, mesg = items.groups()
                 if flag_opt: flag = '%s, %s' % (flag, flag_opt)
-                results.append('  %-20s : %s' % (flag, mesg))
+                results.append('  %-18s : %s' % (flag, wrapper.fill(mesg)))
             if re_end.match(line): break
         elif re_start.match(line): parsing = True
 
@@ -87,17 +89,17 @@ def auto_doc(message=None):
     else: print '%s %s' % (script_name, message)
 
     print """
-The query is of the form key=value. the key might be repeated and/or negated with the '_not_' suffix
-(e.g. model_not_=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001)
+The query is of the form key=value. the key might be repeated and/or negated with the 
+'_not_' suffix (e.g. model_not_=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001)
 
-For Example:
-    %s model=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001 variable=tas distrib=False
+Simple query:
+    %s model=MPI-ESM-LR experiment=decadal2001 variable=tas distrib=False
     
 The search API is described here: http://www.esgf.org/wiki/ESGF_Search_REST_API
 Some special query keys:
-distrib : (*true*, false) search globally or only at DKRZ (MPI data and replicas)
-latest  : (true, false, *unset*) search for the latest version, older ones or all.
-replica : (true, false, *unset*) search only for replicas, only for the original data, or all.
+distrib: (*true*, false) search globally or only at DKRZ (MPI data and replicas)
+latest : (true, false, *unset*) search for the latest version, older ones or all.
+replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 """ % script_name
 
 def main(argv=None): # IGNORE:C0111
@@ -123,21 +125,21 @@ def main(argv=None): # IGNORE:C0111
 
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag == '-d' or flag == '--debug': #turn on debuging info
+            if flag == '-d' or flag == '--debug': # Turn on debuging info
                 DEBUG = True
-            elif flag=='--show-facet':         #<list> :List all values for the given facet (might be defined multiple times)
+            elif flag=='--show-facet':          #<list> List all values for the given facet (might be defined multiple times). The results show the possible values of the selected facet according to the given constraints and the number of *datasets* (not files) that selecting such value as a constraint will result (faceted search)
                  show_facets.append(arg)
-            elif flag=='--datasets':            #       List the name of the datasets.
+            elif flag=='--datasets':            # List the name of the datasets instead of showing the urls.
                 datasets = True
-            elif flag == '--opendap':           #    :show Opendap endpoints instead of the http default ones (or skip them if none found)
+            elif flag == '--opendap':           # Show Opendap endpoints instead of the http default ones (or skip them if none found)
                 url_type= 'opendap'           
-            elif flag == '--gridftp':           #    :show Gridftp endpoints instead of the http default ones (or skip them if none found)
+            elif flag == '--gridftp':           # Show Gridftp endpoints instead of the http default ones (or skip them if none found)
                 url_type= 'gridftp'           
-            elif flag == '--download-script':   #<file> :Download wget_script for getting the files instead of displaying anything (only http)
+            elif flag == '--download-script':   #<file> Download wget_script for getting the files instead of displaying anything (only http)
                 download_file = arg
-            elif flag=='--query':               #<list> :Display results from <list> queried fields
+            elif flag=='--query':               #<list> Display results from <list> queried fields
                 query=arg
-            elif flag=='-h' or flag=='--help':        #    :This help
+            elif flag=='-h' or flag=='--help':   # Show this help
                 auto_doc()
                 return 0
         
