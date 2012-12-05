@@ -1,0 +1,203 @@
+#!/usr/bin/env python
+# encoding: utf-8
+'''
+esgf -- query the esgf search api
+
+@copyright:  2012 FU Berlin. All rights reserved.
+        
+@contact:    estanislao.gonzalez@met.fu-berlin.de
+
+@license:    BSD
+
+Copyright (c) 2012, FU Berlin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this 
+    list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+
+import sys
+import getopt
+
+from evaluation_system.model.esgf import P2P
+
+__all__ = []
+__version__ = 0.1
+__date__ = '2012-12-05'
+__updated__ = '2012-12-05'
+
+
+class CommandError(Exception):
+    '''Generic exception to raise and log different fatal errors.'''
+    def __init__(self, msg, show_help=False, exception=None):
+        super(CommandError).__init__(type(self))
+        self.exception=exception
+        if show_help: auto_doc()
+        else: print "Use --help for getting help."
+        self.msg = " %s" % msg
+    def __str__(self):
+        return self.msg
+    def __unicode__(self):
+        return self.msg
+
+def auto_doc(message=None):
+    import re, os
+    script_file = sys.argv[0]
+    script_name = os.path.basename(script_file)
+    #check if in unit tests
+    if script_name == 'runfiles.py':
+        print "No auto doc for unit test."
+        return
+    
+    re_start = re.compile('.*\*!!!\*$')
+    re_end = re.compile('^[ \t]*$')
+    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
+    parsing=False
+    results = []
+    for line in open(script_file, 'r'):
+        if parsing:
+            items = re_entries.match(line)
+            if items:
+                flag, flag_opt, mesg = items.groups()
+                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
+                results.append('  %-20s : %s' % (flag, mesg))
+            if re_end.match(line): break
+        elif re_start.match(line): parsing = True
+
+    if message: message = ': ' + message
+    else: message = ''
+    if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
+    else: print '%s %s' % (script_name, message)
+
+    print """
+The query is of the form key=value. the key might be repeated and/or negated with the '_not_' suffix
+(e.g. model_not_=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001)
+
+For Example:
+    %s model=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001 variable=tas distrib=False
+    
+The search API is described here: http://www.esgf.org/wiki/ESGF_Search_REST_API
+Some special query keys:
+distrib : (*true*, false) search globally or only at DKRZ (MPI data and replicas)
+latest  : (true, false, *unset*) search for the latest version, older ones or all.
+replica : (true, false, *unset*) search only for replicas, only for the original data, or all.
+""" % script_name
+
+def main(argv=None): # IGNORE:C0111
+    '''Command line options.'''
+    DEBUG = False
+    
+    if argv is None:
+        argv = sys.argv[1:]
+
+
+    try:
+        # Setup argument parser
+        args, lastargs = getopt.getopt(argv, "f:hd", ['help','debug', 'facet=','query=', 'datasets', 'show-facet=',
+                                                      'opendap', 'gridftp', 'download-script='])
+        
+        #defaults
+        datasets = False
+        facets = {}
+        query=None
+        show_facets = []
+        url_type = 'http' #
+        download_file = None
+
+        #parse arguments *!!!*
+        for flag, arg in args:
+            if flag == '-d' or flag == '--debug': #turn on debuging info
+                DEBUG = True
+            elif flag=='--show-facet':         #<list> :List all values for the given facet (might be defined multiple times)
+                 show_facets.append(arg)
+            elif flag=='--datasets':            #       List the name of the datasets.
+                datasets = True
+            elif flag == '--opendap':           #    :show Opendap endpoints instead of the http default ones (or skip them if none found)
+                url_type= 'opendap'           
+            elif flag == '--gridftp':           #    :show Gridftp endpoints instead of the http default ones (or skip them if none found)
+                url_type= 'gridftp'           
+            elif flag == '--download-script':   #<file> :Download wget_script for getting the files instead of displaying anything (only http)
+                download_file = arg
+            elif flag=='--query':               #<list> :Display results from <list> queried fields
+                query=arg
+            elif flag=='-h' or flag=='--help':        #    :This help
+                auto_doc()
+                return 0
+        
+        search_dict = {}
+        for arg in lastargs:
+            items = arg.split('=')
+            if len(items)==1:
+                facets[items[0]] = True
+            else:
+                facets[items[0]] = '='.join(items[1:])
+            
+        if DEBUG:
+            sys.stderr.write("Searching string: %s\n" % facets)
+
+        #flush stderr in case we have something pending
+        sys.stderr.flush()
+        
+        #find the files and display them
+        p2p = P2P()
+    
+        if download_file:
+            with open(download_file, 'w') as f:
+                f.write(p2p.get_wget(**facets))
+                print "Download script successfully saved to %s" % download_file
+                return 0    #there's nothing more to be executed after this
+            return 1
+        if datasets: 
+            print '\n'.join(['%s - version: %s' % d for d in sorted(p2p.get_datasets_names(**facets))])
+        if query: 
+            if len(query.split(',')) > 1:
+                #we get multiple fields queried, return in a tructured fashion
+                p2p.show(p2p.get_datasets(fields=query,**facets))
+            else:
+                #if only one then return directly
+                print '\n'.join([str(d[query]) for d in p2p.get_datasets(fields=query,**facets)])
+            
+        if show_facets:
+            results = p2p.get_facets(show_facets, **facets)
+            #render them
+            for facet_key in sorted(results):
+                if len(results[facet_key]) == 0: values = "<No Results>"
+                else: values = '\n\t'.join([ '%s: %s' % (k,results[facet_key][k])  for k in sorted(results[facet_key])])
+                print '[%s]\n\t%s' % (facet_key, values)
+        if not (datasets or query or show_facets):
+            #default
+            for result in p2p.files(fields='url',**facets):
+                for url_encoded in result['url']:
+                    url, mime, type = url_encoded.split('|')
+                    if type.lower().startswith(url_type):
+                        print url
+        return 0
+        
+    except KeyboardInterrupt:
+        ### handle keyboard interrupt ###
+        return 0
+    except Exception:
+        if DEBUG or __name__ != "__main__":
+            raise
+        else: print "ERROR:",sys.exc_info()[1]
+        return 2
+
+if __name__ == "__main__":
+    sys.exit(main())
