@@ -155,7 +155,6 @@ E.g. del_defaults('institute','model')"""
         request = '%s&%s' % (self.__get_url(), query)
 
         log.debug(request)
-        print request
         response = json.load(urllib2.urlopen(request, None,  self._time_out))
 
         return response
