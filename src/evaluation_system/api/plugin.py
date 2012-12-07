@@ -59,8 +59,24 @@ class metadict(dict):
         """Clear all metadata allocated under the given key."""
         if key not in self: raise KeyError(key)
         if key in self.metainfo: del self.metainfo[key]
-        
 
+    @staticmethod
+    def hasMetadata(some_dict, key=None):
+        """Returns if the given dictionary has metadata"""
+        if key is None:
+            return hasattr(some_dict, 'getMetadata')
+        else:
+            return hasattr(some_dict, 'getMetadata') and bool(some_dict.getMetadata(key))
+    
+    @staticmethod
+    def getMetaValue(some_dict, key, meta_key):
+        """Return the metadata associated with the key if any or None if not found or
+        this is not a metadict"""
+        if metadict.hasMetadata(some_dict):
+            meta = some_dict.getMetadata(key)
+            if meta and meta_key in meta: return meta[meta_key]
+
+        
 class PluginAbstract(object):
     """This is the base class for all plugins"""
     
@@ -78,17 +94,50 @@ class PluginAbstract(object):
     @abc.abstractproperty
     def __version__(self):
         """Returns the version of the plugin"""
-        raise NotImplementedError("This method must be implemented")
+        raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractproperty
     def __short_description__(self):
         """Returns the version of the plugin"""
-        raise NotImplementedError("This method must be implemented")
-           
-    @abc.abstractmethod
+        raise NotImplementedError("This attribute must be implemented")
+
+    @abc.abstractproperty
+    def __config_metadict__(self):
+        """A metadict containing the definition of all known configurable parameters for the
+        implementing plugin class. The used metadata items are:
+        type:=class
+            define the class of the parameter, it will also be used for casting the string values stored
+            in configurations files. Normally is one of str, int, float or bool. It'S only required if there's
+            no default value and therefore the type cannot be infered from it.
+        help:=string
+            some explanation regarding the parameter, this will get written in the config file and displayed to
+            the user.
+        mandatory:=any
+            if this attribute is mandatory (if not present it is not)"""
+        raise NotImplementedError("This attribute must be implemented")
+    
     def getHelp(self):
         """Return some help for the user"""
-        raise NotImplementedError("This method must be implemented")
+        import textwrap
+        separator=''
+        wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*15, subsequent_indent=' '*15, replace_whitespace=False)
+        help_str = ['%s (v%s): %s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), self.__short_description__)]
+        help_str.append('Options:')
+        
+        for key in sorted(self.__config_metadict__):
+            value = self.__config_metadict__[key]
+            help_str.append('%-14s (default: %s)' % (key, value))
+            if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
+                help_str[-1] = help_str[-1] + ' [mandatory]'
+                
+            key_help = metadict.getMetaValue(self.__config_metadict__, key, 'help')
+            if key_help:
+                #wrap it properly
+                help_str.append('\n'.join(wrapper.fill(line) for line in 
+                       key_help.splitlines()))
+            help_str.append(separator)
+        
+        return '\n'.join(help_str)
     
     def __to_bool(self, bool_str):
         """Parses a string for a boolean value"""
@@ -99,29 +148,25 @@ class PluginAbstract(object):
         #if here we couldn't parse it
         raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
         
-    def _parseConfigStrValue(self, key, str_value, ref_dictionary=None, fail_on_missing=True):
+    def _parseConfigStrValue(self, key, str_value, fail_on_missing=True):
         """Try to parse a str_value that is a string into the most appropriate str_value according. 
         The logic is as follows:
         0) If there's no reference dictionary the str_value is returned as is.
-        1) if the ref_dictionary is a metadict and has a 'type' metadata attribute, that will be used for casting
-        2) if the ref_dictionary has a str_value for the key, the type of the ref_dictionary str_value would be used
-        3) if the key is not found in the reference ref_dictionary an exception will be thrown unless
+        1) if the __config_metadict__ is a metadict and has a 'type' metadata attribute, that will be used for casting
+        2) if the __config_metadict__ has a str_value for the key, the type of the __config_metadict__ str_value would be used
+        3) if the key is not found in the reference __config_metadict__ an exception will be thrown unless
            `fail_on_missing` was set to `False`, in which case it will return str_value as it was. 
         4) if the type results in NoneType an exception will be thrown"""
-        key_type = None
-        if ref_dictionary is None or (not fail_on_missing and key not in ref_dictionary):
+        if self.__config_metadict__ is None or (not fail_on_missing and key not in self.__config_metadict__):
             #if there's no dictionary reference or the key is not in it and we are not failling
             #just return the str_value 
             return str_value 
-        if hasattr(ref_dictionary, 'getMetadata') and key in ref_dictionary:
-            meta = ref_dictionary.getMetadata(key)
-            if meta and 'type' in meta: key_type = meta['type']
-            
+        key_type = metadict.getMetaValue(self.__config_metadict__, key, 'type')
         
         #if no metadata is present infer from default str_value
         if key_type is None: 
-            if key in ref_dictionary:
-                key_type = type(ref_dictionary[key])
+            if key in self.__config_metadict__:
+                key_type = type(self.__config_metadict__[key])
             else:
                 raise ConfigurationError("Unknown parameter %s" % key)
         try:
@@ -131,14 +176,11 @@ class PluginAbstract(object):
         except ValueError:
             raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type.__name__))
         
-    @abc.abstractmethod
-    def parseArguments(self, opt_arr, default_cfg=None):
+    def parseArguments(self, opt_arr):
         """Parse an array of strings and return a configuration dictionary.
         The strings are of the type: ['key1=val1', 'key2']
         Parameters:
         opt_arr:= string array with options to be parsed
-        default_cfg:=dict/metadict (optional)
-            If provided it's used to infer the type of the arguments and cast them.
         See `_parseConfigStrValue` for more information on how the parsing is done.
         """
         config = {}
@@ -152,12 +194,10 @@ class PluginAbstract(object):
                 #just in case there were multiple '=' characters
                 value = '='.join(parts[1:])
                 
-            config[key] = self._parseConfigStrValue(key, value, ref_dictionary=default_cfg)
+            config[key] = self._parseConfigStrValue(key, value)
 
         return config
         
-    
-    @abc.abstractmethod
     def setupConfiguration(self, config_dict = None, template = None, check_cfg = True):
         """Define the configuration required for processing this files. If a template was given,
         the return value is a string containing the complete configuration. If not the config_dict
@@ -177,6 +217,14 @@ class PluginAbstract(object):
         template : string
             the substituted configuration string
         """
+        
+        
+        if config_dict:
+            conf = self.__config_metadict__.copy() 
+            conf.update(config_dict)
+            config_dict = conf
+        else:
+            config_dict = self.__config_metadict__.copy()
         
         if template and isinstance(template, basestring):
             #be nice with whomever is implementing dice and accept normal strings
@@ -198,9 +246,9 @@ class PluginAbstract(object):
         config_dict = self._postTransformCfg(config_dict)
         
         if check_cfg:
-            missing =[ k for k, v in config_dict.items() if v is None]
+            missing =[ k for k,v in config_dict.items() if v is None and metadict.getMetaValue(config_dict, k ,'mandatory')]
             if missing:
-                raise ConfigurationError("These items must be configured: %s" % ', '.join(missing))
+                raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
         if template:
             return template.substitute(config_dict)
         else:
@@ -217,39 +265,84 @@ class PluginAbstract(object):
             result[key] = repr(value)
         return result
     
-    def dictToConfig(self, config_dict={}, config_parser=None):
+    def writeToConfigParser(self, config_dict, config_parser=None):
         """Add the given configuration dictionary to a ConfigParser object.
         The section is determined by the name of the implemnting class.
         Parameters
-        confi_dict := configuration dict to be stored (default: {})
-        config_parser := config parser where this info is stored. If None is give a config parser is created (default: None)"""
-        if config_parser is None: config_parser = SafeConfigParser()
+        confi_dict := dict or metadict
+            configuration dict to be stored
+        config_parser := subclass of ConfigParser.RawConfigParser
+            config parser where this info is stored. If None is give a config parser is created (default: None)"""
         section = self.__class__.__name__
+        if config_parser is None: config_parser = SafeConfigParser()
+        if not config_parser.has_section(section): config_parser.add_section(section)
         for key, value in config_dict.items():
+            key_help = metadict.getHelp(config_dict, key)            
+            if key_help:
+                config_parser.set(section, '#%s' % key, key_help)
             config_parser.set(section, key, repr(value))
         return config_parser
     
-    def readFromConfigParser(self, config_parser, default_metadict=None):
+    def readFromConfigParser(self, config_parser):
+        """Reads a configuration from a config parser object.
+        The values are assumed to be in a section named just like the class implementing this method.
+        Parameters
+        config_parser:= subclass of ConfigParser.RawConfigParser
+            From where the configuration is going to be read
+
+        @return: a metadict which is a clone of the default one (if provided) updated with the
+            information found in the config Parser"""
+        
         section = self.__class__.__name__
         #create a copy of metadict
-        if default_metadict is None:
-            keys = config_parser.options(section)
-            result = metadict()
-        else:
-            result = default_metadict.copy()
-            #we do this to avoid having problems with the "DEFAULT" section as it might define
-            #more options that what this plugin requires
-            keys = set(result).intersection(config_parser.options(section))
+        result = self.__config_metadict__.copy()
+        #we do this to avoid having problems with the "DEFAULT" section as it might define
+        #more options that what this plugin requires
+        keys = set(result).intersection(config_parser.options(section))
         #update values as found in the configuration
         for key in keys:
             #parse the value as good as possible
-            result[key] = self._parseConfigStrValue(key, config_parser.get(section, key), ref_dictionary=default_metadict)
+            result[key] = self._parseConfigStrValue(key, config_parser.get(section, key))
         return result
         
-        
-    def saveConfiguration(self, file_name, config_dict):
-        """Stores the given configuration to disk"""
-        pass
+    def readFromFile(self, fp):
+        """Read the configuration from a file object using a SafeConfigParser.
+        Parameters
+        fp:= file object
+            From where the configuration is going to be read
+        default_metadict:= dict or metadict
+            Reference information for parsing the values.
+        @return: a metadict which is a clone of the default one (if provided) updated with the
+            information found in the config Parser"""
+        config_parser = SafeConfigParser()
+        config_parser.readfp(fp)
+        return self.readFromConfigParser(config_parser)
+
+    def saveConfiguration(self, fp, config_dict=None):
+        """Stores the given configuration to the provided file object.
+        if no configuration is provided the default one will be used"""
+        #store the section header
+        if config_dict is None:
+            #a default incomplete one
+            config_dict = self.setupConfiguration(check_cfg=False)
+        fp.write('[%s]\n' % self.__class__.__name__)
+        for key, value in config_dict.items():
+            key_help = metadict.getMetaValue(config_dict, key, 'help')
+            isMandatory = metadict.getMetaValue(config_dict, key, 'mandatory')
+            if key_help:
+                    if isMandatory:
+                        fp.write('#[mandatory] %s\n' % (key_help))
+                    else:
+                        fp.write('#%s\n' % (key_help))
+            if value is None:
+                #means this is not setup
+                if isMandatory:
+                    value="<THIS MUST BE DEFINED!>"
+                else:
+                    value=""
+                    key='#'+key
+            fp.write('%s=%s\n' % (key, value))
+        return fp
         
     
     def _postTransformCfg(self, config_dict):
