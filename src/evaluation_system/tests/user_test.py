@@ -163,6 +163,9 @@ class Test(unittest.TestCase):
         self.assertEquals(dir1, dir2)
         self.assertTrue(os.path.isdir(dir1))
         
+    def testConfigFile(self):
+        tool = 'test_tool'
+        self.assertEquals(self.user.getUserConfigDir(tool) + '/%s.conf' % tool, self.user.getUserToolConfig(tool))
         
     @staticmethod
     def runCmd(cmd):

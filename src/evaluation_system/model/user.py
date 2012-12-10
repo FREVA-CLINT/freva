@@ -77,6 +77,11 @@ class User(object):
             
         return dir
         
+    def getUserToolConfig(self, tool = None, **kwargs):
+        """Return directory where all configurations for this user are stored"""
+        config_dir = self._getUserDir('config', tool, **kwargs)
+        return os.path.join(config_dir,'%s.conf' % tool)
+
     def getUserConfigDir(self, tool = None, **kwargs):
         """Return directory where all configurations for this user are stored"""
         return self._getUserDir('config', tool, **kwargs)
