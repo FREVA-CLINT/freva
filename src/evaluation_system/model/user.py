@@ -62,30 +62,36 @@ class User(object):
     def getUserID(self):  return self._userdata.pw_uid
     def getUserHome(self):  return self._userdata.pw_dir
     def getUserBaseDir(self): return os.path.join(self.getUserHome(), User.BASE_DIR)
-    def _getUserDir(self, dir_type, tool = None):
+    def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
-            return os.path.join(self.getUserBaseDir(), base_dir[dir_type])
+            dir = os.path.join(self.getUserBaseDir(), base_dir[dir_type])
         else:
             #return the specific directory for the given tool            
-            return os.path.join(self.getUserBaseDir(), base_dir[dir_type], tool)
+            dir =  os.path.join(self.getUserBaseDir(), base_dir[dir_type], tool)
+            
+        if create and not os.path.isdir(dir):
+            #we are letting this fail in case of problems.
+            os.makedirs(dir)
+            
+        return dir
         
-    def getUserConfigDir(self, tool = None):
+    def getUserConfigDir(self, tool = None, **kwargs):
         """Return directory where all configurations for this user are stored"""
-        return self._getUserDir('config', tool)
+        return self._getUserDir('config', tool, **kwargs)
     
-    def getUserCacheDir(self, tool = None):
+    def getUserCacheDir(self, tool = None, **kwargs):
         """Return directory where cache files for this user (might not be "only" for this user though)"""
-        return self._getUserDir('cache', tool)
+        return self._getUserDir('cache', tool, **kwargs)
     
-    def getUserOutputDir(self, tool = None):
+    def getUserOutputDir(self, tool = None, **kwargs):
         """Return directory where output data for this user is stored"""
-        return self._getUserDir('output', tool)
+        return self._getUserDir('output', tool, **kwargs)
     
-    def getUserPlotsDir(self, tool = None):
+    def getUserPlotsDir(self, tool = None, **kwargs):
         """Return directory where all plots for this user are stored"""
-        return self._getUserDir('plots', tool)
+        return self._getUserDir('plots', tool, **kwargs)
     
     def prepareDir(self):
         """Prepares the configuration directory for this user if it's not already been done."""

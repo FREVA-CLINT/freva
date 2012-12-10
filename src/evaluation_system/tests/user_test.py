@@ -53,6 +53,7 @@ class Test(unittest.TestCase):
         home = self.user.getUserHome()
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
+            print "Cleaning up %s" % home
             shutil.rmtree(home)
     
     def testDummyUser(self):
@@ -150,7 +151,17 @@ class Test(unittest.TestCase):
         os.rmdir(testUserDir)
         self.assertFalse(os.path.isdir(testUserDir))
         
+    def testDirectoryCreation2(self):
+        testUser = self.user
+        #assure we have a home directory setup
+        self.assertTrue(os.path.isdir(testUser.getUserHome()))
         
+        dir1 = testUser.getUserConfigDir('test_tool')
+        print dir1
+        self.assertFalse(os.path.isdir(dir1))
+        dir2 = testUser.getUserConfigDir('test_tool', create=True)
+        self.assertEquals(dir1, dir2)
+        self.assertTrue(os.path.isdir(dir1))
         
         
     @staticmethod
