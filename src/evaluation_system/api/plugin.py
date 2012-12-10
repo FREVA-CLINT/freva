@@ -305,7 +305,7 @@ class PluginAbstract(object):
             result[key] = self._parseConfigStrValue(key, config_parser.get(section, key))
         return result
         
-    def readFromFile(self, fp):
+    def readConfiguration(self, fp):
         """Read the configuration from a file object using a SafeConfigParser.
         Parameters
         fp:= file object
@@ -320,7 +320,7 @@ class PluginAbstract(object):
 
     def saveConfiguration(self, fp, config_dict=None):
         """Stores the given configuration to the provided file object.
-        if no configuration is provided the default one will be used"""
+        if no configuration is provided the default one will be used."""
         #store the section header
         if config_dict is None:
             #a default incomplete one
