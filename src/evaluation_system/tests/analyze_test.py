@@ -6,6 +6,24 @@ Created on 18.10.2012
 import unittest
 import os
 from evaluation_system.tests.capture_std_streams import stdout
+from evaluation_system.api.plugin import PluginAbstract, metadict
+import evaluation_system.api.plugin_manager as pm
+from evaluation_system.api.plugin_manager import PluginManagerException
+import tempfile
+
+class DummyPlugin(PluginAbstract):
+    """Stub class for implementing the abstrac one"""
+    __short_description__ = None
+    __version__ = (0,0,0)
+    __config_metadict__ =  metadict(compact_creation=True, 
+                                    number=(None, dict(type=int,help='This is just a number, not really important')),
+                                    the_number=(None, dict(type=int,mandatory=True,help='This is *THE* number. Please provide it')), 
+                                    something='test', other=1.4)
+    _runs = []
+    _template = "${number} - $something - $other"
+    def runTool(self, config_dict=None):
+        DummyPlugin._runs.append(config_dict)
+        print "Dummy tool was run with: %s" % config_dict
 
 def loadlib(module_filepath):
     """Loads a module from a file not ending in .py"""
@@ -39,34 +57,61 @@ def call(cmd_string):
     return p.communicate()[0]
 
 class Test(unittest.TestCase):
-
+    def setUp(self):
+        pm.reloadPulgins()
     def testGetEnvironment(self):
         env =  analyze.getEnvironment()
         for expected in ['rows', 'columns']:
             self.assertTrue(expected in env)
 
     def testList(self):
-        #we expect an error if called without parameters
         stdout.startCapturing()
         stdout.reset()
         analyze.main(['--list-tools'])
         stdout.stopCapturing()
+        tool_list = stdout.getvalue()
+        dummy_entry = '%s: %s' % (DummyPlugin.__name__, DummyPlugin.__short_description__)
+        self.assertTrue(dummy_entry in  tool_list.splitlines()) 
         
-    def testTool(self):
+    def testGetTool(self):
+        name='DummyPlugin'
+        #assure the tools can be get case insensitively
+        analyze.main(['--help','--tool', name])
+        analyze.main(['--help','--tool', name.lower()])
+        analyze.main(['--help','--tool', name.upper()])
+        
+        #and that bad names (i.e. missing tools) causes an exception
+        self.failUnlessRaises(PluginManagerException, analyze.main,['--help','--tool', 'Non Existing Tool'])
+    
+    def testDummyTool(self):
         stdout.startCapturing()
         stdout.reset()
-        analyze.main(['--list-tools'])
-        stdout.stopCapturing()
+        analyze.main("--tool dummyplugin --help".split())
+        help_str = stdout.getvalue()
+        stdout.reset()
+        self.assertTrue(len(DummyPlugin._runs) == 0)
+        analyze.main("--tool dummyplugin other=0.5 the_number=4738".split())
+        self.assertTrue(len(DummyPlugin._runs) == 1)
+        run = DummyPlugin._runs.pop()
+        self.assertTrue(run['the_number']==4738)
+        f = tempfile.mktemp('testdummytool')
+        self.assertFalse(os.path.isfile(f))
+        analyze.main(("--tool dummyplugin --config-file %s --save-config other=0.5 the_number=4738" % f).split())
+        #should have been created by now
+        self.assertTrue(os.path.isfile(f))
+        run2 = DummyPlugin._runs.pop()
+        self.assertEqual(run, run2)
+
+        #check if it's being read
+        analyze.main(("--tool dummyplugin --config-file %s the_number=421" % f).split())
+        run = DummyPlugin._runs.pop()
+        self.assertEqual(run['the_number'], 421)
+        self.assertEqual(run['other'], 0.5)
         
-        p_list = stdout.getvalue()
-        for plugin in p_list.strip().split('\n'):
-            name = plugin.split(':')[0]
-            print "Checking %s" % name
-            #assure the tools are there and you can get them case insensitively
-            analyze.main(['--help','--tool', name.lower()])
-            analyze.main(['--help','--tool', name.upper()])
-            
-    def testPCA(self):
+        
+        
+        
+    def _testPCA(self):
         import tempfile
         tmpfile = tempfile.mkstemp("_pca-test.nc")
         outfile = tmpfile[1]

@@ -119,8 +119,8 @@ def main(argv=None): # IGNORE:C0111
     try:
         # Setup argument parser
         args, lastargs = getopt.getopt(argv, "hd", ['tool=', 'list-tools',
-                                                    'help', 'input=', 'input_list=', 'output_dir=',
-                                                    ])
+                                                    'help', 'input=', 'input-list=', 'output-dir=',
+                                                    'config-file=', 'save-config'])
         
         #defaults
         DEBUG = False
@@ -128,13 +128,14 @@ def main(argv=None): # IGNORE:C0111
         tool = None
         input = []
         env = getEnvironment()
-        
+        save_config=False
+        cfg_file = None
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
                 help_opt=True
             elif flag == '--tool':              #define which tool should be used
-                tool=arg
+                tool=arg.lower()
             elif flag == '--list-tools':        #show all available tools
                 import textwrap
                 #we just have to show the list and stop processing
@@ -143,7 +144,7 @@ def main(argv=None): # IGNORE:C0111
                     name_width = max(name_width, len(key))
                 offset = name_width + 2
                 for key, plugin in pm.getPlugins().items():
-                    lines = textwrap.wrap(plugin['description'], env['columns'] - offset)
+                    lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
                     if len(lines) > 1:
                         #multiline
                         print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset +('\n' + ' '*offset).join(lines[1:]))
@@ -151,6 +152,10 @@ def main(argv=None): # IGNORE:C0111
                         print '%s: %s' % (plugin['name'], lines[0])
                 #done
                 return 0
+            elif flag == '--config-file':       #use the given config file instead of the default one
+                cfg_file=arg
+            elif flag == '--save-config':       #save the configuration
+                save_config=True
             elif flag == '--input':             #input file (may be used multiple times)
                 input.append(arg)
             elif flag == '-d' or flag == '--debug': #turn on debuging info
@@ -160,8 +165,8 @@ def main(argv=None): # IGNORE:C0111
         
         if help_opt:
             if tool:
-                plugin = pm.getPlugin(tool.lower())
-                print plugin['plugin_class']().getHelp()
+                plugin = pm.getPluginInstance(tool)
+                print plugin.getHelp()
                 return 0
             else:
                 auto_doc()
@@ -170,15 +175,17 @@ def main(argv=None): # IGNORE:C0111
         
         #get the plugin
         if tool: 
-            plugin = pm.getPlugin(tool.lower())
-            tool = plugin['plugin_class']()
-            tool_dict = tool.parseArguments(lastargs)
+            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=True, config_file=cfg_file)
             if DEBUG:
                 import json
                 print "Current configuration:"
-                print json.dumps(tool.setupConfiguration(**tool_dict), indent=4)
+                print json.dumps(tool_dict, indent=4)
+            
+            if save_config:
+                pm.writeSetup(tool, tool_dict, config_file=cfg_file)
+            
             #now run the tool
-            tool.runTool(**tool_dict)
+            pm.runTool(tool, config_dict=tool_dict)
         else:
             #if no tool selected display the help.
             auto_doc()
