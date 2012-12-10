@@ -69,7 +69,7 @@ def getPlugins():
     """Return a list of plugin dictionary holding the plugin classes and metadata about them"""
     return __plugins_meta
 
-def getPlugin(plugin_name):
+def getPluginDict(plugin_name):
     """Return the requested plugin dictionary entry or raise an exception if not found.
     Parameters
     plugin_name:=string
@@ -84,15 +84,54 @@ def getPlugin(plugin_name):
     
     return getPlugins()[plugin_name]
 
+def getPluginInstance(plugin_name):
+    """Return an instance of the requested plugin or raise an exception if not found.
+    Parameters
+    plugin_name:=string
+        Name of the plugin to search for.
+    @return: an instance of the plugin. Might not be unique"""
+    #in case we want to cache the creation of the plugin classes.
+    return getPluginDict(plugin_name)['plugin_class']()
+
+def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None):
+    """Passes an array of string arguments to the plugin for parsing.
+    Parameters
+    plugin_name:=string
+        Name of the plugin to search for.
+    arguments:=[string]
+        Array of strings that will be parsed by the plugin (see `evaluation_system.api.plugin.parseArguments`)
+    use_user_defaults:=bool
+        If the set tu True and a user configuration is found, it will be used as default for all non set arguments.
+        So the value will be set according to the first found instance in this order: argument, user default, tool default
+    user:=`evaluation_system.model.user.User`
+        The user defining the defaults."""
+    plugin_name = plugin_name.lower()
+    if user is None:
+        user = User()
+    
+    p = getPluginInstance(plugin_name)
+    complete_conf = {}
+    if use_user_defaults:
+        conf_dir = user.getUserConfigDir(plugin_name)
+        conf_file = os.path.join(conf_dir,'%s.conf' % plugin_name)
+        if os.path.isfile(conf_file):
+            with open(conf_file, 'r') as f:
+                complete_conf = p.readConfiguration(f)
+    
+    #update with user defaults if desired
+    complete_conf.update(p.parseArguments(arguments))
+    
+    return complete_conf
+
 def writeSetup(plugin_name, config_dict=None, user=None):
     """Writes the plugin setup to disk. This is the configuration for the plugin itself and not that
     of the tool. The plugin might not write anything to disk when running the tool and instead configure it
     from the command line, environmental variables or any other method.
     Parameters
-    plugin_name:=name of the refered plugin (mandatory)
+    plugin_name:=name of the referred plugin (mandatory)
     config_dict:=config dict or metadict for seting up the configuration
         if None, the default configuration will be stored, this might be incomplete and thus might
-        not be enough for triggereing the plugin.
+        not be enough for triggering the plugin.
     user:=`evaluation_system.model.user.User`
         The user for whom this will be run. If None, then the current user will be used.
     @return: The path to the written configuration file."""
@@ -104,7 +143,7 @@ def writeSetup(plugin_name, config_dict=None, user=None):
     
     conf_dir = user.getUserConfigDir(plugin_name, create=True)
 
-    p = getPlugin(plugin_name)['plugin_class']()
+    p = getPluginInstance(plugin_name)
     complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False) 
     conf_file = os.path.join(conf_dir,'%s.conf' % plugin_name)
     with open(conf_file, 'w') as f:
@@ -113,10 +152,20 @@ def writeSetup(plugin_name, config_dict=None, user=None):
     return conf_file
 
 def runTool(plugin_name, config_dict=None, user=None):
+    """Runs a tool.
+    Parameters
+    plugin_name:=name of the referred plugin (mandatory)
+    config_dict:=config dict or metadict for seting up the configuration
+        if None, the default configuration will be stored, this might be incomplete and thus might
+        not be enough for triggering the plugin.
+    user:=`evaluation_system.model.user.User`
+        The user for whom this will be run. If None, then the current user will be used.
+    @return: The path to the written configuration file."""
+    
     plugin_name = plugin_name.lower()
     if user is None:
         user = User()
-    p = getPlugin(plugin_name)['plugin_class']()
+    p = getPluginInstance(plugin_name)
     complete_conf = None
     if config_dict is None:
         conf_dir = user.getUserConfigDir(plugin_name)
@@ -129,6 +178,8 @@ def runTool(plugin_name, config_dict=None, user=None):
             log.debug('No config file was found in %s', conf_file)
     if complete_conf is None:
         complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False) 
+    
+    #TODO: We should store the configuration... 
     
     #In any case we have now a complete setup in complete_conf
     p.runTool(config_dict=complete_conf)

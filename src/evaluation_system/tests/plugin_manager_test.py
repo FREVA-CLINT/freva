@@ -70,7 +70,7 @@ class Test(unittest.TestCase):
         pm.reloadPulgins()
         self.assertTrue(len(pm.getPlugins())> 0)
         self.assertTrue('dummyplugin' in pm.getPlugins())
-        dummy = pm.getPlugin('dummyplugin')
+        dummy = pm.getPluginDict('dummyplugin')
         self.assertEqual(dummy['description'], DummyPlugin.__short_description__)
         self.assertEqual(dummy['version'], DummyPlugin.__version__)
         self.assertEqual(dummy['plugin_class'], DummyPlugin)
@@ -110,6 +110,34 @@ class Test(unittest.TestCase):
             #make sure the home is a temporary one!!!
             print "Cleaning up %s" % home
             shutil.rmtree(home)
+            
+    def testParseArguments(self):
+        user = DummyUser(random_home=True, pw_name='test_user')
+        home = user.getUserHome()
+        self.assertTrue(os.path.isdir(home))
+        pm.reloadPulgins()
+        
+        #direct parsing
+        for args, result in [("number=4", dict(number=4))]:
+            d = pm.parseArguments('Dummyplugin', args.split(), user=user)        
+            self.assertEquals(d, result)
+
+        #parsing requesting user default but without any
+        for args, result in [("number=4", dict(number=4))]:
+            d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=user)        
+            self.assertEquals(d, result)
+            
+        pm.writeSetup('DummyPlugin', dict(number=7,the_number=42), user)
+        for args, result in [("number=4", dict(number=4, the_number=42,something='test', other=1.4))]:
+            d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=user)        
+            self.assertEquals(d, result)
+        
+        
+        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
+            #make sure the home is a temporary one!!!
+            print "Cleaning up %s" % home
+            shutil.rmtree(home)
+        
             
     def testRun(self):
         pm.reloadPulgins()
