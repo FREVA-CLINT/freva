@@ -330,6 +330,8 @@ class PluginAbstract(object):
             key_help = metadict.getMetaValue(config_dict, key, 'help')
             isMandatory = metadict.getMetaValue(config_dict, key, 'mandatory')
             if key_help:
+                    #make sure all new lines are comments!
+                    key_help = key_help.replace('\n','\n#')
                     if isMandatory:
                         fp.write('#[mandatory] %s\n' % (key_help))
                     else:
