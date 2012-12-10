@@ -35,7 +35,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import sys
 import getopt
-
+import logging
+log = logging.getLogger(__name__)
+if not log.handlers:
+    logging.basicConfig(level=logging.INFO)
 import evaluation_system.api.plugin_manager as pm
 
 __version__ = 0.1
@@ -160,6 +163,8 @@ def main(argv=None): # IGNORE:C0111
                 input.append(arg)
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
+                log.setLevel(logging.DEBUG)
+
 
         
         
@@ -182,7 +187,8 @@ def main(argv=None): # IGNORE:C0111
                 print json.dumps(tool_dict, indent=4)
             
             if save_config:
-                pm.writeSetup(tool, tool_dict, config_file=cfg_file)
+                save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file)
+                log.info("Configuration file saved in %s", save_in)
             
             #now run the tool
             pm.runTool(tool, config_dict=tool_dict)
@@ -202,7 +208,7 @@ def main(argv=None): # IGNORE:C0111
     except Exception:
         if DEBUG or __name__ != "__main__":
             raise
-        else: print sys.exc_info()[:3]
+        else: print sys.exc_info()[1]
         return 2
 
 if __name__ == "__main__":
