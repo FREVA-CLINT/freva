@@ -182,10 +182,11 @@ def runTool(plugin_name, config_dict=None, user=None):
         else:
             log.debug('No config file was found in %s', conf_file)
     if complete_conf is None:
-        complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False) 
+        complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False)
+        
     
     #TODO: We should store the configuration... 
-    
+    log.debug('Running %s with %s', plugin_name, complete_conf)
     #In any case we have now a complete setup in complete_conf
     p.runTool(config_dict=complete_conf)
 

@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
         self.assertTrue(len(DummyPlugin._runs) == 1)
         run = DummyPlugin._runs.pop()
         self.assertTrue(run['the_number']==4738)
-        f = tempfile.mktemp('testdummytool')
+        f = tempfile.mktemp('-testdummytool')
         self.assertFalse(os.path.isfile(f))
         analyze.main(("--tool dummyplugin --config-file %s --save-config other=0.5 the_number=4738" % f).split())
         #should have been created by now
@@ -108,10 +108,15 @@ class Test(unittest.TestCase):
         self.assertEqual(run['the_number'], 421)
         self.assertEqual(run['other'], 0.5)
         
+        os.unlink(f)
+        
+        #check if it's being read
+        f2 = tempfile.mktemp('-testdummytool')
+        analyze.main(("--tool dummyplugin --config-file %s --save-config" % f2).split())
+        os.unlink(f2)
         
         
-        
-    def _testPCA(self):
+    def testPCA(self):
         import tempfile
         tmpfile = tempfile.mkstemp("_pca-test.nc")
         outfile = tmpfile[1]
@@ -119,7 +124,7 @@ class Test(unittest.TestCase):
         reference = '%s/pca/test/reference.nc' % tools_dir
         
         #assure the tools are there and you can get them case insensitively
-        analyze.main(['--tool', 'pca', 'input=' + infile,
+        analyze.main(['-d','--tool', 'pca', 'input=' + infile,
                       'eofs=1', 'normalize', 'variable=tas','outputdir=/tmp', 'pcafile=' + outfile])
         comp_cmd = r"(module load cdo; cdo diff %s %s | sed -n 's/^ *\([0-9]*\) of .*$/\1/p')2>/dev/null" % (reference, outfile)
         differences = call(comp_cmd)

@@ -2,6 +2,55 @@
 Created on 12.11.2012
 
 @author: estani
+
+In this file the only abstract class required for running a plugin is defined.
+You'll need to implement the few attributes and/or methods marked as abstract with the decorator
+@abc.abstractproperty or @abc.abstractmethod
+
+You may overwrite all methods and properties defined in here, but you'll be breaking the contract
+between the methods so you'll have to make sure it doesn't break anything else. Please write some tests
+for your own class that checks it is working as expected.
+
+If you are implementing the plugin for the evaluation_system a further constraint is required:
+The class must be defined in the <plugin_name>.api module so it can be loaded dynamically.
+
+This is an example on how you could write a Plugin that works both detached from the evaluation_system
+as well as it integrates seamlessly.
+
+The plugin module should be load dynamically depending on the context (i.e. if the evaluation_system is
+present or not). This can be done with the following lines of code:
+
+<pre>
+#if the evaluation system module wasn't loaded load the interface.
+#(if not, the interface is already loaded)
+from sys import modules
+if 'evaluation_system.api.plugin' not in modules:
+    #if we don't have the framework around, we'll use the plugin provided here.
+    from pca import plugin
+else:
+    #else just get the reference to the same module as defined in the framework 
+    plugin = modules['evaluation_system.api.plugin']
+</pre>
+
+Now this is the minimal implementation at this time. (If I forgot to update it and there are more
+methods/attributes required, you'll see a proper message telling you that when you try to cast an
+instance of this class)
+ 
+<pre>
+class MyPlugin(plugin.PluginAbstract):
+    "MyPlguin description for the developers"
+    __short_description__ = "A Short description for the user."
+    __version__ = (0,0,1)
+    __config_metadict__ =  metadict(compact_creation=True, 
+                                    number=(None, dict(type=int,help='This is an optional configurable int variable named number without default value and this description')),
+                                    the_number=(None, dict(type=float,mandatory=True,help='A required float value without default')), 
+                                    something='test', #a simple optional test value with default value and no description 
+                                    other=1.4)        #another float value. You cannot define a value without a default value and no metadata 'type' attribute defining how to parse it from a string.
+
+    def runTool(self, config_dict=None):
+        pass    #make sure the plugin does what it needs with the configuration passed in the config_dict dictionary.
+        
+
 '''
 import abc
 from subprocess import Popen, PIPE, STDOUT
