@@ -41,9 +41,9 @@ if not log.handlers:
     logging.basicConfig(level=logging.INFO)
 import evaluation_system.api.plugin_manager as pm
 
-__version__ = 0.1
+__version__ = 0.3
 __date__ = '2012-11-26'
-
+__updated__ = '2012-12-11'
 
 
 class AnalyzeError(Exception):
@@ -207,7 +207,12 @@ def main(argv=None): # IGNORE:C0111
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
-    except Exception:
+    except Exception as e:
+        if isinstance(e, IOError) and e.errno == 32:
+            #this is just a broken pipe, which mean the stdout was closed 
+            #(e.g when using head after 10 lines are read)
+            #just stop normally
+            return 0
         if DEBUG or __name__ != "__main__":
             raise
         else: print sys.exc_info()[1]

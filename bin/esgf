@@ -128,7 +128,7 @@ def main(argv=None): # IGNORE:C0111
             if flag == '-d' or flag == '--debug': # Turn on debuging info
                 DEBUG = True
             elif flag=='--show-facet':          #<list> List all values for the given facet (might be defined multiple times). The results show the possible values of the selected facet according to the given constraints and the number of *datasets* (not files) that selecting such value as a constraint will result (faceted search)
-                 show_facets.append(arg)
+                show_facets.append(arg)
             elif flag=='--datasets':            # List the name of the datasets instead of showing the urls.
                 datasets = True
             elif flag == '--opendap':           # Show Opendap endpoints instead of the http default ones (or skip them if none found)
@@ -143,7 +143,6 @@ def main(argv=None): # IGNORE:C0111
                 auto_doc()
                 return 0
         
-        search_dict = {}
         for arg in lastargs:
             items = arg.split('=')
             if len(items)==1:
@@ -187,15 +186,20 @@ def main(argv=None): # IGNORE:C0111
             #default
             for result in p2p.files(fields='url',**facets):
                 for url_encoded in result['url']:
-                    url, mime, type = url_encoded.split('|')
-                    if type.lower().startswith(url_type):
+                    url, _, access_type = url_encoded.split('|')
+                    if access_type.lower().startswith(url_type):
                         print url
         return 0
         
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
-    except Exception:
+    except Exception as e:
+        if isinstance(e, IOError) and e.errno == 32:
+            #this is just a broken pipe, which mean the stdout was closed 
+            #(e.g when using head after 10 lines are read)
+            #just stop normally
+            return 0
         if DEBUG or __name__ != "__main__":
             raise
         else: print "ERROR:",sys.exc_info()[1]

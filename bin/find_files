@@ -43,9 +43,9 @@ if not log.handlers:
     logging.basicConfig(level=logging.INFO)
 
 __all__ = []
-__version__ = 0.1
+__version__ = 0.2
 __date__ = '2012-10-18'
-__updated__ = '2012-10-18'
+__updated__ = '2012-12-11'
 
 
 class CommandError(Exception):
