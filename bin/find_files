@@ -93,7 +93,7 @@ def auto_doc(message=None):
 The query is of the form key=value. <value> might use *, ?, [seq] or [!seq] (see python glob).
 
 For Example:
-    %s model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
+    %s --baseline 0 model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
 """ % script_name
 
 def main(argv=None): # IGNORE:C0111
@@ -173,7 +173,6 @@ def main(argv=None): # IGNORE:C0111
             #(e.g when using head after 10 lines are read)
             #just stop normally
             return 0
-        print >>sys.stderr, 'xx', e.errno
         if DEBUG or __name__ != "__main__":
             raise
         else: print "ERROR:",sys.exc_info()[1]
