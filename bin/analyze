@@ -105,10 +105,11 @@ def auto_doc(message=None):
     else: print '%s %s' % (script_name, message)
 
     print """
-Applies some analysis to the given data.
+Applies some analysis to the given data. See https://code.zmaw.de/projects/miklip-d-integration/wiki/Analyze
+for more information.
  
 For Example:
-    %s --tool pca --tool_opts eofs=4,bias=False --input myfile.nc --outputdir /tmp/test
+    %s --tool pca eofs=4,bias=False input=myfile.nc outputdir=/tmp/test
 """ % script_name
 
 
@@ -121,18 +122,19 @@ def main(argv=None): # IGNORE:C0111
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['tool=', 'list-tools',
-                                                    'help', 'input=', 'input-list=', 'output-dir=',
+        args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
+                                                    'help', 'debug', 'dry-run',
                                                     'config-file=', 'save-config'])
         
         #defaults
         DEBUG = False
         help_opt=False
         tool = None
-        input = []
         env = getEnvironment()
+        if 'columns' not in env: env['columns'] = 80
         save_config=False
         cfg_file = None
+        dry_run = False
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
@@ -159,12 +161,11 @@ def main(argv=None): # IGNORE:C0111
                 cfg_file=arg
             elif flag == '--save-config':       #save the configuration
                 save_config=True
-            elif flag == '--input':             #input file (may be used multiple times)
-                input.append(arg)
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
-                log.setLevel(logging.DEBUG)
-
+                logging.getLogger().setLevel(logging.DEBUG)
+            elif flag == '-n' or flag == '--dry-run':   #dry-run, perform no computation. This is used for viewing and handling the configuration.
+                dry_run = True
 
         
         
@@ -191,7 +192,8 @@ def main(argv=None): # IGNORE:C0111
                 log.info("Configuration file saved in %s", save_in)
             
             #now run the tool
-            pm.runTool(tool, config_dict=tool_dict)
+            log.debug('Running %s with configuration: %s', tool, tool_dict)
+            if not dry_run: pm.runTool(tool, config_dict=tool_dict)
         else:
             #if no tool selected display the help.
             auto_doc()
