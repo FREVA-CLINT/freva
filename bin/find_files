@@ -37,6 +37,10 @@ import sys
 import getopt
 
 import evaluation_system.model.file as mf
+import logging
+log = logging.getLogger(__name__)
+if not log.handlers:
+    logging.basicConfig(level=logging.INFO)
 
 __all__ = []
 __version__ = 0.1
@@ -129,6 +133,7 @@ def main(argv=None): # IGNORE:C0111
                 latest=False
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
+                logging.getLogger().setLevel(logging.DEBUG)
         
         if drs_struct is None:
             raise CommandError('You must select a search type: --baseline n or --observational or --reanalysis')
@@ -140,8 +145,8 @@ def main(argv=None): # IGNORE:C0111
             items = arg.split('=')
             search_dict[items[0]] = ''.join(items[1:])
             
-        if DEBUG:
-            sys.stderr.write("Searching string: %s\n" % search_dict)
+        log.debug("Searching string: %s\n", search_dict)
+
         if not search_dict and drs_struct == mf.BASELINE0 and latest:
             sys.stderr.write("This search will take a while, since we have to parse all files to get the latest version.\nTry constraining your query for faster results\n")
 
@@ -162,7 +167,13 @@ def main(argv=None): # IGNORE:C0111
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
-    except Exception:
+    except Exception as e:
+        if isinstance(e, IOError) and e.errno == 32:
+            #this is just a broken pipe, which mean the stdout was closed 
+            #(e.g when using head after 10 lines are read)
+            #just stop normally
+            return 0
+        print >>sys.stderr, 'xx', e.errno
         if DEBUG or __name__ != "__main__":
             raise
         else: print "ERROR:",sys.exc_info()[1]

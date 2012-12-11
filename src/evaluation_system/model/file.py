@@ -31,7 +31,7 @@ class DRSFile(object):
          "root_dir":"/miklip/global/prod/archive",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-model-experiment-ensemble-time".split('-'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
          },
@@ -187,11 +187,12 @@ class DRSFile(object):
         bl = DRSFile._get_baseline(drs_structure)
         search_dict = bl['defaults'].copy()
         search_dict.update(partial_dict)
+        log.debug("Searching in %s using %s", drs_structure, search_dict)
         
         #only baseline 0 is versioned
         if latest_version and ('parts_versioned_dataset' not in bl):
             latest_version = False
-            log.error("No version information stored in structure thus latest version is inactive.")
+            log.debug("No version information stored in the selected structure thus latest version is inactive.")
 
         local_path = bl['root_dir']
         for key in bl['parts_dir']:
