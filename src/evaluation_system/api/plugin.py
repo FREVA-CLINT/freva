@@ -247,24 +247,26 @@ class PluginAbstract(object):
 
         return config
         
-    def setupConfiguration(self, config_dict = None, template = None, check_cfg = True):
+    def setupConfiguration(self, config_dict = None, template = None, check_cfg = True, recursion=True):
         """Define the configuration required for processing this files. If a template was given,
         the return value is a string containing the complete configuration. If not the config_dict
         will be returned but with all indirections being resolved. Eg:
         dict(a=1, b='1.txt', c='old_1.txt') == setpuConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
         
         Parameters
-        config_dic : dict, optional
+        config_dic : dict (None)
             dictionary with the configuration to be used when generating the configuration file
         template : string.Template, optional
             defines the template for the configuration.
-        check_cfg : boolean, optional(True)
+        check_cfg : boolean (True)
             whether the method checks that the resulting configuration dictionary (i.e. the default 
             updated by `config_dict`) has no None values after all substituions are made.
-            
-        Returns
-        template : string
-            the substituted configuration string
+        recursion : boolean (True)
+            Whether when resolving the template recursion will be applied, i.e. variables can be set
+            with the values of other variables, e.g. recursion^a==1^b=="x${a}x" => f(b)=="x1x" 
+        @return
+            if a template was provided, the substituted configuration string
+            else a metadict with all defaults values plus those provided here.
         """
         
         
@@ -282,7 +284,6 @@ class PluginAbstract(object):
         #accept a maximal recursion of 5 for resolving all tokens
         #5 is a definite number larger than any thinkable recursion for this case
         max_iter = 5
-        recursion = True
         while recursion and max_iter > 0:
             recursion = False   #assume no recursion until one possible case is found
             for key, value in config_dict.items():                

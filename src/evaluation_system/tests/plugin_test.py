@@ -12,8 +12,10 @@ class DummyPlugin(PluginAbstract):
     __version__ = (0,0,0)
     __config_metadict__ =  metadict(compact_creation=True, a=(None, dict(type=int)), b='test', other=1.4)
     _template = "${number} - $something - $other"
+    _runs = []
     def runTool(self, config_dict=None):
-        PluginAbstract.runTool(self, config_dict=config_dict)
+        DummyPlugin._runs.append(config_dict)
+        print "Dummy tool was run with: %s" % config_dict
 class Test(unittest.TestCase):
 
 
@@ -84,6 +86,10 @@ class Test(unittest.TestCase):
         #check indirect resolution
         res = dummy.setupConfiguration(dict(num='${a}x', a=1),template="$num", check_cfg=False)
         self.assertEquals("1x", res)
+        
+        #check indirect resolution can also be turned off
+        res = dummy.setupConfiguration(dict(num='${a}x', a=1),template="$num", check_cfg=False, recursion=False)
+        self.assertEquals("${a}x", res)
         
     def testParseArguments(self):
         dummy = DummyPlugin()
@@ -291,7 +297,24 @@ We'll have to see how that works out...""")),
         print def_template
         print res_str1
         self.assertEquals(res_str1, res_str2)
-                
+        
+    def testRun(self):
+        dummy = DummyPlugin()
+        #no confg
+        dummy.runTool()
+        self.assertTrue(len(DummyPlugin._runs) == 1)
+        run = DummyPlugin._runs[0]
+        self.assertTrue(run is None)
+        DummyPlugin._runs = []
+        
+        #direct config
+        dummy.runTool(config_dict=dict(the_number=42))
+        self.assertTrue(len(DummyPlugin._runs) == 1)
+        run = DummyPlugin._runs[0]
+        self.assertTrue('the_number' in run)
+        self.assertTrue(run['the_number'] == 42)
+        DummyPlugin._runs = []
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -142,7 +142,7 @@ def writeSetup(plugin_name, config_dict=None, user=None, config_file=None):
     @return: The path to the written configuration file."""
     plugin_name = plugin_name.lower()
     p = getPluginInstance(plugin_name)
-    complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False)
+    complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, recursion=False)
     
     if config_file is None:
         if user is None:
@@ -182,7 +182,8 @@ def runTool(plugin_name, config_dict=None, user=None):
         else:
             log.debug('No config file was found in %s', conf_file)
     if complete_conf is None:
-        complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False)
+        #at this stage we want to resolve or tokens and perform some kind of sanity check before going further 
+        complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
         
     
     #TODO: We should store the configuration... 

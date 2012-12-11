@@ -138,7 +138,22 @@ class Test(unittest.TestCase):
             print "Cleaning up %s" % home
             shutil.rmtree(home)
         
-            
+    def testWriteSetup(self):
+        pm.reloadPulgins()
+        user = DummyUser(random_home=True, pw_name='test_user')
+        home = user.getUserHome()
+        f = pm.writeSetup('DummyPlugin', dict(number="$the_number",the_number=42), user)
+        
+        with open(f) as fp:
+            num_line =  [line for line in fp.read().splitlines() if line.startswith('number')][0]
+            self.assertEqual(num_line, 'number=$the_number')
+        
+        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
+            #make sure the home is a temporary one!!!
+            print "Cleaning up %s" % home
+            shutil.rmtree(home)
+
+        
     def testRun(self):
         pm.reloadPulgins()
         user = DummyUser(random_home=True, pw_name='test_user')
