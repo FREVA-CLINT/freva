@@ -109,7 +109,7 @@ Applies some analysis to the given data. See https://code.zmaw.de/projects/mikli
 for more information.
  
 For Example:
-    %s --tool pca eofs=4,bias=False input=myfile.nc outputdir=/tmp/test
+    %s --tool pca eofs=4 bias=False input=myfile.nc outputdir=/tmp/test
 """ % script_name
 
 
