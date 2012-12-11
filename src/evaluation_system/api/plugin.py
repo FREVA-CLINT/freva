@@ -375,16 +375,20 @@ class PluginAbstract(object):
             #a default incomplete one
             config_dict = self.setupConfiguration(check_cfg=False)
         fp.write('[%s]\n' % self.__class__.__name__)
+
+        import textwrap
+        wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,drop_whitespace=False,break_on_hyphens=False,expand_tabs=False)
+
         for key, value in config_dict.items():
             key_help = metadict.getMetaValue(config_dict, key, 'help')
             isMandatory = metadict.getMetaValue(config_dict, key, 'mandatory')
             if key_help:
                     #make sure all new lines are comments!
-                    key_help = key_help.replace('\n','\n#')
+                    help_lines = key_help.splitlines()                    
                     if isMandatory:
-                        fp.write('#[mandatory] %s\n' % (key_help))
-                    else:
-                        fp.write('#%s\n' % (key_help))
+                        help_lines[0] = '[mandatory] ' + help_lines[0]
+                    fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
+                    fp.write('\n')
             if value is None:
                 #means this is not setup
                 if isMandatory:
@@ -392,7 +396,8 @@ class PluginAbstract(object):
                 else:
                     value=""
                     key='#'+key
-            fp.write('%s=%s\n' % (key, value))
+            fp.write('%s=%s\n\n' % (key, value))
+            fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
         
     

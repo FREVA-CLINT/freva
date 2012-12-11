@@ -168,11 +168,51 @@ class Test(unittest.TestCase):
                 (metadict(b=2), '[DummyPlugin]\nb=2'),
                 (metadict(compact_creation=True,
                           b=(2,dict(help='Example')),
-                          a=('1',dict(help='Example 2'))), '[DummyPlugin]\n#Example 2\na=1\n#Example\nb=2')]
+                          a=('1',dict(help='Example 2'))), '[DummyPlugin]\n#: Example 2\na=1\n\n#: Example\nb=2'),
+                (metadict(compact_creation=True,
+                          b=(None,dict(mandatory=True, help='Example')),
+                          a=(None,dict(help='Example 2'))), '[DummyPlugin]\n#: Example 2\n#a=\n\n#: [mandatory] Example\nb=<THIS MUST BE DEFINED!>')]
         for t, res in tests:
             res_str.truncate(0)
             dummy.saveConfiguration(res_str, t)
             self.assertEqual(res_str.getvalue().strip(), res)
+        
+        res_str.truncate(0)
+        dummy.saveConfiguration(res_str, metadict(compact_creation=True, a=(1, dict(help="""This is a very long and complex explanation so that we could test how it is transformed into a proper configuration file that:
+    a) is understandable
+    b) Retains somehow the format
+    c) its compact
+We'll have to see how that works out...""")),
+                                            b=(None, dict(mandatory=True, help='Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.')),
+                                            c=(None, dict(help="""This is to check the format is preserved
+                 \..,.-
+                 .\   |         __
+                 .|    .-     /  .;
+           _      _|      \__/..     \ 
+          \ ...\|   X Hamburg        :_
+           |                           \ 
+          /                            /
+         -.                           |
+          \  X Rheine      Berlin X    \ 
+       __/                              |
+      |                                 /
+      |                                 \ 
+     /                                   |
+     \     X Cologne        Dresden  X . ,
+      \                            ._-. .
+     /                        __.-/
+     |         X Frankfurt    \ 
+      \                        \ 
+       \                        \ 
+        ...,.                    \ 
+            /                     \.
+           /                       ,.
+          /                      ./
+         |         Munich X     |
+         \,......,__  __,  __.-. .
+                    \/   -/     ..
+-dj1yfk"""))))
+        print res_str.getvalue()
         
     def testReadConfig(self):
         from StringIO import StringIO
