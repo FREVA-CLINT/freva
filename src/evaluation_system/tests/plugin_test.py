@@ -295,9 +295,10 @@ example (default: test)
         
     def testShowConfig(self):
         dummy = DummyPlugin()
-        
-        self.assertEquals(dummy.getCurrentConfig(), "    a: - (default: None)\n    b: - (default: test)\nother: - (default: 1.4)")
-        self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123 \n    b: - (default: test)\nother: - (default: 1.4)")
+        dummy.__config_metadict__.setMetadata('a', mandatory=True)
+        self.assertEquals(dummy.getCurrentConfig(), "    a: - *MUST BE DEFINED!*\n    b: - (default: test)\nother: - (default: 1.4)")
+        self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)")
+        self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)")
         
     def testUsage(self):
         dummy = DummyPlugin()

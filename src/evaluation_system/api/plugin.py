@@ -91,6 +91,7 @@ class metadict(dict):
             super(metadict,self).__init__(*args, **kw)
         
     def copy(self):
+        """return a deep copy of this metadict"""
         return deepcopy(self)
     
     def getMetadata(self, key):
@@ -211,7 +212,7 @@ class PluginAbstract(object):
             else:
                 if self.__config_metadict__[key] is None: 
                     if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
-                        curr_val = '- [Must be defined!]'
+                        curr_val = '- *MUST BE DEFINED!*'
                     else:
                         curr_val = '-'
                 else:
