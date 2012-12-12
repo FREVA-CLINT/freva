@@ -202,7 +202,7 @@ def main(argv=None): # IGNORE:C0111
             return 0
         if DEBUG or __name__ != "__main__":
             raise
-        else: print "ERROR:",sys.exc_info()[1]
+        else: print "ERROR: ",sys.exc_info()[1]
         return 2
 
 if __name__ == "__main__":
