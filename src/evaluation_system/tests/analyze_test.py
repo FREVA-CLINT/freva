@@ -10,7 +10,9 @@ from evaluation_system.api.plugin import PluginAbstract, metadict
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.api.plugin_manager import PluginManagerException
 import tempfile
-
+import logging
+if not logging.getLogger().handlers:
+    logging.basicConfig(level=logging.DEBUG)
 class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstrac one"""
     __short_description__ = None
@@ -59,6 +61,7 @@ def call(cmd_string):
 class Test(unittest.TestCase):
     def setUp(self):
         pm.reloadPulgins()
+        
     def testGetEnvironment(self):
         env =  analyze.getEnvironment()
         for expected in ['rows', 'columns']:
@@ -88,6 +91,7 @@ class Test(unittest.TestCase):
         stdout.reset()
         analyze.main("--tool dummyplugin --help".split())
         help_str = stdout.getvalue()
+        self.assertEqual(help_str, 'DummyPlugin (v0.0.0): None\nOptions:\nnumber     (default: None)\n           This is just a number, not really important\n\nother      (default: 1.4)\n\nsomething  (default: test)\n\nthe_number (default: None) [mandatory]\n           This is *THE* number. Please provide it\n\n')
         stdout.reset()
         self.assertTrue(len(DummyPlugin._runs) == 0)
         analyze.main("--tool dummyplugin other=0.5 the_number=4738".split())
@@ -112,20 +116,27 @@ class Test(unittest.TestCase):
         
         #check if it's being read
         f2 = tempfile.mktemp('-testdummytool')
-        analyze.main(("--tool dummyplugin --config-file %s --save-config" % f2).split())
+        analyze.main(("-n --tool dummyplugin --config-file %s --save-config" % f2).split())
         os.unlink(f2)
         
+    def testShowConfig(self):
+        old = DummyPlugin.__config_metadict__
+        DummyPlugin.__config_metadict__ = metadict(compact_creation=True,
+                                                   variable1=1,
+                                                   variable2=(None,dict(type=int)),
+                                                   variable3=(None,dict(mandatory=True)))
+        analyze.main("--tool dummyplugin --show-config".split())
+        DummyPlugin.__config_metadict__ = old
         
     def testPCA(self):
-        import tempfile
         tmpfile = tempfile.mkstemp("_pca-test.nc")
         outfile = tmpfile[1]
         infile = '%s/pca/test/test.nc' % tools_dir
         reference = '%s/pca/test/reference.nc' % tools_dir
         
         #assure the tools are there and you can get them case insensitively
-        analyze.main(['-d','--tool', 'pca', 'input=' + infile,
-                      'eofs=1', 'normalize', 'variable=tas','outputdir=/tmp', 'pcafile=' + outfile])
+        analyze.main(['-d','--tool', 'pca', 'input=' + infile, 
+                      'eofs=1', 'normalize', 'bootstrap=false', 'variable=tas','outputdir=/tmp', 'pcafile=' + outfile])
         comp_cmd = r"(module load cdo; cdo diff %s %s | sed -n 's/^ *\([0-9]*\) of .*$/\1/p')2>/dev/null" % (reference, outfile)
         differences = call(comp_cmd)
         self.assertEqual(0, int(differences))

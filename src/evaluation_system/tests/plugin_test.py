@@ -112,6 +112,12 @@ class Test(unittest.TestCase):
         dummy.__config_metadict__ = dict(a=None, b=1)
         self.failUnlessRaises(ConfigurationError, dummy.parseArguments, "a=1 b=2".split())
         
+        dummy.__config_metadict__ = metadict(compact_creation=True,a=(None, dict(type=bool)))
+        for arg, parsed_val in [("a=1",True),("a=true",True),("a=TRUE",True),
+                                ("a=0",False),("a=false",False),("a=False",False)]:
+            res = dummy.parseArguments(arg.split())
+            self.assertEqual(res, dict(a=parsed_val), 'Error when parsing %s, got %s' % (arg, res))
+        
     def test_parseMetadict(self):
         dummy = DummyPlugin()
         for d, res_d in [(dict(a=0), 1),
@@ -275,8 +281,23 @@ We'll have to see how that works out...""")),
                                              a=(1,dict(help='This is the value of a')),
                                              b=(None, dict(help='This is not the value of b')),
                                              example=('test',dict(help="let's hope people write some useful help...")))
-        print dummy.getHelp()
-        self.assertTrue(len(dummy.getHelp()) > 100)
+        res="""DummyPlugin (v1.2.3): A short Description.
+Options:
+a       (default: 1)
+        This is the value of a
+
+b       (default: None)
+        This is not the value of b
+
+example (default: test)
+        let's hope people write some useful help..."""
+        self.assertEquals(dummy.getHelp().strip(), res.strip())
+        
+    def testShowConfig(self):
+        dummy = DummyPlugin()
+        
+        self.assertEquals(dummy.getCurrentConfig(), "    a: - (default: None)\n    b: - (default: test)\nother: - (default: 1.4)")
+        self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123 \n    b: - (default: test)\nother: - (default: 1.4)")
         
     def testUsage(self):
         dummy = DummyPlugin()

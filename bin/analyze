@@ -124,7 +124,7 @@ def main(argv=None): # IGNORE:C0111
         # Setup argument parser
         args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
                                                     'help', 'debug', 'dry-run',
-                                                    'config-file=', 'save-config'])
+                                                    'config-file=', 'save-config', 'show-config'])
         
         #defaults
         DEBUG = False
@@ -133,6 +133,7 @@ def main(argv=None): # IGNORE:C0111
         env = getEnvironment()
         if 'columns' not in env: env['columns'] = 80
         save_config=False
+        show_config=False
         cfg_file = None
         dry_run = False
         #parse arguments *!!!*
@@ -161,6 +162,9 @@ def main(argv=None): # IGNORE:C0111
                 cfg_file=arg
             elif flag == '--save-config':       #save the configuration
                 save_config=True
+            elif flag == '--show-config':       #show the resulting configuration (implies dry-run)
+                show_config=True
+                dry_run=True
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
@@ -183,17 +187,22 @@ def main(argv=None): # IGNORE:C0111
         if tool: 
             tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=True, config_file=cfg_file)
             if DEBUG:
+                log.debug("Arguments: %s", lastargs)
                 import json
-                print "Current configuration:"
-                print json.dumps(tool_dict, indent=4)
+                log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
+                
             
             if save_config:
                 save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file)
                 log.info("Configuration file saved in %s", save_in)
+            if show_config:
+                print pm.getPluginInstance(tool).getCurrentConfig(config_dict=tool_dict)
+                
             
             #now run the tool
             log.debug('Running %s with configuration: %s', tool, tool_dict)
-            if not dry_run: pm.runTool(tool, config_dict=tool_dict)
+            if not dry_run: 
+                pm.runTool(tool, config_dict=tool_dict)
         else:
             #if no tool selected display the help.
             auto_doc()

@@ -169,16 +169,21 @@ class PluginAbstract(object):
         """Return some help for the user"""
         import textwrap
         separator=''
-        wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*15, subsequent_indent=' '*15, replace_whitespace=False)
+        #compute maximal param length for better viewing
+        max_size= max([len(k) for k in self.__config_metadict__])
+        wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*(max_size+1), subsequent_indent=' '*(max_size+1), replace_whitespace=False)
         help_str = ['%s (v%s): %s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), self.__short_description__)]
         help_str.append('Options:')
         
+         
         for key in sorted(self.__config_metadict__):
             value = self.__config_metadict__[key]
-            help_str.append('%-14s (default: %s)' % (key, value))
+
+            param_format = '%%-%ss (default: %%s)' % (max_size) 
+            help_str.append(param_format % (key, value))
             if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
                 help_str[-1] = help_str[-1] + ' [mandatory]'
-                
+
             key_help = metadict.getMetaValue(self.__config_metadict__, key, 'help')
             if key_help:
                 #wrap it properly
@@ -188,7 +193,36 @@ class PluginAbstract(object):
         
         return '\n'.join(help_str)
     
-    def __to_bool(self, bool_str):
+    def getCurrentConfig(self, config_dict=None):
+        """Return the given configuration ready for displaying
+        Parameters
+        config_dict: dict
+            Contains the current configuration being displayed, if missing the default values will be shown
+        @return: a string displaying the given configuration values"""
+        max_size= max([len(k) for k in self.__config_metadict__])
+        if config_dict is None: config_dict = {}
+        
+        current_conf = []
+        for key in sorted(self.__config_metadict__):
+            line_format = '%%%ss: %%s' % max_size
+            
+            if key in config_dict and config_dict[key]:
+                curr_val = config_dict[key]
+            else:
+                if self.__config_metadict__[key] is None: 
+                    if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
+                        curr_val = '- [Must be defined!]'
+                    else:
+                        curr_val = '-'
+                else:
+                    curr_val = '- (default: %s)' % (self.__config_metadict__[key])
+            
+            current_conf.append(line_format % (key, curr_val))
+    
+        return '\n'.join(current_conf)
+    
+    @staticmethod
+    def __to_bool(bool_str):
         """Parses a string for a boolean value"""
         if isinstance(bool_str, basestring) and bool_str: 
             if bool_str.lower() in ['true', 't', '1']: return True
@@ -221,7 +255,10 @@ class PluginAbstract(object):
         try:
             if key_type is type(None):
                 raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
-            return key_type(str_value)
+            elif key_type is bool:
+                return PluginAbstract.__to_bool(str_value)
+            else:
+                return key_type(str_value)
         except ValueError:
             raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type.__name__))
         
