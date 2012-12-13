@@ -5,6 +5,7 @@ Created on 12.12.2012
 '''
 from evaluation_system.api.plugin import PluginAbstract, metadict
 from evaluation_system.model.user import User
+from evaluation_system.model.db import UserDB
 import tempfile
 
 class DummyPlugin(PluginAbstract):
@@ -48,4 +49,6 @@ class DummyUser(User):
         for key, value in override.items():
             if key in DummyUserData._NAMES:
                 user_data[DummyUserData._NAMES.index(key)] = value
+        
         self._userdata = DummyUserData(user_data)
+        self._db = UserDB(self)
