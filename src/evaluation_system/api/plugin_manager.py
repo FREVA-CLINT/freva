@@ -8,9 +8,11 @@ Created on 23.11.2012
 #*** Initialize the plugin
 import os
 import sys
-import evaluation_system.api.plugin as plugin
 import logging
 log = logging.getLogger(__name__)
+
+import evaluation_system.api.plugin as plugin
+import evaluation_system.model.db as db
 
 #get the tools directory from the current one
 tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
@@ -186,9 +188,21 @@ def runTool(plugin_name, config_dict=None, user=None):
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
         
     
-    #TODO: We should store the configuration... 
+     
     log.debug('Running %s with %s', plugin_name, complete_conf)
+    if user: user.getUserDB().storeHistory(p, complete_conf)
+    
     #In any case we have now a complete setup in complete_conf
     p.runTool(config_dict=complete_conf)
+
+
+def getHistory(plugin_name=None, limit=-1, days_span = None, entry_ids=None, user=None):
+    """Returns the history from the given user
+    This is just a wrapper for the defined db interface accessed via the user object
+    See `evaluation_system.model.db.UserDB.getHistory`"""
+    if plugin_name is not None: plugin_name = plugin_name.lower()
+    if user is None: user = User()
+    
+    return user.getUserDB().getHistory(plugin_name, limit, days_span=days_span, entry_ids=entry_ids)
 
 

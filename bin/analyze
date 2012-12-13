@@ -120,14 +120,16 @@ def main(argv=None): # IGNORE:C0111
     if argv is None:
         argv = sys.argv[1:]
 
+    DEBUG = False
+
     try:
         # Setup argument parser
         args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
                                                     'help', 'debug', 'dry-run',
+                                                    'history',
                                                     'config-file=', 'save-config', 'show-config'])
         
         #defaults
-        DEBUG = False
         help_opt=False
         tool = None
         env = getEnvironment()
@@ -136,6 +138,7 @@ def main(argv=None): # IGNORE:C0111
         show_config=False
         cfg_file = None
         dry_run = False
+        history=False
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
@@ -165,18 +168,34 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--show-config':       #show the resulting configuration (implies dry-run)
                 show_config=True
                 dry_run=True
+            elif flag == '--history':           #manage the configuration history
+                history = True
             elif flag == '-d' or flag == '--debug': #turn on debuging info
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
             elif flag == '-n' or flag == '--dry-run':   #dry-run, perform no computation. This is used for viewing and handling the configuration.
                 dry_run = True
 
-        
+        if tool and history:
+            lastargs.append('tool=%s' % tool)
+            tool = None
         
         if help_opt:
             if tool:
                 plugin = pm.getPluginInstance(tool)
                 print plugin.getHelp()
+                return 0
+            elif history:
+                print """Displays the last 10 entries with a oneline compact description.
+Arguments
+full_text     If present shows the complete configuration stored
+
+limit         Number of entries to be displayed (don't set it or set it to < 0 to display all)
+
+tool          Display only entries from this tool
+since         Amount of days up to which the history will be retrieved
+until         Amount of days until which the history will be retrieved
+entry_ids      Select this particular entry number from the history"""
                 return 0
             else:
                 auto_doc()
@@ -203,6 +222,38 @@ def main(argv=None): # IGNORE:C0111
             log.debug('Running %s with configuration: %s', tool, tool_dict)
             if not dry_run: 
                 pm.runTool(tool, config_dict=tool_dict)
+        elif history:
+            full = False
+            limit=10
+            days_span = since = until = None
+            tool_name=None
+            entry_ids=None
+            for args in lastargs:
+                tmp = args.split('=')
+                flag = tmp[0]
+                arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
+                if flag == 'full_text':
+                    full = True
+                elif flag == 'limit':
+                    limit=int(arg)
+                elif flag == 'tool':
+                    tool_name=arg
+                elif flag == 'since':
+                    since=float(arg)
+                elif flag == 'until':
+                    until=float(arg)
+                elif flag == 'entry_ids':
+                    entry_ids=map(int,arg.split(','))
+                else:
+                    raise Exception("There's no valid argument named %s in the history management mode.")
+            if until:
+                days_span = [since, until] if since else [99999, until]
+            else:
+                days_span = since
+            log.debug('history of %s, limit=%s, days_span=%s, entry_ids=%s',tool_name,limit, days_span, entry_ids)
+            for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids):
+                print row.__str__(compact=not full)
+                
         else:
             #if no tool selected display the help.
             auto_doc()

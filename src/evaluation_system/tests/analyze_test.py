@@ -11,6 +11,8 @@ import evaluation_system.api.plugin_manager as pm
 from evaluation_system.api.plugin_manager import PluginManagerException
 import tempfile
 import logging
+from evaluation_system.model.user import User
+from gtk.keysyms import seconds
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 class DummyPlugin(PluginAbstract):
@@ -58,9 +60,18 @@ def call(cmd_string):
     p = Popen(['/bin/bash', '-c', '%s' % (cmd_string)], stdout=PIPE, stderr=STDOUT)
     return p.communicate()[0]
 
+def timedeltaToDays(time_delta):
+        return time_delta.microseconds / (24.0 * 60 * 60 * 1000000) + \
+                time_delta.seconds / (24.0 * 60 * 60) + \
+                time_delta.days
+                
 class Test(unittest.TestCase):
     def setUp(self):
         pm.reloadPulgins()
+        
+    def tearDown(self):
+        #just remove the calls to dummyplugin...
+        print User().getUserDB()._getConnection().execute("DELETE FROM history WHERE tool = 'dummyplugin';")
         
     def testGetEnvironment(self):
         env =  analyze.getEnvironment()
@@ -128,7 +139,73 @@ class Test(unittest.TestCase):
         analyze.main("--tool dummyplugin --show-config".split())
         DummyPlugin.__config_metadict__ = old
         
-    def testPCA(self):
+    def testHistory(self):
+        import re,json
+        analyze.main("--tool dummyplugin the_number=13".split())
+        run = DummyPlugin._runs.pop()
+        analyze.main("--history --help".split())
+        stdout.startCapturing()
+        stdout.reset()
+        analyze.main("--history".split())
+        res = stdout.getvalue()
+        
+        user = User()
+        #try to convert all lines rowids to number (so we are sure we get one per file
+        [int(line.split(')')[0]) for line in res.splitlines()]
+        stdout.reset()
+        analyze.main("--history full_text".split())
+        
+        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        self.assertEqual(result[1], 'dummyplugin')
+        self.assertEqual(result[2], '0.0.0')
+        self.assertEqual(json.loads(result[3]), run)
+        rowid = int(result[0])
+        from datetime import datetime, timedelta
+        from time import sleep
+        sleep(0.1)
+        now1 = datetime.now()
+        for i in range(10):
+            analyze.main("--tool dummyplugin the_number=7".split())
+        
+        stdout.reset()
+        analyze.main("--history full_text".split())
+        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        self.assertEquals(int(result[0]), rowid + 10)
+        
+        sleep(0.1)
+        now2 = datetime.now()
+        analyze.main("--tool dummyplugin the_number=15".split())
+        
+        #check since
+        stdout.reset()
+        since_val = timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05))
+        analyze.main(("--history limit=10 since=%s" % since_val).split())
+        res = stdout.getvalue()
+        self.assertEqual(len(res.splitlines()), 1)
+        self.assertEqual(int(res.split(')')[0]), rowid + 10 + 1)
+        since_val = timedeltaToDays(datetime.now()-now1+timedelta(seconds=0.05))
+        until_val = timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05))
+        
+        #check since and until
+        stdout.reset()
+        analyze.main(("--history limit=20 since=%s until=%s" % (since_val, until_val)).split())
+        res = stdout.getvalue()
+        self.assertEqual(len(res.splitlines()), 10)
+        self.assertEqual(int(res.split(')')[0]), rowid + 10)
+
+        #check finding over entry_ids
+        stdout.reset()
+        analyze.main(("--history limit=20 entry_ids=%s" % (rowid+5)).split())
+        res = stdout.getvalue()
+        self.assertEqual(len(res.splitlines()), 1)
+        self.assertEqual(int(res.split(')')[0]), rowid + 5)
+        
+        self.failUnlessRaises(Exception, analyze.main, '--history non_existing_parameter=12'.split())
+        DummyPlugin._runs = []
+
+        
+        
+    def _testPCA(self):
         tmpfile = tempfile.mkstemp("_pca-test.nc")
         outfile = tmpfile[1]
         infile = '%s/pca/test/test.nc' % tools_dir

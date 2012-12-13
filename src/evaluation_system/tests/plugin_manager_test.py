@@ -124,7 +124,7 @@ class Test(unittest.TestCase):
         #direct config
         pm.runTool('dummyplugin', user=user, config_dict=dict(the_number=42))
         self.assertTrue(len(DummyPlugin._runs) == 1)
-        run = DummyPlugin._runs[0]
+        run = DummyPlugin._runs.pop()
         self.assertTrue('the_number' in run)
         self.assertTrue(run['the_number'] == 42)
         DummyPlugin._runs = []
@@ -132,14 +132,45 @@ class Test(unittest.TestCase):
         #config stored on disk
         cf = pm.writeSetup('DummyPlugin', dict(the_number=777), user)
         self.assertTrue(os.path.isfile(cf))
-        print cf
         pm.runTool('dummyplugin', user=user)
         self.assertTrue(len(DummyPlugin._runs) == 1)
-        run = DummyPlugin._runs[0]
+        run = DummyPlugin._runs.pop()
         self.assertTrue('the_number' in run)
         self.assertTrue(run['the_number'] == 777)
         DummyPlugin._runs = []
 
+        #check the run was stored
+        res =  user.getUserDB().getHistory()
+        self.assertEqual(len(res), 2)
+        #last call should be first returned
+        self.assertEqual(res[0].configuration, run)
+        
+        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
+            #make sure the home is a temporary one!!!
+            print "Cleaning up %s" % home
+            shutil.rmtree(home)
+            
+    def testGetHistory(self):
+        pm.reloadPulgins()
+        user = DummyUser(random_home=True, pw_name='test_user')
+        home = user.getUserHome()
+        
+        cf = pm.writeSetup('DummyPlugin', dict(the_number=777), user)
+        pm.runTool('dummyplugin', user=user)
+        run = DummyPlugin._runs.pop()
+        
+        res = pm.getHistory(user=user)
+        self.assertEqual(len(res), 1)
+        res = res[0]
+        self.assertEqual(res.__str__(compact=False), """1) dummyplugin v0.0.0 
+{
+  "number": null, 
+  "other": 1.3999999999999999, 
+  "something": "test", 
+  "the_number": 777
+}""")
+        self.assertEqual(res.__str__(), "1) dummyplugin {u'something': u'test', u'other': 1.399999999999...")
+        
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
             print "Cleaning up %s" % home
