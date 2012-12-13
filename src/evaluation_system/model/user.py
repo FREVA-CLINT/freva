@@ -66,16 +66,16 @@ class User(object):
         base_dir = dict(config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
-            dir = os.path.join(self.getUserBaseDir(), base_dir[dir_type])
+            dir_name = os.path.join(self.getUserBaseDir(), base_dir[dir_type])
         else:
             #return the specific directory for the given tool            
-            dir =  os.path.join(self.getUserBaseDir(), base_dir[dir_type], tool)
+            dir_name =  os.path.join(self.getUserBaseDir(), base_dir[dir_type], tool)
             
-        if create and not os.path.isdir(dir):
+        if create and not os.path.isdir(dir_name):
             #we are letting this fail in case of problems.
-            os.makedirs(dir)
+            os.makedirs(dir_name)
             
-        return dir
+        return dir_name
         
     def getUserToolConfig(self, tool = None, **kwargs):
         """Return directory where all configurations for this user are stored"""

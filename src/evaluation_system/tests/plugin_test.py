@@ -5,20 +5,9 @@ Created on 03.12.2012
 '''
 import unittest
 from evaluation_system.api.plugin import metadict, PluginAbstract, ConfigurationError
+from evaluation_system.tests.mocks import DummyPlugin
 
-class DummyPlugin(PluginAbstract):
-    """Stub class for implementing the abstrac one"""
-    __short_description__ = None
-    __version__ = (0,0,0)
-    __config_metadict__ =  metadict(compact_creation=True, a=(None, dict(type=int)), b='test', other=1.4)
-    _template = "${number} - $something - $other"
-    _runs = []
-    def runTool(self, config_dict=None):
-        DummyPlugin._runs.append(config_dict)
-        print "Dummy tool was run with: %s" % config_dict
 class Test(unittest.TestCase):
-
-
     def testMetadictCreation(self):
         m1 = metadict(dict(a=1,b=2,c=[1,2,3]))
         m2 = metadict(a=1,b=2,c=[1,2,3])
@@ -295,7 +284,7 @@ example (default: test)
         
     def testShowConfig(self):
         dummy = DummyPlugin()
-        dummy.__config_metadict__.setMetadata('a', mandatory=True)
+        dummy.__config_metadict__ =  metadict(compact_creation=True, a=(None, dict(mandatory=True,type=int)), b='test', other=1.4)
         self.assertEquals(dummy.getCurrentConfig(), "    a: - *MUST BE DEFINED!*\n    b: - (default: test)\nother: - (default: 1.4)")
         self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)")
         self.assertEquals(dummy.getCurrentConfig(config_dict=dict(a=2123123)), "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)")

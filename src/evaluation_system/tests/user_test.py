@@ -4,43 +4,13 @@ Created on 04.10.2012
 @author: estani
 '''
 import unittest
-from evaluation_system.model.user import User
 import subprocess
 import os
 import tempfile
 import shutil
 
-class DummyUser(User):
-    """Create a dummy User object that allows testing"""
-    def __init__(self, random_home=False, **override):
-        if random_home:
-            if 'pw_dir' in override:
-                raise Exception("Can't define random_home and provide a home directory")
-            override['pw_dir'] = tempfile.mkdtemp('_es_userdir')
-            
-        User.__init__(self)
-        
-        class DummyUserData(list):
-            """Override a normal list and make it work like the pwd read-only struct"""
-            _NAMES = 'pw_name pw_passwd pw_uid pw_gid pw_gecos pw_dir pw_shell'.split()
-            def __init__(self, arr_list):
-                list.__init__(self, arr_list)
-            def __getattribute__(self, name):
-                #don't access any internal variable (avoid recursion!)
-                if name[0] != '_' and name in self._NAMES:
-                    return self[self._NAMES.index(name)]
-                return list.__getattribute__(self, name)
-                    
-        
-        #copy the current data
-        user_data = list(self._userdata[:])
-        for key, value in override.items():
-            if key in DummyUserData._NAMES:
-                user_data[DummyUserData._NAMES.index(key)] = value
-        self._userdata = DummyUserData(user_data)
-                
-        
-
+from evaluation_system.model.user import User
+from evaluation_system.tests.mocks import DummyUser
                     
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuratio of a user"""

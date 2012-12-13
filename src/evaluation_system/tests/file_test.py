@@ -97,7 +97,8 @@ class Test(unittest.TestCase):
         self.failUnlessRaises(Exception, generator.next)
         stderr.stopCapturing()
         #assure we got a proper warning being displayed
-        self.assertTrue(stderr.getvalue().startswith('WARNING'))
+        msg = stderr.getvalue()
+        self.assertTrue('unused constraints' in msg)
              
     def test_dataset(self):
         bl = DRSFile.from_json(self.real_json)
