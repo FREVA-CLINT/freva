@@ -21,6 +21,7 @@ class DummyPlugin(PluginAbstract):
     def runTool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
         print "Dummy tool was run with: %s" % config_dict
+        return {'/tmp/dummyfile1': dict(type='plot'), '/tmp/dummyfile2': dict(type='data')}
         
 class DummyUser(User):
     """Create a dummy User object that allows testing"""

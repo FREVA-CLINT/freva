@@ -6,6 +6,7 @@ Created on 12.12.2012
 from evaluation_system.tests.mocks import DummyUser, DummyPlugin
 from evaluation_system.api.plugin import metadict
 
+from datetime import datetime, timedelta
 import unittest
 import os
 import tempfile
@@ -68,14 +69,13 @@ class Test(unittest.TestCase):
         
         res = db._getConnection().execute("SELECT * from history;").fetchall()
         self.assertEqual(len(res), len(test_dicts))
-        
         all_res = db.getHistory()
         self.assertEqual(len(all_res), len(test_dicts))
         
         #check the content and also the order. should be LIFO ordered
         test_dicts.reverse()
         count=0
-        old_time='2099'    
+        old_time=datetime(3000,1,1)
         version=(0,0,0)
         tool_name='DummyPlugin'.lower()
         for rd in all_res:
@@ -87,38 +87,46 @@ class Test(unittest.TestCase):
             count += 1
             
         self.assertEqual(len(db.getHistory(limit=1)), 1)
-        print all_res
-        print db.getHistory(tool_name)
         self.assertEqual(db.getHistory(tool_name), all_res)
         #to assure some minimal time distance from last additions
-        import time, datetime
+        import time
         time.sleep(0.1)
-        now1 = datetime.datetime.now()
+        now1 = datetime.now()
         db.storeHistory(DummyPlugin(), dict(special='time1'))
         time.sleep(0.1)
-        now2 = datetime.datetime.now()
+        now2 = datetime.now()
         db.storeHistory(DummyPlugin(), dict(special='time2'))
         
         #check we get time1 and time2 when going 0.5 before now1
-        from_days = self._timedeltaToDays(datetime.datetime.now()-now1+datetime.timedelta(seconds=0.05))
+        from_days = self._timedeltaToDays(datetime.now()-now1+timedelta(seconds=0.05))
         res = db.getHistory(days_span=from_days)
         self.assertEqual(len(res), 2)
         self.assertEqual(set([r.configuration['special'] for r in res]), set(['time1','time2']))
         
         #check we get time2 when going 0.5 before now2
-        from_days = self._timedeltaToDays(datetime.datetime.now()-now2+datetime.timedelta(seconds=0.05))
+        from_days = self._timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05))
         res = db.getHistory(days_span=from_days)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].configuration['special'],'time2')
         
         #check we get time2 when going between 0.5 before now1 and 0.5 before now2
-        from_days = (self._timedeltaToDays(datetime.datetime.now()-now1+datetime.timedelta(seconds=0.05)),
-                     self._timedeltaToDays(datetime.datetime.now()-now2+datetime.timedelta(seconds=0.05)))
+        from_days = (self._timedeltaToDays(datetime.now()-now1+timedelta(seconds=0.05)),
+                     self._timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05)))
         res = db.getHistory(days_span=from_days)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].configuration['special'],'time1')
+    
+    def testHistoryEntry(self):
+        db = self.user.getUserDB()
+        db.storeHistory(DummyPlugin(), dict(a=1))
+        all = db.getHistory()
+        print all
+        print all[0].__str__()
+        print all[0].__str__(compact=False)
         
-
+    def testSchemaUpgrade(self):
+        pass
+    
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -149,16 +149,15 @@ class Test(unittest.TestCase):
         analyze.main("--history".split())
         res = stdout.getvalue()
         
-        user = User()
         #try to convert all lines rowids to number (so we are sure we get one per file
         [int(line.split(')')[0]) for line in res.splitlines()]
         stdout.reset()
         analyze.main("--history full_text".split())
-        
-        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        print stdout.getvalue()
+        result = re.search(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
         self.assertEqual(result[1], 'dummyplugin')
         self.assertEqual(result[2], '0.0.0')
-        self.assertEqual(json.loads(result[3]), run)
+        self.assertEqual(json.loads(result[4]), run)
         rowid = int(result[0])
         from datetime import datetime, timedelta
         from time import sleep
@@ -169,7 +168,7 @@ class Test(unittest.TestCase):
         
         stdout.reset()
         analyze.main("--history full_text".split())
-        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
         self.assertEquals(int(result[0]), rowid + 10)
         
         sleep(0.1)

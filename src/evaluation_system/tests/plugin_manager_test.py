@@ -162,14 +162,17 @@ class Test(unittest.TestCase):
         res = pm.getHistory(user=user)
         self.assertEqual(len(res), 1)
         res = res[0]
-        self.assertEqual(res.__str__(compact=False), """1) dummyplugin v0.0.0 
-{
-  "number": null, 
-  "other": 1.3999999999999999, 
-  "something": "test", 
-  "the_number": 777
-}""")
-        self.assertEqual(res.__str__(), "1) dummyplugin {u'something': u'test', u'other': 1.399999999999...")
+        import re
+        mo = re.search('^([0-9]{1,})[)] ([^ ]{1,}) ([^ ]{1,}) ([^ ]{1,})', res.__str__(compact=False))
+        self.assertTrue(mo is not None)
+        g1 = mo.groups()
+        self.assertTrue(all([g is not None for g in g1]))
+        mo = re.search('^([0-9]{1,})[)] ([^ ]{1,}) ([^ ]{1,})', res.__str__())
+        g2 = mo.groups()
+        self.assertTrue(all([g is not None for g in g2]))
+        self.assertEqual(g1[0], g2[0])
+        self.assertEqual(g1[1], g2[1])
+        self.assertEqual(g1[3], g2[2])
         
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!

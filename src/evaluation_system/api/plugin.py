@@ -165,7 +165,16 @@ class PluginAbstract(object):
         mandatory:=any
             if this attribute is mandatory (if not present it is not)"""
         raise NotImplementedError("This attribute must be implemented")
-    
+
+    @abc.abstractmethod
+    def runTool(self, config_dict = None):
+        """Starts the tool with the given configuration and returns a metadict with the created files
+        Parametes
+        config_dict: metadict
+            Current configuration with which the tool will be run
+        @return: metadict with the files that were created."""
+        raise NotImplementedError("This method must be implemented")
+
     def getHelp(self):
         """Return some help for the user"""
         import textwrap
@@ -444,10 +453,6 @@ class PluginAbstract(object):
         """Allow plugins to give a final check or modification to the configuration before being issued"""
         return config_dict
     
-    @abc.abstractmethod
-    def runTool(self, config_dict = None):
-        """Starts the tool with the given configuration"""
-        raise NotImplementedError("This method must be implemented")
     
     def getToolBaseDir(self):
         """Returns the absolute path to the tool subcasting this plugin"""
