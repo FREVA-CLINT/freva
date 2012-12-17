@@ -188,14 +188,17 @@ def main(argv=None): # IGNORE:C0111
             elif history:
                 print """Displays the last 10 entries with a oneline compact description.
 Arguments
-full_text     If present shows the complete configuration stored
+full-text     If present shows the complete configuration stored
 
 limit         Number of entries to be displayed (don't set it or set it to < 0 to display all)
 
 tool          Display only entries from this tool
 since         Amount of days up to which the history will be retrieved
 until         Amount of days until which the history will be retrieved
-entry_ids      Select this particular entry number from the history"""
+entry-ids     Select this particular entry number from the history
+
+store-file    Instead of displaying, store the configuration in a file (you have to select a single configuration) 
+"""
                 return 0
             else:
                 auto_doc()
@@ -228,11 +231,12 @@ entry_ids      Select this particular entry number from the history"""
             days_span = since = until = None
             tool_name=None
             entry_ids=None
+            store_file=None
             for args in lastargs:
                 tmp = args.split('=')
                 flag = tmp[0]
                 arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
-                if flag == 'full_text':
+                if flag == 'full-text':
                     full = True
                 elif flag == 'limit':
                     limit=int(arg)
@@ -242,8 +246,10 @@ entry_ids      Select this particular entry number from the history"""
                     since=float(arg)
                 elif flag == 'until':
                     until=float(arg)
-                elif flag == 'entry_ids':
+                elif flag == 'entry-ids':
                     entry_ids=map(int,arg.split(','))
+                elif flag == 'store-file':
+                    store_file=arg
                 else:
                     raise Exception("There's no valid argument named %s in the history management mode.")
             if until:
@@ -251,8 +257,17 @@ entry_ids      Select this particular entry number from the history"""
             else:
                 days_span = since
             log.debug('history of %s, limit=%s, days_span=%s, entry_ids=%s',tool_name,limit, days_span, entry_ids)
-            for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids):
-                print row.__str__(compact=not full)
+            if store_file:
+                rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids)
+                if len(rows) > 1:
+                    raise AnalyzeError("Can't only store one configuration at a time. We got %s back.\nTrim your search and try again (better if you use rowids with a single id).")
+                entry = rows[0]
+                tool = pm.getPluginInstance(entry.tool_name)
+                saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
+                print "Configuration stored in %s", saved_in
+            else:
+                for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids):
+                    print row.__str__(compact=not full)
                 
         else:
             #if no tool selected display the help.
