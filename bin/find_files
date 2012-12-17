@@ -103,13 +103,13 @@ def main(argv=None): # IGNORE:C0111
         argv = sys.argv[1:]
 
 
+    DEBUG = False
     try:
         # Setup argument parser
         args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion',
-                                                    'observations', 'reanalysis'])
+                                                    'observations', 'reanalysis', 'cmip5'])
         
         #defaults
-        DEBUG = False
         baseline = 0
         latest=True
         drs_struct=None
@@ -125,6 +125,8 @@ def main(argv=None): # IGNORE:C0111
                 except:
                     print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
                     return 1
+            elif flag == '--cmip5':          #    :search for cmip5 data (includes baselin 0)
+                drs_struct = mf.CMIP5
             elif flag == '--observations':          #    :search for observational data
                 drs_struct = mf.OBSERVATIONS
             elif flag == '--reanalysis':            #    :search for reanalysis data

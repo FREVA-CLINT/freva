@@ -25,7 +25,7 @@ class DRSFile(object):
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "defaults" : {"project":"cmip5", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+         "defaults" : {"project":"cmip5" }
         },
         #baseline 0 data      
         BASELINE0 : {
@@ -130,12 +130,12 @@ class DRSFile(object):
     
     @staticmethod
     def from_path(path, drs_structure=BASELINE0):
-        path = os.path.realpath(path)
+        path = os.path.abspath(path)
         bl = DRSFile._get_baseline(drs_structure)
     
         #trim root_dir
         if not path.startswith(bl['root_dir'] + '/'):
-            raise Exception("This file does not correspond to %s" % drs_structure)                                                         
+            raise Exception("File %s does not correspond to %s" % (path, drs_structure))
         
         parts = path[len(bl['root_dir'])+1:].split('/')
         
