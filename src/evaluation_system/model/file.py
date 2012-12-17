@@ -9,6 +9,7 @@ import os
 import logging
 log = logging.getLogger(__name__)
 
+CMIP5 = 'cmip5'
 BASELINE0 = 'baseline 0'
 BASELINE1 = 'baseline 1'
 OBSERVATIONS = 'observations'
@@ -16,9 +17,9 @@ REANALYSIS = 'reanalysis'
 class DRSFile(object):
     
     DRS_STRUCTURE = {
-        #baseline 0 data      
-        BASELINE0 : {
-         "root_dir":"/gpfs_750/projects/CMIP5/data",
+        #Cmip5 data      
+        CMIP5 : {
+         "root_dir":"/miklip/integration/data4miklip/model",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -26,9 +27,19 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"cmip5", "institute":"MPI-M", "model":"MPI-ESM-LR"}
         },
+        #baseline 0 data      
+        BASELINE0 : {
+         "root_dir":"/miklip/integration/data4miklip/model",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "defaults" : {"project":"baseline0", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+        },
         #baseline 1 data
         BASELINE1 : {
-         "root_dir":"/miklip/global/prod/archive",
+         "root_dir":"/miklip/integration/data4miklip/model",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),

@@ -34,10 +34,10 @@ class Test(unittest.TestCase):
         
         DRSFile.DRS_STRUCTURE[BASELINE0]['root_dir'] = self.base0
         DRSFile.DRS_STRUCTURE[BASELINE1]['root_dir'] = self.base1
-        self.real_path_0 = self.base0 + '/cmip5/output1/MPI-M/MPI-ESM-LR/decadal1960/mon/land/Lmon/r1i1p1/v20111122/c3PftFrac/c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc'
+        self.real_path_0 = self.base0 + '/baseline0/output1/MPI-M/MPI-ESM-LR/decadal1960/mon/land/Lmon/r1i1p1/v20111122/c3PftFrac/c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc'
         self.real_path_1 = self.base1 + '/baseline1/output/MPI-M/MPI-ESM-LR/asORAoERAa/day/atmos/pr/r1i1p1/pr_day_MPI-ESM-LR_asORAoERAa_r1i1p1_19600101-19691231.nc'
-        self.real_dict = {'parts': {'cmor_table': 'Lmon', 'product': 'output1', 'realm': 'land', 'version': 'v20111122', 'institute': 'MPI-M', 'file_name': 'c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc', 'project': 'cmip5', 'time_frequency': 'mon', 'experiment': 'decadal1960', 'time': '196101-199012', 'variable': 'c3PftFrac', 'model': 'MPI-ESM-LR', 'ensemble': 'r1i1p1'}, 'root_dir': self.base0}
-        self.real_json = '{"parts": {"cmor_table": "Lmon", "product": "output1", "realm": "land", "version": "v20111122", "institute": "MPI-M", "file_name": "c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc", "project": "cmip5", "time_frequency": "mon", "experiment": "decadal1960", "time": "196101-199012", "variable": "c3PftFrac", "model": "MPI-ESM-LR", "ensemble": "r1i1p1"}, "root_dir": "' + self.base0 + '"}'
+        self.real_dict = {'parts': {'cmor_table': 'Lmon', 'product': 'output1', 'realm': 'land', 'version': 'v20111122', 'institute': 'MPI-M', 'file_name': 'c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc', 'project': 'baseline0', 'time_frequency': 'mon', 'experiment': 'decadal1960', 'time': '196101-199012', 'variable': 'c3PftFrac', 'model': 'MPI-ESM-LR', 'ensemble': 'r1i1p1'}, 'root_dir': self.base0}
+        self.real_json = '{"parts": {"cmor_table": "Lmon", "product": "output1", "realm": "land", "version": "v20111122", "institute": "MPI-M", "file_name": "c3PftFrac_Lmon_MPI-ESM-LR_decadal1960_r1i1p1_196101-199012.nc", "project": "baseline0", "time_frequency": "mon", "experiment": "decadal1960", "time": "196101-199012", "variable": "c3PftFrac", "model": "MPI-ESM-LR", "ensemble": "r1i1p1"}, "root_dir": "' + self.base0 + '"}'
         self.baslinefile = DRSFile(self.real_dict)
 
         
