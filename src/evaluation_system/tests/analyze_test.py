@@ -142,7 +142,7 @@ class Test(unittest.TestCase):
         #try to convert all lines rowids to number (so we are sure we get one per file
         [int(line.split(')')[0]) for line in res.splitlines()]
         stdout.reset()
-        analyze.main("--history full-text".split())
+        analyze.main("--history full_text".split())
         print stdout.getvalue()
         result = re.search(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
         self.assertEqual(result[1], 'dummyplugin')
@@ -157,7 +157,7 @@ class Test(unittest.TestCase):
             analyze.main("--tool dummyplugin the_number=7".split())
         
         stdout.reset()
-        analyze.main("--history full-text".split())
+        analyze.main("--history full_text".split())
         result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
         self.assertEquals(int(result[0]), rowid + 10)
         
@@ -184,7 +184,7 @@ class Test(unittest.TestCase):
 
         #check finding over entry_ids
         stdout.reset()
-        analyze.main(("--history limit=20 entry-ids=%s" % (rowid+5)).split())
+        analyze.main(("--history limit=20 entry_ids=%s" % (rowid+5)).split())
         res = stdout.getvalue()
         self.assertEqual(len(res.splitlines()), 1)
         self.assertEqual(int(res.split(')')[0]), rowid + 5)
@@ -198,7 +198,7 @@ class Test(unittest.TestCase):
         self.assertTrue(DummyPlugin._runs.pop() is not None)
         self.assertEqual(len(DummyPlugin._runs), 0)
 
-        analyze.main(("--history store-file=%s limit=1" % tmpfile).split())
+        analyze.main(("--history store_file=%s limit=1" % tmpfile).split())
         with open(tmpfile, 'r') as f:
             config=f.readlines()
         self.assertEqual(config[0].strip(), '[DummyPlugin]')
