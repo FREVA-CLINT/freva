@@ -103,8 +103,10 @@ class Test(unittest.TestCase):
         
         baseDir = testUser.getUserBaseDir()
         
-        #check home is created
-        self.assertFalse(os.path.isdir(baseDir))
+        #check home is completely created
+        #self.assertFalse(os.path.isdir(baseDir)) Basic dir structure is created when running a tool because of
+        #history, so this doesn't apply anymore
+        
         testUser.prepareDir()
         self.assertTrue(os.path.isdir(baseDir))
         print "Test user config dir in: ", testUser.getUserBaseDir()
@@ -113,6 +115,8 @@ class Test(unittest.TestCase):
                         testUser.getUserOutputDir(), testUser.getUserPlotsDir()]
         for directory in created_dirs:
             self.assertTrue(os.path.isdir(directory))
+            if directory == testUser.getUserConfigDir():
+                os.unlink(testUser.getUserDB()._db_file)
             os.rmdir(directory)
 
         #clean everything up

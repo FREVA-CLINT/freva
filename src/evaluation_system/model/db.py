@@ -20,7 +20,7 @@ class HistoryEntry(object):
         self.tool_name = row[2]
         self.version = ast.literal_eval(row[3])
         self.configuration = json.loads(row[4])
-        self.results = json.loads(row[5])
+        self.results = json.loads(row[5]) if row[5] else {}
         
     def __eq__(self, hist_entry):
         if isinstance(hist_entry, HistoryEntry):

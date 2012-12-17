@@ -17,6 +17,9 @@ logging.basicConfig(level=logging.DEBUG)
         
 class Test(unittest.TestCase):
     
+    def setUp(self):
+        pm.reloadPulgins()
+    
 
     def testModules(self):
         pmod = pm.getPulginModules()
@@ -25,7 +28,6 @@ class Test(unittest.TestCase):
 
     def testPlugins(self):
         #force reload to be sure the dummy is loaded
-        pm.reloadPulgins()
         self.assertTrue(len(pm.getPlugins())> 0)
         self.assertTrue('dummyplugin' in pm.getPlugins())
         dummy = pm.getPluginDict('dummyplugin')
@@ -37,7 +39,6 @@ class Test(unittest.TestCase):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         self.assertTrue(os.path.isdir(home))
-        pm.reloadPulgins()
         conf_file = pm.writeSetup('dummyplugin', user=user)
         
         print conf_file
@@ -54,7 +55,6 @@ class Test(unittest.TestCase):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         self.assertTrue(os.path.isdir(home))
-        pm.reloadPulgins()
         conf_file = pm.writeSetup('dummyplugin', config_dict=dict(the_number=42),user=user)
         
         print conf_file
@@ -73,7 +73,6 @@ class Test(unittest.TestCase):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         self.assertTrue(os.path.isdir(home))
-        pm.reloadPulgins()
         
         #direct parsing
         for args, result in [("number=4", dict(number=4))]:
@@ -97,7 +96,6 @@ class Test(unittest.TestCase):
             shutil.rmtree(home)
         
     def testWriteSetup(self):
-        pm.reloadPulgins()
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         f = pm.writeSetup('DummyPlugin', dict(number="$the_number",the_number=42), user)
@@ -113,7 +111,6 @@ class Test(unittest.TestCase):
 
         
     def testRun(self):
-        pm.reloadPulgins()
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         
@@ -151,7 +148,6 @@ class Test(unittest.TestCase):
             shutil.rmtree(home)
             
     def testGetHistory(self):
-        pm.reloadPulgins()
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         

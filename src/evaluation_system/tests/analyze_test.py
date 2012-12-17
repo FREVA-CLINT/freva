@@ -5,29 +5,18 @@ Created on 18.10.2012
 '''
 import unittest
 import os
-from evaluation_system.tests.capture_std_streams import stdout
-from evaluation_system.api.plugin import PluginAbstract, metadict
-import evaluation_system.api.plugin_manager as pm
-from evaluation_system.api.plugin_manager import PluginManagerException
 import tempfile
 import logging
-from evaluation_system.model.user import User
-from gtk.keysyms import seconds
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
-class DummyPlugin(PluginAbstract):
-    """Stub class for implementing the abstrac one"""
-    __short_description__ = None
-    __version__ = (0,0,0)
-    __config_metadict__ =  metadict(compact_creation=True, 
-                                    number=(None, dict(type=int,help='This is just a number, not really important')),
-                                    the_number=(None, dict(type=int,mandatory=True,help='This is *THE* number. Please provide it')), 
-                                    something='test', other=1.4)
-    _runs = []
-    _template = "${number} - $something - $other"
-    def runTool(self, config_dict=None):
-        DummyPlugin._runs.append(config_dict)
-        print "Dummy tool was run with: %s" % config_dict
+    
+from evaluation_system.tests.capture_std_streams import stdout
+import evaluation_system.api.plugin_manager as pm
+from evaluation_system.tests.mocks import DummyPlugin
+from evaluation_system.api.plugin import metadict
+from evaluation_system.api.plugin_manager import PluginManagerException
+from evaluation_system.model.user import User
+
 
 def loadlib(module_filepath):
     """Loads a module from a file not ending in .py"""
@@ -72,6 +61,7 @@ class Test(unittest.TestCase):
     def tearDown(self):
         #just remove the calls to dummyplugin...
         print User().getUserDB()._getConnection().execute("DELETE FROM history WHERE tool = 'dummyplugin';")
+        
         
     def testGetEnvironment(self):
         env =  analyze.getEnvironment()
@@ -163,7 +153,7 @@ class Test(unittest.TestCase):
         from time import sleep
         sleep(0.1)
         now1 = datetime.now()
-        for i in range(10):
+        for _ in range(10):
             analyze.main("--tool dummyplugin the_number=7".split())
         
         stdout.reset()

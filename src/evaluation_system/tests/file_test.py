@@ -87,7 +87,7 @@ class Test(unittest.TestCase):
         result = DRSFile.search(experiment='decadal1960', variable='tas')
         #check we have something
         self.assertNotEqual(result, None)
-        print "found %s files" % len(result)
+        print "found %s files" % len([r for r in result])
         
     def test_search_wrong_constraints(self):
         stderr.startCapturing()
@@ -98,7 +98,8 @@ class Test(unittest.TestCase):
         stderr.stopCapturing()
         #assure we got a proper warning being displayed
         msg = stderr.getvalue()
-        self.assertTrue('unused constraints' in msg)
+        if msg:
+            self.assertTrue('unused constraints' in msg, msg)
              
     def test_dataset(self):
         bl = DRSFile.from_json(self.real_json)

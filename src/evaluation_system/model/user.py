@@ -61,21 +61,30 @@ class User(object):
     def getName(self):  return self._userdata.pw_name
     def getUserID(self):  return self._userdata.pw_uid
     def getUserHome(self):  return self._userdata.pw_dir
-    def getUserBaseDir(self): return os.path.join(self.getUserHome(), User.BASE_DIR)
+    
+    def _getUserBaseDir(self): return os.path.join(self.getUserHome(), User.BASE_DIR)
     def _getUserDir(self, dir_type, tool = None, create=False):
-        base_dir = dict(config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
+        base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
-            dir_name = os.path.join(self.getUserBaseDir(), base_dir[dir_type])
+            dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
         else:
             #return the specific directory for the given tool            
-            dir_name =  os.path.join(self.getUserBaseDir(), base_dir[dir_type], tool)
-            
+            dir_name =  os.path.join(self._getUserBaseDir(), base_dir[dir_type], tool)
+        
+        #make sure we have a canonical path
+        dir_name = os.path.abspath(dir_name)
+        
         if create and not os.path.isdir(dir_name):
             #we are letting this fail in case of problems.
             os.makedirs(dir_name)
             
         return dir_name
+
+    def getUserBaseDir(self, **kwargs): 
+        """Return directory where all configurations for this user are stored"""
+        #return os.path.join(self.getUserHome(), User.BASE_DIR)
+        return self._getUserDir('base', **kwargs)
         
     def getUserToolConfig(self, tool = None, **kwargs):
         """Return directory where all configurations for this user are stored"""
@@ -102,17 +111,17 @@ class User(object):
         """Prepares the configuration directory for this user if it's not already been done."""
         if os.path.isdir(self.getUserBaseDir()):
             #we assume preparation was succesfull... but we might to be sure though... 
-            return
+            #return
+            pass
         
         if not os.path.isdir(self.getUserHome()):
             raise Exception("Can't create configuration, user HOME doesn't exist (%s)" % self.getUserHome())
         
         #create directory for the framework
-        os.mkdir(self.getUserBaseDir())
+        
         
         #create all required subdirectories
-        required_dirs = [self.getUserConfigDir(), self.getUserCacheDir(), self.getUserOutputDir(), self.getUserPlotsDir()]
-        for directory in required_dirs:
-            if not os.path.isdir(directory):
-                os.mkdir(directory)
+        dir_creators = [self.getUserBaseDir, self.getUserConfigDir, self.getUserCacheDir, self.getUserOutputDir, self.getUserPlotsDir]
+        for f in dir_creators:
+            f(create=True)
         
