@@ -20,7 +20,8 @@ def loadlib(module_filepath):
 
 #load the module from a non .py file
 find_files = loadlib('../../../bin/find_files')
-    
+
+from evaluation_system.tests.capture_std_streams import stdout
 
 class Test(unittest.TestCase):
 
@@ -35,6 +36,17 @@ class Test(unittest.TestCase):
          
         find_files.main(['--baseline', '1', 'model=MPI-ESM-LR', 'variable=tas', 'experiment=decadal2000', 
                          'time_frequency=mon']);
+    def testHelp(self):
+        stdout.startCapturing()
+        old_str = ""
+        for data_type in ["","--baseline 0", "--baseline 1", "--cmip5", "--observations", "--reanalysis"]:
+            stdout.reset()
+            find_files.main(("--help %s" % data_type).split())
+            help_str = stdout.getvalue()
+            self.assertNotEqual(old_str, help_str)
+            help_str = old_str
+            
+        stdout.stopCapturing()
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -96,6 +96,17 @@ For Example:
     %s --baseline 0 model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
 """ % script_name
 
+def _showDataTypeHelp(data_type):
+    structure = mf.DRSFile.DRS_STRUCTURE[data_type]
+    search_options = ', '.join(structure['parts_dir'])
+    search_defaults = ', '.join(['%s=%s' % (key, value) for key, value in structure['defaults'].items()])
+    
+    print """Search help for type: %s
+
+Possible search parameters: %s
+
+Current defaults: %s""" % (data_type, search_options, search_defaults)
+
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
@@ -113,11 +124,11 @@ def main(argv=None): # IGNORE:C0111
         baseline = 0
         latest=True
         drs_struct=None
+        show_help=False
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':        #    :This help
-                auto_doc()
-                return 0
+            if flag=='-h' or flag=='--help':        #    :This help (if a seach type is selected, show help for that type)
+                show_help = True
             elif flag == '--baseline':              #<n> :search for baseline n data 
                 try:
                     baseline = int(arg)
@@ -137,6 +148,13 @@ def main(argv=None): # IGNORE:C0111
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
         
+        if show_help:
+            if drs_struct:
+                _showDataTypeHelp(drs_struct)
+            else:
+                auto_doc()
+            return 0
+
         if drs_struct is None:
             raise CommandError('You must select a search type: --baseline n or --observational or --reanalysis')
         search_dict = {}
