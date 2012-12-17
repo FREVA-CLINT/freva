@@ -264,7 +264,7 @@ store_file    Instead of displaying, store the configuration in a file (you have
                 entry = rows[0]
                 tool = pm.getPluginInstance(entry.tool_name)
                 saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
-                print "Configuration stored in %s", saved_in
+                print "Configuration stored in %s" % saved_in
             else:
                 for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids):
                     print row.__str__(compact=not full)
