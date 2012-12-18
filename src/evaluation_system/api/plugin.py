@@ -61,6 +61,9 @@ from string import Template
 from ConfigParser import SafeConfigParser
 from copy import deepcopy
 
+
+__version__ = (1,0,0)
+
 class ConfigurationError(Exception):
     """Signals the configuration failed somehow."""
     pass
@@ -172,8 +175,24 @@ class PluginAbstract(object):
         Parametes
         config_dict: metadict
             Current configuration with which the tool will be run
-        @return: metadict with the files that were created."""
+        @return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
+    
+    def prepareOutput(self, list_of_output_files):
+        """Prepare output for files supposedly created. This method checks the files exists
+        and return a dictionary with information about them. Use it for the return call of runTool.
+        Parameters
+        list_of_output_files: list of strings
+            Paths to all files that where created by the tool.
+        @return: dict with the paths to the files that were created and some info if possible:
+            {<absolute_path_to_file>:{'timestamp': os.path.getctime(<absolute_path_to_file>),
+                                      'size': os.path.getsize(<absolute_path_to_file>)}"""
+        result = {}
+        for file_path in list_of_output_files:
+            if os.path.isfile(file_path):
+                result[os.path.abspath(file_path)] = {'timestamp':os.path.getctime(file_path),'size':os.path.getsize(file_path)}
+        return result
+
 
     def getHelp(self):
         """Return some help for the user"""
