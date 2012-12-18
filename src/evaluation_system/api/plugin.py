@@ -178,19 +178,34 @@ class PluginAbstract(object):
         @return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
-    def prepareOutput(self, list_of_output_files):
+    def prepareOutput(self, output_files):
         """Prepare output for files supposedly created. This method checks the files exists
         and return a dictionary with information about them. Use it for the return call of runTool.
         Parameters
-        list_of_output_files: list of strings
+        output_files: iterable of strings
             Paths to all files that where created by the tool.
         @return: dict with the paths to the files that were created and some info if possible:
             {<absolute_path_to_file>:{'timestamp': os.path.getctime(<absolute_path_to_file>),
                                       'size': os.path.getsize(<absolute_path_to_file>)}"""
         result = {}
-        for file_path in list_of_output_files:
+        for file_path in output_files:
+            if isinstance(output_files, dict): metadata = output_files
+            else: metadata = {}
             if os.path.isfile(file_path):
-                result[os.path.abspath(file_path)] = {'timestamp':os.path.getctime(file_path),'size':os.path.getsize(file_path)}
+                if 'timestamp' not in metadata:
+                    metadata['timestamp'] = os.path.getctime(file_path)
+                if 'size' not in metadata:
+                    metadata['size'] = os.path.getsize(file_path)
+                if 'type' not in metadata:    
+                    ext = os.path.splitext(file_path)
+                    if ext:
+                        ext = ext.lower()
+                        if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .tex'.split():
+                            metadata['type'] = 'plot'
+                        elif ext in '.nc .bin .ascii'.split():
+                            metadata['type'] = 'data'
+            result[os.path.abspath(file_path)] = metadata
+                        
         return result
 
 

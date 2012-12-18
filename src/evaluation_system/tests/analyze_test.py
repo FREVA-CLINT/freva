@@ -144,10 +144,15 @@ class Test(unittest.TestCase):
         stdout.reset()
         analyze.main("--history full_text".split())
         print stdout.getvalue()
-        result = re.search(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        re_pat = re.compile(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\nConfiguration:\n((?:.*=.*\n)*)Output.*\n', flags=re.MULTILINE)
+        result = re_pat.search(stdout.getvalue()).groups()
         self.assertEqual(result[1], 'dummyplugin')
         self.assertEqual(result[2], '0.0.0')
-        self.assertEqual(json.loads(result[4]), run)
+        res_run = {}
+        for line in result[4].splitlines():
+            key, val = line.split('=')
+            res_run[key.strip()] = val
+        self.assertEqual(res_run, dict([(k,str(v)) for k,v in run.items()]))
         rowid = int(result[0])
         from datetime import datetime, timedelta
         from time import sleep
@@ -158,7 +163,7 @@ class Test(unittest.TestCase):
         
         stdout.reset()
         analyze.main("--history full_text".split())
-        result = re.search(r'^([0-9]*)[)] ([^ ]*) v([^ ]*) (.*) *\n({\n(?:[^}].*\n)*}\n)', stdout.getvalue(), flags=re.MULTILINE).groups()
+        result = re_pat.search( stdout.getvalue()).groups()
         self.assertEquals(int(result[0]), rowid + 10)
         
         sleep(0.1)

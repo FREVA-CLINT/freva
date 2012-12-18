@@ -7,6 +7,7 @@ import sqlite3
 from datetime import datetime, timedelta
 import json
 import ast
+import os
 import logging
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class HistoryEntry(object):
         self.timestamp = row[1] #datetime object
         self.tool_name = row[2]
         self.version = ast.literal_eval(row[3])
-        self.configuration = json.loads(row[4])
+        self.configuration = json.loads(row[4]) if row[4] else {}
         self.results = json.loads(row[5]) if row[5] else {}
         
     def __eq__(self, hist_entry):
@@ -29,12 +30,32 @@ class HistoryEntry(object):
                     self.configuration == hist_entry.configuration
     def __str__(self, compact=True):
         if compact:
-            conf_str = str(self.configuration)
-            if len(conf_str) > 50:
-                conf_str = conf_str[:48] + '...'
+            out_files = []
+            for f in self.results:
+                out_files.append(os.path.basename(f))
+            conf_str = ', '.join(out_files) + ' ' + str(self.configuration)
+            if len(conf_str) > 70:
+                conf_str = conf_str[:67] + '...'
             version = '' 
         else:
-            conf_str = '\n' + json.dumps(self.configuration, sort_keys=True, indent=2)
+            items = ['%15s=%s' % (k,v) for k,v in sorted(self.configuration.items())]
+            if items:
+                #conf_str = '\n' + json.dumps(self.configuration, sort_keys=True, indent=2)
+                conf_str = '\nConfiguration:\n%s' % '\n'.join(items)
+            if self.results:
+                out_files = []
+                for out_file, metadata in self.results.items():
+                    status = 'deleted'
+                    if os.path.isfile(out_file):
+                        if 'timestamp' in metadata and os.path.getctime(out_file) - metadata['timestamp'] <= 0.9:
+                            status = 'available'
+                        else:
+                            status = 'modified' 
+                    out_files.append('  %s (%s)' % (out_file, status))
+                conf_str = '%s\nOutput:\n%s' % (conf_str, '\n'.join(out_files))
+                    
+                    
+
             version = ' v%s.%s.%s' % self.version
             
         

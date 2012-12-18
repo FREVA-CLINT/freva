@@ -118,7 +118,8 @@ class Test(unittest.TestCase):
     
     def testHistoryEntry(self):
         db = self.user.getUserDB()
-        db.storeHistory(DummyPlugin(), dict(a=1))
+        db.storeHistory(DummyPlugin(), dict(a=1), result={'/dummy/tmp/test/file1.png':{'timestamp':1,'type':'plot'},
+                                                          '/dummy/tmp/test/file1.nc':{'timestamp':1,'type':'data'},})
         all = db.getHistory()
         print all
         print all[0].__str__()
