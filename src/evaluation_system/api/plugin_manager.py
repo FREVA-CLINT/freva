@@ -2,6 +2,14 @@
 Created on 23.11.2012
 
 @author: estani
+
+The plugin manager manages the loading and access to all plugins.
+These are found in a specific directory (<evaluation_system_root_dir>/tools)
+or by adding the modules where the PluginAbstract is implemented to an environmental variable: EVALUATION_SYSTEM_PLUGINS
+This is a colon (':') separated list, of path,package pair, separated by a comma (','). The path
+denotes where the source is to be found, and the package the package in which the PluginAbstract 
+interface is being implemented. For example:
+EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:/other/different/path,some.plugin:/tmp/test,some.other.plugin
 '''
 
 
@@ -14,8 +22,8 @@ log = logging.getLogger(__name__)
 import evaluation_system.api.plugin as plugin
 import evaluation_system.model.db as db
 
-#get the tools directory from the current one
-tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
+PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
+    
 #all plugins modules will be dynamically loaded here.
 __plugin_modules__ = {}
 """Dictionary of modules holding the plugins"""
@@ -31,6 +39,8 @@ plugin_name=>{
  
 
 def reloadPulgins():
+    #get the tools directory from the current one
+    tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
     #get all modules from the tool directory
     for plugin_imp in os.listdir(tools_dir):
         if not plugin_imp.startswith('.'):
@@ -40,6 +50,25 @@ def reloadPulgins():
                 #we have a plugin_imp with defined api
                 sys.path.append(int_dir)
                 __plugin_modules__[plugin_imp] = __import__(plugin_imp + '.api')
+
+    #extra_modules = [(path, module) ... ]
+    extra_modules = []
+    if PLUGIN_ENV in os.environ:
+        extra_modules = map( lambda item: tuple([e.strip() for e in item.split(',')]), 
+                             os.environ[PLUGIN_ENV].split(':'))                
+    #now get all modules loaded from the environment
+    print extra_modules
+    for path, module_name in extra_modules:
+        if os.path.isdir(path):
+            #we have a plugin_imp with defined api
+            sys.path.append(path)
+            #TODO this is not working like in the previous loop. Though we might just want to remove it,
+            #as there seem to be no use for this info... 
+            print module_name
+            __plugin_modules__[module_name] = __import__(module_name)
+    
+    #no clean that path from duplicates...
+    sys.path = list(set(sys.path))
     
     #load all plugin classes found (they are loaded when loading the modules)
     for plug_class in plugin.PluginAbstract.__subclasses__():
