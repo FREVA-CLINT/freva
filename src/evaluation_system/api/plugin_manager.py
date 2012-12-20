@@ -73,7 +73,7 @@ def reloadPulgins():
             __plugin_modules__[module_name] = __import__(module_name)
     
     #no clean that path from duplicates...
-    sys.path = munge(sys.path)
+    sys.path = [p for p in munge(sys.path)]
     
     #load all plugin classes found (they are loaded when loading the modules)
     for plug_class in plugin.PluginAbstract.__subclasses__():

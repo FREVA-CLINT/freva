@@ -213,27 +213,28 @@ class PluginAbstract(object):
         """Return some help for the user"""
         import textwrap
         separator=''
-        #compute maximal param length for better viewing
-        max_size= max([len(k) for k in self.__config_metadict__])
-        wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*(max_size+1), subsequent_indent=' '*(max_size+1), replace_whitespace=False)
         help_str = ['%s (v%s): %s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), self.__short_description__)]
-        help_str.append('Options:')
+        #compute maximal param length for better viewing
+        max_size= max([len(k) for k in self.__config_metadict__] + [0])
+        if max_size > 0:
+            wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*(max_size+1), subsequent_indent=' '*(max_size+1), replace_whitespace=False)
+            help_str.append('Options:')
         
          
-        for key in sorted(self.__config_metadict__):
-            value = self.__config_metadict__[key]
+            for key in sorted(self.__config_metadict__):
+                value = self.__config_metadict__[key]
 
-            param_format = '%%-%ss (default: %%s)' % (max_size) 
-            help_str.append(param_format % (key, value))
-            if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
-                help_str[-1] = help_str[-1] + ' [mandatory]'
+                param_format = '%%-%ss (default: %%s)' % (max_size) 
+                help_str.append(param_format % (key, value))
+                if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
+                    help_str[-1] = help_str[-1] + ' [mandatory]'
 
-            key_help = metadict.getMetaValue(self.__config_metadict__, key, 'help')
-            if key_help:
-                #wrap it properly
-                help_str.append('\n'.join(wrapper.fill(line) for line in 
-                       key_help.splitlines()))
-            help_str.append(separator)
+                key_help = metadict.getMetaValue(self.__config_metadict__, key, 'help')
+                if key_help:
+                    #wrap it properly
+                    help_str.append('\n'.join(wrapper.fill(line) for line in 
+                           key_help.splitlines()))
+                help_str.append(separator)
         
         return '\n'.join(help_str)
     
