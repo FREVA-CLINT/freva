@@ -37,7 +37,14 @@ plugin_name=>{
     version=>(0,0,0)
     description=>"string"}"""
  
-
+def munge( seq ):
+    """Generator to remove duplicates without cahnging order"""
+    seen = set()
+    for item in seq:
+        if item not in seen:
+            seen.add( item )
+            yield item
+            
 def reloadPulgins():
     #get the tools directory from the current one
     tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
@@ -57,18 +64,16 @@ def reloadPulgins():
         extra_modules = map( lambda item: tuple([e.strip() for e in item.split(',')]), 
                              os.environ[PLUGIN_ENV].split(':'))                
     #now get all modules loaded from the environment
-    print extra_modules
     for path, module_name in extra_modules:
         if os.path.isdir(path):
             #we have a plugin_imp with defined api
             sys.path.append(path)
             #TODO this is not working like in the previous loop. Though we might just want to remove it,
             #as there seem to be no use for this info... 
-            print module_name
             __plugin_modules__[module_name] = __import__(module_name)
     
     #no clean that path from duplicates...
-    sys.path = list(set(sys.path))
+    sys.path = munge(sys.path)
     
     #load all plugin classes found (they are loaded when loading the modules)
     for plug_class in plugin.PluginAbstract.__subclasses__():
