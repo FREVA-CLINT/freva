@@ -12,19 +12,27 @@ log = logging.getLogger(__name__)
 
 from evaluation_system.api import plugin
 
+DIRECTORY_STRUCTURE = type('Struct', (object,), dict(LOCAL='local', CENTRAL='central'))
+
 
 #Some defaults in case nothing is defined
 _DEFAULT_CONFIG_FILE = os.path.expanduser('~/.evaluation_system')
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 
+#config options
 BASE_DIR = 'base_dir'
 BASE_DIR_LOCATION = 'base_dir_location'
+DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 CONFIG_FILE = 'config_file'
 
 #prepare the config_metadict for the plugin
 meta = plugin.metadict()
 meta.put(BASE_DIR, 'evaluation_system', help='The name of the directory storing the evaluation system (output, configuration, etc)')
-#meta.put(BASE_DIR_LOCATION, os.path.expanduser('~'), help='The location of the directory defined in %s' % BASE_DIR)
+meta.put(BASE_DIR_LOCATION, os.path.expanduser('~'), help='The location of the directory defined in %s .' % BASE_DIR
+                                                + 'It will be used only when %s is set to %s' % (DIRECTORY_STRUCTURE_TYPE, DIRECTORY_STRUCTURE.CENTRAL))
+meta.put(DIRECTORY_STRUCTURE_TYPE, DIRECTORY_STRUCTURE.LOCAL, help='''Defines how the directory structure is created:
+    local := ~/<base_dir>/...
+    central := <base_dir_location>/<base_dir>/<user>/...''')
 meta.put(CONFIG_FILE, _DEFAULT_CONFIG_FILE, help='This value points to the system configuration file, which is just a symlink to the ' 
                                                 + 'configuration stored in $system_dir. This value will not be stored in the configuration '
                                                 + 'as it makes no sense. Use the environmental variable %s to set ' % _DEFAULT_ENV_CONFIG_FILE
