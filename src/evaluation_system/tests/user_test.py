@@ -11,6 +11,7 @@ import shutil
 
 from evaluation_system.model.user import User
 from evaluation_system.tests.mocks import DummyUser
+from evaluation_system.api import config
                     
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuratio of a user"""
@@ -75,7 +76,7 @@ class Test(unittest.TestCase):
         
         db = self.user.getUserDB();
         self.assertTrue(db is not None)
-        baseDir = '/'.join([self.user.getUserHome(), User.BASE_DIR])
+        baseDir = '/'.join([self.user.getUserHome(), config.get(config.BASE_DIR)])
         self.assertEqual(baseDir, self.user.getUserBaseDir())
         tool1_cnfDir = os.path.join(baseDir, User.CONFIG_DIR, 'tool1')
         tool1_chDir = os.path.join(baseDir, User.CACHE_DIR, 'tool1')
@@ -136,6 +137,28 @@ class Test(unittest.TestCase):
         dir2 = testUser.getUserConfigDir('test_tool', create=True)
         self.assertEquals(dir1, dir2)
         self.assertTrue(os.path.isdir(dir1))
+    
+    def testCentralDirectoryCreation(self):
+        tmp_dir = tempfile.mkdtemp(__name__)
+        config._config[config.BASE_DIR_LOCATION] = tmp_dir
+        config._config[config.DIRECTORY_STRUCTURE_TYPE] = config.DIRECTORY_STRUCTURE.CENTRAL
+        testUser = DummyUser(random_home=False,  **Test.DUMMY_USER)
+        
+        dir1 = testUser.getUserBaseDir()
+        self.assertEquals(dir1, os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(testUser.getUserID())))
+        dir2 = testUser.getUserOutputDir('sometool')
+        self.assertEquals(dir2, 
+                          os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), 
+                                       str(testUser.getUserID()),User.OUTPUT_DIR, 'sometool'))
+        print dir2
+        
+        config.reloadConfiguration()
+        
+        if os.path.isdir(tmp_dir) and tmp_dir.startswith(tempfile.gettempdir()):
+            #make sure the home is a temporary one!!!
+            print "Cleaning up %s" % tmp_dir
+            shutil.rmtree(tmp_dir)
+
         
     def testConfigFile(self):
         tool = 'test_tool'

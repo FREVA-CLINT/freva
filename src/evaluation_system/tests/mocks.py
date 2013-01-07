@@ -25,13 +25,13 @@ class DummyPlugin(PluginAbstract):
         
 class DummyUser(User):
     """Create a dummy User object that allows testing"""
-    def __init__(self, random_home=False, **override):
+    def __init__(self, random_home=False, uid=None, **override):
         if random_home:
             if 'pw_dir' in override:
                 raise Exception("Can't define random_home and provide a home directory")
-            override['pw_dir'] = tempfile.mkdtemp('_es_userdir')
+            override['pw_dir'] = tempfile.mkdtemp('_dummyUser')
             
-        User.__init__(self)
+        super(DummyUser, self).__init__(uid=uid)
         
         class DummyUserData(list):
             """Override a normal list and make it work like the pwd read-only struct"""

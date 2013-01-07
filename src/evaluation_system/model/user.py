@@ -8,27 +8,32 @@ import os
 import sys
 from ConfigParser import SafeConfigParser as Config
 from evaluation_system.model.db import UserDB
+from evaluation_system.api import config
 
 class User(object):
     '''
-    This Class encapsulates a user (configurations, etc)
+    This Class encapsulates a user (configurations, etc).
     '''
     
-    BASE_DIR = 'evaluation_system'
     CONFIG_DIR = 'config'
     CACHE_DIR = 'cache'
     OUTPUT_DIR = 'output'
     PLOTS_DIR = 'plots'
     
+    
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
     EVAL_SYS_DEFAULT_CONFIG = os.path.normpath(os.path.dirname(sys.modules[__name__].__file__)+'/../../etc/system_default.config')
-    EVAL_SYS_DB = os.path.join(CONFIG_DIR,'evaluation_system.db')
 
 
     def __init__(self, uid = None):
         '''
-        Constructor for the current user.
+        Parameters:
+        uid: int (optional)
+            user id in the local system, if not provided the current user is used.
+        
         '''
+        self._dir_type = config.get(config.DIRECTORY_STRUCTURE_TYPE)
+
         if uid is None: uid = os.getuid()
         self._userdata = pwd.getpwuid(uid)
         self._userconfig = Config()
@@ -62,7 +67,12 @@ class User(object):
     def getUserID(self):  return self._userdata.pw_uid
     def getUserHome(self):  return self._userdata.pw_dir
     
-    def _getUserBaseDir(self): return os.path.join(self.getUserHome(), User.BASE_DIR)
+    def _getUserBaseDir(self):
+        if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
+            return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))
+        elif self._dir_type == config.DIRECTORY_STRUCTURE.CENTRAL:
+            return os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(self.getUserID()))
+        
     def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
         if tool is None:
