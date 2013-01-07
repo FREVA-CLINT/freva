@@ -5,9 +5,17 @@ Created on 07.01.2013
 '''
 import os
 import unittest
-from evaluation_system.api import config 
+from evaluation_system.api import config
+import logging
+if not logging.getLogger().handlers:
+    logging.basicConfig(level=logging.INFO)
 
 class Test(unittest.TestCase):
+    
+    def setUp(self):
+        if config._DEFAULT_ENV_CONFIG_FILE in os.environ:
+            del os.environ[config._DEFAULT_ENV_CONFIG_FILE]
+        config.reloadConfiguration()
 
 
     def testConfigPlugin(self):
@@ -24,8 +32,8 @@ class Test(unittest.TestCase):
         self.assertEquals(conf[config.CONFIG_FILE], '/tmp')
         
     def testGet(self):
-        sys_dir = config.get(config.BASE_DIR)
-        self.assertEquals(sys_dir, 'evaluation_system')
+        base_dir = config.get(config.BASE_DIR)
+        self.assertEquals(base_dir, 'evaluation_system')
         self.failUnlessRaises(config.ConfigurationException, config.get, 'non-existing-key')
         self.assertEquals(config.get('non-existing-key', 'default-answer'), 'default-answer')
     
@@ -36,6 +44,7 @@ class Test(unittest.TestCase):
         self.assertTrue(config.CONFIG_FILE in keys)
         
     def testReload(self):
+        """Test we can reload the configuration"""
         c1 = config.get(config.CONFIG_FILE)
         self.assertEquals(c1, config._DEFAULT_CONFIG_FILE)
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = '/tmp'
@@ -45,6 +54,19 @@ class Test(unittest.TestCase):
         c3 = config.get(config.CONFIG_FILE)
         self.assertNotEquals(c2, c3)
         self.assertEquals(c3, '/tmp')
+        
+    def testConfigFile(self):
+        """If a config file is provided it should be read"""
+        import tempfile
+        fd, name = tempfile.mkstemp(__name__, text=True)
+        with os.fdopen(fd, 'w') as f:
+            f.write('[Configuration]\n%s=nowhere\n' % config.BASE_DIR)
+        
+        self.assertEquals(config.get(config.BASE_DIR), 'evaluation_system')
+        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+        config.reloadConfiguration()
+        self.assertEquals(config.get(config.BASE_DIR), 'nowhere')
+        os.unlink(name)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testPlugin']

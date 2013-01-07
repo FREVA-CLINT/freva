@@ -33,10 +33,23 @@ class Configuration(plugin.PluginAbstract):
     '''This class is just a normal plugin that is used to handle the system configuration.'''
     __short_description__ = "Used to configure the evaluation system" 
     __version__ = (1,0,0)
-    __config_metadict__ = meta
+    __config_metadict__ = meta.copy()   #this is required for the abstract class
     
     def __init__(self, *args, **kwargs):
-        self.__config_metadict__['config_file'] = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE)
+        #Make sure we always start from scratch though.
+        self.__config_metadict__ = meta.copy()
+
+        #now check if we have a configuration file, and read the defaults from there
+        config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE)
+        if os.path.isfile(config_file):
+            with open(config_file, 'r') as fp:
+                for key, value in self.readConfiguration(fp).items():
+                    self.__config_metadict__[key] = value
+                log.debug('Configuration loaded from %s', config_file)
+        else:
+            log.debug('No configuration file found in %s. Using default values.', config_file)
+
+        self.__config_metadict__[CONFIG_FILE] = config_file
         super(Configuration, self).__init__(*args,**kwargs)
 
     def saveConfiguration(self, fp, config_dict=None):
