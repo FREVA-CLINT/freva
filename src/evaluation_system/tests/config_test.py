@@ -46,7 +46,7 @@ class Test(unittest.TestCase):
     def testReload(self):
         """Test we can reload the configuration"""
         c1 = config.get(config.CONFIG_FILE)
-        self.assertEquals(c1, config._DEFAULT_CONFIG_FILE)
+        self.assertEquals(c1, os.path.expanduser(config._DEFAULT_CONFIG_FILE))
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = '/tmp'
         c2 = config.get(config.CONFIG_FILE)
         self.assertEquals(c1, c2)

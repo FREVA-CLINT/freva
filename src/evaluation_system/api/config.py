@@ -16,7 +16,7 @@ DIRECTORY_STRUCTURE = type('Struct', (object,), dict(LOCAL='local', CENTRAL='cen
 
 
 #Some defaults in case nothing is defined
-_DEFAULT_CONFIG_FILE = os.path.expanduser('~/.evaluation_system')
+_DEFAULT_CONFIG_FILE = '~/.evaluation_system'
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 
 #config options
@@ -25,10 +25,12 @@ BASE_DIR_LOCATION = 'base_dir_location'
 DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 CONFIG_FILE = 'config_file'
 
+_PATH_OPTIONS = [BASE_DIR_LOCATION, CONFIG_FILE]
+
 #prepare the config_metadict for the plugin
 meta = plugin.metadict()
 meta.put(BASE_DIR, 'evaluation_system', help='The name of the directory storing the evaluation system (output, configuration, etc)')
-meta.put(BASE_DIR_LOCATION, os.path.expanduser('~'), help='The location of the directory defined in %s .' % BASE_DIR
+meta.put(BASE_DIR_LOCATION, '~', help='The location of the directory defined in %s .' % BASE_DIR
                                                 + 'It will be used only when %s is set to %s' % (DIRECTORY_STRUCTURE_TYPE, DIRECTORY_STRUCTURE.CENTRAL))
 meta.put(DIRECTORY_STRUCTURE_TYPE, DIRECTORY_STRUCTURE.LOCAL, help='''Defines how the directory structure is created:
     local := ~/<base_dir>/...
@@ -110,10 +112,16 @@ def get(config_prop, default=_nothing):
     """
         
     if config_prop in _config:
-        return _config[config_prop]
-    if default != _nothing:
-        return default
-    raise ConfigurationException("No configuration for %s" % config_prop)
+        value = _config[config_prop]
+    elif default != _nothing:
+        value = default
+    else:
+        raise ConfigurationException("No configuration for %s" % config_prop)
+    
+    if value and config_prop in _PATH_OPTIONS:
+        return os.path.expanduser(value)
+    else:
+        return value
 
 def keys():
     """Returns all configured keys"""
