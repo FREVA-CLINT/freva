@@ -112,6 +112,13 @@ class metadict(dict):
         """Clear all metadata allocated under the given key."""
         if key not in self: raise KeyError(key)
         if key in self.metainfo: del self.metainfo[key]
+        
+    def put(self, key, value, **meta):
+        """Puts a key,value pair into the dictionary and all other keywords are added
+        as meta-data to this key."""
+        self[key] = value
+        if meta:
+            self.setMetadata(key, **meta)
 
     @staticmethod
     def hasMetadata(some_dict, key=None):
