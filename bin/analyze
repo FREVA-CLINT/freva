@@ -40,8 +40,8 @@ log = logging.getLogger(__name__)
 if not log.handlers:
     logging.basicConfig(level=logging.INFO)
 
-import evaluation_system.api.plugin_manager as pm
 from evaluation_system.api import config    #we need to import this so it's active
+import evaluation_system.api.plugin_manager as pm
 
 __version__ = 0.3
 __date__ = '2012-11-26'
