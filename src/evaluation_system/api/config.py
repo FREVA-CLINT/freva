@@ -1,0 +1,103 @@
+'''
+Created on 07.01.2013
+
+@author: estani
+
+This packages handles the configuration of the system.
+It defines a plugin like any other.
+'''
+import os
+import logging
+log = logging.getLogger(__name__)
+
+from evaluation_system.api import plugin
+
+
+#Some defaults in case nothing is defined
+_DEFAULT_CONFIG_FILE = os.path.expanduser('~/.evaluation_system')
+_DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
+
+BASE_DIR = 'base_dir'
+BASE_DIR_LOCATION = 'base_dir_location'
+CONFIG_FILE = 'config_file'
+
+#prepare the config_metadict for the plugin
+meta = plugin.metadict()
+meta.put(BASE_DIR, 'evaluation_system', help='The name of the directory storing the evaluation system (output, configuration, etc)')
+#meta.put(BASE_DIR_LOCATION, os.path.expanduser('~'), help='The location of the directory defined in %s' % BASE_DIR)
+meta.put(CONFIG_FILE, _DEFAULT_CONFIG_FILE, help='This value points to the system configuration file, which is just a symlink to the ' 
+                                                + 'configuration stored in $system_dir. This value will not be stored in the configuration '
+                                                + 'as it makes no sense. Use the environmental variable %s to set ' % _DEFAULT_ENV_CONFIG_FILE
+                                                + 'when starting the system.')
+class Configuration(plugin.PluginAbstract):
+    '''This class is just a normal plugin that is used to handle the system configuration.'''
+    __short_description__ = "Used to configure the evaluation system" 
+    __version__ = (1,0,0)
+    __config_metadict__ = meta
+    
+    def __init__(self, *args, **kwargs):
+        self.__config_metadict__['config_file'] = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE)
+        super(Configuration, self).__init__(*args,**kwargs)
+
+    def saveConfiguration(self, fp, config_dict=None):
+        #get the config_file value and remove it from the config_dict since it's confusing if we store it
+        #(it can't really be used)
+        config_file = None
+        if config_dict:
+            config_file = config_dict.pop('config_file', None)
+        if config_file is None:
+            config_file = self.__config_metadict__['config_file']
+
+        #store the configuration as usual
+        super(Configuration, self).saveConfiguration(fp, config_dict)
+        path = fp.name
+        if os.path.islink(config_file):
+            #allow the link to be recreated
+            os.unlink(config_file)
+        try:
+            os.symlink(path, config_file)
+            print "Configuration file linked at %s" % config_file
+        except OSError as e:
+            if e.errno == 2:
+                log.error("Please create the required directory %s if that's where you want the configuration file to be stored.", os.path.dirname(config_file))
+            else:
+                log.error("Could not create the required symlink %s pointing to %s", config_file, path)
+            raise
+        
+    def runTool(self, config_dict=None):
+        print "Showing current configuration:"
+        print self.getCurrentConfig(config_dict=config_dict)
+
+class ConfigurationException(Exception):
+    """Mark exceptions thrown in this package"""
+    pass
+
+_config = Configuration().setupConfiguration()
+_nothing = object()
+
+def get(config_prop, default=_nothing):
+    """Returns the value stored for the given config_prop.
+    If the config_prop is not found and no default value is provided an exception
+    will be thrown. If not the default value is returned.
+    Parameters:
+    config_prop: string
+        property for which it's value is looked for
+    default: anything
+        If property is not found this value is returned
+    @return the value associated with the given property, the default one if not found or an
+    exception is thrown if no default is provided.
+    """
+        
+    if config_prop in _config:
+        return _config[config_prop]
+    if default != _nothing:
+        return default
+    raise ConfigurationException("No configuration for %s" % config_prop)
+
+def keys():
+    """Returns all configured keys"""
+    return _config.keys()
+
+def reloadConfiguration():
+    global _config
+    _config = Configuration().setupConfiguration()
