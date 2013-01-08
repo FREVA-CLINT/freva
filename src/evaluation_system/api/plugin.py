@@ -393,7 +393,11 @@ that started this program is created."""
         if template and isinstance(template, basestring):
             #be nice with whomever is implementing dice and accept normal strings
             import string 
-            template = string.Template(template) 
+            template = string.Template(template)
+            
+        user_vars_dict = self._user.getUserVarDict()
+        user_vars_dict.update(config_dict)
+        
         #accept a maximal recursion of 5 for resolving all tokens
         #5 is a definite number larger than any thinkable recursion for this case
         max_iter = 5
@@ -401,7 +405,7 @@ that started this program is created."""
             recursion = False   #assume no recursion until one possible case is found
             for key, value in config_dict.items():                
                 if isinstance(value, basestring) and '$' in value:
-                    config_dict[key] = Template(value).safe_substitute(config_dict)
+                    config_dict[key] = Template(value).safe_substitute(user_vars_dict)
                     recursion = True
             max_iter -= 1
         

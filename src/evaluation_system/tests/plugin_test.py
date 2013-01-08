@@ -5,7 +5,7 @@ Created on 03.12.2012
 '''
 import unittest
 from evaluation_system.api.plugin import metadict, PluginAbstract, ConfigurationError
-from evaluation_system.tests.mocks import DummyPlugin
+from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
 class Test(unittest.TestCase):
     def testMetadictCreation(self):
@@ -79,6 +79,16 @@ class Test(unittest.TestCase):
         #check indirect resolution can also be turned off
         res = dummy.setupConfiguration(dict(num='${a}x', a=1),template="$num", check_cfg=False, recursion=False)
         self.assertEquals("${a}x", res)
+        
+        #check user special values work
+        user = DummyUser(random_home=True)
+        dummy._user = user
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),template="$num", check_cfg=False)
+        print res
+        self.assertEquals(user.getUserBaseDir(), res)
+        
+        user.cleanRandomHome()
+        
         
     def testParseArguments(self):
         dummy = DummyPlugin()
