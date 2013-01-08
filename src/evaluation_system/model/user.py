@@ -9,6 +9,7 @@ import sys
 from ConfigParser import SafeConfigParser as Config
 from evaluation_system.model.db import UserDB
 from evaluation_system.api import config
+#----------------------------- from evaluation_system.api.plugin import metadict
 
 class User(object):
     '''
@@ -41,6 +42,14 @@ class User(object):
         self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self._userdata.pw_dir, User.EVAL_SYS_CONFIG)])
         
         self._db = UserDB(self)
+        
+        #-------------------------- self._meta = metadict(compact_creation=True,
+        #--------------------------------- USER_BASE_DIR=)
+        # """Expand the user specific values in the given string. Those values might be one of:
+    # $USER_BASE_DIR := central directory for this user in the evaluation system.
+    # $USER_OUTPUT_DIR := directory where the output data for this user is stored.
+    #------ $USER_PLOT_DIR := directory where the plots for this user is stored.
+    # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
         
     def getUserConfig(self):
         """Returns user configuration object (ConfigParser)"""
@@ -135,3 +144,11 @@ class User(object):
         for f in dir_creators:
             f(create=True)
         
+    #--------------------------------------- def expandUserValues(self, string):
+        # """Expand the user specific values in the given string. Those values might be one of:
+    # $USER_BASE_DIR := central directory for this user in the evaluation system.
+    # $USER_OUTPUT_DIR := directory where the output data for this user is stored.
+    #------ $USER_PLOT_DIR := directory where the plots for this user is stored.
+    # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
+        #------------------------------------------------------------------ pass
+#------------------------------------------------------------------------------ 

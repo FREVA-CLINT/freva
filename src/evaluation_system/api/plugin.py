@@ -60,7 +60,7 @@ import sys
 from string import Template
 from ConfigParser import SafeConfigParser
 from copy import deepcopy
-
+from evaluation_system.model.user import User
 
 __version__ = (1,0,0)
 
@@ -140,17 +140,32 @@ class metadict(dict):
 class PluginAbstract(object):
     """This is the base class for all plugins"""
     
-    class __metaclass__(abc.ABCMeta):
-        """This metaclass encapsulates the abstract class from abc and allows plugin self-registration
-        and control. All plugin "classes" inheriting from this class will go through this method
-        while being defined"""
-        def __init__(self, name, bases, namespace):
-            if name != 'PluginAbstract':
-                #This is a new subclass. We may register it on the fly now.
-                pass
-                return abc.ABCMeta.__init__(PluginAbstract, name, bases, namespace)
-            return abc.ABCMeta.__init__(abc.ABCMeta, name, bases, namespace)
+    __metaclass__ = abc.ABCMeta
+    #===========================================================================
+    # class __metaclass__(abc.ABCMeta):
+    #    """This metaclass encapsulates the abstract class from abc and allows plugin self-registration
+    #    and control. All plugin "classes" inheriting from this class will go through this method
+    #    while being defined"""
+    #    def __init__(self, name, bases, namespace):
+    #        if name != 'PluginAbstract':
+    #            #This is a new subclass. We may register it on the fly now.
+    #            pass
+    #            return abc.ABCMeta.__init__(PluginAbstract, name, bases, namespace)
+    #        return abc.ABCMeta.__init__(abc.ABCMeta, name, bases, namespace)
+    #===========================================================================
 
+    def __init__(self, *args, **kwargs):
+        """Plugin main constructor. It is designed to catch all calls. It accepts a "user"
+argument containing an evaluation_system.model.user.User object for which this plugin will
+be created. If given it will be passed to the implementing plugin and use to get different
+user-defined configurations. If no user is provided an object representing the user
+that started this program is created.""" 
+        self._user = kwargs.pop('user', None)
+        if 'user' in kwargs:
+            self._user = kwargs['user']
+        else:
+            self._user = User()
+        
     @abc.abstractproperty
     def __version__(self):
         """Returns the version of the plugin"""
@@ -206,7 +221,7 @@ class PluginAbstract(object):
                 if 'type' not in metadata:    
                     ext = os.path.splitext(file_path)
                     if ext:
-                        ext = ext.lower()
+                        ext = ext[-1].lower()
                         if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .tex'.split():
                             metadata['type'] = 'plot'
                         elif ext in '.nc .bin .ascii'.split():
@@ -272,7 +287,16 @@ class PluginAbstract(object):
             current_conf.append(line_format % (key, curr_val))
     
         return '\n'.join(current_conf)
-    
+
+    def getToolBaseDir(self):
+        """Returns the absolute path to the tool subcasting this plugin"""
+        subclass_file = sys.modules[self.__module__].__file__
+        return os.path.join(*self._splitPath(os.path.abspath(subclass_file))[:-len(self.__module__.split('.'))-1])
+
+    def getCurrentUser(self):
+        """Returns the user for which this instance was generated."""
+        return self._user
+        
     @staticmethod
     def __to_bool(bool_str):
         """Parses a string for a boolean value"""
@@ -494,12 +518,6 @@ class PluginAbstract(object):
     def _postTransformCfg(self, config_dict):
         """Allow plugins to give a final check or modification to the configuration before being issued"""
         return config_dict
-    
-    
-    def getToolBaseDir(self):
-        """Returns the absolute path to the tool subcasting this plugin"""
-        subclass_file = sys.modules[self.__module__].__file__
-        return os.path.join(*self._splitPath(os.path.abspath(subclass_file))[:-len(self.__module__.split('.'))-1])
     
     def call(self, cmd_string, stdin=None, stdout=PIPE, stderr=STDOUT):
         """Simplify the interaction with the tool.
