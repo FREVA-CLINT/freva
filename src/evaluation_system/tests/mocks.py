@@ -3,10 +3,13 @@ Created on 12.12.2012
 
 @author: estani
 '''
+import tempfile
+import shutil
+import os
+
 from evaluation_system.api.plugin import PluginAbstract, metadict
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
-import tempfile
 
 class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstrac one"""
@@ -26,10 +29,12 @@ class DummyPlugin(PluginAbstract):
 class DummyUser(User):
     """Create a dummy User object that allows testing"""
     def __init__(self, random_home=False, uid=None, **override):
+        self.__random_home = None
         if random_home:
             if 'pw_dir' in override:
                 raise Exception("Can't define random_home and provide a home directory")
             override['pw_dir'] = tempfile.mkdtemp('_dummyUser')
+            self.__random_home = override['pw_dir'] 
             
         super(DummyUser, self).__init__(uid=uid)
         
@@ -53,3 +58,9 @@ class DummyUser(User):
         
         self._userdata = DummyUserData(user_data)
         self._db = UserDB(self)
+        
+    def cleanRandomHome(self):
+        if self.__random_home and os.path.isdir(self.__random_home) and self.__random_home.startswith(tempfile.gettempdir()):
+            #make sure the home is a temporary one!!!
+            shutil.rmtree(self.__random_home)
+        
