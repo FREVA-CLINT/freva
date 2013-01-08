@@ -128,7 +128,7 @@ def main(argv=None): # IGNORE:C0111
         # Setup argument parser
         args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
                                                     'help', 'debug', 'dry-run',
-                                                    'history',
+                                                    'history', 'use-defaults',
                                                     'config-file=', 'save-config', 'show-config'])
         
         #defaults
@@ -141,13 +141,17 @@ def main(argv=None): # IGNORE:C0111
         cfg_file = None
         dry_run = False
         history=False
+        use_user_defaults=True
+        
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
                 help_opt=True
-            elif flag == '--tool':              #define which tool should be used
+            elif flag == '--tool':              #Define which tool should be used
                 tool=arg.lower()
-            elif flag == '--list-tools':        #show all available tools
+            elif flag == '--use-defaults':      #Skip user configuration and use system defaults
+                use_user_defaults=False
+            elif flag == '--list-tools':        #Show all available tools
                 import textwrap
                 #we just have to show the list and stop processing
                 name_width = 0
@@ -209,7 +213,7 @@ store_file    Instead of displaying, store the configuration in a file (you have
         
         #get the plugin
         if tool: 
-            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=True, config_file=cfg_file)
+            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file)
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)
                 import json
