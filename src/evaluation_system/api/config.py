@@ -16,7 +16,7 @@ DIRECTORY_STRUCTURE = type('Struct', (object,), dict(LOCAL='local', CENTRAL='cen
 
 
 #Some defaults in case nothing is defined
-_DEFAULT_CONFIG_FILE = '~/.evaluation_system'
+#--------------------------------- _DEFAULT_CONFIG_FILE = '~/.evaluation_system'
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 
 #config options
@@ -35,10 +35,12 @@ meta.put(BASE_DIR_LOCATION, '~', help='The location of the directory defined in 
 meta.put(DIRECTORY_STRUCTURE_TYPE, DIRECTORY_STRUCTURE.LOCAL, help='''Defines how the directory structure is created:
     local := ~/<base_dir>/...
     central := <base_dir_location>/<base_dir>/<user>/...''')
-meta.put(CONFIG_FILE, _DEFAULT_CONFIG_FILE, help='This value points to the system configuration file, which is just a symlink to the ' 
-                                                + 'configuration stored in $system_dir. This value will not be stored in the configuration '
-                                                + 'as it makes no sense. Use the environmental variable %s to set ' % _DEFAULT_ENV_CONFIG_FILE
-                                                + 'when starting the system.')
+#===============================================================================
+# meta.put(CONFIG_FILE, _DEFAULT_CONFIG_FILE, help='This value points to the system configuration file, which is just a symlink to the ' 
+#                                                + 'configuration stored in $system_dir. This value will not be stored in the configuration '
+#                                                + 'as it makes no sense. Use the environmental variable %s to set ' % _DEFAULT_ENV_CONFIG_FILE
+#                                                + 'when starting the system.')
+#===============================================================================
 class Configuration(plugin.PluginAbstract):
     '''This class is just a normal plugin that is used to handle the system configuration.'''
     __short_description__ = "Used to configure the evaluation system" 
@@ -46,12 +48,14 @@ class Configuration(plugin.PluginAbstract):
     __config_metadict__ = meta.copy()   #this is required for the abstract class
     
     def __init__(self, *args, **kwargs):
+        super(Configuration, self).__init__(*args,**kwargs)
+        
         #Make sure we always start from scratch though.
         self.__config_metadict__ = meta.copy()
 
         #now check if we have a configuration file, and read the defaults from there
-        config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE)
-        if os.path.isfile(config_file):
+        config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, None)
+        if config_file and os.path.isfile(config_file):
             with open(config_file, 'r') as fp:
                 for key, value in self.readConfiguration(fp).items():
                     self.__config_metadict__[key] = value
@@ -59,34 +63,11 @@ class Configuration(plugin.PluginAbstract):
         else:
             log.debug('No configuration file found in %s. Using default values.', config_file)
 
-        self.__config_metadict__[CONFIG_FILE] = config_file
-        super(Configuration, self).__init__(*args,**kwargs)
-
-    def saveConfiguration(self, fp, config_dict=None):
-        #get the config_file value and remove it from the config_dict since it's confusing if we store it
-        #(it can't really be used)
-        config_file = None
-        if config_dict:
-            config_file = config_dict.pop('config_file', None)
-        if config_file is None:
-            config_file = self.__config_metadict__['config_file']
-
-        #store the configuration as usual
-        super(Configuration, self).saveConfiguration(fp, config_dict)
-        path = fp.name
-        if os.path.islink(config_file):
-            #allow the link to be recreated
-            os.unlink(config_file)
-        try:
-            os.symlink(path, config_file)
-            print "Configuration file linked at %s" % config_file
-        except OSError as e:
-            if e.errno == 2:
-                log.error("Please create the required directory %s if that's where you want the configuration file to be stored.", os.path.dirname(config_file))
-            else:
-                log.error("Could not create the required symlink %s pointing to %s", config_file, path)
-            raise
-        
+    def getHelp(self):
+        help_str = super(Configuration, self).getHelp()
+        return """To point to a different config file while starting use the %s environmental variable.
+%s""" % (_DEFAULT_ENV_CONFIG_FILE, help_str)
+    
     def runTool(self, config_dict=None):
         print "Showing current configuration:"
         print self.getCurrentConfig(config_dict=config_dict)

@@ -24,12 +24,6 @@ class Test(unittest.TestCase):
         self.assertTrue(conf is not None)
         self.assertEquals(conf, c.__config_metadict__)
         self.assertEquals(conf[config.BASE_DIR], 'evaluation_system')
-        self.assertEquals(conf[config.CONFIG_FILE], config._DEFAULT_CONFIG_FILE)
-        
-        #check the environmental variable is being read.
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = '/tmp'
-        conf = config.Configuration().setupConfiguration()
-        self.assertEquals(conf[config.CONFIG_FILE], '/tmp')
         
     def testGet(self):
         base_dir = config.get(config.BASE_DIR)
@@ -41,19 +35,15 @@ class Test(unittest.TestCase):
         keys = config.keys()
         self.assertTrue(len(keys) >= 2)
         self.assertTrue(config.BASE_DIR in keys)
-        self.assertTrue(config.CONFIG_FILE in keys)
         
     def testReload(self):
         """Test we can reload the configuration"""
-        c1 = config.get(config.CONFIG_FILE)
-        self.assertEquals(c1, os.path.expanduser(config._DEFAULT_CONFIG_FILE))
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = '/tmp'
-        c2 = config.get(config.CONFIG_FILE)
-        self.assertEquals(c1, c2)
+        config._config[config.BASE_DIR_LOCATION] = 'TEST'
+        c1 = config.get(config.BASE_DIR_LOCATION)
+        self.assertEquals(c1, 'TEST')
         config.reloadConfiguration()
-        c3 = config.get(config.CONFIG_FILE)
-        self.assertNotEquals(c2, c3)
-        self.assertEquals(c3, '/tmp')
+        c2 = config.get(config.BASE_DIR_LOCATION)
+        self.assertNotEquals(c1, c2)
         
     def testConfigFile(self):
         """If a config file is provided it should be read"""
