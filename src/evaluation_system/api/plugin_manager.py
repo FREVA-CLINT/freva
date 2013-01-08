@@ -120,13 +120,16 @@ def getPluginDict(plugin_name):
     
     return getPlugins()[plugin_name]
 
-def getPluginInstance(plugin_name):
+def getPluginInstance(plugin_name, user = None):
     """Return an instance of the requested plugin or raise an exception if not found.
     Parameters
     plugin_name:=string
         Name of the plugin to search for.
+    user := evaluation_system.model.user.User (optional)
+        User for which this Plugin instance is to be acquired. If not given the user running this program will be used.
     @return: an instance of the plugin. Might not be unique"""
     #in case we want to cache the creation of the plugin classes.
+    if user is None: user = User()
     return getPluginDict(plugin_name)['plugin_class']()
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None):
@@ -145,13 +148,12 @@ def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, c
         path to a file where the setup will be stored. If None, the default user dependent one will be used.
     @return: A dictionary with the configuration"""
     plugin_name = plugin_name.lower()
+    if user is None: user = User()
     
-    p = getPluginInstance(plugin_name)
+    p = getPluginInstance(plugin_name, user)
     complete_conf = {}
     if use_user_defaults:
         if config_file is None:
-            if user is None:
-                user = User()
             config_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(config_file):
             with open(config_file, 'r') as f:
@@ -177,12 +179,12 @@ def writeSetup(plugin_name, config_dict=None, user=None, config_file=None):
         path to a file where the setup will be stored. If None, the default user dependent one will be used.
     @return: The path to the written configuration file."""
     plugin_name = plugin_name.lower()
-    p = getPluginInstance(plugin_name)
+    if user is None: user = User()
+    
+    p = getPluginInstance(plugin_name, user)
     complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, recursion=False)
     
     if config_file is None:
-        if user is None:
-            user = User()
         #make sure the required directory structure and data is in place
         user.prepareDir()
          
@@ -205,9 +207,9 @@ def runTool(plugin_name, config_dict=None, user=None):
     @return: The path to the written configuration file."""
     
     plugin_name = plugin_name.lower()
-    if user is None:
-        user = User()
-    p = getPluginInstance(plugin_name)
+    if user is None: user = User()
+    
+    p = getPluginInstance(plugin_name, user)
     complete_conf = None
     if config_dict is None:
         conf_file = user.getUserToolConfig(plugin_name)

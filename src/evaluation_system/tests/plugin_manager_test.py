@@ -152,9 +152,9 @@ class Test(unittest.TestCase):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         
-        cf = pm.writeSetup('DummyPlugin', dict(the_number=777), user)
+        pm.writeSetup('DummyPlugin', dict(the_number=777), user)
         pm.runTool('dummyplugin', user=user)
-        run = DummyPlugin._runs.pop()
+        DummyPlugin._runs.pop()
         
         res = pm.getHistory(user=user)
         self.assertEqual(len(res), 1)
