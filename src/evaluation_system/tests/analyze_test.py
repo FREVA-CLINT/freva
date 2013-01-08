@@ -130,7 +130,7 @@ class Test(unittest.TestCase):
         DummyPlugin.__config_metadict__ = old
         
     def testHistory(self):
-        import re,json
+        import re
         analyze.main("--tool dummyplugin the_number=13".split())
         run = DummyPlugin._runs.pop()
         analyze.main("--history --help".split())

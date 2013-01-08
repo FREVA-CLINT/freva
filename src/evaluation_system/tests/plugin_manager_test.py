@@ -56,14 +56,34 @@ class Test(unittest.TestCase):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         self.assertTrue(os.path.isdir(home))
+        
+        res = pm.getPluginInstance('dummyplugin').setupConfiguration(config_dict=dict(the_number=42))
+        self.assertEquals(res['something'], 'test')
+        
+        #write down this default
         conf_file = pm.writeSetup('dummyplugin', config_dict=dict(the_number=42),user=user)
         
         print conf_file
         self.assertTrue(os.path.isfile(conf_file))
-        with open(conf_file, 'r')as f:
-            print f.read()
-            
-        #conf_file = pm.readSetup('dummyplugin', config_dict=dict(number=1234),user=user)
+        with open(conf_file, 'r') as f:
+            config = f.read()
+        self.assertTrue('\nsomething=test\n' in config)
+        
+        res = pm.parseArguments('dummyplugin', [])
+        self.assertEquals(res, {})
+        res = pm.parseArguments('dummyplugin', [], user=user)
+        self.assertEquals(res, {})        
+        res = pm.parseArguments('dummyplugin', [], use_user_defaults=True, user=user)
+        self.assertNotEquals(res, {})
+        self.assertEquals(res['something'], 'test')
+        
+        #now change the stored configuration
+        config = config.replace('\nsomething=test\n', '\nsomething=super_test\n')
+        with open(conf_file, 'w') as f:
+            f.write(config)
+        res = pm.parseArguments('dummyplugin', [], use_user_defaults=True, user=user)
+        self.assertEquals(res['something'], 'super_test')
+
         
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
