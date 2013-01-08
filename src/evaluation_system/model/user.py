@@ -148,6 +148,7 @@ class User(object):
     $USER_OUTPUT_DIR := directory where the output data for this user is stored.
     $USER_PLOTS_DIR := directory where the plots for this user is stored.
     $USER_CACHE_DIR := directory where the cached data for this user is stored."""
+        if tool: tool = tool.lower()
         return dict(USER_BASE_DIR=self.getUserBaseDir(),
                     USER_CACHE_DIR=self.getUserCacheDir(tool=tool),
                     USER_PLOTS_DIR=self.getUserPlotsDir(tool=tool),

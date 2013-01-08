@@ -395,7 +395,7 @@ that started this program is created."""
             import string 
             template = string.Template(template)
             
-        user_vars_dict = self._user.getUserVarDict()
+        user_vars_dict = self._user.getUserVarDict(self.__class__.__name__)
         user_vars_dict.update(config_dict)
         
         #accept a maximal recursion of 5 for resolving all tokens
