@@ -129,7 +129,7 @@ class User(object):
     def prepareDir(self):
         """Prepares the configuration directory for this user if it's not already been done."""
         if os.path.isdir(self.getUserBaseDir()):
-            #we assume preparation was succesfull... but we might to be sure though... 
+            #we assume preparation was successful... but we might to be sure though... 
             #return
             pass
         
@@ -137,18 +137,19 @@ class User(object):
             raise Exception("Can't create configuration, user HOME doesn't exist (%s)" % self.getUserHome())
         
         #create directory for the framework
-        
-        
         #create all required subdirectories
         dir_creators = [self.getUserBaseDir, self.getUserConfigDir, self.getUserCacheDir, self.getUserOutputDir, self.getUserPlotsDir]
         for f in dir_creators:
             f(create=True)
         
-    #--------------------------------------- def expandUserValues(self, string):
-        # """Expand the user specific values in the given string. Those values might be one of:
-    # $USER_BASE_DIR := central directory for this user in the evaluation system.
-    # $USER_OUTPUT_DIR := directory where the output data for this user is stored.
-    #------ $USER_PLOT_DIR := directory where the plots for this user is stored.
-    # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
-        #------------------------------------------------------------------ pass
-#------------------------------------------------------------------------------ 
+    def getUserVarDict(self, tool=None):
+        """Returns a dictionary with some variables that will be accessible to the plugins:
+    $USER_BASE_DIR := central directory for this user in the evaluation system.
+    $USER_OUTPUT_DIR := directory where the output data for this user is stored.
+    $USER_PLOTS_DIR := directory where the plots for this user is stored.
+    $USER_CACHE_DIR := directory where the cached data for this user is stored."""
+        return dict(USER_BASE_DIR=self.getUserBaseDir(),
+                    USER_CACHE_DIR=self.getUserCacheDir(tool=tool),
+                    USER_PLOTS_DIR=self.getUserPlotsDir(tool=tool),
+                    USER_OUTPUT_DIR=self.getUserOutputDir(tool=tool))
+

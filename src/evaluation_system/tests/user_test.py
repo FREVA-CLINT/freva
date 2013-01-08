@@ -21,11 +21,7 @@ class Test(unittest.TestCase):
         self.user = DummyUser(random_home=True, **Test.DUMMY_USER)
 
     def tearDown(self):
-        home = self.user.getUserHome()
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
+        self.user.cleanRandomHome()
     
     def testDummyUser(self):
         """Be sure the dummy user is created as expected"""
@@ -61,12 +57,7 @@ class Test(unittest.TestCase):
         self.assertTrue(cnfg.get('test2', 'key2') == 'Some\nmany\nlines=2')
         self.assertTrue(cnfg.getint('test2', 'key3') == 420)
         
-        home = d_user.getUserHome()
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            shutil.rmtree(home)
-        
-        
+        d_user.cleanRandomHome()
 
     def testGetters(self):
         """Test the object creation and some basic return functions"""
@@ -163,6 +154,10 @@ class Test(unittest.TestCase):
     def testConfigFile(self):
         tool = 'test_tool'
         self.assertEquals(self.user.getUserConfigDir(tool) + '/%s.conf' % tool, self.user.getUserToolConfig(tool))
+    
+    def testUserVarDict(self):
+        var_dict = self.user.getUserVarDict(tool='test_tool')
+        self.assertEquals(set(var_dict).intersection(set('USER_BASE_DIR USER_CACHE_DIR USER_PLOTS_DIR USER_OUTPUT_DIR'.split())), set(var_dict))
         
     @staticmethod
     def runCmd(cmd):
