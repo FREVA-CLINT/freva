@@ -54,12 +54,14 @@ class MyPlugin(plugin.PluginAbstract):
 '''
 import abc
 from subprocess import Popen, PIPE, STDOUT
-import shlex
 import os
 import sys
 from string import Template
 from ConfigParser import SafeConfigParser
 from copy import deepcopy
+import logging
+log = logging.getLogger(__name__)
+
 from evaluation_system.model.user import User
 
 __version__ = (1,0,0)
@@ -204,12 +206,13 @@ that started this program is created."""
         """Prepare output for files supposedly created. This method checks the files exists
         and return a dictionary with information about them. Use it for the return call of runTool.
         Parameters
-        output_files: iterable of strings
+        output_files: iterable of strings or single string
             Paths to all files that where created by the tool.
         @return: dict with the paths to the files that were created and some info if possible:
             {<absolute_path_to_file>:{'timestamp': os.path.getctime(<absolute_path_to_file>),
                                       'size': os.path.getsize(<absolute_path_to_file>)}"""
         result = {}
+        if isinstance(output_files, basestring): output_files = [output_files]
         for file_path in output_files:
             if isinstance(output_files, dict): metadata = output_files
             else: metadata = {}
@@ -222,7 +225,7 @@ that started this program is created."""
                     ext = os.path.splitext(file_path)
                     if ext:
                         ext = ext[-1].lower()
-                        if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .tex'.split():
+                        if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .ps .eps .tex'.split():
                             metadata['type'] = 'plot'
                         elif ext in '.nc .bin .ascii'.split():
                             metadata['type'] = 'data'
@@ -288,10 +291,10 @@ that started this program is created."""
     
         return '\n'.join(current_conf)
 
-    def getToolBaseDir(self):
-        """Returns the absolute path to the tool subcasting this plugin"""
-        subclass_file = sys.modules[self.__module__].__file__
-        return os.path.join(*self._splitPath(os.path.abspath(subclass_file))[:-len(self.__module__.split('.'))-1])
+    def getClassBaseDir(self):
+        """Returns the absolute path to the class subcasting this plugin"""
+        subclass_file = os.path.abspath(sys.modules[self.__module__].__file__)
+        return os.path.join(*self._splitPath(subclass_file)[:-len(self.__module__.split('.'))])
 
     def getCurrentUser(self):
         """Returns the user for which this instance was generated."""
@@ -536,15 +539,20 @@ that started this program is created."""
             link the standard error of this command call to the given file descriptor. Passing None will shut it up."""
         
         #check if we have any module at all...
-        env_file = '%s/etc/setup_bash.env' % self.getToolBaseDir()
-        if os.path.isfile(env_file):         
-            #This is not much less secure than running the plugins themselves...
-            #it spawns a bash shell, sources the environment and issue the given command 
-            p = Popen(['/bin/bash', '-c', '. "%s" >/dev/null; %s' % (env_file, cmd_string)], stdout=stdout, stderr=stderr)
-        else:
-            #but if we don't need a shell, then we don't do it
-            cmd = shlex.split(cmd_string)
-            p = Popen(cmd, stdout=stdout, stderr=stderr)
+        #=======================================================================
+        # env_file = '%s/etc/setup_bash.env' % self.getClassBaseDir()
+        # if os.path.isfile(env_file):         
+        #    #This is not much less secure than running the plugins themselves...
+        #    #it spawns a bash shell, sources the environment and issue the given command 
+        #    p = Popen(['/bin/bash', '-c', '. "%s" >/dev/null; %s' % (env_file, cmd_string)], stdout=stdout, stderr=stderr)
+        # else:
+        #    #but if we don't need a shell, then we don't do it
+        #    cmd = shlex.split(cmd_string)
+        #    p = Popen(cmd, stdout=stdout, stderr=stderr)
+        #=======================================================================
+
+        log.debug("Calling: %s", cmd_string)
+        p = Popen(['/bin/bash', '-c', cmd_string], stdout=stdout, stderr=stderr)
 
         return p.communicate(stdin)
     

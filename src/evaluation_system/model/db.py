@@ -4,7 +4,7 @@ Created on 06.11.2012
 @author: estani
 '''
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import ast
 import os
@@ -15,6 +15,23 @@ log = logging.getLogger(__name__)
 _connection_pool = {}
 
 class HistoryEntry(object):
+    TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+    
+    @staticmethod
+    def timestampToString(datetime_obj):
+        return datetime_obj.strftime(HistoryEntry.TIMESTAMP_FORMAT)
+    
+    @staticmethod
+    def timestampFromString(date_string):
+        tmp_format = HistoryEntry.TIMESTAMP_FORMAT
+        while tmp_format:
+            try:
+                return datetime.strptime(date_string, tmp_format)
+            except:
+                pass
+            tmp_format = tmp_format[:-3]    #removing las entry and separator (one of ' :-')
+        raise ValueError("Can't parse a date out of '%s'" % date_string)
+    
     def __init__(self, row):
         self.rowid = row[0]
         self.timestamp = row[1] #datetime object
@@ -22,6 +39,7 @@ class HistoryEntry(object):
         self.version = ast.literal_eval(row[3])
         self.configuration = json.loads(row[4]) if row[4] else {}
         self.results = json.loads(row[5]) if row[5] else {}
+        
         
     def __eq__(self, hist_entry):
         if isinstance(hist_entry, HistoryEntry):
@@ -59,7 +77,7 @@ class HistoryEntry(object):
             version = ' v%s.%s.%s' % self.version
             
         
-        return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp.strftime('%F %H:%M:%S'), conf_str)
+        return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp.strftime(HistoryEntry.TIMESTAMP_FORMAT), conf_str)
         
 class UserDB(object):
     '''
@@ -160,40 +178,38 @@ class UserDB(object):
         log.debug('Row: %s', row)
         self._getConnection().execute("INSERT INTO history(timestamp,tool,version,configuration,result) VALUES(?, ?, ?, ?,?);", row)
         
-    def getHistory(self, tool_name=None, limit=-1, days_span=None, entry_ids=None):
+    def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None):
         """Returns the stored history (run analysis) for the given tool.
         Parameters
         tool_name : string
             name of the tool for which the information will be gathered (if None, then everything is returned)
         limit : int
             Amount of rows to be returned (if -1, return all)
-        days_span: number or iterable with two values
-            return entries located at [from, to] days ago. if only one value it's assumed [days_span, now].
-            Days might be floats.
+        since: datetime
+            Return items after this date
+        until: datetime
+            return items until this date
         entry_ids: list of ints or int 
             list of ids to be selected
         @return: list of tuples [(row_id, timestamp, tool_name, version, configuration)]"""
         #ast.literal_eval(node_or_string)
         sql_params = []
         sql_str = "SELECT rowid, * FROM history"
-        if tool_name or days_span or entry_ids:
+        if tool_name or since or until or entry_ids:
             sql_str = '%s WHERE 1=1' % sql_str
             if entry_ids is not None:
                 if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND rowid in (?)' % sql_str
-                sql_params.append(','.join(map(str,entry_ids)))
+                sql_str = '%s AND rowid in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
+                sql_params.extend(entry_ids)
             if tool_name is not None:
                 sql_str = '%s AND tool=?' % sql_str
                 sql_params.append(tool_name.lower())    #make search case insensitive
-            if days_span is not None:
-                if isinstance(days_span, (int, float)):
-                    #one single span means "from"
-                    sql_str = '%s AND timestamp > ?' % sql_str
-                    sql_params.append(datetime.now() - timedelta(days=abs(days_span)))
-                else:
-                    sql_str = '%s AND timestamp > ? AND timestamp < ?' % sql_str
-                    sql_params.append(datetime.now() - timedelta(days=abs(days_span[0])))
-                    sql_params.append(datetime.now() - timedelta(days=abs(days_span[1])))
+            if since is not None:
+                sql_str = '%s AND timestamp > ?' % sql_str
+                sql_params.append(since)
+            if until is not None:
+                sql_str = '%s AND timestamp < ?' % sql_str
+                sql_params.append(until)
                     
         sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:

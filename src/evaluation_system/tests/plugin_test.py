@@ -336,6 +336,16 @@ example (default: test)
         self.assertTrue(run['the_number'] == 42)
         DummyPlugin._runs = []
         
+    def testGetClassBaseDir(self):
+        dummy = DummyPlugin()
+        import evaluation_system.tests.mocks
+        import os
+        
+        self.assertTrue(evaluation_system.tests.mocks.__file__.startswith(dummy.getClassBaseDir()))
+        #module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" 
+        module_name=os.path.abspath(evaluation_system.tests.mocks.__file__)[len(dummy.getClassBaseDir())+1:].replace('/','.')[:-4]
+        self.assertEquals(module_name, 'evaluation_system.tests.mocks')
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

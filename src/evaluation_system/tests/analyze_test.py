@@ -7,6 +7,8 @@ import unittest
 import os
 import tempfile
 import logging
+from evaluation_system.model.db import HistoryEntry
+import datetime
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
     
@@ -49,10 +51,13 @@ def call(cmd_string):
     p = Popen(['/bin/bash', '-c', '%s' % (cmd_string)], stdout=PIPE, stderr=STDOUT)
     return p.communicate()[0]
 
-def timedeltaToDays(time_delta):
-        return time_delta.microseconds / (24.0 * 60 * 60 * 1000000) + \
-                time_delta.seconds / (24.0 * 60 * 60) + \
-                time_delta.days
+def timedeltaToDays(date_time):
+        #=======================================================================
+        # td = time_delta.microseconds / (24.0 * 60 * 60 * 1000000) + \
+        #        time_delta.seconds / (24.0 * 60 * 60) + \
+        #        time_delta.days
+        #=======================================================================
+        return HistoryEntry.timestampToString(date_time)
                 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -154,8 +159,10 @@ class Test(unittest.TestCase):
             res_run[key.strip()] = val
         self.assertEqual(res_run, dict([(k,str(v)) for k,v in run.items()]))
         rowid = int(result[0])
+        
         from datetime import datetime, timedelta
         from time import sleep
+        #take some time and add 10 entries
         sleep(0.1)
         now1 = datetime.now()
         for _ in range(10):
@@ -166,23 +173,25 @@ class Test(unittest.TestCase):
         result = re_pat.search( stdout.getvalue()).groups()
         self.assertEquals(int(result[0]), rowid + 10)
         
+        #take some time again and add a last entry
         sleep(0.1)
         now2 = datetime.now()
         analyze.main("--tool dummyplugin the_number=15".split())
         
         #check since
         stdout.reset()
-        since_val = timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05))
-        analyze.main(("--history limit=10 since=%s" % since_val).split())
+        since_val = timedeltaToDays(now2-timedelta(seconds=0.05))
+        analyze.main(["--history", "limit=10", "since=%s" % since_val])
         res = stdout.getvalue()
+        #print "xxx", res, rowid + 10 + 1
         self.assertEqual(len(res.splitlines()), 1)
         self.assertEqual(int(res.split(')')[0]), rowid + 10 + 1)
-        since_val = timedeltaToDays(datetime.now()-now1+timedelta(seconds=0.05))
-        until_val = timedeltaToDays(datetime.now()-now2+timedelta(seconds=0.05))
+        since_val = timedeltaToDays(now1-timedelta(seconds=0.05))
+        until_val = timedeltaToDays(now2-timedelta(seconds=0.05))
         
         #check since and until
         stdout.reset()
-        analyze.main(("--history limit=20 since=%s until=%s" % (since_val, until_val)).split())
+        analyze.main(["--history", "limit=20", "since=%s" % since_val, "until=%s" % until_val])
         res = stdout.getvalue()
         self.assertEqual(len(res.splitlines()), 10)
         self.assertEqual(int(res.split(')')[0]), rowid + 10)
@@ -190,9 +199,18 @@ class Test(unittest.TestCase):
         #check finding over entry_ids
         stdout.reset()
         analyze.main(("--history limit=20 entry_ids=%s" % (rowid+5)).split())
-        res = stdout.getvalue()
+        res = stdout.getvalue().strip()
         self.assertEqual(len(res.splitlines()), 1)
         self.assertEqual(int(res.split(')')[0]), rowid + 5)
+
+        stdout.reset()
+        analyze.main(("--history limit=20 entry_ids=%s,%s,%s" % (rowid+1,rowid+3,rowid+5)).split())
+        res = stdout.getvalue().strip()
+        self.assertEqual(len(res.splitlines()), 3)
+        self.assertEqual(int(res.splitlines()[0].split(')')[0]), rowid+5)
+        self.assertEqual(int(res.splitlines()[1].split(')')[0]), rowid+3)
+        self.assertEqual(int(res.splitlines()[2].split(')')[0]), rowid+1)
+        
         
         self.failUnlessRaises(Exception, analyze.main, '--history non_existing_parameter=12'.split())
         DummyPlugin._runs = []

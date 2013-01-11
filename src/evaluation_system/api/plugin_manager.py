@@ -233,13 +233,13 @@ def runTool(plugin_name, config_dict=None, user=None):
     if user: user.getUserDB().storeHistory(p, complete_conf, result=result)
 
 
-def getHistory(plugin_name=None, limit=-1, days_span = None, entry_ids=None, user=None):
+def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
     """Returns the history from the given user
     This is just a wrapper for the defined db interface accessed via the user object
     See `evaluation_system.model.db.UserDB.getHistory`"""
     if plugin_name is not None: plugin_name = plugin_name.lower()
     if user is None: user = User()
     
-    return user.getUserDB().getHistory(plugin_name, limit, days_span=days_span, entry_ids=entry_ids)
+    return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids)
 
 

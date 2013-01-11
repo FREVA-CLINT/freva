@@ -3,9 +3,6 @@ Created on 12.12.2012
 
 @author: estani
 '''
-from evaluation_system.tests.mocks import DummyUser, DummyPlugin
-from evaluation_system.api.plugin import metadict
-
 from datetime import datetime, timedelta
 import unittest
 import os
@@ -14,6 +11,10 @@ import shutil
 import logging
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
+
+from evaluation_system.tests.mocks import DummyUser, DummyPlugin
+from evaluation_system.api.plugin import metadict
+from evaluation_system.model.db import HistoryEntry
 
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuratio of a user"""
@@ -115,15 +116,27 @@ class Test(unittest.TestCase):
         res = db.getHistory(days_span=from_days)
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].configuration['special'],'time1')
+        
     
     def testHistoryEntry(self):
         db = self.user.getUserDB()
         db.storeHistory(DummyPlugin(), dict(a=1), result={'/dummy/tmp/test/file1.png':{'timestamp':1,'type':'plot'},
                                                           '/dummy/tmp/test/file1.nc':{'timestamp':1,'type':'data'},})
-        all = db.getHistory()
-        print all
-        print all[0].__str__()
-        print all[0].__str__(compact=False)
+        all_entries = db.getHistory()
+        print all_entries
+        print all_entries[0].__str__()
+        print all_entries[0].__str__(compact=False)
+        
+        #test date parsing
+        values = [('2012-10-01 10:11:21', (2012, 10,1,10,11,21)),
+                  ('2012-10-01 10:11', (2012, 10,1,10,11,0)),
+                  ('2012-10-01 10', (2012, 10,1,10)),
+                  ('2012-10-01', (2012, 10,1)),
+                  ('2012-10', (2012, 10,1)),
+                  ('2012', (2012, 1,1))]
+        for date_str, date_tup in values:
+            dt = HistoryEntry.timestampFromString(date_str)
+            self.assertEquals(dt, datetime(*date_tup))
         
     def testSchemaUpgrade(self):
         pass
