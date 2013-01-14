@@ -147,10 +147,12 @@ class User(object):
     $USER_BASE_DIR := central directory for this user in the evaluation system.
     $USER_OUTPUT_DIR := directory where the output data for this user is stored.
     $USER_PLOTS_DIR := directory where the plots for this user is stored.
-    $USER_CACHE_DIR := directory where the cached data for this user is stored."""
+    $USER_CACHE_DIR := directory where the cached data for this user is stored.
+    
+To avoid problems we are assuring all this directories exist after this call returns."""
         if tool: tool = tool.lower()
         return dict(USER_BASE_DIR=self.getUserBaseDir(),
-                    USER_CACHE_DIR=self.getUserCacheDir(tool=tool),
-                    USER_PLOTS_DIR=self.getUserPlotsDir(tool=tool),
-                    USER_OUTPUT_DIR=self.getUserOutputDir(tool=tool))
+                    USER_CACHE_DIR=self.getUserCacheDir(tool=tool, create=True),
+                    USER_PLOTS_DIR=self.getUserPlotsDir(tool=tool, create=True),
+                    USER_OUTPUT_DIR=self.getUserOutputDir(tool=tool, create=True))
 
