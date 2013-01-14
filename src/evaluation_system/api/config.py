@@ -1,5 +1,5 @@
 '''
-Created on 07.01.2013
+This module contains the central configuration of the system.
 
 @author: estani
 '''
@@ -10,14 +10,17 @@ log = logging.getLogger(__name__)
 
 
 DIRECTORY_STRUCTURE = type('Struct', (object,), dict(LOCAL='local', CENTRAL='central'))
-'''Type of directory structure:
-   local := ~/<base_dir>/...
-   central := <base_dir_location>/<base_dir>/<user>/...'''
+'''Type of directory structure that will be used to maintain state::
+
+    local := ~/<base_dir>/...
+    central := <base_dir_location>/<base_dir>/<user>/...
+
+We only use local at this time, but we'll be migrating to central in the future for the next project phase.'''
 
 #Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 
-#config options
+#: config options
 BASE_DIR = 'base_dir'
 'The name of the directory storing the evaluation system (output, configuration, etc)'
 
@@ -37,6 +40,10 @@ class ConfigurationException(Exception):
 
 _config = None
 def reloadConfiguration():
+    """Reloads the configuration.
+This can be used for reloading a new configuration from disk. At the present time
+it has no use other than setting different configurations for testing, since the 
+framework is restarted every time an analysis is performed."""
     global _config
     _config = { BASE_DIR:'evaluation_system',
                  BASE_DIR_LOCATION: os.path.expanduser('~'),
@@ -63,16 +70,15 @@ reloadConfiguration()
 _nothing = object()
 def get(config_prop, default=_nothing):
     """Returns the value stored for the given config_prop.
-    If the config_prop is not found and no default value is provided an exception
-    will be thrown. If not the default value is returned.
-    Parameters:
-    config_prop: string
-        property for which it's value is looked for
-    default: anything
-        If property is not found this value is returned
-    @return the value associated with the given property, the default one if not found or an
-    exception is thrown if no default is provided.
-    """
+If the config_prop is not found and no default value is provided an exception
+will be thrown. If not the default value is returned.
+
+:param config_prop: property for which it's value is looked for.
+:type config_prop: str
+:param default: If the property is not found this value is returned.
+:return: the value associated with the given property, the default one if not found 
+    or an exception is thrown if no default is provided.
+"""
         
     if config_prop in _config:
         return _config[config_prop]
@@ -82,5 +88,5 @@ def get(config_prop, default=_nothing):
         raise ConfigurationException("No configuration for %s" % config_prop)
 
 def keys():
-    """Returns all configured keys"""
+    """Returns all the keys from the current configuration."""
     return _config.keys()
