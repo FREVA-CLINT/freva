@@ -273,19 +273,30 @@ that started this program is created."""
         if config_dict is None: config_dict = {}
         
         current_conf = []
+        user_dict = None
         for key in sorted(self.__config_metadict__):
             line_format = '%%%ss: %%s' % max_size
             
             if key in config_dict and config_dict[key]:
                 curr_val = config_dict[key]
             else:
-                if self.__config_metadict__[key] is None: 
+                default_value = self.__config_metadict__[key]
+                if default_value is None: 
                     if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
                         curr_val = '- *MUST BE DEFINED!*'
                     else:
                         curr_val = '-'
                 else:
-                    curr_val = '- (default: %s)' % (self.__config_metadict__[key])
+                    #just for "USER_*" report where that directory is!
+                    if isinstance(default_value, basestring) and default_value.startswith('$USER_'):
+                        if user_dict is None:
+                            #lazy creation and better readability.
+                            user_dict = self._user.getUserVarDict(self.__class__.__name__)
+                            
+                        extra_info = ' [%s] ' % user_dict.get(default_value[1:], 'Unknown') 
+                    else: 
+                        extra_info = ''
+                    curr_val = '- (default: %s%s)' % (self.__config_metadict__[key], extra_info)
             
             current_conf.append(line_format % (key, curr_val))
     
