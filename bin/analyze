@@ -97,22 +97,31 @@ def auto_doc(message=None):
             if items:
                 flag, flag_opt, mesg = items.groups()
                 if flag_opt: flag = '%s, %s' % (flag, flag_opt)
-                results.append('  %-20s : %s' % (flag, mesg))
+                results.append((flag, mesg))
             if re_end.match(line): break
         elif re_start.match(line): parsing = True
 
+    #Help must be written as just one line comment, here we wrap it properly
+    import textwrap
+    env = getEnvironment()
+    max_length = max([len(i[0]) for i in results])
+    wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
+    results = [wrapper.fill(('  %-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
+    
     if message: message = ': ' + message
     else: message = ''
     if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
     else: print '%s %s' % (script_name, message)
 
-    print """
-Applies some analysis to the given data. See https://code.zmaw.de/projects/miklip-d-integration/wiki/Analyze
-for more information.
- 
+    print '\n'.join([textwrap.fill(r, width = env['columns'], replace_whitespace=False) for r in ("""
+Applies some analysis to the given data.
+See https://code.zmaw.de/projects/miklip-d-integration/wiki/Analyze for more information.
+
+The "query" part is a key=value list used for configuring the tool. It's tool dependent so check that tool help.
+
 For Example:
     %s --tool pca eofs=4 bias=False input=myfile.nc outputdir=/tmp/test
-""" % script_name
+""" % script_name).splitlines()])
 
 
 
@@ -135,7 +144,7 @@ def main(argv=None): # IGNORE:C0111
         help_opt=False
         tool = None
         env = getEnvironment()
-        if 'columns' not in env: env['columns'] = 80
+        
         save_config=False
         show_config=False
         cfg_file = None
@@ -145,13 +154,15 @@ def main(argv=None): # IGNORE:C0111
         
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':    #Displays the context help (use tool to display the tool help)
+            if flag=='-h' or flag=='--help':    #displays this help or that of the given context.
                 help_opt=True
-            elif flag == '--tool':              #Define which tool should be used
+            elif flag == '--history':           #provides access to the configuration history (use also --help for more help).
+                history = True
+            elif flag == '--tool':              #defines which tool should be used (use also --help for more help).
                 tool=arg.lower()
-            elif flag == '--use-defaults':      #Skip user configuration and use system defaults
+            elif flag == '--use-defaults':      #skips user configuration and use system defaults.
                 use_user_defaults=False
-            elif flag == '--list-tools':        #Show all available tools
+            elif flag == '--list-tools':        #lists all available tools.
                 import textwrap
                 #we just have to show the list and stop processing
                 name_width = 0
@@ -167,16 +178,14 @@ def main(argv=None): # IGNORE:C0111
                         print '%s: %s' % (plugin['name'], lines[0])
                 #done
                 return 0
-            elif flag == '--config-file':       #use the given config file instead of the default one
+            elif flag == '--config-file':       #uses the given configuration file.
                 cfg_file=arg
-            elif flag == '--save-config':       #save the configuration
+            elif flag == '--save-config':       #saves the configuration.
                 save_config=True
-            elif flag == '--show-config':       #show the resulting configuration (implies dry-run)
+            elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
-            elif flag == '--history':           #manage the configuration history
-                history = True
-            elif flag == '-d' or flag == '--debug': #turn on debuging info
+            elif flag == '-d' or flag == '--debug': #turn on debugging info and show stack trace on exceptions.
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
             elif flag == '-n' or flag == '--dry-run':   #dry-run, perform no computation. This is used for viewing and handling the configuration.
