@@ -40,8 +40,8 @@ log = logging.getLogger(__name__)
 if not log.handlers:
     logging.basicConfig(level=logging.INFO)
 
-from evaluation_system.api import config    #we need to import this so it's active
 import evaluation_system.api.plugin_manager as pm
+from evaluation_system.model.db import HistoryEntry
 
 __version__ = 0.3
 __date__ = '2012-11-26'
@@ -194,17 +194,36 @@ def main(argv=None): # IGNORE:C0111
             elif history:
                 print """Displays the last 10 entries with a oneline compact description.
 Arguments
-full_text     If present shows the complete configuration stored
+full_text       If present shows the complete configuration stored
 
-limit         Number of entries to be displayed (don't set it or set it to < 0 to display all)
+limit=n         Where n is the number of entries to be displayed 
+                (don't set it or set it to < 0 to display all)
 
-tool          Display only entries from this tool
-since         Amount of days up to which the history will be retrieved
-until         Amount of days until which the history will be retrieved
-entry_ids     Select this particular entry number from the history
+tool=name       Display only entries from tool "name"
+since=date      Retrieve entries older than date (see DATE FORMAT)
+until=date      Retrieve entries newer than date (see DATE FORMAT)
+entry_ids=ids   Select entries whose ids are in "ids"
+                (single number or comma separated list, e.g. entry_ids=1,2 or entry_ids=5)
 
-store_file    Instead of displaying, store the configuration in a file (you have to select a single configuration) 
-"""
+store_file=file Instead of displaying, store the configuration in the given file 
+                (you have to select a single configuration)
+
+DATE FORMAT
+   Dates can be given in "YYYY-MM-DD HH:mm:ss.n" or any less accurate subset of it.
+   These are all valid: "2012-02-01 10:08:32.1233431", "2012-02-01 10:08:32",
+   "2012-02-01 10:08", "2012-02-01 10", "2012-02-01", "2012-02", "2012".
+   
+   These are *NOT*: "01/01/2010", "10:34", "2012-20-01"
+   
+   Missing values are assumed to be the minimal allowed value. For example:
+   "2012" == "2012-01-01 00:00:00.0"
+   
+   Please note that in the shell you need to escape spaces. 
+   All these are valid examples (at least for the bash shell):    
+   analyze --history since=2012-10-1\ 10:35
+   analyze --history since=2012-10-1" "10:35
+   analyze --history "since=2012-10-1 10:35"
+   analyze --history 'since=2012-10-1 10:35'"""
                 return 0
             else:
                 auto_doc()
@@ -234,7 +253,7 @@ store_file    Instead of displaying, store the configuration in a file (you have
         elif history:
             full = False
             limit=10
-            days_span = since = until = None
+            since = until = None
             tool_name=None
             entry_ids=None
             store_file=None
@@ -249,22 +268,18 @@ store_file    Instead of displaying, store the configuration in a file (you have
                 elif flag == 'tool':
                     tool_name=arg
                 elif flag == 'since':
-                    since=float(arg)
+                    since=HistoryEntry.timestampFromString(arg)
                 elif flag == 'until':
-                    until=float(arg)
+                    until=HistoryEntry.timestampFromString(arg)
                 elif flag == 'entry_ids':
                     entry_ids=map(int,arg.split(','))
                 elif flag == 'store_file':
                     store_file=arg
                 else:
                     raise Exception("There's no valid argument named %s in the history management mode.")
-            if until:
-                days_span = [since, until] if since else [99999, until]
-            else:
-                days_span = since
-            log.debug('history of %s, limit=%s, days_span=%s, entry_ids=%s',tool_name,limit, days_span, entry_ids)
+            log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
             if store_file:
-                rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids)
+                rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
                 if len(rows) > 1:
                     raise AnalyzeError("Can't only store one configuration at a time. We got %s back.\nTrim your search and try again (better if you use rowids with a single id).")
                 entry = rows[0]
@@ -272,7 +287,7 @@ store_file    Instead of displaying, store the configuration in a file (you have
                 saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
                 print "Configuration stored in %s" % saved_in
             else:
-                for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, days_span=days_span, entry_ids=entry_ids):
+                for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids):
                     print row.__str__(compact=not full)
                 
         else:
