@@ -1,15 +1,18 @@
 '''
-Created on 23.11.2012
+.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
-@author: estani
+This module manages the loading and access to all plug-ins. It is designed as a central registration thorugh
+which plug-ins can be accessed.
 
-The plugin manager manages the loading and access to all plugins.
-These are found in a specific directory (<evaluation_system_root_dir>/tools)
-or by adding the modules where the PluginAbstract is implemented to an environmental variable: EVALUATION_SYSTEM_PLUGINS
-This is a colon (':') separated list, of path,package pair, separated by a comma (','). The path
-denotes where the source is to be found, and the package the package in which the PluginAbstract 
-interface is being implemented. For example:
-EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:/other/different/path,some.plugin:/tmp/test,some.other.plugin
+Plug-ins are automatically registered if  found either in a specific directory ``<evaluation_system_root_dir>/tools``
+or by using the environmental variable ``EVALUATION_SYSTEM_PLUGINS``.
+This variable must to point to the modules implementing :class:`evaluation_system.api.plugin.PluginAbstract`. 
+
+The value stored there is a colon (':') separated list of ``path,package`` comma (',') separated pairs. The path
+denotes where the source is to be found, and the package the module name in which the PluginAbstract interface is being implemented. For example::
+
+    EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:/other/different/path,some.plugin:/tmp/test,some.other.plugin
+
 '''
 
 
@@ -20,17 +23,23 @@ import logging
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
-import evaluation_system.model.db as db
+from evaluation_system.model.user import User
+
+class PluginManagerException(Exception):
+    """For all problems generating while using the plugin manager."""
+    pass
+
 
 PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
+"""Defines the environmental variable name for pointing to the plug-ins"""
     
 #all plugins modules will be dynamically loaded here.
 __plugin_modules__ = {}
-"""Dictionary of modules holding the plugins"""
+"""Dictionary of modules holding the plug-ins."""
 __plugins__ = {}
-"""Dictionary of plugins class_name=>class)"""
+"""Dictionary of plug-ins class_name=>class"""
 __plugins_meta = {}
-"""Dictionary of plugins with more information 
+"""Dictionary of plug-ins with more information 
 plugin_name=>{
     name=>plugin_name,
     plugin_class=>class,
@@ -38,7 +47,11 @@ plugin_name=>{
     description=>"string"}"""
  
 def munge( seq ):
-    """Generator to remove duplicates without cahnging order"""
+    """Generator to remove duplicates from a list without changing it's order.
+It's used to keep sys.path tidy.
+
+:param seq: any sequence
+:returns: a generator returning the same objects in the same sequence but skipping duplicates."""
     seen = set()
     for item in seq:
         if item not in seen:
@@ -46,6 +59,7 @@ def munge( seq ):
             yield item
             
 def reloadPulgins():
+    """Reload all plug-ins."""
     #get the tools directory from the current one
     tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
     #get all modules from the tool directory
@@ -90,63 +104,74 @@ def reloadPulgins():
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPulgins()
 
-from evaluation_system.model.user import User
-
-class PluginManagerException(Exception):
-    pass
-
-#get the current directory
-def getPulginModules():
-    """Return a dictonary with all modules holding the plugins"""
-    return __plugin_modules__
-
 
 def getPlugins():
-    """Return a list of plugin dictionary holding the plugin classes and metadata about them"""
+    """Return a dictionary of plug-ins holding the plug-in classes and meta-data about them.
+It's a dictionary with the ``plugin_name`` in lower case of what :class:`getPluginDict` returns.
+
+The dictionary is therefore defined as::
+
+    {plugin_name.lower() : dict(name = plugin_name,
+                                plugin_class = plugin_class,
+                                version=plugin_class.__version__,
+                                description=plugin_class.__short_description__)
+
+This can be used if the plug-in name is unknown."""
     return __plugins_meta
 
 def getPluginDict(plugin_name):
-    """Return the requested plugin dictionary entry or raise an exception if not found.
-    Parameters
-    plugin_name:=string
-        Name of the plugin to search for.
-    @return: a dictionary with information on the plugin 
-            {name=>plugin_name,
-            plugin_class=>class,
-            version=>(0,0,0)
-            description=>"string"}"""
+    """Return the requested plug-in dictionary entry or raise an exception if not found.
+
+name
+    The class name implementing the plugin (and therefore inheriting from :class:`evaluation_system.api.plugin.PluginAbstract`)
+plugin_class
+    The class itself.
+version
+    A 3-value tuple representing the plug-in version (major, minor, build)
+description
+    A string providing a hort description about what the plugin does.
+
+:type plugin_name: str
+:param plugin_name: Name of the plug-in to search for.
+:return: a dictionary with information on the plug-in 
+"""
     plugin_name = plugin_name.lower()
     if plugin_name not in getPlugins(): raise PluginManagerException("No plugin named: %s" % plugin_name)
     
     return getPlugins()[plugin_name]
 
 def getPluginInstance(plugin_name, user = None):
-    """Return an instance of the requested plugin or raise an exception if not found.
-    Parameters
-    plugin_name:=string
-        Name of the plugin to search for.
-    user := evaluation_system.model.user.User (optional)
-        User for which this Plugin instance is to be acquired. If not given the user running this program will be used.
-    @return: an instance of the plugin. Might not be unique"""
+    """Return an instance of the requested plug-in or raise an exception if not found.
+At the current time we are just creating new instances, but this might change in the future, so it's
+*not* guaranteed that the instances are *unique*, i.e. they might be re-used and/or shared.
+
+:type plugin_name: str
+:param plugin_name: Name of the plugin to search for.
+:type user: :class:`evaluation_system.model.user.User`
+:param user: User for which this plug-in instance is to be acquired. If not given the user running this program will be used.
+:return: an instance of the plug-in. Might not be unique."""
     #in case we want to cache the creation of the plugin classes.
     if user is None: user = User()
     return getPluginDict(plugin_name)['plugin_class']()
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None):
-    """Passes an array of string arguments to the plugin for parsing.
-    Parameters
-    plugin_name:=string
-        Name of the plugin to search for.
-    arguments:=[string]
-        Array of strings that will be parsed by the plugin (see `evaluation_system.api.plugin.parseArguments`)
-    use_user_defaults:=bool
-        If the set tu True and a user configuration is found, it will be used as default for all non set arguments.
-        So the value will be set according to the first found instance in this order: argument, user default, tool default
-    user:=`evaluation_system.model.user.User`
-        The user defining the defaults.
-    config_file:=string
-        path to a file where the setup will be stored. If None, the default user dependent one will be used.
-    @return: A dictionary with the configuration"""
+    """Manages the parsing of arguments which are passed as a list of strings. These are in turn
+sent to an instance of the plugin, that will handle the parsing. This is why the user is required
+to be known at this stage.
+    
+:type plugin_name: str
+:param plugin_name: Name of the plugin to search for.
+:type arguments: list of strings
+:param arguments: it will be parsed by the plug-in (see :class:`evaluation_system.api.plugin.parseArguments`)
+:type use_user_defaults: bool
+:param use_user_defaults: If ``True`` and a user configuration is found, this will be used as a default for all non set arguments.
+                          So the value will be determined according to the first found instance of: argument, user default, tool default
+:type user: :class:`evaluation_system.model.user.User`
+:param user: The user for whom this arguments are parsed.
+:type config_file: str
+:param config_file: path to a file from where the setup will read a configuration. If None, the default user dependent one will be used. 
+                    This will be completely skipped if ``use_user_defaults`` is ``False``.
+:return: A dictionary with the parsed configuration."""
     plugin_name = plugin_name.lower()
     if user is None: user = User()
     
@@ -165,19 +190,22 @@ def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, c
     return complete_conf
 
 def writeSetup(plugin_name, config_dict=None, user=None, config_file=None):
-    """Writes the plugin setup to disk. This is the configuration for the plugin itself and not that
-    of the tool. The plugin might not write anything to disk when running the tool and instead configure it
-    from the command line, environmental variables or any other method.
-    Parameters
-    plugin_name:=name of the referred plugin (mandatory)
-    config_dict:=config dict or metadict for seting up the configuration
-        if None, the default configuration will be stored, this might be incomplete and thus might
-        not be enough for triggering the plugin.
-    user:=`evaluation_system.model.user.User`
-        The user for whom this will be run. If None, then the current user will be used.
-    config_file:=string
-        path to a file where the setup will be stored. If None, the default user dependent one will be used.
-    @return: The path to the written configuration file."""
+    """Writes the plug-in setup to disk. This is the configuration for the plug-in itself and not that
+of the tool (which is what normally the plug-in encapsulates). The plug-in is not required to write anything to 
+disk when running the tool; it might instead configure it from the command line, environmental variables or 
+any other method.
+
+:type plugin_name: str
+:param plugin_name: name of the referred plugin.
+:type config_dict: dict or metadict 
+:param config_dict: The configuration being stored. If is None, the default configuration will be stored, 
+    this might be incomplete.
+:type user: :class:`evaluation_system.model.user.User`
+:param user: The user for whom this arguments are parsed.
+:type config_file: str
+:param config_file: path to a file  where the setup will be stored. If None, the default user dependent one will be used. 
+                    This will be completely skipped if ``use_user_defaults`` is ``False``.
+:returns: The path to the configuration file that was written."""
     plugin_name = plugin_name.lower()
     if user is None: user = User()
     
@@ -196,15 +224,15 @@ def writeSetup(plugin_name, config_dict=None, user=None, config_file=None):
     return config_file
 
 def runTool(plugin_name, config_dict=None, user=None):
-    """Runs a tool.
-    Parameters
-    plugin_name:=name of the referred plugin (mandatory)
-    config_dict:=config dict or metadict for seting up the configuration
-        if None, the default configuration will be stored, this might be incomplete and thus might
-        not be enough for triggering the plugin.
-    user:=`evaluation_system.model.user.User`
-        The user for whom this will be run. If None, then the current user will be used.
-    @return: The path to the written configuration file."""
+    """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
+    
+:type plugin_name: str
+:param plugin_name: name of the referred plugin.
+:type config_dict: dict or metadict 
+:param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
+    this might be incomplete.
+:type user: :class:`evaluation_system.model.user.User`
+"""
     
     plugin_name = plugin_name.lower()
     if user is None: user = User()
@@ -234,9 +262,9 @@ def runTool(plugin_name, config_dict=None, user=None):
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
-    """Returns the history from the given user
-    This is just a wrapper for the defined db interface accessed via the user object
-    See `evaluation_system.model.db.UserDB.getHistory`"""
+    """Returns the history from the given user.
+This is just a wrapper for the defined db interface accessed via the user object.
+See :class:`evaluation_system.model.db.UserDB.getHistory` for more information on this interface."""
     if plugin_name is not None: plugin_name = plugin_name.lower()
     if user is None: user = User()
     

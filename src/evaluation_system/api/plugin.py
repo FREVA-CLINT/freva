@@ -1,57 +1,16 @@
 '''
-Created on 12.11.2012
 
-@author: estani
+.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
-In this file the only abstract class required for running a plugin is defined.
-You'll need to implement the few attributes and/or methods marked as abstract with the decorator
-@abc.abstractproperty or @abc.abstractmethod
 
-You may overwrite all methods and properties defined in here, but you'll be breaking the contract
-between the methods so you'll have to make sure it doesn't break anything else. Please write some tests
-for your own class that checks it is working as expected.
+This module defines the basic objects for implementing a plug_in.
 
-If you are implementing the plugin for the evaluation_system a further constraint is required:
-The class must be defined in the <plugin_name>.api module so it can be loaded dynamically.
-
-This is an example on how you could write a Plugin that works both detached from the evaluation_system
-as well as it integrates seamlessly.
-
-The plugin module should be load dynamically depending on the context (i.e. if the evaluation_system is
-present or not). This can be done with the following lines of code:
-
-<pre>
-#if the evaluation system module wasn't loaded load the interface.
-#(if not, the interface is already loaded)
-from sys import modules
-if 'evaluation_system.api.plugin' not in modules:
-    #if we don't have the framework around, we'll use the plugin provided here.
-    from pca import plugin
-else:
-    #else just get the reference to the same module as defined in the framework 
-    plugin = modules['evaluation_system.api.plugin']
-</pre>
-
-Now this is the minimal implementation at this time. (If I forgot to update it and there are more
-methods/attributes required, you'll see a proper message telling you that when you try to cast an
-instance of this class)
- 
-<pre>
-class MyPlugin(plugin.PluginAbstract):
-    "MyPlguin description for the developers"
-    __short_description__ = "A Short description for the user."
-    __version__ = (0,0,1)
-    __config_metadict__ =  metadict(compact_creation=True, 
-                                    number=(None, dict(type=int,help='This is an optional configurable int variable named number without default value and this description')),
-                                    the_number=(None, dict(type=float,mandatory=True,help='A required float value without default')), 
-                                    something='test', #a simple optional test value with default value and no description 
-                                    other=1.4)        #another float value. You cannot define a value without a default value and no metadata 'type' attribute defining how to parse it from a string.
-
-    def runTool(self, config_dict=None):
-        pass    #make sure the plugin does what it needs with the configuration passed in the config_dict dictionary.
-        
-
+* :class:`metadict`: It's used for defining :class:`PluginAbstract.__config_metadict__` which holds
+                     information about the parameters the plug-in will be requiring.
+* :class:`PluginAbstract`: It's an abstract class which provides many useful methods, requires
+                           some to be defined and keeps track of the classes implementing it.
 '''
+
 import abc
 from subprocess import Popen, PIPE, STDOUT
 import os
@@ -72,11 +31,14 @@ class ConfigurationError(Exception):
 
 class metadict(dict):
     """A dictionary extension for storing metadata along with the keys.
-    It behaves like a normal dictionary in all other cases."""
+In all other cases, it behaves like a normal dictionary."""
     def __init__(self, *args, **kw):
-        """Creates a metadict dictionary. If the keyword 'compact_creation' is used the
-        entries will be given like: key1=(value1, dict1) or key2=value2
-        and dict1 is the dictionary attached to the key providing metadata."""
+        """Creates a metadict dictionary. 
+If the keyword ``compact_creation`` is used and set to ``True`` the entries will be given like this: 
+
+    key1=(value1, dict1) or key2=value2
+    
+Where dict1 is the dictionary attached to the key providing its meta-data (key2 has no meta-data, by the way)."""
         self.metainfo = {}
         compact_creation = kw.pop('compact_creation', False)
         if compact_creation:
@@ -96,35 +58,44 @@ class metadict(dict):
             super(metadict,self).__init__(*args, **kw)
         
     def copy(self):
-        """return a deep copy of this metadict"""
+        """:return: a deep copy of this metadict."""
         return deepcopy(self)
     
     def getMetadata(self, key):
-        """Return the metadata allocated for the given key if any."""
+        """:return: The meta-data value associated with this key or ``None`` if no meta-data was stored."""
         if key in self.metainfo: return self.metainfo[key]
         else: return None
         
     def setMetadata(self, key, **meta_dict):
-        """Store/replace the metadata allocated for the given key."""
+        """Store/replace the meta-data allocated for the given key.
+
+:raises: KeyError if key is not present."""
         if key not in self: raise KeyError(key)
         if key not in self.metainfo: self.metainfo[key] = {}
         self.metainfo[key].update(meta_dict)
     
     def clearMetadata(self, key):
-        """Clear all metadata allocated under the given key."""
+        """Clear all meta-data allocated under the given key.
+
+:raises: KeyError if key is not present."""
         if key not in self: raise KeyError(key)
         if key in self.metainfo: del self.metainfo[key]
         
-    def put(self, key, value, **meta):
+    def put(self, key, value, **meta_dict):
         """Puts a key,value pair into the dictionary and all other keywords are added
-        as meta-data to this key."""
+as meta-data to this key. If key was already present, it will be over-written and its
+meta-data will be removed (even if no new meta-data is provided)."""
         self[key] = value
-        if meta:
-            self.setMetadata(key, **meta)
+        if meta_dict:
+            self.clearMetadata(key)
+            self.setMetadata(key, **meta_dict)
 
     @staticmethod
     def hasMetadata(some_dict, key=None):
-        """Returns if the given dictionary has metadata"""
+        """if the given dictionary has meta-data for the given key or, if no key was given,
+ if the dictionary can hold meta-data at all.
+
+:returns: if ``some_dict`` has stored meta-data for ``key`` or any meta-data at all if ``key==None``."""
         if key is None:
             return hasattr(some_dict, 'getMetadata')
         else:
@@ -132,15 +103,61 @@ class metadict(dict):
     
     @staticmethod
     def getMetaValue(some_dict, key, meta_key):
-        """Return the metadata associated with the key if any or None if not found or
-        this is not a metadict"""
+        """This method allows to work both with normal dictionaries and metadict transparently.
+        
+:returns: the meta-data associated with the key if any or None if not found or
+          this is not a metadict at all."""
         if metadict.hasMetadata(some_dict):
             meta = some_dict.getMetadata(key)
             if meta and meta_key in meta: return meta[meta_key]
 
         
 class PluginAbstract(object):
-    """This is the base class for all plugins"""
+    """This is the base class for all plug-ins. It is the only class that needs to be inherited from when implementing a plug-in.
+    
+From it, you'll need to implement the few attributes and/or methods marked as abstract with the decorator
+``@abc.abstractproperty`` or ``@abc.abstractmethod`` (Sphinx can't handle decorators, so you'll see this in the code only
+though I've added them to the docs so they show in the API documentation).
+
+You may overwrite all methods and properties defined in here, but you'll be breaking the contract
+between the methods so you'll have to make sure it doesn't break anything else. Please write some tests
+for your own class that checks it is working as expected.
+
+This very short example that shows a complete plug-in. Although it does nothing it already show the most important part,
+the :class:`evaluation_system.api.plugin.metadict` used for defining meta-data on the parameters::
+
+    from evaluation_system.api import plugin
+    
+    class MyPlugin(plugin.PluginAbstract):
+        __short_description__ = "MyPlugin short description (just to know what it does)" 
+        __version__ = (0,0,1)
+        __config_metadict__ =  plugin.metadict(compact_creation=True, 
+                                    number=(None, dict(type=int, help='This is an optional configurable int variable named number without default value and this description')),
+                                    the_number=(None, dict(type=float, mandatory=True, help='A required float value without default')), 
+                                    something='test', #a simple optional test value with default value and no description 
+                                    other=1.4)        #another float value. 
+                                                      #You cannot define a parameter without a default value and no metadata 'type' attribute 
+                                                      #as it defines how it should be parsed from a string (for config files, command line arguments, etc).
+    
+        def runTool(self, config_dict=None):
+            print "MyPlugin", config_dict
+
+If you need to test it use the ``EVALUATION_SYSTEM_PLUGINS`` environmental variable to point to the source directory and package.
+For example assuming you have th source code in ``/path/to/source`` and the package holding the class implementing :class:`evaluation_system.api.plugin` is
+``package.plugin_module`` (i.e. its absolute file path is ``/path/to/source/package/plugin_module.py``), you would tell the system how to find
+the plug-in by issuing the following command (bash & co)::
+
+    export EVALUATION_SYSTEM_PLUGINS=/path/to/source,package.plugin_module
+
+Use a colon to separate multiple items::
+
+    export EVALUATION_SYSTEM_PLUGINS=/path1,plguin1:/path2,plugin2:/path3,plugin3
+
+By telling the system where to find the packages it can find the :class:`evaluation_system.api.plugin` implementations. The system just loads the packages and get to the classes using the :py:meth:`class.__subclasses__` method. The reference speaks about *weak references* so it's not clear if (and when) they get removed. 
+We might have to change this in the future if it's not enough. Another approach would be forcing self-registration of a class in the :ref:`__metaclass__ <python:datamodel>` attribute when the class is implemented. 
+
+For more general (and less technical) information refer to the wiki: https://code.zmaw.de/projects/miklip-d-integration/wiki
+"""
     
     __metaclass__ = abc.ABCMeta
     #===========================================================================
@@ -157,11 +174,11 @@ class PluginAbstract(object):
     #===========================================================================
 
     def __init__(self, *args, **kwargs):
-        """Plugin main constructor. It is designed to catch all calls. It accepts a "user"
-argument containing an evaluation_system.model.user.User object for which this plugin will
-be created. If given it will be passed to the implementing plugin and use to get different
-user-defined configurations. If no user is provided an object representing the user
-that started this program is created.""" 
+        """Plugin main constructor. It is designed to catch all calls. It accepts a ``user``
+argument containing an :class:`evaluation_system.model.user.User` representing the user for 
+which this plug-in will be created. It is used here for setting up the user-defined configuration but 
+the implementing plug-in will also have access to it. If no user is provided an object representing 
+the current user, i.e. the user that started this program, is created.""" 
         self._user = kwargs.pop('user', None)
         if 'user' in kwargs:
             self._user = kwargs['user']
@@ -170,47 +187,77 @@ that started this program is created."""
         
     @abc.abstractproperty
     def __version__(self):
-        """Returns the version of the plugin"""
+        """``@abc.abstractproperty`` 
+
+A 3-value tuple representing the version of the plug-in. E.g. ``(1, 0, 3)`` that's (major, minor, build)."""
         raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractproperty
     def __short_description__(self):
-        """Returns the version of the plugin"""
+        """``@abc.abstractproperty``
+
+A short description of this plug-in. It will be displayed to the user in the help and
+when listing all plug-ins."""
         raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractproperty
     def __config_metadict__(self):
-        """A metadict containing the definition of all known configurable parameters for the
-        implementing plugin class. The used metadata items are:
-        type:=class
-            define the class of the parameter, it will also be used for casting the string values stored
-            in configurations files. Normally is one of str, int, float or bool. It'S only required if there's
-            no default value and therefore the type cannot be infered from it.
-        help:=string
-            some explanation regarding the parameter, this will get written in the config file and displayed to
-            the user.
-        mandatory:=any
-            if this attribute is mandatory (if not present it is not)"""
+        """``@abc.abstractproperty``
+
+A :class:`metadict` containing the definition of all known configurable parameters for the
+implementing class. The meta-data items used from it are:
+
+type
+    defines the class of the parameter, it will also be used for casting the string values stored
+    in configurations files. Normally is one of str, int, float or bool. It's only required if there's
+    no default value, i.e. it's ``None``, and therefore the type cannot be inferred from it.
+    
+help
+    A string providing some explanation regarding the parameter, this will get written in the 
+    configuration file and displayed to the user when requesting help.
+    
+mandatory
+    boolean equivalent that tells if this attribute is mandatory (if not present, it is not)
+
+You may use the ``compact_creation`` special key to create the dictionary in a compact manner::
+
+    metadict('compact_creation' = True, 
+        a_number = (None, dict(type = int, mandatory = True, help = 'Just a number.')),
+        another = (1.4, dict(help = 'Some optional parameter with a default value')),
+        nothing = 'a string')
+
+You may use a simple dictionary too, but there are huge limitations applied by doing so, e.g. all values *must* have
+default values and there will be no help whatsoever."""
         raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractmethod
     def runTool(self, config_dict = None):
-        """Starts the tool with the given configuration and returns a metadict with the created files
-        Parametes
-        config_dict: metadict
-            Current configuration with which the tool will be run
-        @return: see and use self.prepareOutput([<list_of_created_files>])"""
+        """``@abc.abstractmethod``
+
+Starts the tool with the given configuration. It is expected to return a :class:`metadict` with the
+paths to the created files and some info about them. This can be directly handled by passing just
+a list (or anything iterable) to :class:`prepareOutput` .
+
+
+:param config_dict: A dict/metadict with the current configuration with which the tool will be run
+:return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
     def prepareOutput(self, output_files):
-        """Prepare output for files supposedly created. This method checks the files exists
-        and return a dictionary with information about them. Use it for the return call of runTool.
-        Parameters
-        output_files: iterable of strings or single string
-            Paths to all files that where created by the tool.
-        @return: dict with the paths to the files that were created and some info if possible:
-            {<absolute_path_to_file>:{'timestamp': os.path.getctime(<absolute_path_to_file>),
-                                      'size': os.path.getsize(<absolute_path_to_file>)}"""
+        """Prepare output for files supposedly created. This method checks the files exist
+and returns a dictionary with information about them::
+
+    { <absolute_path_to_file>: {
+        'timestamp': os.path.getctime(<absolute_path_to_file>),
+        'size': os.path.getsize(<absolute_path_to_file>)
+        }
+    }
+
+Use it for the return call of runTool.
+    
+:param output_files: iterable of strings or single string with paths to all files that where created by the tool.
+:return: dictionary with the paths to the files that were created as key and a dictionary as value.
+    """
         result = {}
         if isinstance(output_files, basestring): output_files = [output_files]
         for file_path in output_files:
@@ -235,7 +282,11 @@ that started this program is created."""
 
 
     def getHelp(self):
-        """Return some help for the user"""
+        """This method uses the information from the implementing class name, :class:`__version__`, 
+:class:`__short_description__` and :class:`__config_metadict__` to create a proper help.
+Since it returns a string, the implementing class might use it and extend it if required. 
+
+:returns: a string containing the help."""
         import textwrap
         separator=''
         help_str = ['%s (v%s): %s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), self.__short_description__)]
@@ -264,11 +315,10 @@ that started this program is created."""
         return '\n'.join(help_str)
     
     def getCurrentConfig(self, config_dict=None):
-        """Return the given configuration ready for displaying
-        Parameters
-        config_dict: dict
-            Contains the current configuration being displayed, if missing the default values will be shown
-        @return: a string displaying the given configuration values"""
+        """
+:param config_dict: the dict/metadict containing the current configuration being displayed. 
+                    This info will update the default values.
+:return: the current configuration in a string for displaying."""
         max_size= max([len(k) for k in self.__config_metadict__])
         if config_dict is None: config_dict = {}
         
@@ -303,12 +353,12 @@ that started this program is created."""
         return '\n'.join(current_conf)
 
     def getClassBaseDir(self):
-        """Returns the absolute path to the class subcasting this plugin"""
+        """:returns: the absolute path to the module defining the class implementing this plug-in."""
         subclass_file = os.path.abspath(sys.modules[self.__module__].__file__)
         return os.path.join(*self._splitPath(subclass_file)[:-len(self.__module__.split('.'))])
 
     def getCurrentUser(self):
-        """Returns the user for which this instance was generated."""
+        """:returns: the :class:`evaluation_system.model.user.User` for which this instance was generated."""
         return self._user
         
     @staticmethod
@@ -322,14 +372,26 @@ that started this program is created."""
         raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
         
     def _parseConfigStrValue(self, key, str_value, fail_on_missing=True):
-        """Try to parse a str_value that is a string into the most appropriate str_value according. 
-        The logic is as follows:
-        0) If there's no reference dictionary the str_value is returned as is.
-        1) if the __config_metadict__ is a metadict and has a 'type' metadata attribute, that will be used for casting
-        2) if the __config_metadict__ has a str_value for the key, the type of the __config_metadict__ str_value would be used
-        3) if the key is not found in the reference __config_metadict__ an exception will be thrown unless
-           `fail_on_missing` was set to `False`, in which case it will return str_value as it was. 
-        4) if the type results in NoneType an exception will be thrown"""
+        """Try to parse the string in ``str_value`` into the most appropriate value according 
+to the following logic:
+
+#. if there's no :class:`__config_metadict__` ``str_value`` is returned as is.
+#. if the :class:`__config_metadict__` is a :class:`metadict` and has a *type* 
+   metadata attribute, this will be used for casting.
+#. if the :class:`__config_metadict__` has a value for ``key``, then ``type(``:class:`__config_metadict__` ``[key]``) will be used.
+#. if ``key`` is not found in the reference :class:`__config_metadict__` an exception will be thrown unless
+   ``fail_on_missing`` was set to `False`, in which case it will return ``str_value``. 
+#. if the type results in NoneType an exception will be thrown
+
+:param key: Reference to the value being parsed.
+:type key: str
+:param str_value: The string that will be parsed.
+:type str_value: str
+:param fail_on_missing: If the an exception should be risen in case the key is not found in :class:`__config_metadict__`
+:type fail_on_missing: bool
+:return: the parsed string, or the string itself if it couldn't be parsed, but no exception was thrown.
+:raises: ( :class:`ConfigurationError` ) if parsing couldn't succeed.
+"""
         if self.__config_metadict__ is None or (not fail_on_missing and key not in self.__config_metadict__):
             #if there's no dictionary reference or the key is not in it and we are not failling
             #just return the str_value 
@@ -353,12 +415,12 @@ that started this program is created."""
             raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type.__name__))
         
     def parseArguments(self, opt_arr):
-        """Parse an array of strings and return a configuration dictionary.
-        The strings are of the type: ['key1=val1', 'key2']
-        Parameters:
-        opt_arr:= string array with options to be parsed
-        See `_parseConfigStrValue` for more information on how the parsing is done.
-        """
+        """Parses an array of strings and return a configuration dictionary.
+The strings are of the type: ``key1=val1`` or ``key2``
+
+:type opt_arr: List of strings
+:param opt_arr: See :class:`_parseConfigStrValue` for more information on how the parsing is done.
+"""
         config = {}
         
         for option in opt_arr:            
@@ -375,28 +437,29 @@ that started this program is created."""
         return config
         
     def setupConfiguration(self, config_dict = None, template = None, check_cfg = True, recursion=True):
-        """Define the configuration required for processing this files. If a template was given,
-        the return value is a string containing the complete configuration. If not the config_dict
-        will be returned but with all indirections being resolved. Eg:
-        dict(a=1, b='1.txt', c='old_1.txt') == setpuConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
-        
-        Parameters
-        config_dic : dict (None)
-            dictionary with the configuration to be used when generating the configuration file
-        template : string.Template, optional
-            defines the template for the configuration.
-        check_cfg : boolean (True)
-            whether the method checks that the resulting configuration dictionary (i.e. the default 
-            updated by `config_dict`) has no None values after all substituions are made.
-        recursion : boolean (True)
-            Whether when resolving the template recursion will be applied, i.e. variables can be set
-            with the values of other variables, e.g. recursion^a==1^b=="x${a}x" => f(b)=="x1x" 
-        @return
-            if a template was provided, the substituted configuration string
-            else a metadict with all defaults values plus those provided here.
+        """Defines the configuration required for running this plug-in. If ``template`` was given,
+the return value is a string containing the complete configuration that results from filling out
+the template with the resulting configuration.
+If not a dictionary will be returned but with all indirections being resolved. E.g.::
+
+    dict(a=1, b='1.txt', c='old_1.txt') == setupConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
+
+Basically :class:`__config_metadict__` will be updated with the values from ``config_dict``.
+There are some special values pointing to user-related managed by the system defined in :class:`evaluation_system.model.user.User.getUserVarDict` .
+ 
+:param config_dic: dictionary with the configuration to be used when generating the configuration file.
+:type config_dic: dict or :class:`metadict`
+:param template: defines the template for the configuration.
+:type template: string.Template
+:param check_cfg: whether the method checks that the resulting configuration dictionary (i.e. the default 
+                  updated by `config_dict`) has no None values after all substituions are made.
+:type check_cfg: bool
+:param recursion: Whether when resolving the template recursion will be applied, i.e. variables can be set
+                  with the values of other variables, e.g. ``recursion && a==1 && b=="x${a}x" => f(b)=="x1x"`` 
+:type recursion: bool
+:return:  if a template was provided, the substituted configuration string
+          else a metadict with all defaults values plus those provided here.
         """
-        
-        
         if config_dict:
             conf = self.__config_metadict__.copy() 
             conf.update(config_dict)
@@ -434,45 +497,15 @@ that started this program is created."""
             return template.substitute(config_dict)
         else:
             return config_dict
-        
-    def _dictValuesToString(self, dictionary):
-        """Transform a dictionary into its representation. no recursion is been handled here, that should
-        be left to the implementing class to solve. The original dictionary is not transformed a copy is created
-        and returned.
-        Parameters
-        dictionary := The dictionary to transform"""
-        result = {}
-        for key, value in dictionary.items():
-            result[key] = repr(value)
-        return result
-    
-    def writeToConfigParser(self, config_dict, config_parser=None):
-        """Add the given configuration dictionary to a ConfigParser object.
-        The section is determined by the name of the implemnting class.
-        Parameters
-        confi_dict := dict or metadict
-            configuration dict to be stored
-        config_parser := subclass of ConfigParser.RawConfigParser
-            config parser where this info is stored. If None is give a config parser is created (default: None)"""
-        section = self.__class__.__name__
-        if config_parser is None: config_parser = SafeConfigParser()
-        if not config_parser.has_section(section): config_parser.add_section(section)
-        for key, value in config_dict.items():
-            key_help = metadict.getHelp(config_dict, key)            
-            if key_help:
-                config_parser.set(section, '#%s' % key, key_help)
-            config_parser.set(section, key, repr(value))
-        return config_parser
-    
+   
     def readFromConfigParser(self, config_parser):
         """Reads a configuration from a config parser object.
-        The values are assumed to be in a section named just like the class implementing this method.
-        Parameters
-        config_parser:= subclass of ConfigParser.RawConfigParser
-            From where the configuration is going to be read
-
-        @return: a metadict which is a clone of the default one (if provided) updated with the
-            information found in the config Parser"""
+The values are assumed to be in a section named just like the class implementing this method.
+        
+:param config_parser: From where the configuration is going to be read.
+:type config_parser: ConfigParser.RawConfigParser
+:return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
+         information found in the config Parser"""
         
         section = self.__class__.__name__
         #create a copy of metadict
@@ -487,25 +520,26 @@ that started this program is created."""
         return result
         
     def readConfiguration(self, fp):
-        """Read the configuration from a file object using a SafeConfigParser.
-        Parameters
-        fp:= file object
-            From where the configuration is going to be read
-        default_metadict:= dict or metadict
-            Reference information for parsing the values.
-        @return: a metadict which is a clone of the default one (if provided) updated with the
-            information found in the config Parser"""
+        """Read the configuration from a file object using a SafeConfigParser. See also :class:`saveConfiguration` .
+
+:param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
+:return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
+         information found in ``fp``"""
         config_parser = SafeConfigParser()
         config_parser.readfp(fp)
         return self.readFromConfigParser(config_parser)
 
     def saveConfiguration(self, fp, config_dict=None):
         """Stores the given configuration to the provided file object.
-        if no configuration is provided the default one will be used."""
+if no configuration is provided the default one will be used.
+
+:param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
+:param config_dict: a metadict with the configuration to be stored. If none is provided the result from
+                    :class:`setupConfiguration` with ``check_cfg=False`` will be used."""
         #store the section header
         if config_dict is None:
             #a default incomplete one
-            config_dict = self.setupConfiguration(check_cfg=False)
+            config_dict = self.setupConfiguration(check_cfg = False)
         fp.write('[%s]\n' % self.__class__.__name__)
 
         import textwrap
@@ -534,34 +568,28 @@ that started this program is created."""
         
     
     def _postTransformCfg(self, config_dict):
-        """Allow plugins to give a final check or modification to the configuration before being issued"""
+        """Allow plugins to give a final check or modification to the configuration before being issued.
+This hook is especially useful if you need to transform booleans to special values (e.g. ``0`` or ``yes``)
+or if the plug-in needs to define some values that overides what the user selects, etc.
+Checking the completenes of the dictionary happens after this call return.
+
+:param config_dict: the complete configuration dictionary as it would be used.
+:returns: the final configuration in a dictionary that will be used for starting the underlaying tool."""
         return config_dict
     
     def call(self, cmd_string, stdin=None, stdout=PIPE, stderr=STDOUT):
-        """Simplify the interaction with the tool.
-        Parameters
-        cmd_string : string
-            the command to be issued in a string
-        stdin : string, optional
-            a string that will be forwarded in the stdin of the started process
-        stdout : file descriptor, optional(PIPE)
-            link the standard output of this command call to the given file descriptor. Passing None will shut it up.
-        stderr : file descriptor, optional(STDOUT)
-            link the standard error of this command call to the given file descriptor. Passing None will shut it up."""
-        
-        #check if we have any module at all...
-        #=======================================================================
-        # env_file = '%s/etc/setup_bash.env' % self.getClassBaseDir()
-        # if os.path.isfile(env_file):         
-        #    #This is not much less secure than running the plugins themselves...
-        #    #it spawns a bash shell, sources the environment and issue the given command 
-        #    p = Popen(['/bin/bash', '-c', '. "%s" >/dev/null; %s' % (env_file, cmd_string)], stdout=stdout, stderr=stderr)
-        # else:
-        #    #but if we don't need a shell, then we don't do it
-        #    cmd = shlex.split(cmd_string)
-        #    p = Popen(cmd, stdout=stdout, stderr=stderr)
-        #=======================================================================
+        """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
+It means, **never** start a plug-in comming from unknown sources.
 
+:param cmd_string: the command to be issued in a string.
+:type cmd_string: str
+:param stdin: a string that will be forwarded to the stdin of the started process.
+:type stdin: str
+:param stdout: link the standard output of this command call to the given file descriptor. passing None will shut it up.
+:type stdout: see :py:class:`subprocess.Popen`
+:param stderr: link the standard error of this command call to the given file descriptor. Passing None will shut it up.
+               Default is to forward ``stderr`` to ``stdout``. 
+:type stderr: see :py:class:`subprocess.Popen`"""
         log.debug("Calling: %s", cmd_string)
         p = Popen(['/bin/bash', '-c', cmd_string], stdout=stdout, stderr=stderr)
 

@@ -23,7 +23,7 @@ class Test(unittest.TestCase):
     
 
     def testModules(self):
-        pmod = pm.getPulginModules()
+        pmod = pm.__plugin_modules__
         self.assertTrue(pmod is not None)
         self.assertTrue(len(pmod)>0)
 
