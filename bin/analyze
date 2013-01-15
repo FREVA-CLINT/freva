@@ -171,6 +171,7 @@ def main(argv=None): # IGNORE:C0111
                 offset = name_width + 2
                 for key, plugin in pm.getPlugins().items():
                     lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
+                    if not lines: lines = ['No description.']
                     if len(lines) > 1:
                         #multiline
                         print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset +('\n' + ' '*offset).join(lines[1:]))
