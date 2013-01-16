@@ -1,7 +1,8 @@
 '''
-Created on 04.10.2012
+.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
-@author: estani
+This module manages the abstraction of a user providing thus all information about him/her that
+might be required anywhere else.
 '''
 import pwd
 import os
@@ -17,22 +18,33 @@ class User(object):
     '''
     
     CONFIG_DIR = 'config'
+    "The directory name where all plug-in/system configurations will be stored."
+    
     CACHE_DIR = 'cache'
+    "The temporary directory where plug-ins can store files while performing some computation."
+    
     OUTPUT_DIR = 'output'
+    "The directory where output files are stored. Intended for files containing data and thus taking much space."
+    
     PLOTS_DIR = 'plots'
+    """The directory where just plots are stored. Plots are assumed to be much smaller in size than data and might
+therefore live longer"""
     
     
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
+    """The file containing a central configuration for the whole system (user-wise)"""
+    
     EVAL_SYS_DEFAULT_CONFIG = os.path.normpath(os.path.dirname(sys.modules[__name__].__file__)+'/../../etc/system_default.config')
-
+    """The central default configuration file for all users. It should not be confused with the system configuration
+file that is handled by :class:`evaluation_system.api.config`."""
 
     def __init__(self, uid = None):
-        '''
-        Parameters:
-        uid: int (optional)
-            user id in the local system, if not provided the current user is used.
-        
-        '''
+        '''Creates a user object for the provided id. If no id is given, a user object for
+the current user, i.e. the one that started the application, is created instead.
+
+:type uid: int
+:param uid: user id in the local system, if not provided the current user is used.
+'''
         self._dir_type = config.get(config.DIRECTORY_STRUCTURE_TYPE)
 
         if uid is None: uid = os.getuid()
@@ -52,29 +64,41 @@ class User(object):
     # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
         
     def getUserConfig(self):
-        """Returns user configuration object (ConfigParser)"""
+        """:returns: the user configuration object :py:class:`ConfigParser.SafeConfigParser`"""
         return self._userconfig
     
     def getUserDB(self):
-        """Returns the db abstraction for this user"""
+        """:returns: the db abstraction for this user.
+:rtype: :class:`evaluation_system.model.db.UserDB`"""
         return self._db
         
     def reloadConfig(self):
-        """Reloads user configuration from disk"""
+        """Reloads user central configuration from disk (not the plug-in related one)."""
         self._userconfig = Config()
         self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self.getUserBaseDir(), User.EVAL_SYS_CONFIG)])
         return self._userconfig
     
     def writeConfig(self):
-        """Writes user configuration to disk according to User.EVAL_SYS_CONFIG"""
+        """Writes the user central configuration to disk according to :class:`EVAL_SYS_CONFIG`"""
         
         fp = open(os.path.join(self.getUserBaseDir(), User.EVAL_SYS_CONFIG), 'w')
         self._userconfig.write(fp)
         fp.close()
         
-    def getName(self):  return self._userdata.pw_name
-    def getUserID(self):  return self._userdata.pw_uid
-    def getUserHome(self):  return self._userdata.pw_dir
+    def getName(self):
+        """:returns: the user name
+:rtype: str"""  
+        return self._userdata.pw_name
+    
+    def getUserID(self):
+        """:returns: the user id.
+:rtype: int"""  
+        return self._userdata.pw_uid
+    
+    def getUserHome(self):
+        """:returns: the path to the user home directory.
+:rtype: str"""  
+        return self._userdata.pw_dir
     
     def _getUserBaseDir(self):
         if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
@@ -101,29 +125,64 @@ class User(object):
         return dir_name
 
     def getUserBaseDir(self, **kwargs): 
-        """Return directory where all configurations for this user are stored"""
-        #return os.path.join(self.getUserHome(), User.BASE_DIR)
+        """Returns path to where this system is managing this user data.
+
+:param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
+:returns: (str) path"""
         return self._getUserDir('base', **kwargs)
         
-    def getUserToolConfig(self, tool = None, **kwargs):
-        """Return directory where all configurations for this user are stored"""
+    def getUserToolConfig(self, tool, **kwargs):
+        """Returns the path to the configuration file.
+
+:param kwargs: ``create`` := If ``True`` assure the underlaying directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned.
+:type tool: str
+:returns: path to the configuration file."""
         config_dir = self._getUserDir('config', tool, **kwargs)
         return os.path.join(config_dir,'%s.conf' % tool)
 
     def getUserConfigDir(self, tool = None, **kwargs):
-        """Return directory where all configurations for this user are stored"""
+        """Return the path to the directory where all configurations for this user are stored.
+
+:param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned. If None, then the directory
+             where all information for all tools reside is returned insted (normally, that would
+             be the parent directrory).
+:type tool: str
+:returns: path to the directory."""
         return self._getUserDir('config', tool, **kwargs)
     
     def getUserCacheDir(self, tool = None, **kwargs):
-        """Return directory where cache files for this user (might not be "only" for this user though)"""
+        """Return directory where cache files for this user (might not be "only" for this user though).
+
+:param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned. If None, then the directory
+             where all information for all tools reside is returned insted (normally, that would
+             be the parent directrory).
+:type tool: str
+:returns: path to the directory."""
         return self._getUserDir('cache', tool, **kwargs)
     
     def getUserOutputDir(self, tool = None, **kwargs):
-        """Return directory where output data for this user is stored"""
+        """Return directory where output data for this user is stored.
+
+:param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned. If None, then the directory
+             where all information for all tools reside is returned insted (normally, that would
+             be the parent directrory).
+:type tool: str
+:returns: path to the directory."""
         return self._getUserDir('output', tool, **kwargs)
     
     def getUserPlotsDir(self, tool = None, **kwargs):
-        """Return directory where all plots for this user are stored"""
+        """Return directory where all plots for this user are stored.
+
+:param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned. If None, then the directory
+             where all information for all tools reside is returned insted (normally, that would
+             be the parent directrory).
+:type tool: str
+:returns: path to the directory."""
         return self._getUserDir('plots', tool, **kwargs)
     
     def prepareDir(self):
@@ -143,13 +202,24 @@ class User(object):
             f(create=True)
         
     def getUserVarDict(self, tool=None):
-        """Returns a dictionary with some variables that will be accessible to the plugins:
-    $USER_BASE_DIR := central directory for this user in the evaluation system.
-    $USER_OUTPUT_DIR := directory where the output data for this user is stored.
-    $USER_PLOTS_DIR := directory where the plots for this user is stored.
-    $USER_CACHE_DIR := directory where the cached data for this user is stored.
-    
-To avoid problems we are assuring all this directories exist after this call returns."""
+        """Returns a dictionary with some variables that will be accessible to the plug-ins.
+The variables are:
+
+===============  =========================================================
+   Variables        Description
+===============  =========================================================
+USER_BASE_DIR    central directory for this user in the evaluation system.
+USER_OUTPUT_DIR  directory where the output data for this user is stored.
+USER_PLOTS_DIR   directory where the plots for this user is stored.
+USER_CACHE_DIR   directory where the cached data for this user is stored.
+===============  =========================================================
+
+To avoid problems we are assuring all this directories exist after this call returns.
+A plug-in/user might then use it to define a value in the following way::
+
+    output_file='$USER_OUTPUT_DIR/myfile.nc'
+
+"""
         if tool: tool = tool.lower()
         return dict(USER_BASE_DIR=self.getUserBaseDir(),
                     USER_CACHE_DIR=self.getUserCacheDir(tool=tool, create=True),

@@ -1,7 +1,8 @@
 '''
-Created on 20.09.2012
+.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
-@author: estani
+The module encapsulates all methods for accessing files on the system.
+These are mainly model and observational and reanalysis data.
 '''
 import json
 import glob
@@ -10,12 +11,18 @@ import logging
 log = logging.getLogger(__name__)
 
 CMIP5 = 'cmip5'
+"""DRS structure for CMIP5 Data"""
 BASELINE0 = 'baseline 0'
+"""DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
 BASELINE1 = 'baseline 1'
+"""DRS structure for Baseline 0 Data"""
 OBSERVATIONS = 'observations'
+"""DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
+"""DRS structure for reanalysis data."""
+
 class DRSFile(object):
-    
+    """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
     DRS_STRUCTURE = {
         #Cmip5 data      
         CMIP5 : {
@@ -65,8 +72,15 @@ class DRSFile(object):
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
         }
-
+    """Describes the DRS structure of different types of data"""
+    
     def __init__(self, file_dict=None, drs_structure=BASELINE0):
+        """Creates a DRSfile out of the dictionary containing information about the file or from scratch.
+
+:param file_dict: dictionary with the DRS component values and keys from which this file will be initialized. 
+:param drs_structure: Which structure is going to be used with this file.
+:type drs_structure: key value of :class:`DRSFile.DRS_STRUCTURE` 
+"""
         self.drs_structure = drs_structure
         if not file_dict: file_dict = {} 
         self.dict = file_dict
@@ -89,49 +103,67 @@ class DRSFile(object):
         return -1
 
     def to_json(self):
+        """:returns: (str) the json representation of the dictionary encapsulating the DRS components of this file."""
         return json.dumps(self.dict)
     
     def to_path(self):
+        """:returns: (str) the path to the file as described by the DRS components. The file is not required to exist.
+:raises: KeyError if can't construct the path because there's information missing in the DRS components."""
         #TODO: check if construction is complete and therefore can succeed
         result = self.dict['root_dir']
-        for key in self.get_baseline()['parts_dir']:
+        for key in self.getDrsStructure()['parts_dir']:
+            if key not in self.dict['parts']:
+                raise KeyError("Can't construct path as key %s is missing." % key)
             result = os.path.join(result, self.dict['parts'][key])
         return result
     
     def to_dataset(self, versioned=False):
-        """Extract the dataset name (DRS) from the path"""
+        """creates the dataset to which this file is part of out of the DRS information.
+
+:param versioned: If the dataset should contain inforation about the version. Note that not
+                  all DRS structures are versioned, so in those cases where there is just no
+                  version information this makes no difference.
+:type versioned: bool"""
         result = []
         if versioned:
             if not self.is_versioned():
                 raise Exception('%s is not versioned!' % self.drs_structure)
-            iter_parts = self.get_baseline()['parts_versioned_dataset']
+            iter_parts = self.getDrsStructure()['parts_versioned_dataset']
         else:  
-            iter_parts = self.get_baseline()['parts_dataset']
+            iter_parts = self.getDrsStructure()['parts_dataset']
             
         for key in iter_parts:
             if key in self.dict['parts']:
                 result.append(self.dict['parts'][key])
-            elif key in self.get_baseline()['defaults']:
-                result.append(self.get_baseline()['defaults'][key])
+            elif key in self.getDrsStructure()['defaults']:
+                result.append(self.getDrsStructure()['defaults'][key])
         return '.'.join(result)
     
     def is_versioned(self):
-        """If this baseline versions files"""
-        return 'parts_versioned_dataset' in self.get_baseline()
+        """If this file is from a DRS structure that is versioned."""
+        return 'parts_versioned_dataset' in self.getDrsStructure()
     
     def get_version(self):
-        """Return the *dataset* version from which this file is part of.
-        Returns None if the dataset is not versioned"""
+        """
+:returns: the *dataset* version from which this file is part of or None if the dataset is not versioned.
+          Note that this is the version of the dataset and not of the file, since the DRS does not version
+          files but datasets.
+:rtype: int"""
         if 'version' in self.dict['parts']:
             return self.dict['parts']['version']
         else:
             return None
-        
     
     @staticmethod
     def from_path(path, drs_structure=BASELINE0):
+        """Extract a DRSFile object out of a path.
+:param path: path to a file that is part of the ``drs_structure``.
+:type param: str
+:param drs_structure: Which structure is going to be used with this file.
+:type drs_structure: key value of :class:`DRSFile.DRS_STRUCTURE` 
+"""
         path = os.path.abspath(path)
-        bl = DRSFile._get_baseline(drs_structure)
+        bl = DRSFile._getDrsStructure(drs_structure)
     
         #trim root_dir
         if not path.startswith(bl['root_dir'] + '/'):
@@ -166,36 +198,53 @@ class DRSFile(object):
         
         return bl_file
     
-    def get_baseline(self):
-        return DRSFile._get_baseline(self.drs_structure)
+    def getDrsStructure(self):
+        ":returns: the :class:`DRSFile.DRS_STRUCTURE` used by this file."
+        return DRSFile._getDrsStructure(self.drs_structure)
     
     @staticmethod
-    def _get_baseline(drs_structure=BASELINE0):
-        """Returns the Object representing the baseline given.
-        Throws an exception if there's no such baseline implemented.
-        (NOTE: baseline refers to the different states of data for comparison in the MiKlip project"""
+    def _getDrsStructure(drs_structure=BASELINE0):
+        """
+:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
+:type drs_structure: str 
+:returns: (dict) the dictionary of the DRS structure of the requested type.
+:raises: Exception if there's no such DRS structure.
+"""
         if drs_structure not in DRSFile.DRS_STRUCTURE:
             raise Exception("Unknown DRS structure %s" % drs_structure)
         return DRSFile.DRS_STRUCTURE[drs_structure]
     
     @staticmethod
     def from_dict(file_dict, drs_structure=BASELINE0):
-        #need to check file_dict is as expected...
-        #if 'baseline_nr' in file_dict:
-        #    baseline_nr = file_dict['baseline_nr']
-        #    del file_dict['baseline_nr']
+        """:param file_dict: dictionary with the DRS components.
+:type file_dict: dict
+:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
+:type drs_structure: str 
+:returns: (:class:`DRSFile`) generated from the given dictionary and DRS structure name"""
         return DRSFile(file_dict, drs_structure=drs_structure)
         
     @staticmethod
     def from_json(json_str, drs_structure=BASELINE0):
+        """:param json_str: string with a json representation of the DRS components. Like the result from calling :class:`DRSFile.to_json`.
+:type json_str: str
+:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
+:type drs_structure: str 
+:returns: (:class:`DRSFile`) generated from the given dictionary and DRS structure name"""
         return DRSFile.from_dict(json.loads(json_str), drs_structure=drs_structure)
     
     @staticmethod
     def search(drs_structure=BASELINE0, latest_version=True, **partial_dict):
-        """Search for files from the given parameters as part of the baseline names.
-        returns := Generator returning matching Baseline files"""
+        """Simple search for files. It searches locally on the file system using :py:func:`glob.iglob`.
+This means the values might contain jokers like '\*1960*'.
+
+:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
+:type drs_structure: str 
+:param latest_version: if this should be only the latest version available.
+:type latest_version: bool
+:param partial_dict: a dictionary with some DRS components representing the query. 
+:returns: Generator returning matching files"""
         
-        bl = DRSFile._get_baseline(drs_structure)
+        bl = DRSFile._getDrsStructure(drs_structure)
         search_dict = bl['defaults'].copy()
         search_dict.update(partial_dict)
         log.debug("Searching in %s using %s", drs_structure, search_dict)

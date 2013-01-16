@@ -4,7 +4,6 @@ CREATES A REQUEST TO P2P SEARCH API BASED ON CONSTRAINTS GIVEN AS INPUT PARAMETE
 
 """
 import json
-import re
 import urllib2
 import sys
 import logging
@@ -14,6 +13,7 @@ log = logging.getLogger(__name__)
 
 
 class Utils(object):
+    """Just some utility classes"""
     class Struct(object):
         """This class is used for converting dictionaries into classes."""
 
@@ -24,7 +24,7 @@ class Utils(object):
             return None
 
         def toDict(self):
-            """Transfrom this struct to a dictionary."""
+            """Transfrom this struct into a dictionary."""
             result = {}
             for i in self.__dict__:
                 if isinstance(self.__dict__[i], Struct): result[i] = self.__dict__[i].toDict()
@@ -41,6 +41,11 @@ class Utils(object):
 
     @staticmethod
     def to_obj(dictionary, recurse=False):
+        """Transforms a dict into an object.
+
+:param dictionary: the dictionary that will be transformed.
+:param recurse: if it would be applied recursive to other internal dictionaries.
+:type recurse: bool"""
         dictionary = copy.deepcopy(dictionary)
 
         #we don't need to recurse if this is not a non-empty iterable sequence
@@ -58,23 +63,26 @@ class Utils(object):
 
 
 class P2P(object):
-    """Handle the connection to a p2p Index node"""
+    """Handle the connection to a P2P over the Search API (check the `Search API documentation <http://esgf.org/wiki/ESGF_Search_API>`_."""
 
     TYPE = Utils.to_obj({'DATASET':'Dataset','FILE':'File'})
-
+    """Types of results that will be returned."""
+    
     __MAX_RESULTS = 1000
-    """Maximum number of items returned per call"""
+    """Maximum number of items returned per call."""
 
     _time_out = 30
-    """Specifies the time out (seconds) when trying to reach an index node"""
+    """Specifies the time out (seconds) when trying to reach an index node."""
 
 
     def __init__(self, node='esgf-data.dkrz.de', api='esg-search/search', wget_api='esg-search/wget', defaults=None):
-        """
-	    Generates a p2p connection.
-	    node := the p2p search node to connect to.
-	    api := the url path of the service
-	    defaults := start the connection with the given defaults
+        """Creates a connection to the P2P search API.
+:param node: the p2p search node to connect to.
+:type node: str
+:param api: the url path of the service.
+:type api: str
+:param defaults: start the connection with the given defaultsused for every search.
+:type defaults: dict
 	"""
         self.node = node
         self.api = api
@@ -86,35 +94,51 @@ class P2P(object):
     
 
     def set_defaults(self, defaults):
-        """Set the defaults (dict) that will be used everytime the node is contacted 
-e.g. {'project':'CMIP5'}"""
+        """Set the defaults that will be used every time the node is contacted. For example::
+
+    set_defaults(dict(project ='CMIP5'))
+
+:param defaults: defaults to use.
+:type defaults: dict
+"""
         self.defaults = defaults
 
     def get_defaults(self): 
-        """Return the defaults set"""
+        """Return the defaults being currently used."""
         return copy.deepcopy(self.defaults)
 
     def reset_defaults(self): 
-        """Clear all defaults (same as set_defaults({})"""
+        """Clear all defaults. It's the same as::
+
+        set_defaults({})
+
+."""
         self.defaults = {}
 
     def add_defaults(self, **defaults): 
-        """Adds values to the defaults of this p2p connection
-E.g. add_defaults(project='CMIP5', product=['output1','output2'], institute_not_='MPI-M')"""
+        """Adds values to the defaults for this connection.For example::
+
+    add_defaults(project='CMIP5', product=['output1','output2'], institute_not_='MPI-M')
+
+This replaces but not removes existing keys."""
         self.defaults.update(defaults)
 
     def del_defaults(self, *def_keys):
-        """Remove all the give defaults values if found
-E.g. del_defaults('institute','model')""" 
+        """Remove all the give defaults values if found. For example::
+
+    del_defaults('institute','model')
+
+This would remove all values for both *institute* and *model* leaving everything else intact.""" 
         for k in def_keys: 
             if k in self.defaults: del self.defaults[k]
             elif k + '_not_' in self.defaults: del self.defaults[k + '_not_']
 
 
     def duplicate(self):
-        """Create a duplicate of this p2p connection."""
-        return P2P(node=self.node, api=self.api, defaults=self.get_defaults())
+        """Create a duplicate of this p2p connection.
 
+:returns: A new instance of :class:`P2P` with the same configuration as this one."""
+        return P2P(node=self.node, api=self.api, defaults=self.get_defaults())
 
     def __get_url(self):
         """Just return the url to this service from the values in this object"""
@@ -145,13 +169,15 @@ E.g. del_defaults('institute','model')"""
         return '&'.join(proc_const)
     
     def get_wget(self, **constraints):
-        """Returns a string containing the wget script used for downloading the selected files""" 
+        """:returns: (str) a string containing the wget script that can be used for downloading the selected files""" 
         query = self.__constraints_to_str(constraints, type=P2P.TYPE.FILE)
         request = 'http://%s/%s?%s' % (self.node, self.wget_api, query)
         return urllib2.urlopen(request, None,  self._time_out).read()
         
     def raw_search(self, query):
-        """A raw search to the Solr index returning everything we get back."""
+        """A raw search to the Solr index returning everything we get back.
+
+:returns: (dict) the raw result as returned from Solr using the search API."""
         request = '%s&%s' % (self.__get_url(), query)
 
         log.debug(request)
@@ -160,14 +186,18 @@ E.g. del_defaults('institute','model')"""
         return response
 
     def search(self, type=TYPE.DATASET, **constraints):
-        """Constructs a P2P Search API from the constraint passed and return just the response
-(no headers). Default type=Dataset."""
+        """Issue a query to the  P2P Search API from the constraint passed and return just the response
+(no headers).
+
+:param type: type of elements to return.
+:type type: :class:`P2P.TYPE`
+:param constraints: dictinary with any P2P Search API constraints.
+:returns: all documents returned from the P2P Search API."""
         query = self.__constraints_to_str(constraints, type=type)
         return self.raw_search(query)['response']
 
     def get_datasets_names(self, batch_size=__MAX_RESULTS, **constraints):
-        """returns a list of (datasets, version) tuppels. You can't define "fields"
-while calling this method"""
+        """:returns: a list of (datasets, version) tuples. (You can't define "fields" while calling this method)."""
         if 'fields' in constraints: 
             del constraints['fields']
         datasets = set([(d['master_id'], int(d['version'])) for d in self.datasets(
@@ -175,18 +205,21 @@ while calling this method"""
         return datasets
 
     def get_datasets(self, **constraints):
-        """returns a list of dataset. There's no limit imposed in the method itself, So it will
-run out of memory if too many dataset are tried to be retireved. use limit=N to get
-just the first "N" records."""
+        """
+:returns: a list of dataset names. There's no limit imposed in the method itself, So it will
+          run out of memory if too many datasets are tried to be retrieved. Use the constraint limit=N to get
+          just the first "N" records.
+:param constraints: dictinary with any P2P Search API constraints.
+"""
 
         return [d for d in self.datasets(**constraints)]
 
     def datasets(self, batch_size=__MAX_RESULTS, **constraints):
-        """returns a generator iterating thorugh the complete resulting docs.
-batch_size := defines the size of the retrieved batch
-limit := limits the total number of returned docs
-
-all other solar constraints apply"""
+        """:returns: a generator iterating through the retrieve Solr docs.
+:param batch_size: defines the size of the retrieved batch. It means a query will 
+                   be sent to Solr every ``batch_size`` entries from the result set.
+:type batch_size: int
+:param constraints: dictinary with any P2P Search API constraints."""
         #if we have a limit use it also here.
         max_items = sys.maxint
         if 'limit' in constraints:
@@ -218,13 +251,17 @@ all other solar constraints apply"""
             retrieved = len(result['docs'])
 
     def files(self, type=TYPE.FILE, **constraints):
-        """the same as datasets, but sets the type to 'File'. It's just a commodity function to
-improve readability"""
+        """the same as :class:`P2P.datasets`, but sets the type to 'File'. It's just a commodity function to
+improve readability.
+
+:param constraints: dictinary with any P2P Search API constraints."""
         return self.datasets(type=type, **constraints)
 
     def get_facets(self, *facets, **constraints):
-        """Return the facet count from the server or the given facets (as parameters or list)
-return {facet:{facet_value:count}}"""
+        """
+:param facets: list of facets to query for.
+:param constraints: dictinary with any P2P Search API constraints.
+:returns: ([{facet:{facet_value:count}}]) the facets count from the server."""
         if 'limit' in constraints:
             constraints = constraints.copy()
             del constraints['limit']
@@ -250,7 +287,7 @@ return {facet:{facet_value:count}}"""
 
     @staticmethod
     def extract_catalog(dictio):
-        """Extract the catalog from this json returned info. Only 1 cataog is expected"""
+        """Extract the catalog from this json returned info. Only 1 cataog is expected."""
         if 'url' in dictio:
             result = [ e.split('.xml')[0]+'.xml' for e in dictio['url'] if e[-7:] == 'Catalog']
             if result and len(result) == 1:
