@@ -6,14 +6,14 @@ Created on 23.11.2012
 import unittest
 import os
 import tempfile
-import evaluation_system.api.plugin_manager as pm
-from evaluation_system.tests.mocks import DummyPlugin, DummyUser
-
 import shutil
 import logging
-from evaluation_system.api.plugin import ConfigurationError
-from tempfile import mktemp
 logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
+from evaluation_system.api.plugin import ConfigurationError
+import evaluation_system.api.plugin_manager as pm
+from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
         
 class Test(unittest.TestCase):
@@ -210,33 +210,44 @@ class %s(plugin.PluginAbstract):
 
     def runTool(self, config_dict=None):
         print "%s", config_dict"""
-        path1 = mktemp('dyn_plugin')
+        path1 = tempfile.mktemp('dyn_plugin')
+        
         os.makedirs(os.path.join(path1,'a/b'))
         with open(path1 + '/a/__init__.py', 'w'): pass
         with open(path1 + '/a/b/__init__.py', 'w'): pass
         with open(path1 + '/a/b/blah.py', 'w') as f:
             f.write(basic_plugin % tuple(['TestPlugin1']*2))
 
-        path2 = mktemp('dyn_plugin')
+        path2 = tempfile.mktemp('dyn_plugin')
+        
         os.makedirs(os.path.join(path2,'x/y/z'))
         with open(path2 + '/x/__init__.py', 'w'): pass
         with open(path2 + '/x/y/__init__.py', 'w'): pass
         with open(path2 + '/x/y/z/__init__.py', 'w'): pass
         with open(path2 + '/x/y/z/foo.py', 'w') as f:
             f.write(basic_plugin % tuple(['TestPlugin2']*2))
-            
-        os.environ[pm.PLUGIN_ENV] = '%s,%s:%s,%s' % (path1, 'a.b.blah', path2, 'x.y.z.foo')
+        
+        os.environ[pm.PLUGIN_ENV] = '%s,%s:%s,%s' % \
+            ('~/../../../../../..' + path1, 'a.b.blah', #test a relative path starting from ~
+             '$HOME/../../../../../..' + path2, 'x.y.z.foo') #test a relative path starting from $HOME
         print os.environ[pm.PLUGIN_ENV]
+        log.debug('pre-loading: %s', list(pm.getPlugins()))
+        
+        self.assertTrue('testplugin1' not in list(pm.getPlugins()))
+        self.assertTrue('testplugin2' not in list(pm.getPlugins()))
         pm.reloadPulgins()
-        print pm.getPlugins()
+        log.debug('post-loading: %s', list(pm.getPlugins()))
+        self.assertTrue('testplugin1' in list(pm.getPlugins()))
+        self.assertTrue('testplugin2' in list(pm.getPlugins()))
+        
         if os.path.isdir(path1) and path1.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % path1
+            log.debug("Cleaning up %s", path1)
             shutil.rmtree(path1)
             
         if os.path.isdir(path2) and path2.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % path2
+            log.debug("Cleaning up %s", path2)
             shutil.rmtree(path2)
 
 if __name__ == "__main__":

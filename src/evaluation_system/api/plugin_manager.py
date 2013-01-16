@@ -79,6 +79,8 @@ def reloadPulgins():
                              os.environ[PLUGIN_ENV].split(':'))                
     #now get all modules loaded from the environment
     for path, module_name in extra_modules:
+        #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+        path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
         if os.path.isdir(path):
             #we have a plugin_imp with defined api
             sys.path.append(path)
