@@ -5,12 +5,11 @@ Created on 07.01.2013
 '''
 import os
 import unittest
-from evaluation_system.api import config
+from evaluation_system.misc import config
 import logging
-from evaluation_system.api.config import ConfigurationException,\
-    reloadConfiguration
+from evaluation_system.misc.config import ConfigurationException, reloadConfiguration
 if not logging.getLogger().handlers:
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
 class Test(unittest.TestCase):
     

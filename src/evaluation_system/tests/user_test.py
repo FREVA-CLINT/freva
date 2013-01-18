@@ -11,7 +11,7 @@ import shutil
 
 from evaluation_system.model.user import User
 from evaluation_system.tests.mocks import DummyUser
-from evaluation_system.api import config
+from evaluation_system.misc import config
                     
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuratio of a user"""
