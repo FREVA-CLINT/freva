@@ -11,61 +11,16 @@ import copy
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
+from evaluation_system.misc.utils import Struct
 
-class Utils(object):
-    """Just some utility classes"""
-    class Struct(object):
-        """This class is used for converting dictionaries into classes."""
 
-        def __init__(self, **entries):
-            self.__dict__.update(entries)
-
-        def __getattr__(self, name):
-            return None
-
-        def toDict(self):
-            """Transfrom this struct into a dictionary."""
-            result = {}
-            for i in self.__dict__:
-                if isinstance(self.__dict__[i], Struct): result[i] = self.__dict__[i].toDict()
-                else: result[i] = self.__dict__[i]
-            return result
-
-        def __repr__(self):
-            def to_str(val):
-                if isinstance(val, basestring): return "'" + val + "'"
-                return val
-
-            return "<%s>" % ",".join([ "%s:%s" % (att, to_str(self.__dict__[att]))
-                                        for att in self.__dict__ if not att.startswith('_')])
-
-    @staticmethod
-    def to_obj(dictionary, recurse=False):
-        """Transforms a dict into an object.
-
-:param dictionary: the dictionary that will be transformed.
-:param recurse: if it would be applied recursive to other internal dictionaries.
-:type recurse: bool"""
-        dictionary = copy.deepcopy(dictionary)
-
-        #we don't need to recurse if this is not a non-empty iterable sequence
-        if not dictionary: return dictionary
-
-        #If a list, apply to elements within
-        if type(dictionary) == list: return map(lambda d: to_obj(d, recurse) ,dictionary)
-        #not a dictionary, return unchanged
-        if type(dictionary) != dict: return dictionary
-        if recurse:
-            for key in dictionary: dictionary[key] = to_obj(dictionary[key], recurse)
-
-        return Utils.Struct(**dictionary)
 
 
 
 class P2P(object):
     """Handle the connection to a P2P over the Search API (check the `Search API documentation <http://esgf.org/wiki/ESGF_Search_API>`_."""
 
-    TYPE = Utils.to_obj({'DATASET':'Dataset','FILE':'File'})
+    TYPE = Struct.from_dict({'DATASET':'Dataset','FILE':'File'})
     """Types of results that will be returned."""
     
     __MAX_RESULTS = 1000
@@ -238,7 +193,6 @@ This would remove all values for both *institute* and *model* leaving everything
 
         total = min(max_items, result['numFound'])
         retrieved = len(result['docs'])
-        datasets = {}
         for d in result['docs']:
             yield d
         
@@ -281,9 +235,9 @@ improve readability.
     @staticmethod
     def show(dictio, return_str=False):
         """Pretty print json (or any dict)"""
-        str = json.dumps(dictio, sort_keys=True, indent=2)
-        if return_str: return str
-        print str
+        json_str = json.dumps(dictio, sort_keys=True, indent=2)
+        if return_str: return json_str
+        print json_str
 
     @staticmethod
     def extract_catalog(dictio):
@@ -298,15 +252,15 @@ improve readability.
 
 #**** COMMAND LINE ****
 def auto_doc(message=''):
-    import re, sys, os
-    file = sys.argv[0]
+    import re, os
+    script_file = sys.argv[0]
 
     re_start = re.compile('.*\*!!!\*$')
     re_end = re.compile('^[ \t]*$')
     re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
     parsing=False
     results = []
-    for line in open(file, 'r'):
+    for line in open(script_file, 'r'):
         if parsing:
             items = re_entries.match(line)
             if items:
@@ -316,8 +270,8 @@ def auto_doc(message=''):
             if re_end.match(line): break
         elif re_start.match(line): parsing = True
 
-    if results: print '%s%s [opt]\nopt:\n%s' % (message, os.path.basename(file), '\n'.join(results))
-    else: print '%s %s' % (os.path.basename(file), message)
+    if results: print '%s%s [opt]\nopt:\n%s' % (message, os.path.basename(script_file), '\n'.join(results))
+    else: print '%s %s' % (os.path.basename(script_file), message)
 
 def usage(message=None):
     if message: auto_doc(message)
@@ -352,7 +306,7 @@ def main(argv=None):
             else: 
                 facets[facet] = value
         elif flag=='--show-facet':         #<list> :List all values for the given facet (might be defined multiple times)
-             show_facets.append(arg)
+            show_facets.append(arg)
         elif flag=='--list-datasets':       #       List datasets found using the p2p interface
             datasets = True
         elif flag=='--query':               #<list> :Display results from <list> queried fields
@@ -368,18 +322,20 @@ def main(argv=None):
     #handle constraints as the last items in the argument list
     for arg in lastargs:
         if '=' not in arg:
-            raise CommandError("Invalid format for query: %s" % arg)
+            raise Exception("Invalid format for query: %s" % arg)
         
         items = arg.split('=')
         if len(items==1):
             facets[items[0]] = True
         else:
             facets[items[0]] = '='.join(items[1:])
+    
+    p2p = P2P()
         
     if DEBUG:
-        sys.stderr.write("Searching string: %s\n" % search_dict)
+        sys.stderr.write("Searching dict: %s\n" % p2p.show(facets, return_str=True))
 
-    p2p = P2P()
+    
 
     if datasets: print '\n'.join(['%s#%s' % d for d in sorted(p2p.get_datasets_names(**facets))])
     if query: 
@@ -400,7 +356,6 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    import sys
     result=main(None)
     if isinstance(result, int):
         if result != 0: usage()

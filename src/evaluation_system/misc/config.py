@@ -1,15 +1,16 @@
 '''
-This module contains the central configuration of the system.
+.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
-@author: estani
+This module manages the central configuration of the system.
 '''
 import os
 import logging
 from ConfigParser import SafeConfigParser
 log = logging.getLogger(__name__)
 
+from evaluation_system.misc.utils import Struct
 
-DIRECTORY_STRUCTURE = type('Struct', (object,), dict(LOCAL='local', CENTRAL='central'))
+DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central')
 '''Type of directory structure that will be used to maintain state::
 
     local := ~/<base_dir>/...
@@ -65,7 +66,12 @@ framework is restarted every time an analysis is performed."""
             log.debug('Configuration loaded from %s', config_file)
     else:
         log.debug('No configuration file found in %s. Using default values.', config_file)
-
+    
+    #perform all special checks
+    if not DIRECTORY_STRUCTURE.validate(_config[DIRECTORY_STRUCTURE_TYPE]):
+        raise ConfigurationException("value (%s) of %s is not valid. Should be one of: %s" \
+                     % (_config[DIRECTORY_STRUCTURE_TYPE], DIRECTORY_STRUCTURE_TYPE, 
+                        ', '.join(DIRECTORY_STRUCTURE.toDict().values())))
 #load the configuration for the first time
 reloadConfiguration()
 

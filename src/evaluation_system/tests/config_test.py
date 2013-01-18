@@ -39,6 +39,11 @@ class Test(unittest.TestCase):
         c2 = config.get(config.BASE_DIR_LOCATION)
         self.assertNotEquals(c1, c2)
         
+    def testDIRECTORY_STRUCTURE(self):
+        self.assertTrue(config.DIRECTORY_STRUCTURE.validate('local'))
+        self.assertTrue(config.DIRECTORY_STRUCTURE.validate('central'))
+        self.assertFalse(config.DIRECTORY_STRUCTURE.validate('asdasdasdasdss'))
+        
     def testConfigFile(self):
         """If a config file is provided it should be read"""
         import tempfile
@@ -62,6 +67,17 @@ class Test(unittest.TestCase):
         self.failUnlessRaises(ConfigurationException, reloadConfiguration)
 
         os.unlink(name)
+        
+        #check directory structure value        
+        fd, name = tempfile.mkstemp(__name__, text=True)
+        with os.fdopen(fd, 'w') as f:
+            f.write('[evaluation_system]\n%s=wrong_value\n' % config.DIRECTORY_STRUCTURE_TYPE)
+        
+        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+        self.failUnlessRaises(ConfigurationException, reloadConfiguration)
+
+        os.unlink(name)
+        
         
 
 if __name__ == "__main__":
