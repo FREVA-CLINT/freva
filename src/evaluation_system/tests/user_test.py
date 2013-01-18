@@ -155,11 +155,6 @@ class Test(unittest.TestCase):
         tool = 'test_tool'
         self.assertEquals(self.user.getUserConfigDir(tool) + '/%s.conf' % tool, self.user.getUserToolConfig(tool))
     
-    def testUserVarDict(self):
-        var_dict = self.user.getUserVarDict(tool='test_tool')
-        self.assertEquals(set(var_dict).intersection(set('USER_BASE_DIR USER_CACHE_DIR USER_PLOTS_DIR USER_OUTPUT_DIR'.split())), set(var_dict))
-        self.assertEquals(var_dict['USER_OUTPUT_DIR'], var_dict['USER_BASE_DIR'] + '/output/test_tool')
-        
     @staticmethod
     def runCmd(cmd):
         if isinstance(cmd, basestring): cmd = cmd.split()        

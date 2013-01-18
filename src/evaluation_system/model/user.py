@@ -112,6 +112,8 @@ the current user, i.e. the one that started the application, is created instead.
             #return the directory where the tool configuration files are stored
             dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
         else:
+            #It's too confusing if we create case sensitive directories...
+            tool = tool.lower()
             #return the specific directory for the given tool            
             dir_name =  os.path.join(self._getUserBaseDir(), base_dir[dir_type], tool)
         
@@ -200,29 +202,5 @@ the current user, i.e. the one that started the application, is created instead.
         dir_creators = [self.getUserBaseDir, self.getUserConfigDir, self.getUserCacheDir, self.getUserOutputDir, self.getUserPlotsDir]
         for f in dir_creators:
             f(create=True)
-        
-    def getUserVarDict(self, tool=None):
-        """Returns a dictionary with some variables that will be accessible to the plug-ins.
-The variables are:
 
-===============  =========================================================
-   Variables        Description
-===============  =========================================================
-USER_BASE_DIR    central directory for this user in the evaluation system.
-USER_OUTPUT_DIR  directory where the output data for this user is stored.
-USER_PLOTS_DIR   directory where the plots for this user is stored.
-USER_CACHE_DIR   directory where the cached data for this user is stored.
-===============  =========================================================
-
-To avoid problems we are assuring all this directories exist after this call returns.
-A plug-in/user might then use it to define a value in the following way::
-
-    output_file='$USER_OUTPUT_DIR/myfile.nc'
-
-"""
-        if tool: tool = tool.lower()
-        return dict(USER_BASE_DIR=self.getUserBaseDir(),
-                    USER_CACHE_DIR=self.getUserCacheDir(tool=tool, create=True),
-                    USER_PLOTS_DIR=self.getUserPlotsDir(tool=tool, create=True),
-                    USER_OUTPUT_DIR=self.getUserOutputDir(tool=tool, create=True))
 

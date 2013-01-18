@@ -111,7 +111,78 @@ meta-data will be removed (even if no new meta-data is provided)."""
             meta = some_dict.getMetadata(key)
             if meta and meta_key in meta: return meta[meta_key]
 
+class SpecialVariables(object):
+    """This object is used to resolve the *special variables* that are available
+to the plugins for defining some values of their parameters in a standardize manner.
+
+The variables are:
+
+================== ====================================================================
+   Variables          Description
+================== ====================================================================
+USER_BASE_DIR      central directory for this user in the evaluation system.
+USER_OUTPUT_DIR    directory where the output data for this user is stored.
+USER_PLOTS_DIR     directory where the plots for this user is stored.
+USER_CACHE_DIR     directory where the cached data for this user is stored.
+SYSTEM_DATE        current date in the form YYYYMMDD (e.g. 20120130)
+SYSTEM_DATETIME    current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123)
+SYSTEM_TIMESTAMP   milliseconds since epoch (i.e. a new number every millisecond)
+SYSTEM_RANDOM_UUID a random UUID string (just something random of the form a3e7-e12...)
+================== ====================================================================
+
+A plug-in/user might then use them to define a value in the following way::
+
+    output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
+
+"""
+    def __init__(self, plugin_name, user):
+        """Creates a :class:`SpecialVariables` object linked to a plugin and user.
+
+:param plugin_name: the name of the plugin requesting this object.
+:type plugin_name: str
+:param user: The user for which this values will be set.
+:type user: :class:`evaluation_system.model.user.User`
+"""
+        from functools import partial
+        from datetime import datetime
+        from time import time
+        from uuid import uuid4
+        #don't use case sensite for directories in Linux... it's too confusing for the users...
+        self._func_dict = dict(
+                USER_BASE_DIR      = user.getUserBaseDir,
+                USER_CACHE_DIR     = partial(user.getUserCacheDir, tool=plugin_name, create=True),
+                USER_PLOTS_DIR     = partial(user.getUserPlotsDir, tool=plugin_name, create=True),
+                USER_OUTPUT_DIR    = partial(user.getUserOutputDir, tool=plugin_name, create=True),
+                SYSTEM_DATE        = lambda: datetime.now().strftime('%Y%m%d'),
+                SYSTEM_DATETIME    = lambda: datetime.now().strftime('%Y%m%d_%H%M%S'),
+                SYSTEM_TIMESTAMP   = lambda: str(long(time() * 1000)),
+                SYSTEM_RANDOM_UUID = lambda: str(uuid4()))
         
+    def create_dict(self, update_dict = {}):
+        """Creates a special dictionary that returns the values from ``update_dict`` and if the requested key
+isn't present there but it is in the special ``self._func_dict`` compute that *special variable* value
+on the fly when requested.
+
+:param update_dict: a dictionary that will be used both for overiding the special variables as for providing the rest.
+:type update_dict: dict
+""" 
+        spec_var = self
+        class new_dict(object):
+            def __getitem__(self, key):
+                if key in update_dict:
+                    return update_dict[key]
+                elif key in spec_var._func_dict:
+                    return spec_var._func_dict[key]()
+                else:
+                    raise KeyError(key)
+            def keys(self): return spec_var._func_dict.keys() + update_dict.keys()
+            def special_keys(self): return spec_var._func_dict.keys()
+            
+            def items(self):
+                for k in self.keys():
+                    yield (k, self[k])
+            
+        return new_dict()
 class PluginAbstract(object):
     """This is the base class for all plug-ins. It is the only class that needs to be inherited from when implementing a plug-in.
     
@@ -179,11 +250,15 @@ argument containing an :class:`evaluation_system.model.user.User` representing t
 which this plug-in will be created. It is used here for setting up the user-defined configuration but 
 the implementing plug-in will also have access to it. If no user is provided an object representing 
 the current user, i.e. the user that started this program, is created.""" 
-        self._user = kwargs.pop('user', None)
         if 'user' in kwargs:
-            self._user = kwargs['user']
+            self._user = kwargs.pop('user')
         else:
             self._user = User()
+            
+        #this construct fixes some values but allow others to be computed on demand
+        #it holds the special variables that are accessible to both users and developers
+        self._special_vars = SpecialVariables(self.__class__.__name__, self._user)
+
         
     @abc.abstractproperty
     def __version__(self):
@@ -314,22 +389,34 @@ Since it returns a string, the implementing class might use it and extend it if 
         
         return '\n'.join(help_str)
     
-    def getCurrentConfig(self, config_dict=None):
+    def getCurrentConfig(self, config_dict = {}):
         """
 :param config_dict: the dict/metadict containing the current configuration being displayed. 
                     This info will update the default values.
 :return: the current configuration in a string for displaying."""
         max_size= max([len(k) for k in self.__config_metadict__])
-        if config_dict is None: config_dict = {}
         
         current_conf = []
-        user_dict = None
+        config_dict_resolved = self.setupConfiguration(config_dict=config_dict, check_cfg=False)
+        config_dict_orig = dict(self.__config_metadict__)
+        config_dict_orig.update(config_dict)
+        
+        def show_key(key):
+            "This functions formats the results depending on whether the values contain variables or not."
+            if config_dict_resolved[key] == config_dict_orig[key]:
+                return  config_dict_orig[key]
+            else:
+                return '%s [%s]' % (config_dict_orig[key], config_dict_resolved[key]) 
+        
         for key in sorted(self.__config_metadict__):
             line_format = '%%%ss: %%s' % max_size
             
-            if key in config_dict and config_dict[key]:
-                curr_val = config_dict[key]
+            
+            if key in config_dict:
+                #user defined
+                curr_val = show_key(key)
             else:
+                #default value
                 default_value = self.__config_metadict__[key]
                 if default_value is None: 
                     if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
@@ -337,16 +424,9 @@ Since it returns a string, the implementing class might use it and extend it if 
                     else:
                         curr_val = '-'
                 else:
-                    #just for "USER_*" report where that directory is!
-                    if isinstance(default_value, basestring) and default_value.startswith('$USER_'):
-                        if user_dict is None:
-                            #lazy creation and better readability.
-                            user_dict = self._user.getUserVarDict(self.__class__.__name__)
-                            
-                        extra_info = ' [%s] ' % user_dict.get(default_value[1:], 'Unknown') 
-                    else: 
-                        extra_info = ''
-                    curr_val = '- (default: %s%s)' % (self.__config_metadict__[key], extra_info)
+                    curr_val = '- (default: %s)' % show_key(key)
+                    
+
             
             current_conf.append(line_format % (key, curr_val))
     
@@ -472,8 +552,9 @@ There are some special values pointing to user-related managed by the system def
             import string 
             template = string.Template(template)
             
-        user_vars_dict = self._user.getUserVarDict(self.__class__.__name__)
-        user_vars_dict.update(config_dict)
+        #user_vars_dict = self._user.getUserVarDict(self.__class__.__name__)
+        #user_vars_dict.update(config_dict)
+        user_vars_dict = self._special_vars.create_dict(config_dict)
         
         #accept a maximal recursion of 5 for resolving all tokens
         #5 is a definite number larger than any thinkable recursion for this case
@@ -482,6 +563,7 @@ There are some special values pointing to user-related managed by the system def
             recursion = False   #assume no recursion until one possible case is found
             for key, value in config_dict.items():                
                 if isinstance(value, basestring) and '$' in value:
+                    #something to get replaced!
                     config_dict[key] = Template(value).safe_substitute(user_vars_dict)
                     recursion = True
             max_iter -= 1
@@ -591,7 +673,7 @@ It means, **never** start a plug-in comming from unknown sources.
                Default is to forward ``stderr`` to ``stdout``. 
 :type stderr: see :py:class:`subprocess.Popen`"""
         log.debug("Calling: %s", cmd_string)
-        p = Popen(['/bin/bash', '-c', cmd_string], stdout=stdout, stderr=stderr)
+        p = Popen(['/bin/bash', '-ic', cmd_string], stdout=stdout, stderr=stderr)
 
         return p.communicate(stdin)
     
