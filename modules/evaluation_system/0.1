@@ -11,11 +11,12 @@ set toolName [exec dirname $modName]
 set curMode [module-info mode]
 set isload [is-loaded $modName]
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
-if { [exec basename $toolPath] ne $toolName } {
-    #this is loaded from the evaluation_system module central location
-    #correct the path
-    set toolPath "$toolPath/tools/$toolName"
-}
+#This is only for tools
+#if { [exec basename $toolPath] ne $toolName } {
+#    #this is loaded from the evaluation_system module central location
+#    #correct the path
+#    set toolPath "$toolPath/tools/$toolName"
+#}
 
 #set the default path to the bin directory
 append-path PATH "$toolPath/bin"
@@ -30,7 +31,6 @@ if { $curMode eq "load" && [file exists $howToFile] } {
 ### END of general part ********
 
 module-whatis   "evaluation_system v0.1"
-
 proc ModulesHelp { } {
     puts stderr "evaluation_system 0.1"
 }
