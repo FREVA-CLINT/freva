@@ -78,7 +78,51 @@ class Test(unittest.TestCase):
 
         os.unlink(name)
         
+        #check $EVALUATION_SYSTEM_HOME get's resolved properly        
+        fd, name = tempfile.mkstemp(__name__, text=True)
+        with os.fdopen(fd, 'w') as f:
+            f.write('[evaluation_system]\n%s=$EVALUATION_SYSTEM_HOME\n' % config.BASE_DIR)
         
+        self.assertEquals(config.get(config.BASE_DIR), 'evaluation_system')
+        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+        config.reloadConfiguration()
+        self.assertEquals(config.get(config.BASE_DIR), '/'.join(__file__.split('/')[:-4]))
+
+        os.unlink(name)
+
+    def testPluginConf(self):
+        import tempfile
+        fd, name = tempfile.mkstemp(__name__, text=True)
+        with os.fdopen(fd, 'w') as f:
+            f.write("""
+[evaluation_system]
+base_dir=~
+
+[plugin:pca]
+plugin_path=$EVALUATION_SYSTEM_HOME/tool/pca
+python_path=$EVALUATION_SYSTEM_HOME/tool/pca/integration
+module=pca.api
+
+[plugin:climval]
+plugin_path=$EVALUATION_SYSTEM_HOME/tool/climval
+python_path=$EVALUATION_SYSTEM_HOME/tool/climval/src
+module=climval.tool
+
+""")
+        
+        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+        config.reloadConfiguration()
+        plugins_dict = config.get(config.PLUGINS)
+        self.assertEquals(set(plugins_dict), set(['pca', 'climval']))
+        es_home = '/'.join(__file__.split('/')[:-4])
+        self.assertEquals(config.get_plugin('pca', config.PLUGIN_PATH), es_home + '/tool/pca')
+        self.assertEquals(config.get_plugin('pca', config.PLUGIN_PYTHON_PATH), es_home + '/tool/pca/integration')
+        self.assertEquals(config.get_plugin('pca', config.PLUGIN_MODULE), 'pca.api')
+        self.assertEquals(config.get_plugin('pca', 'not_existing', 'some_default'), 'some_default')
+        
+        self.assertEquals(config.get_plugin('climval', config.PLUGIN_MODULE), 'climval.tool')
+        os.unlink(name)
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testPlugin']

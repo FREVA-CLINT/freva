@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
 from evaluation_system.model.user import User
+from evaluation_system.misc import config
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
@@ -61,16 +62,14 @@ It's used to keep sys.path tidy.
 def reloadPulgins():
     """Reload all plug-ins."""
     #get the tools directory from the current one
-    tools_dir = os.path.join(os.path.abspath(__file__)[:-len('src/evaluation_system/api/plugin_manager.py')-1],'tools')
     #get all modules from the tool directory
-    for plugin_imp in os.listdir(tools_dir):
-        if not plugin_imp.startswith('.'):
-            #check if api available
-            int_dir = os.path.join(tools_dir,plugin_imp,'integration') 
-            if os.path.isdir(int_dir):
-                #we have a plugin_imp with defined api
-                sys.path.append(int_dir)
-                __plugin_modules__[plugin_imp] = __import__(plugin_imp + '.api')
+    plugins = list(config.get(config.PLUGINS))
+    for plugin_name in plugins:
+        py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
+        py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
+        if os.path.isdir(py_dir):
+            sys.path.append(py_dir)
+            __plugin_modules__[plugin_name] = __import__(py_mod)
 
     #extra_modules = [(path, module) ... ]
     extra_modules = []
