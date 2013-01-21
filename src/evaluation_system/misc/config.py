@@ -13,15 +13,16 @@ from evaluation_system.misc.utils import Struct
 DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central')
 '''Type of directory structure that will be used to maintain state::
 
-    local := ~/<base_dir>/...
+    local := <base_dir_location>/<base_dir>... (base_dir_location is normally '~')
     central := <base_dir_location>/<base_dir>/<user>/...
 
 We only use local at this time, but we'll be migrating to central in the future for the next project phase.'''
 
 #Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % \
-        os.sep.join(os.path.abspath(__file__).split(os.sep)[:-4])    #remove src/evaluation_system/api/config.py
+_SYSTEM_HOME = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-4]) #remove src/evaluation_system/misc/config.py
+_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % _SYSTEM_HOME
+
 
 #: config options
 BASE_DIR = 'base_dir'

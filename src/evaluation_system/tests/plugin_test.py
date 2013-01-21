@@ -4,7 +4,7 @@ Created on 03.12.2012
 @author: estani
 '''
 import unittest
-from evaluation_system.api.plugin import metadict, PluginAbstract, ConfigurationError, SpecialVariables
+from evaluation_system.api.plugin import metadict, PluginAbstract, ConfigurationError
 from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
 class Test(unittest.TestCase):
@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
     def testSetupConfiguration(self):
         user = DummyUser(random_home=True)
         dummy = DummyPlugin(user=user)
-        dummy.__config_metadict__ = metadict(compact_creation=True, a=(None, dict(mandatory=1)))
+        dummy.__config_metadict__ = metadict(compact_creation=True, a=(None, dict(mandatory=True)))
         #the default behavior is to check for None values and fail if found
         self.failUnlessRaises(ConfigurationError, dummy.setupConfiguration)
         
@@ -141,26 +141,7 @@ class Test(unittest.TestCase):
         #missing key
         dummy.__config_metadict__=dict(b=1)
         self.failUnlessRaises(ConfigurationError,dummy._parseConfigStrValue,'a', '1')
-    
-    def testSpecialVariables(self):
-        user = DummyUser()
-        sv = SpecialVariables('test', user)
-        v_dict = sv.create_dict(dict(a='test'))
-        s_time = v_dict['SYSTEM_TIMESTAMP']
-        s_uuid = v_dict['SYSTEM_RANDOM_UUID']
-        u_plot = v_dict['USER_PLOTS_DIR']
-        for var, value in v_dict.items():
-            print '%s: %s' % (var, value)
-        self.assertEquals(v_dict['a'], 'test')
-        self.assertEquals(u_plot, v_dict['USER_PLOTS_DIR'])
-        self.assertTrue(u_plot.startswith('/'))
-        #The uuid must always be different
-        self.assertNotEquals(s_uuid, v_dict['SYSTEM_RANDOM_UUID'])
-        
-        #the timestamp should also change between two calls (unless they are done within 1/1000 second
-        import time
-        time.sleep(0.001)
-        self.assertNotEquals(s_time, v_dict['SYSTEM_TIMESTAMP'])
+
         
     def testReadConfigParser(self):
         from ConfigParser import SafeConfigParser

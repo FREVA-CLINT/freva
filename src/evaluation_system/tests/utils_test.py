@@ -4,7 +4,7 @@ Created on 18.01.2013
 @author: estani
 '''
 import unittest
-from evaluation_system.misc.utils import *
+from evaluation_system.misc.utils import Struct, TemplateDict
 
 class Test(unittest.TestCase):
 
@@ -33,20 +33,29 @@ class Test(unittest.TestCase):
 
     def testTemplateDict(self):
         t = TemplateDict(a=1,b=2,c='$a')
-        res = t.substitute(dict(x='$b$b$b', y='$c', z='$a'), recursive=False)
-        self.assertEquals(res, {'x': '222', 'y': '$a', 'z': '1'})
+        res = t.substitute(dict(x='$b$b$b', y='$z', z='$a'), recursive=False)
+        self.assertEquals(res, {'x': '222', 'y': '$z', 'z': '1'})
         res = t.substitute(dict(x='$b$b$b', y='$c', z='$a'), recursive=True)
         self.assertEquals(res, {'x': '222', 'y': '1', 'z': '1'})
         tmp = {}
-        max_it=12
+        #the maximal amount depends on de order they get resolved, and in dictionaries this order is not
+        #even given by anything in particular (e.g. alphabetic).
+        #for a transitive sbstitution (a=b,b=c,c=d,...) the best case is always 1 and the worst is ceil(log_2(n))
+        #We have a maximal_iterations of 15 so we can substitute *at least* 2^15=32768 variables
+        max_it=5000
         for l in range(max_it):
-            tmp[chr(97+l)] = '$'+ chr(97+l+1)
-        tmp[chr(97+max_it)] = 'end'
+            tmp['a_%s' % (l)] = '$a_%s' % (l+1)
+        tmp['a_%s' % (max_it)] = 'end'
+        print "Testing substitution with a variable chain (a_0=$a_1,a_1=$a_2,...,a_n='end') of  %s links." % len(tmp)
         res = t.substitute(tmp, recursive=True)
+        self.assertTrue(all([r=='end' for r in res.values()]))
+        
+        #check recursions that doesn't work
+        tmp['a_%s' % (max_it)] = '$a_0'
+        self.failUnlessRaises(Exception,t.substitute, tmp, recursive=True)
         self.failUnlessRaises(Exception,t.substitute, dict(x='$y', y='$x'), recursive=True)
         self.failUnlessRaises(Exception,t.substitute, dict(x='$y', y='$z' , z='$x'), recursive=True)
         
-        print res
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testStruct']
