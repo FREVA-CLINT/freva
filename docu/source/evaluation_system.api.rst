@@ -1,6 +1,8 @@
 api Package
 ===========
 
+This packages contains modules that manage the access to the system.
+
 
 :mod:`plugin` Module
 --------------------
@@ -14,14 +16,6 @@ api Package
 ----------------------------
 
 .. automodule:: evaluation_system.api.plugin_manager
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`config` Module
---------------------
-
-.. automodule:: evaluation_system.api.config
     :members:
     :undoc-members:
     :show-inheritance:
