@@ -7,3 +7,6 @@
 [submodule "tools/pca"]
 	path = tools/pca
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/pca.git
+[submodule "tools/movieplotter"]
+	path = tools/movieplotter
+	url = ssh://miklip.dkrz.de/miklip/integration/repositories/movie_plotter
