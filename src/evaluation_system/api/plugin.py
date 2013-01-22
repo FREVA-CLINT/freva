@@ -521,7 +521,6 @@ There are some special values pointing to user-related managed by the system def
         
         if check_cfg:
             missing =[ k for k,v in results.items() if v is None and metadict.getMetaValue(config_dict, k ,'mandatory')]
-            print missing
             if missing:
                 raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
         
