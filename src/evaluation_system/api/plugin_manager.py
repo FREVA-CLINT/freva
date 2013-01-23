@@ -60,7 +60,23 @@ It's used to keep sys.path tidy.
             yield item
             
 def reloadPulgins():
-    """Reload all plug-ins."""
+    """Reload all plug-ins. Plug-ins are then loaded first from the :class:`PLUGIN_ENV` environmental
+variable and then from the configuration file. This means that the environmental variable has precedence
+and can therefore overwrite existing plug-ins (useful for debugging and testing)."""
+    #extra_modules = [(path, module) ... ]
+    if PLUGIN_ENV in os.environ:
+        #now get all modules loaded from the environment
+        for path, module_name in map( lambda item: tuple([e.strip() for e in item.split(',')]), 
+                                 os.environ[PLUGIN_ENV].split(':')):                
+            #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+            path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+            if os.path.isdir(path):
+                #we have a plugin_imp with defined api
+                sys.path.append(path)
+                #TODO this is not working like in the previous loop. Though we might just want to remove it,
+                #as there seem to be no use for this info... 
+                __plugin_modules__[module_name] = __import__(module_name)
+
     #get the tools directory from the current one
     #get all modules from the tool directory
     plugins = list(config.get(config.PLUGINS))
@@ -71,22 +87,6 @@ def reloadPulgins():
             sys.path.append(py_dir)
             __plugin_modules__[plugin_name] = __import__(py_mod)
 
-    #extra_modules = [(path, module) ... ]
-    extra_modules = []
-    if PLUGIN_ENV in os.environ:
-        extra_modules = map( lambda item: tuple([e.strip() for e in item.split(',')]), 
-                             os.environ[PLUGIN_ENV].split(':'))                
-    #now get all modules loaded from the environment
-    for path, module_name in extra_modules:
-        #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
-        path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
-        if os.path.isdir(path):
-            #we have a plugin_imp with defined api
-            sys.path.append(path)
-            #TODO this is not working like in the previous loop. Though we might just want to remove it,
-            #as there seem to be no use for this info... 
-            __plugin_modules__[module_name] = __import__(module_name)
-    
     #no clean that path from duplicates...
     sys.path = [p for p in munge(sys.path)]
     
