@@ -101,8 +101,12 @@ in the background when retrieving the values."""
                 return val()
             else: 
                 return val
+
+        def i(self):
+            for key in var_dict.keys() + templ_self.translation_dict.keys():
+                yield (key, self[key])
             
-        return type('dict_wrapper', (object,), {'__getitem__':f})()
+        return type('dict_wrapper', (object,), {'__getitem__':f, 'items':i})()
             
         
     def substitute(self, substitute_dict, recursive = True):
@@ -183,7 +187,9 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
                     
             max_iter -= 1
         if recursive and max_iter <= 0:
-            raise Exception("maximum recursion depth exceeded. Check the substitution variables are not referecing in a loop.")
+            raise Exception("maximum recursion depth exceeded." + 
+                            "Check the substitution variables are not referencing in a loop.\n" +
+                            "last state: %s" % ['%s=%s,'%(k,v) for k,v in final_dict.items()])
         
         return result
                 

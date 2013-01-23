@@ -179,18 +179,18 @@ For more general (and less technical) information refer to the wiki: https://cod
 to the plug-ins for defining some values of their parameters in a standardize manner.
 These are initialized per user and plug-in. The variables are:
 
-================== ====================================================================
+================== ===================================================================================
    Variables          Description
-================== ====================================================================
-USER_BASE_DIR      central directory for this user in the evaluation system.
-USER_OUTPUT_DIR    directory where the output data for this user is stored.
-USER_PLOTS_DIR     directory where the plots for this user is stored.
-USER_CACHE_DIR     directory where the cached data for this user is stored.
-SYSTEM_DATE        current date in the form YYYYMMDD (e.g. 20120130)
-SYSTEM_DATETIME    current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123)
-SYSTEM_TIMESTAMP   milliseconds since epoch (i.e. a new number every millisecond)
-SYSTEM_RANDOM_UUID a random UUID string (just something random of the form a3e7-e12...)
-================== ====================================================================
+================== ===================================================================================
+USER_BASE_DIR      Absolute path to the central directory for this user in the evaluation system. 
+USER_OUTPUT_DIR    Absolute path to where the output data for this user is stored. 
+USER_PLOTS_DIR     Absolute path to where the plots for this user is stored. 
+USER_CACHE_DIR     Absolute path to where the cached data for this user is stored. 
+SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130). 
+SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123). 
+SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. a new number every millisecond, e.g. 1358929581838).
+SYSTEM_RANDOM_UUID A random UUID string (e.g. 912cca21-6364-4f46-9b03-4263410c9899). 
+================== ===================================================================================
 
 A plug-in/user might then use them to define a value in the following way::
 

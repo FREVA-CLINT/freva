@@ -350,6 +350,26 @@ example (default: test)
         module_name=os.path.abspath(evaluation_system.tests.mocks.__file__)[len(dummy.getClassBaseDir())+1:].replace('/','.')[:-4]
         self.assertEquals(module_name, 'evaluation_system.tests.mocks')
         
+    def testSpecialVariables(self):
+        dummy = DummyPlugin()
+        special_vars = dict(sv_USER_BASE_DIR = "$USER_BASE_DIR",
+                            sv_USER_OUTPUT_DIR = "$USER_OUTPUT_DIR",
+                            sv_USER_PLOTS_DIR = "$USER_PLOTS_DIR",
+                            sv_USER_CACHE_DIR = "$USER_CACHE_DIR",
+                            sv_SYSTEM_DATE = "$SYSTEM_DATE",
+                            sv_SYSTEM_DATETIME = "$SYSTEM_DATETIME",
+                            sv_SYSTEM_TIMESTAMP = "$SYSTEM_TIMESTAMP",
+                            sv_SYSTEM_RANDOM_UUID = "$SYSTEM_RANDOM_UUID")
+        
+        result = dict([(k,v) for k,v in dummy.setupConfiguration(config_dict=special_vars,check_cfg=False).items() if k in special_vars])
+        print '\n'.join(['%s=%s' % (k,v) for k,v in result.items()])
+        import re
+        self.assertTrue(re.match('[0-9]{8}$', result['sv_SYSTEM_DATE']))
+        self.assertTrue(re.match('[0-9]{8}_[0-9]{6}$', result['sv_SYSTEM_DATETIME']))
+        self.assertTrue(re.match('[0-9]{9,}$', result['sv_SYSTEM_TIMESTAMP']))
+        self.assertTrue(re.match('[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$', result['sv_SYSTEM_RANDOM_UUID']))
+        
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
