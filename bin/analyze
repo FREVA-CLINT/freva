@@ -183,6 +183,7 @@ def main(argv=None): # IGNORE:C0111
                 cfg_file=arg
             elif flag == '--save-config':       #saves the configuration.
                 save_config=True
+                dry_run=True
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
@@ -241,8 +242,12 @@ DATE FORMAT
         
         
         #get the plugin
-        if tool: 
-            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file)
+        if tool:
+            if save_config:
+                #don't read from the file we will store (if it exists) this confuses people...
+                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults)
+            else:
+                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file)
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)
                 import json

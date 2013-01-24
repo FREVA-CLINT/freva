@@ -109,8 +109,7 @@ class Test(unittest.TestCase):
         analyze.main(("--tool dummyplugin --config-file %s --save-config other=0.5 the_number=4738" % f).split())
         #should have been created by now
         self.assertTrue(os.path.isfile(f))
-        run2 = DummyPlugin._runs.pop()
-        self.assertEqual(run, run2)
+        self.assertEquals(0, len(DummyPlugin._runs))
 
         #check if it's being read
         analyze.main(("--tool dummyplugin --config-file %s the_number=421" % f).split())
