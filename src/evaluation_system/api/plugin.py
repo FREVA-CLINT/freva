@@ -579,7 +579,8 @@ if no configuration is provided the default one will be used.
         import textwrap
         wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,drop_whitespace=False,break_on_hyphens=False,expand_tabs=False)
 
-        for key, value in config_dict.items():
+        for key in sorted(config_dict):
+            value = config_dict[key]
             key_help = metadict.getMetaValue(config_dict, key, 'help')
             isMandatory = metadict.getMetaValue(config_dict, key, 'mandatory')
             if key_help:
