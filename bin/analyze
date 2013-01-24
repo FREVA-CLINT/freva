@@ -151,6 +151,7 @@ def main(argv=None): # IGNORE:C0111
         history=False
         use_user_defaults=True
         
+        _nothing = object        
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':    #displays this help or that of the given context.
@@ -180,8 +181,11 @@ def main(argv=None): # IGNORE:C0111
                 return 0
             elif flag == '--config-file':       #uses the given configuration file.
                 cfg_file_load=arg
-            elif flag == '--save-config':       #saves the configuration.
+            elif flag == '--save-config':       #saves the configuration at the given file path.
                 cfg_file_save=arg
+                dry_run=True
+            elif flag == '--save':              #saves the configuration locally for this user.
+                cfg_file_save=_nothing
                 dry_run=True
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
@@ -250,6 +254,7 @@ DATE FORMAT
                 
             
             if cfg_file_save:
+                if cfg_file_save == _nothing: cfg_file_save = None 
                 save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file_save)
                 log.info("Configuration file saved in %s", save_in)
             if show_config:
