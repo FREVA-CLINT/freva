@@ -138,7 +138,7 @@ def main(argv=None): # IGNORE:C0111
         args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
                                                     'help', 'debug', 'dry-run',
                                                     'history', 'use-defaults',
-                                                    'config-file=', 'save-config=', 'show-config'])
+                                                    'config-file=', 'save-config=', 'save', 'show-config'])
         
         #defaults
         help_opt=False
