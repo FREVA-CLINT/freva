@@ -106,7 +106,7 @@ class Test(unittest.TestCase):
         self.assertTrue(run['the_number']==4738)
         f = tempfile.mktemp('-testdummytool')
         self.assertFalse(os.path.isfile(f))
-        analyze.main(("--tool dummyplugin --config-file %s --save-config other=0.5 the_number=4738" % f).split())
+        analyze.main(("--tool dummyplugin --save-config %s other=0.5 the_number=4738" % f).split())
         #should have been created by now
         self.assertTrue(os.path.isfile(f))
         self.assertEquals(0, len(DummyPlugin._runs))
@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
         
         #check if it's being read
         f2 = tempfile.mktemp('-testdummytool')
-        analyze.main(("-n --tool dummyplugin --config-file %s --save-config" % f2).split())
+        analyze.main(("-n --tool dummyplugin --save-config %s" % f2).split())
         os.unlink(f2)
         
     def testShowConfig(self):

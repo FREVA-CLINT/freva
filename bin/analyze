@@ -138,16 +138,15 @@ def main(argv=None): # IGNORE:C0111
         args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
                                                     'help', 'debug', 'dry-run',
                                                     'history', 'use-defaults',
-                                                    'config-file=', 'save-config', 'show-config'])
+                                                    'config-file=', 'save-config=', 'show-config'])
         
         #defaults
         help_opt=False
         tool = None
         env = getEnvironment()
         
-        save_config=False
         show_config=False
-        cfg_file = None
+        cfg_file_load = cfg_file_save = None
         dry_run = False
         history=False
         use_user_defaults=True
@@ -180,9 +179,9 @@ def main(argv=None): # IGNORE:C0111
                 #done
                 return 0
             elif flag == '--config-file':       #uses the given configuration file.
-                cfg_file=arg
+                cfg_file_load=arg
             elif flag == '--save-config':       #saves the configuration.
-                save_config=True
+                cfg_file_save=arg
                 dry_run=True
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
@@ -243,19 +242,15 @@ DATE FORMAT
         
         #get the plugin
         if tool:
-            if save_config:
-                #don't read from the file we will store (if it exists) this confuses people...
-                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults)
-            else:
-                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file)
+            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)
                 import json
                 log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
                 
             
-            if save_config:
-                save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file)
+            if cfg_file_save:
+                save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file_save)
                 log.info("Configuration file saved in %s", save_in)
             if show_config:
                 print pm.getPluginInstance(tool).getCurrentConfig(config_dict=tool_dict)
