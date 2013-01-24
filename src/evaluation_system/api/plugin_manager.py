@@ -211,7 +211,7 @@ any other method.
     if user is None: user = User()
     
     p = getPluginInstance(plugin_name, user)
-    complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, recursion=False)
+    complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, substitute=False)
     
     if config_file is None:
         #make sure the required directory structure and data is in place
