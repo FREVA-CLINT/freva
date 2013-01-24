@@ -490,7 +490,7 @@ The strings are of the type: ``key1=val1`` or ``key2``
 
         return config
         
-    def setupConfiguration(self, config_dict = None, template = None, check_cfg = True, recursion=True):
+    def setupConfiguration(self, config_dict = None, template = None, check_cfg = True, recursion=True, substitute=True):
         """Defines the configuration required for running this plug-in. If ``template`` was given,
 the return value is a string containing the complete configuration that results from filling out
 the template with the resulting configuration.
@@ -521,7 +521,10 @@ There are some special values pointing to user-related managed by the system def
         else:
             config_dict = self.__config_metadict__.copy()
         
-        results = self._special_variables.substitute(config_dict, recursive=recursion)
+        if substitute:
+            results = self._special_variables.substitute(config_dict, recursive=recursion)
+        else:
+            results = config_dict.copy()
 
         #Allow inheriting class to modify the final configuration before issuing it
         results = self._postTransformCfg(results)
@@ -580,7 +583,7 @@ if no configuration is provided the default one will be used.
         #store the section header
         if config_dict is None:
             #a default incomplete one
-            config_dict = self.setupConfiguration(check_cfg = False)
+            config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
         fp.write('[%s]\n' % self.__class__.__name__)
 
         import textwrap

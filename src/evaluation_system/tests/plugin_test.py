@@ -83,8 +83,10 @@ class Test(unittest.TestCase):
         
         #check user special values work
         res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),template="$num", check_cfg=False)
-        print res
         self.assertEquals(user.getUserBaseDir(), res)
+        
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),template="$num", check_cfg=False, substitute=False)
+        self.assertEquals('$USER_BASE_DIR', res)
         
         user.cleanRandomHome()
         
