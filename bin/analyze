@@ -90,13 +90,20 @@ def auto_doc(message=None):
     re_end = re.compile('^[ \t]*$')
     re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
     parsing=False
+    
+    args_w_param = ['-%s' % _short_args[i-1] for i in range(len(_short_args)) if _short_args[i] == ':'] + ['--'+ar[:-1] for ar in _args if ar[-1] == '=']
+    print args_w_param
     results = []
     for line in open(script_file, 'r'):
         if parsing:
             items = re_entries.match(line)
             if items:
                 flag, flag_opt, mesg = items.groups()
+                #if multiple flags, all should accept parameters!
+                has_param = flag in args_w_param
                 if flag_opt: flag = '%s, %s' % (flag, flag_opt)
+                if has_param:
+                    flag = '%s <value>' % flag
                 results.append((flag, mesg))
             if re_end.match(line): break
         elif re_start.match(line): parsing = True
@@ -124,7 +131,11 @@ For Example:
 """ % script_name).splitlines()])
 
 
-
+_short_args = "hnd"
+_args = ['tool=', 'list-tools',
+    'help', 'debug', 'dry-run',
+    'history', 'use-defaults',
+    'config-file=', 'save-config=', 'save', 'show-config']
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
@@ -135,10 +146,7 @@ def main(argv=None): # IGNORE:C0111
 
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hnd", ['tool=', 'list-tools',
-                                                    'help', 'debug', 'dry-run',
-                                                    'history', 'use-defaults',
-                                                    'config-file=', 'save-config=', 'save', 'show-config'])
+        args, lastargs = getopt.getopt(argv, _short_args, _args)
         
         #defaults
         help_opt=False
