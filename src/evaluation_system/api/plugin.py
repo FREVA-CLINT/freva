@@ -430,6 +430,9 @@ to the following logic:
    ``fail_on_missing`` was set to `False`, in which case it will return ``str_value``. 
 #. if the type results in NoneType an exception will be thrown
 
+The string *None* will be mapped to the value ``None``. On the other hand the wuoted word *"None"* will remain as the
+string ``"None"`` without any quotes. 
+
 :param key: Reference to the value being parsed.
 :type key: str
 :param str_value: The string that will be parsed.
@@ -439,8 +442,12 @@ to the following logic:
 :return: the parsed string, or the string itself if it couldn't be parsed, but no exception was thrown.
 :raises: ( :class:`ConfigurationError` ) if parsing couldn't succeed.
 """
+        
+        if str_value == "None": return None
+        elif str_value == '"None"': str_value = "None"
+        
         if self.__config_metadict__ is None or (not fail_on_missing and key not in self.__config_metadict__):
-            #if there's no dictionary reference or the key is not in it and we are not failling
+            #if there's no dictionary reference or the key is not in it and we are not failing
             #just return the str_value 
             return str_value 
         key_type = metadict.getMetaValue(self.__config_metadict__, key, 'type')
