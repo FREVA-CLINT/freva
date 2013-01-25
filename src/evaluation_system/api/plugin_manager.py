@@ -178,12 +178,22 @@ to be known at this stage.
     
     p = getPluginInstance(plugin_name, user)
     complete_conf = {}
+    
+    #if we are using user defaults then load them first
     if use_user_defaults:
-        if config_file is None:
-            config_file = user.getUserToolConfig(plugin_name)
-        if os.path.isfile(config_file):
-            with open(config_file, 'r') as f:
-                complete_conf = p.readConfiguration(f)
+        user_config_file = user.getUserToolConfig(plugin_name)
+        if os.path.isfile(user_config_file):
+            with open(user_config_file, 'r') as f:
+                complete_conf.update(p.readConfiguration(f))
+    #now if we still have a config file update what the configuration with it
+    if config_file == '-':
+        #reading from stdin
+        complete_conf.update(p.readConfiguration(sys.stdin))
+    elif config_file is not None:
+        with open(config_file, 'r') as f:
+            complete_conf.update(p.readConfiguration(f))
+        
+
     
     #update with user defaults if desired
     complete_conf.update(p.parseArguments(arguments))
@@ -218,9 +228,12 @@ any other method.
         user.prepareDir()
          
         config_file = user.getUserToolConfig(plugin_name, create=True)
-        
-    with open(config_file, 'w') as f:
-        p.saveConfiguration(f, config_dict=complete_conf)
+
+    if config_file == '-':
+        p.saveConfiguration(sys.stdout, config_dict=complete_conf)
+    else:
+        with open(config_file, 'w') as f:
+            p.saveConfiguration(f, config_dict=complete_conf)
     
     return config_file
 
