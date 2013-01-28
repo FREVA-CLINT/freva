@@ -314,17 +314,20 @@ DATE FORMAT
                 else:
                     raise Exception("There's no valid argument named '%s' in the history management mode. Use --help for help." % flag)
             log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
-            if store_file:
-                rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
-                if len(rows) > 1:
-                    raise AnalyzeError("Can't only store one configuration at a time. We got %s back.\nTrim your search and try again (better if you use rowids with a single id).")
-                entry = rows[0]
-                tool = pm.getPluginInstance(entry.tool_name)
-                saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
-                log.info("Configuration stored in %s",  saved_in)
+            rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
+            if rows:
+                if store_file:                
+                    if len(rows) > 1:
+                        raise AnalyzeError("Can't only store one configuration at a time. We got %s back.\nTrim your search and try again (better if you use rowids with a single id).")
+                    
+                    entry = rows[0]
+                    tool = pm.getPluginInstance(entry.tool_name)
+                    saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
+                    log.info("Configuration stored in %s",  saved_in)
+                else:
+                    print '\n'.join([row.__str__(compact=not full) for row in rows])
             else:
-                for row in pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids):
-                    print row.__str__(compact=not full)
+                log.error("No results. Check query.")
                 
         else:
             #if no tool selected display the help.
