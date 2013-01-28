@@ -15,6 +15,8 @@ import abc
 from subprocess import Popen, PIPE, STDOUT
 import os
 import sys
+from time import time
+from datetime import datetime
 from string import Template
 from ConfigParser import SafeConfigParser
 from copy import deepcopy
@@ -213,8 +215,6 @@ the current user, i.e. the user that started this program, is created."""
         #self._special_vars = SpecialVariables(self.__class__.__name__, self._user)
         
         from functools import partial
-        from datetime import datetime
-        from time import time
         from uuid import uuid4
         plugin_name, user = self.__class__.__name__, self._user
         self._special_variables = TemplateDict(
@@ -285,6 +285,16 @@ a list (or anything iterable) to :class:`prepareOutput` .
 :return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
+    def _runTool(self, config_dict = None):
+        #start = time()
+        
+        result = self.runTool(config_dict)
+        #end = time()
+        
+        #length_seconds = end - start
+        #datetime.fromtimestamp(start)
+        return result
+    
     def prepareOutput(self, output_files):
         """Prepare output for files supposedly created. This method checks the files exist
 and returns a dictionary with information about them::
@@ -306,23 +316,33 @@ Use it for the return call of runTool.
             if isinstance(output_files, dict): metadata = output_files
             else: metadata = {}
             if os.path.isfile(file_path):
-                if 'timestamp' not in metadata:
-                    metadata['timestamp'] = os.path.getctime(file_path)
-                if 'size' not in metadata:
-                    metadata['size'] = os.path.getsize(file_path)
-                if 'type' not in metadata:    
-                    ext = os.path.splitext(file_path)
-                    if ext:
-                        ext = ext[-1].lower()
-                        if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .ps .eps .tex'.split():
-                            metadata['type'] = 'plot'
-                        elif ext in '.nc .bin .ascii'.split():
-                            metadata['type'] = 'data'
-            result[os.path.abspath(file_path)] = metadata
-                        
+                self._extend_output_metadata(file_path, metadata)
+                result[os.path.abspath(file_path)] = metadata
+            elif os.path.isdir(file_path):
+                #ok, we got a directory, so parse the contents recursively
+                for file_path in [os.path.join(r,f) for r,_,files in os.walk(file_path) for f in files]:
+                    metadata = {}
+                    self._extend_output_metadata(file_path, metadata)
+                    result[os.path.abspath(file_path)] = metadata
+            else:
+                result[os.path.abspath(file_path)] = metadata
         return result
 
-
+    def _extend_output_metadata(self, file_path, metadata):
+        if 'timestamp' not in metadata:
+            metadata['timestamp'] = os.path.getctime(file_path)
+        if 'size' not in metadata:
+            metadata['size'] = os.path.getsize(file_path)
+        if 'type' not in metadata:    
+            ext = os.path.splitext(file_path)
+            if ext:
+                ext = ext[-1].lower()
+                if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .ps .eps .tex'.split():
+                    metadata['type'] = 'plot'
+                elif ext in '.nc .bin .ascii'.split():
+                    metadata['type'] = 'data'
+        
+        
     def getHelp(self):
         """This method uses the information from the implementing class name, :class:`__version__`, 
 :class:`__short_description__` and :class:`__config_metadict__` to create a proper help.
@@ -636,7 +656,7 @@ It means, **never** start a plug-in comming from unknown sources.
                Default is to forward ``stderr`` to ``stdout``. 
 :type stderr: see :py:class:`subprocess.Popen`"""
         log.debug("Calling: %s", cmd_string)
-        p = Popen(['/bin/bash', '-c', cmd_string], stdout=stdout, stderr=stderr)
+        p = Popen(['/bin/bash', '-ic', cmd_string], stdout=stdout, stderr=stderr)
 
         return p.communicate(stdin)
     

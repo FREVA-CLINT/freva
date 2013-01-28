@@ -270,7 +270,7 @@ def runTool(plugin_name, config_dict=None, user=None):
     log.debug('Running %s with %s', plugin_name, complete_conf)
     
     #In any case we have now a complete setup in complete_conf
-    result = p.runTool(config_dict=complete_conf)
+    result = p._runTool(config_dict=complete_conf)
     
     if user: user.getUserDB().storeHistory(p, complete_conf, result=result)
 
