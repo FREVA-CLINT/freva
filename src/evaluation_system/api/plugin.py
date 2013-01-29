@@ -288,7 +288,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
     def _runTool(self, config_dict = None):
         #start = time()
         
-        result = self.runTool(config_dict)
+        result = self.runTool(config_dict=config_dict)
         #end = time()
         
         #length_seconds = end - start
