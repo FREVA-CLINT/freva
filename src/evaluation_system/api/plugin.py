@@ -656,7 +656,11 @@ It means, **never** start a plug-in comming from unknown sources.
                Default is to forward ``stderr`` to ``stdout``. 
 :type stderr: see :py:class:`subprocess.Popen`"""
         log.debug("Calling: %s", cmd_string)
-        p = Popen(['/bin/bash', '-ic', cmd_string], stdout=stdout, stderr=stderr)
+        if log.isEnabledFor(logging.DEBUG):
+            bash_opt = '-xc'
+        else:
+            bash_opt = '-c'
+        p = Popen(['/bin/bash', bash_opt, cmd_string], stdout=stdout, stderr=stderr)
 
         return p.communicate(stdin)
     
