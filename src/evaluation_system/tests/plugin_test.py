@@ -147,7 +147,7 @@ class Test(unittest.TestCase):
         
     def testReadConfigParser(self):
         from ConfigParser import SafeConfigParser
-        from io import StringIO
+        from StringIO import StringIO
         conf = SafeConfigParser()
         conf_str = "[DummyPlugin]\na=42\nb=text"
         conf.readfp(StringIO(conf_str))
