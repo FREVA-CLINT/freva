@@ -37,7 +37,7 @@ def loadlib(module_filepath):
                 module_name, module_file, module_filepath, py_source_description)
 
 #load the module from a non .py file
-analyze = loadlib('../../../bin/analyze')
+analyze = loadlib(os.path.abspath(os.path.join(os.path.dirname(__file__),'../../../bin/analyze')))
 tools_dir = os.path.join(__file__[:-len('src/evaluation_system/tests/analyze_test.py')-1],'tools')
 
 def call(cmd_string):

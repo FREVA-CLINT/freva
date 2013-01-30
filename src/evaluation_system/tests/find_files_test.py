@@ -4,10 +4,10 @@ Created on 18.10.2012
 @author: estani
 '''
 import unittest
+import os
 
 def loadlib(module_filepath):
     """Loads a module from a file not ending in .py"""
-    import os
     import imp
     
     py_source_open_mode = "U"
@@ -19,7 +19,7 @@ def loadlib(module_filepath):
                 module_name, module_file, module_filepath, py_source_description)
 
 #load the module from a non .py file
-find_files = loadlib('../../../bin/find_files')
+find_files = loadlib(os.path.abspath(os.path.join(os.path.dirname(__file__),'../../../bin/find_files')))
 
 from evaluation_system.tests.capture_std_streams import stdout
 
