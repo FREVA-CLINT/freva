@@ -24,7 +24,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from evaluation_system.model.user import User
-from evaluation_system.misc.utils import TemplateDict
+from evaluation_system.misc.utils import TemplateDict, find_similar_words
 
 __version__ = (1,0,0)
 
@@ -477,7 +477,10 @@ string ``"None"`` without any quotes.
             if key in self.__config_metadict__:
                 key_type = type(self.__config_metadict__[key])
             else:
-                raise ConfigurationError("Unknown parameter %s" % key)
+                mesg = "Unknown parameter %s" % key
+                similar_words = find_similar_words(key, self.__config_metadict__)
+                if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+                raise ConfigurationError(mesg)
         try:
             if key_type is type(None):
                 raise ConfigurationError("Default arguments type missing. Can't infer argument type.")

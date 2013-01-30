@@ -4,7 +4,9 @@
 This module provides different utilities that does not depend on any other internal package.
 '''
 import copy
+from difflib import get_close_matches
 from string import Template
+from re import split
 
 class Struct(object):
     """This class is used for converting dictionaries into classes in order to access them
@@ -193,3 +195,19 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
         
         return result
                 
+def find_similar_words(word, list_of_valid_words):
+    """This function implements a "Did you mean? xxx" algorith for finding similar words.
+It's used for helping the user find the right word.
+
+:param word: the word the user selected.
+:param list_of_valid_words: a list of valid words.
+:returns: a list of words that are close to the word given"""
+    expand_list = {}
+    for w in list_of_valid_words:
+        for w_part in split('[ _\-:/]', w): 
+            if w_part not in expand_list: expand_list[w_part] = set([w])
+            else: expand_list[w_part].add(w) 
+        
+    result =  get_close_matches(word, expand_list)
+    return [w for parts in result for w in expand_list[parts]]
+    

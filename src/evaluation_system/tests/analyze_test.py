@@ -220,7 +220,7 @@ class Test(unittest.TestCase):
         self.assertTrue(DummyPlugin._runs.pop() is not None)
         self.assertEqual(len(DummyPlugin._runs), 0)
 
-        analyze.main(("--history store_file=%s limit=1" % tmpfile).split())
+        analyze.main(("--history --save-config %s limit=1" % tmpfile).split())
         with open(tmpfile, 'r') as f:
             config=f.readlines()
         self.assertEqual(config[0].strip(), '[DummyPlugin]')

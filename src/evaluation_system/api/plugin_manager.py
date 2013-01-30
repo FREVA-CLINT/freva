@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
 from evaluation_system.model.user import User
-from evaluation_system.misc import config
+from evaluation_system.misc import config, utils
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
@@ -137,7 +137,12 @@ description
 :return: a dictionary with information on the plug-in 
 """
     plugin_name = plugin_name.lower()
-    if plugin_name not in getPlugins(): raise PluginManagerException("No plugin named: %s" % plugin_name)
+    if plugin_name not in getPlugins():
+        mesg = "No plugin named: %s" % plugin_name
+        similar_words = utils.find_similar_words(plugin_name, getPlugins())
+        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
+        raise PluginManagerException(mesg)
     
     return getPlugins()[plugin_name]
 

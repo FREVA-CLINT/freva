@@ -56,18 +56,19 @@ if not log.handlers:
 
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model.db import HistoryEntry
+from evaluation_system.misc.utils import find_similar_words
 
-__version__ = 0.3
+__version__ = 0.4
 __date__ = '2012-11-26'
 __updated__ = '2012-12-11'
+
 
 
 class AnalyzeError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
     def __init__(self, msg, show_help=True):
         super(AnalyzeError).__init__(type(self))
-        auto_doc()
-        self.msg = " %s" % msg
+        self.msg = " %s\nUse --help to get help." % msg
     def __str__(self):
         return self.msg
     def __unicode__(self):
@@ -217,17 +218,30 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '-n' or flag == '--dry-run':   #dry-run, perform no computation. This is used for viewing and handling the configuration.
                 dry_run = True
 
+
         if tool and history:
             lastargs.append('tool=%s' % tool)
             tool = None
         
+        if tool is None and not history and cfg_file_load:
+            #ok, try to infer the tool from the configuration
+            with open(cfg_file_load, 'r') as f:
+                import re
+                results = re.findall('^[ \t]*\[([^\]]*)\]', f.read())
+                if len(results) != 1:
+                    raise AnalyzeError("Can't infer tool name from file. Check the file is ok or use --tool tool_name to define the tool to be used.")
+                tool = results[0].lower()
+                
         if help_opt:
             if tool:
                 plugin = pm.getPluginInstance(tool)
                 print plugin.getHelp()
                 return 0
             elif history:
-                print """Displays the last 10 entries with a oneline compact description.
+                print """Displays the last 10 entries with a one-line compact description.
+The first number you see is the entry id, which you might use to select single entries.
+To store the resulting configuration user --save-config output_configuration_file.
+
 Arguments
 full_text       If present shows the complete configuration stored
 
@@ -239,9 +253,6 @@ since=date      Retrieve entries older than date (see DATE FORMAT)
 until=date      Retrieve entries newer than date (see DATE FORMAT)
 entry_ids=ids   Select entries whose ids are in "ids"
                 (single number or comma separated list, e.g. entry_ids=1,2 or entry_ids=5)
-
-store_file=file Instead of displaying, store the configuration in the given file 
-                (you have to select a single configuration)
 
 DATE FORMAT
    Dates can be given in "YYYY-MM-DD HH:mm:ss.n" or any less accurate subset of it.
@@ -264,7 +275,8 @@ DATE FORMAT
                 auto_doc()
                 return 0
         
-        
+
+                
         #get the plugin
         if tool:
             tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
@@ -292,7 +304,7 @@ DATE FORMAT
             since = until = None
             tool_name=None
             entry_ids=None
-            store_file=None
+            store_file=cfg_file_save
             for args in lastargs:
                 tmp = args.split('=')
                 flag = tmp[0]
@@ -309,16 +321,19 @@ DATE FORMAT
                     until=HistoryEntry.timestampFromString(arg)
                 elif flag == 'entry_ids':
                     entry_ids=map(int,arg.split(','))
-                elif flag == 'store_file':
-                    store_file=arg
                 else:
-                    raise Exception("There's no valid argument named '%s' in the history management mode. Use --help for help." % flag)
+                    mesg = "There's no valid argument named '%s' in the history management mode." % flag 
+                    similar_words = find_similar_words(flag, 'full_text limit tool since until entry_ids'.split())
+                    if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+                    raise AnalyzeError(mesg)
+                    
             log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
             rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
             if rows:
                 if store_file:                
                     if len(rows) > 1:
-                        raise AnalyzeError("Can't only store one configuration at a time. We got %s back.\nTrim your search and try again (better if you use rowids with a single id).")
+                        raise AnalyzeError("Can only store one configuration at a time. We got %s back.\n" % len(rows) +
+                                           "Trim your search and try again (better if you use entry_ids with a single id).")
                     
                     entry = rows[0]
                     tool = pm.getPluginInstance(entry.tool_name)
@@ -337,7 +352,21 @@ DATE FORMAT
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
-    except Exception as e:
+    except getopt.GetoptError as e:
+        #Did you mean funtionality
+        similar_words = None
+        if len(e.opt) > 1:
+            trimmed_args = []
+            for arg in _args:
+                if arg[-1] == '=': trimmed_args.append(arg[:-1])
+                else: trimmed_args.append(arg)
+            similar_words = find_similar_words(e.opt, trimmed_args)
+        mesg = e.msg
+        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        print mesg
+
+        return 2
+    except Exception as e:                    
         if isinstance(e, IOError) and e.errno == 32:
             #this is just a broken pipe, which mean the stdout was closed 
             #(e.g when using head after 10 lines are read)
