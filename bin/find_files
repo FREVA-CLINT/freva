@@ -205,7 +205,7 @@ def main(argv=None): # IGNORE:C0111
             return 0
 
         if drs_struct is None:
-            raise CommandError('You must select a search type: --baseline n or --observational or --reanalysis')
+            raise CommandError('You must select a search type. One of: --%s' % ', --'.join(mf.DRSFile.DRS_STRUCTURE))
         search_dict = {}
         for arg in lastargs:
             if '=' not in arg:
