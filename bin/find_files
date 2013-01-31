@@ -40,7 +40,22 @@ import evaluation_system.model.file as mf
 import logging
 log = logging.getLogger(__name__)
 if not log.handlers:
-    logging.basicConfig(level=logging.INFO)
+    class SpecialFormatter(logging.Formatter):
+        FORMATS = {logging.DEBUG :"DBG: %(module)s: %(lineno)d: %(message)s",
+                   logging.ERROR : "ERROR: %(message)s",
+                   logging.INFO : "%(message)s",
+                   'DEFAULT' : "%(levelname)s: %(message)s"}
+    
+        def format(self, record):
+            self._fmt = self.FORMATS.get(record.levelno, self.FORMATS['DEFAULT'])
+            return logging.Formatter.format(self, record)
+        
+    hdlr = logging.StreamHandler(sys.stderr)
+    hdlr.setFormatter(SpecialFormatter())
+    logging.root.addHandler(hdlr)
+    logging.root.setLevel(logging.INFO)
+
+from evaluation_system.misc.utils import find_similar_words
 
 __all__ = []
 __version__ = 0.2
@@ -50,21 +65,38 @@ __updated__ = '2012-12-11'
 
 class CommandError(Exception):
     '''Generic exception to raise and log different fatal errors.'''
-    def __init__(self, msg, show_help=False):
+    def __init__(self, msg):
         super(CommandError).__init__(type(self))
-        if show_help: auto_doc()
-        else: print "Use --help for getting help."
-        self.msg = " %s" % msg
+        
+        self.msg = " %s\nUse --help for getting help" % msg
     def __str__(self):
         return self.msg
     def __unicode__(self):
         return self.msg
 
+def call(cmd_str):
+    from subprocess import Popen, PIPE
+    return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
+
+def getEnvironment():
+    """Parses required variablems from the environment and return a dictionary of them"""
+    result = {}
+    console_size = call('stty size')[0]
+    if console_size:
+        rows, columns = console_size.strip().split()
+        rows, columns = int(rows), int(columns)
+    else:
+        rows, columns = 25, 80
+    
+    result['rows'] = rows
+    result['columns'] = columns
+    return result
+
 def auto_doc(message=None):
     import re, os
     script_file = sys.argv[0]
     script_name = os.path.basename(script_file)
-    #check if in unit tests
+    #check if in unit tests (runfiles.py is starting the unit test)
     if script_name == 'runfiles.py':
         print "No auto doc for unit test."
         return
@@ -73,17 +105,32 @@ def auto_doc(message=None):
     re_end = re.compile('^[ \t]*$')
     re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
     parsing=False
+    
+    args_w_param = ['-%s' % _short_args[i-1] for i in range(len(_short_args)) if _short_args[i] == ':'] + ['--'+ar[:-1] for ar in _args if ar[-1] == '=']
     results = []
     for line in open(script_file, 'r'):
         if parsing:
             items = re_entries.match(line)
             if items:
                 flag, flag_opt, mesg = items.groups()
+                #if multiple flags, all should accept parameters!
+                has_param = flag in args_w_param
                 if flag_opt: flag = '%s, %s' % (flag, flag_opt)
-                results.append('  %-20s : %s' % (flag, mesg))
+                if has_param:
+                    flag = '%s <value>' % flag
+                results.append((flag, mesg))
             if re_end.match(line): break
         elif re_start.match(line): parsing = True
 
+    #Help must be written as just one line comment, here we wrap it properly
+    import textwrap
+    env = getEnvironment()
+    if results:
+        max_length = max([len(i[0]) for i in results])
+    else: max_length = 0
+    wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
+    results = [wrapper.fill(('  %-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
+    
     if message: message = ': ' + message
     else: message = ''
     if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
@@ -107,6 +154,10 @@ Possible search parameters: %s
 
 Current defaults: %s""" % (data_type, search_options, search_defaults)
 
+_short_args = 'hd'
+_args = ['baseline=', 'help', 'debug', 'multiversion',
+        'observations', 'reanalysis', 'cmip5']
+
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
@@ -117,9 +168,7 @@ def main(argv=None): # IGNORE:C0111
     DEBUG = False
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, "hd", ['baseline=', 'help', 'debug', 'multiversion',
-                                                    'observations', 'reanalysis', 'cmip5'])
-        
+        args, lastargs = getopt.getopt(argv, _short_args, _args)
         #defaults
         baseline = 0
         latest=True
@@ -127,24 +176,24 @@ def main(argv=None): # IGNORE:C0111
         show_help=False
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':        #    :This help (if a seach type is selected, show help for that type)
+            if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
                 show_help = True
-            elif flag == '--baseline':              #<n> :search for baseline n data 
+            elif flag == '--baseline':              #search for baseline n data 
                 try:
                     baseline = int(arg)
                     drs_struct = {0: mf.BASELINE0, 1:mf.BASELINE1}[baseline]
                 except:
                     print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
                     return 1
-            elif flag == '--cmip5':          #    :search for cmip5 data (includes baselin 0)
+            elif flag == '--cmip5':                 #search for cmip5 data (includes baseline 0)
                 drs_struct = mf.CMIP5
-            elif flag == '--observations':          #    :search for observational data
+            elif flag == '--observations':          #search for observational data
                 drs_struct = mf.OBSERVATIONS
-            elif flag == '--reanalysis':            #    :search for reanalysis data
+            elif flag == '--reanalysis':            #search for reanalysis data
                 drs_struct = mf.REANALYSIS
-            elif flag == '--multiversion':          #    :select not only the latest version but all of them
+            elif flag == '--multiversion':          #select not only the latest version but all of them
                 latest=False
-            elif flag == '-d' or flag == '--debug': #turn on debuging info
+            elif flag == '-d' or flag == '--debug': #turn on debugging info
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
         
@@ -182,6 +231,20 @@ def main(argv=None): # IGNORE:C0111
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
+    except getopt.GetoptError as e:
+        #Did you mean functionality
+        similar_words = None
+        if len(e.opt) > 1:
+            trimmed_args = []
+            for arg in _args:
+                if arg[-1] == '=': trimmed_args.append(arg[:-1])
+                else: trimmed_args.append(arg)
+            similar_words = find_similar_words(e.opt, trimmed_args)
+        mesg = e.msg
+        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        print mesg
+
+        return 2
     except Exception as e:
         if isinstance(e, IOError) and e.errno == 32:
             #this is just a broken pipe, which mean the stdout was closed 

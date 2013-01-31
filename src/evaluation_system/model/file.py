@@ -10,6 +10,8 @@ import os
 import logging
 log = logging.getLogger(__name__)
 
+from evaluation_system.misc.utils import find_similar_words
+
 CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
 BASELINE0 = 'baseline 0'
@@ -266,10 +268,15 @@ This means the values might contain jokers like '\*1960*'.
         if set(search_dict) - set(bl['defaults']):
             #ok, there are typos or non existing constraints in the search.
             #which are not in the defaults. Those are "strange" to the selected structure.
-            log.warn("There where unused constraints: %s\nFor %s try one of: %s\n" % 
-                             (','.join(search_dict), drs_structure, ','.join(bl['parts_dir'])))
-            raise Exception("Unknown parameter(s) %s" % 
-                            (','.join(search_dict)))
+            mesg = "Unknown parameter(s) %s for %s." % (','.join(search_dict), drs_structure)
+            similar_words = set()
+            for w in search_dict:
+                    similar_words.update(find_similar_words(w, bl['parts_dir']))
+            if similar_words: 
+                mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+            mesg = "%s\n\nFor %s try one of: %s" % (mesg, drs_structure, ','.join(bl['parts_dir']))
+                
+            raise Exception(mesg)
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset
