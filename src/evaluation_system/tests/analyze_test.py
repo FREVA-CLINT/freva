@@ -123,6 +123,31 @@ class Test(unittest.TestCase):
         f2 = tempfile.mktemp('-testdummytool')
         analyze.main(("-n --tool dummyplugin --save-config %s" % f2).split())
         os.unlink(f2)
+
+    def testConfig(self):
+        analyze.main("--tool dummyplugin the_number=91".split())
+        res = DummyPlugin._runs.pop()
+        self.assertEquals(res['the_number'], 91)
+        import sys
+        from StringIO import StringIO
+
+        #read from stdin
+        sys.stdin = StringIO("[DummyPlugin]\nthe_number=921")
+        analyze.main("--tool dummyplugin --config-file -".split())
+        res = DummyPlugin._runs.pop()
+        self.assertEquals(res['the_number'], 921)
+
+        
+        #read from file descriptor
+        #no idea how to test this!
+        class one_way_reader(object):
+            def __init__(self, input_string):
+                self._buff = StringIO(input_string)
+            def read(self, n=-1):
+                return self._buff.read(n)
+            def readline(self, length=None):
+                return self._buff.readline(length)
+        
         
     def testShowConfig(self):
         old = DummyPlugin.__config_metadict__
