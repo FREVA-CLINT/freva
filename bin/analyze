@@ -225,9 +225,15 @@ def main(argv=None): # IGNORE:C0111
         
         if tool is None and not history and cfg_file_load:
             #ok, try to infer the tool from the configuration
-            with open(cfg_file_load, 'r') as f:
+            if cfg_file_load == '-':
+                #reading from stdin so we can read this only once... but we need it twice!
+                #buffer it into StringIO 
+                from StringIO import StringIO
+                in_str = sys.stdin.read()
+                cfg_file_load = StringIO(in_str)
+                
                 import re
-                results = re.findall('^[ \t]*\[([^\]]*)\]', f.read())
+                results = re.findall('^[ \t]*\[([^\]]*)\]', in_str)
                 if len(results) != 1:
                     raise AnalyzeError("Can't infer tool name from file. Check the file is ok or use --tool tool_name to define the tool to be used.")
                 tool = results[0].lower()

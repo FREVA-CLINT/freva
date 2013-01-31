@@ -191,13 +191,17 @@ to be known at this stage.
             with open(user_config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
     #now if we still have a config file update what the configuration with it
-    if config_file == '-':
-        #reading from stdin
-        complete_conf.update(p.readConfiguration(sys.stdin))
+    
+    if isinstance(config_file, basestring):
+        if config_file == '-':
+            #reading from stdin
+            complete_conf.update(p.readConfiguration(sys.stdin))
+        elif config_file is not None:
+            with open(config_file, 'r') as f:
+                complete_conf.update(p.readConfiguration(f))
     elif config_file is not None:
-        with open(config_file, 'r') as f:
-            complete_conf.update(p.readConfiguration(f))
-        
+        #if it's not a string and is something, we asume is something that can be read from
+        complete_conf.update(p.readConfiguration(config_file))
 
     
     #update with user defaults if desired
