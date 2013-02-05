@@ -76,6 +76,8 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 #TODO this is not working like in the previous loop. Though we might just want to remove it,
                 #as there seem to be no use for this info... 
                 __plugin_modules__[module_name] = __import__(module_name)
+            else:
+                log.warn("Cannot load %s, directory missing: %s", module_name, path)
 
     #get the tools directory from the current one
     #get all modules from the tool directory
@@ -84,15 +86,21 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
         py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
         if os.path.isdir(py_dir):
+            log.debug("Loading %s", plugin_name)
             sys.path.append(py_dir)
             __plugin_modules__[plugin_name] = __import__(py_mod)
+        else:
+            log.warn("Cannot load %s, directory missing: %s", plugin_name, py_dir)
 
     #no clean that path from duplicates...
     sys.path = [p for p in munge(sys.path)]
     
     #load all plugin classes found (they are loaded when loading the modules)
     for plug_class in plugin.PluginAbstract.__subclasses__():
-        __plugins__[plug_class.__name__] = plug_class
+        if plug_class.__name__ not in __plugins__:
+            __plugins__[plug_class.__name__] = plug_class
+        else:
+            log.warn("PLUGIN %s is being overwritten.", plug_class.__name__)
 
     #now fill up the metadata
     for plugin_name, plugin_class in __plugins__.items():
