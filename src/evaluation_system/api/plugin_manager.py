@@ -74,8 +74,12 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 #we have a plugin_imp with defined api
                 sys.path.append(path)
                 #TODO this is not working like in the previous loop. Though we might just want to remove it,
-                #as there seem to be no use for this info... 
-                __plugin_modules__[module_name] = __import__(module_name)
+                #as there seem to be no use for this info...
+                try:
+                    __plugin_modules__[module_name] = __import__(module_name)
+                except ImportError as e:
+                    #we handle this as a warning 
+                    log.warning("Cannot import module '%s' from %s. (msg: '%s')", module_name, path, e)
             else:
                 log.warn("Cannot load %s, directory missing: %s", module_name, path)
 
@@ -86,11 +90,19 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
         py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
         if os.path.isdir(py_dir):
-            log.debug("Loading %s", plugin_name)
-            sys.path.append(py_dir)
-            __plugin_modules__[plugin_name] = __import__(py_mod)
+            if py_mod in __plugin_modules__:
+                log.warn("Module '%s' is being overwritten by: %s", py_mod, py_dir)
+            else:
+                log.debug("Loading '%s'", plugin_name)
+                sys.path.append(py_dir)
+                try:
+                    __plugin_modules__[plugin_name] = __import__(py_mod)
+                except ImportError:
+                    #this is an error in this case as is in the central system
+                    log.error("Cannot import module '%s' from %s.", py_mod, py_dir)
+                    raise
         else:
-            log.warn("Cannot load %s, directory missing: %s", plugin_name, py_dir)
+            log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
     #no clean that path from duplicates...
     sys.path = [p for p in munge(sys.path)]
@@ -100,7 +112,8 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         if plug_class.__name__ not in __plugins__:
             __plugins__[plug_class.__name__] = plug_class
         else:
-            log.warn("PLUGIN %s is being overwritten.", plug_class.__name__)
+            from inspect import getfile
+            log.warn("Default plugin %s is being overwritten by: %s", plug_class.__name__, getfile(__plugins__[plug_class.__name__]))
 
     #now fill up the metadata
     for plugin_name, plugin_class in __plugins__.items():
