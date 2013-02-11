@@ -521,6 +521,9 @@ class Player(object):
                 sys.stderr.flush() 
             recording_time=timedelta(seconds=running_time)
             play_time=datetime.now() - start
+            sys.stderr.write("\n\r*** END ***\r\n<Hit any key to exit>")
+            w.nodelay(False)
+            w.getch()
         finally:
             curses.endwin()
 

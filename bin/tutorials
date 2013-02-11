@@ -90,6 +90,9 @@ def getEnvironment():
     result['columns'] = columns
     return result
 
+TTYREC_SUFFIX = '.ttyrec'
+ASCII_SUFFIX = '.rec'
+
 SHORTCUTS = """The recording can be controlled via the following key-shortcuts:
     q            := quits 
     p . <space>  := pauses the tutorial
@@ -142,7 +145,6 @@ def auto_doc(message=None):
 Displays some tutorials on the terminal. %s""" % SHORTCUTS).splitlines()])
 
 
-TTYREC_SUFFIX = '.ttyrec'
 
 _short_args = "hldt:"
 _args = ['tutorial=', 'list', 'help', 'debug']
@@ -153,8 +155,9 @@ def main(argv=None): # IGNORE:C0111
         argv = sys.argv[1:]
 
     DEBUG = False
-    tutorial = None
+    tutorial = external_file = None
     show_list = False
+    
     try:
         # Setup argument parser
         args, _ = getopt.getopt(argv, _short_args, _args)
@@ -162,46 +165,69 @@ def main(argv=None): # IGNORE:C0111
         _nothing = object        
         #parse arguments *!!!*
         for flag, arg in args:
-            if flag=='-h' or flag=='--help':    #displays this help or that of the given context.
+            if flag=='-h' or flag=='--help':            #displays this help or that of the given context.
                 auto_doc()
                 return 0
-            elif flag == '-t' or flag == '--tutorial':              #defines which tool should be used (use also --help for more help).
+            elif flag == '-t' or flag == '--tutorial':  #defines which tool should be used (use also --help for more help).
                 tutorial=arg
-            elif flag == '-l' or flag == '--list':        #lists all available tutorials.
+            elif flag == '-l' or flag == '--list':      #lists all available tutorials.
                 show_list = True
-            elif flag == '-d' or flag == '--debug': #turn on debugging info and show stack trace on exceptions.
+            elif flag == '-f' or flag == '--file':      #load the following tutorial
+                external_file = arg
+            elif flag == '-d' or flag == '--debug':     #turn on debugging info and show stack trace on exceptions.
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
 
 
         recordings_path = os.path.dirname(os.path.abspath(inspect.getframeinfo(
                                inspect.currentframe()).filename)) + '/../tutorials/recordings'
-        
+        tut_path = None
+        is_ascii = True
         if not tutorial:
-            if not show_list:
-                print "You must select a tutorial." 
-            tutorials = [f[:-len(TTYREC_SUFFIX)] for f in os.listdir(recordings_path) if f.endswith(TTYREC_SUFFIX)]
-            if tutorials:
-                print "List of available tutorials:\n\t"
-                print '\n\t'.join(tutorials)
+            if external_file:
+                if os.path.isfile(external_file):
+                    tut_path = external_file
+                else:
+                    print "Cannot find file %s" % external_file
+                    return 1
             else:
-                print "No tutorials available"
+                if not show_list:
+                    print "You must select a tutorial."
+                tutorials = set([f[:-len(TTYREC_SUFFIX)] for f in os.listdir(recordings_path) if f.endswith(TTYREC_SUFFIX)]\
+                    + [f[:-len(ASCII_SUFFIX)] for f in os.listdir(recordings_path) if f.endswith(ASCII_SUFFIX)])
+                if tutorials:
+                    print "List of available tutorials:\n\t" + '\n\t'.join(tutorials)
+                else:
+                    print "No tutorials available"
         else:
             from glob import glob
-            tut_path = glob(os.path.normpath('%s/%s%s' % (recordings_path, tutorial, TTYREC_SUFFIX)))
+            tut_path = glob(os.path.normpath('%s/%s%s' % (recordings_path, tutorial, ASCII_SUFFIX)))
+            tut_name = None
+            if not tut_path:
+                tut_path = glob(os.path.normpath('%s/%s%s' % (recordings_path, tutorial, TTYREC_SUFFIX)))
+                is_ascii = False
+                 
             if tut_path:
                 if len(tut_path)==1:
-                    p = Player()
-                    p.load(tut_path[0])
-                    #show some help
-                    print SHORTCUTS
-                    raw_input("Hit <ENTER> to start the tutorial.\n(Ctrl-C to abort any time).\n")
-                    p.play()
+                    if is_ascii:
+                        tut_name = os.path.basename(tut_path[0][:-len(ASCII_SUFFIX)])
+                    else: 
+                        tut_name = os.path.basename(tut_path[:-len(TTYREC_SUFFIX)])
+                    tut_path = tut_path[0]
                 else:
                     print "Too many similar tutorials, please select only one."
             else:
                 print "Unknown tutorial: %s" % tutorial
-            
+
+        if tut_path:
+            p = Player()
+            p.load(tut_path, ascii=is_ascii)
+            #show some help
+            print "Displaying %s" % tut_name
+            print SHORTCUTS
+            raw_input("Hit <ENTER> to start the tutorial.\n(Ctrl-C to abort any time).\n")
+            p.play()
+
 
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
