@@ -191,7 +191,7 @@ def main(argv=None): # IGNORE:C0111
                 for key in pm.getPlugins():
                     name_width = max(name_width, len(key))
                 offset = name_width + 2
-                for key, plugin in pm.getPlugins().items():
+                for key, plugin in sorted(pm.getPlugins().items()):
                     lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
                     if not lines: lines = ['No description.']
                     if len(lines) > 1:
