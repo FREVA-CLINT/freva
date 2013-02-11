@@ -161,7 +161,7 @@ description
     if plugin_name not in getPlugins():
         mesg = "No plugin named: %s" % plugin_name
         similar_words = utils.find_similar_words(plugin_name, getPlugins())
-        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
         mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
         raise PluginManagerException(mesg)
     

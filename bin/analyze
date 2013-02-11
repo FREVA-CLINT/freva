@@ -334,7 +334,7 @@ DATE FORMAT
                 else:
                     mesg = "There's no valid argument named '%s' in the history management mode." % flag 
                     similar_words = find_similar_words(flag, 'full_text limit tool since until entry_ids'.split())
-                    if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+                    if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
                     raise AnalyzeError(mesg)
                     
             log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
@@ -372,7 +372,7 @@ DATE FORMAT
                 else: trimmed_args.append(arg)
             similar_words = find_similar_words(e.opt, trimmed_args)
         mesg = e.msg
-        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
         print mesg
 
         return 2

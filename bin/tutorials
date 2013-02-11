@@ -242,7 +242,7 @@ def main(argv=None): # IGNORE:C0111
                 else: trimmed_args.append(arg)
             similar_words = find_similar_words(e.opt, trimmed_args)
         mesg = e.msg
-        if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
         print mesg
 
         return 2

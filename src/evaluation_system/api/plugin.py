@@ -479,7 +479,7 @@ string ``"None"`` without any quotes.
             else:
                 mesg = "Unknown parameter %s" % key
                 similar_words = find_similar_words(key, self.__config_metadict__)
-                if similar_words: mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+                if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
                 raise ConfigurationError(mesg)
         try:
             if key_type is type(None):

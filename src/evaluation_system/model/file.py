@@ -273,7 +273,7 @@ This means the values might contain jokers like '\*1960*'.
             for w in search_dict:
                     similar_words.update(find_similar_words(w, bl['parts_dir']))
             if similar_words: 
-                mesg = "%s\n Did you mean?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+                mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
             mesg = "%s\n\nFor %s try one of: %s" % (mesg, drs_structure, ','.join(bl['parts_dir']))
                 
             raise Exception(mesg)
