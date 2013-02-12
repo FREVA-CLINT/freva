@@ -146,8 +146,8 @@ Displays some tutorials on the terminal. %s""" % SHORTCUTS).splitlines()])
 
 
 
-_short_args = "hldt:"
-_args = ['tutorial=', 'list', 'help', 'debug']
+_short_args = "hldt:f:"
+_args = ['tutorial=', 'file=', 'list', 'help', 'debug']
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
@@ -187,6 +187,7 @@ def main(argv=None): # IGNORE:C0111
             if external_file:
                 if os.path.isfile(external_file):
                     tut_path = external_file
+                    tut_name = os.path.basename(external_file)
                 else:
                     print "Cannot find file %s" % external_file
                     return 1
