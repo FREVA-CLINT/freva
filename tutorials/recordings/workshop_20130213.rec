@@ -43,13 +43,14 @@ Last login: Mon Feb  4 11:28:44 2013 from tux14.met.fu-berlin.de
 [2] 2 
 
 
-[0.612046] 342 
+[0.612046] 356 
 Evaluation System successfully loaded.
 
 New available commands:
 *  analyze
 *  esgf
 *  find_files
+*  tutorials
  
 To get help use: 
 <command> --help
@@ -101,9 +102,10 @@ analyze --list
 [2] 2 
 
 
-[0.563939] 111 
-PCA: Principal Component Analysis
+[0.563939] 167 
+DiffPlotter: Plots difference between two NetCDF files
 MoviePlotter: Plots 2D lon/lat movies in GIF format
+PCA: Principal Component Analysis
 ]0;k204198@miklip04:~
 [0.016341] 84 
 [01;32mk204198@[38;5;49mmiklip04[00m:[01;34m~[00m [1;38;5;232;48;5;117m[0m $ 
@@ -778,10 +780,11 @@ analyze --list
 [2] 2 
 
 
-[1.499981] 152 
+[1.499981] 208 
+DiffPlotter: Plots difference between two NetCDF files
+MoviePlotter: Plots 2D lon/lat movies in GIF format
 PCA: Principal Component Analysis
 TheAnswer: Finds the answer.
-MoviePlotter: Plots 2D lon/lat movies in GIF format
 ]0;k204198@miklip04:~/tmp_plugin
 [0.016064] 95 
 [01;32mk204198@[38;5;49mmiklip04[00m:[01;34m~/tmp_plugin[00m [1;38;5;232;48;5;117m[0m $ 
@@ -1049,9 +1052,10 @@ analyze --list
 [2] 2 
 
 
-[0.104001] 122 
-PCA: Principal Component Analysis
+[0.104001] 178 
+DiffPlotter: Plots difference between two NetCDF files
 MoviePlotter: Plots 2D lon/lat movies in GIF format
+PCA: Principal Component Analysis
 ]0;k204198@miklip04:~/tmp_plugin
 [0.015993] 95 
 [01;32mk204198@[38;5;49mmiklip04[00m:[01;34m~/tmp_plugin[00m [1;38;5;232;48;5;117m[0m $ 
