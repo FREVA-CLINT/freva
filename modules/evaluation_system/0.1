@@ -35,17 +35,49 @@ proc ModulesHelp { } {
     puts stderr "evaluation_system 0.1"
 }
 
+proc show_info {dir}  {
+    puts stderr "Evaluation System successfully loaded.
+
+New available commands:
+[ set res ""
+  foreach f [glob "$dir/bin/*"] {
+  append res [file tail $f] "\n"
+} 
+  set res]
+ 
+To get help use: 
+<command> --help
+
+For more help/information check: https://code.zmaw.de/projects/miklip-d-integration/wiki"
+}
+
 #only one version at a time!!
 conflict evaluation_system
 
 #load required modules
-module load python
-module load cdo
+proc safe_load { mod_name } {
+    if [ is-loaded $mod_name ] {
+        puts stderr "*** $mod_name module already loaded!! ***"
+        puts stderr "To avoid conflicts it will be removed."
+        module unload $mod_name
+    }
+    module load $mod_name
+}
 
 set evaluation_system_dir "/miklip/integration/evaluation_system"
 
 #add the python packages to the pythonpath so it can be used anywhere
-append-path PYTHONPATH "$toolPath/src"
+append-path PYTHONPATH "$evaluation_system_dir/src"
 #add al binaries to the path
 append-path PATH "$evaluation_system_dir/bin"
 
+
+if { $curMode eq "load" } {
+    safe_load python
+    safe_load cdo
+    show_info $evaluation_system_dir
+} elseif { $curMode eq "remove" } {
+    module unload cdo
+    module unload python
+    puts stderr "Evaluation System succefully unloaded."
+}
