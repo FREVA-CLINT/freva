@@ -145,10 +145,9 @@ def main(argv=None): # IGNORE:C0111
         
         for arg in lastargs:
             items = arg.split('=')
-            if len(items)==1:
-                facets[items[0]] = True
-            else:
-                facets[items[0]] = '='.join(items[1:])
+            if items[0] not in facets: facets[items[0]] = [] 
+            if len(items)>1:
+                facets[items[0]].append('='.join(items[1:]))
             
         if DEBUG:
             sys.stderr.write("Searching string: %s\n" % facets)
