@@ -59,7 +59,7 @@ It's used to keep sys.path tidy.
             seen.add( item )
             yield item
             
-def reloadPulgins():
+def reloadPlugins():
     """Reload all plug-ins. Plug-ins are then loaded first from the :class:`PLUGIN_ENV` environmental
 variable and then from the configuration file. This means that the environmental variable has precedence
 and can therefore overwrite existing plug-ins (useful for debugging and testing)."""
@@ -124,7 +124,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #This only runs once after start. To load new plugins on the fly we have 2 possibilities
 #1) Watch the tool directory
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
-reloadPulgins()
+reloadPlugins()
 
 
 def getPlugins():

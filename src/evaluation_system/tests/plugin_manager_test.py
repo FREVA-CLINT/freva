@@ -19,7 +19,7 @@ from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 class Test(unittest.TestCase):
     
     def setUp(self):
-        pm.reloadPulgins()
+        pm.reloadPlugins()
     
 
     def testModules(self):
@@ -235,7 +235,7 @@ class %s(plugin.PluginAbstract):
         
         self.assertTrue('testplugin1' not in list(pm.getPlugins()))
         self.assertTrue('testplugin2' not in list(pm.getPlugins()))
-        pm.reloadPulgins()
+        pm.reloadPlugins()
         log.debug('post-loading: %s', list(pm.getPlugins()))
         self.assertTrue('testplugin1' in list(pm.getPlugins()))
         self.assertTrue('testplugin2' in list(pm.getPlugins()))

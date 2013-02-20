@@ -61,7 +61,7 @@ def timedeltaToDays(date_time):
                 
 class Test(unittest.TestCase):
     def setUp(self):
-        pm.reloadPulgins()
+        pm.reloadPlugins()
         
     def tearDown(self):
         #just remove the calls to dummyplugin...
