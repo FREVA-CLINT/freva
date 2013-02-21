@@ -9,8 +9,9 @@
 set modName [module-info name]
 set toolName evaluation_system
 set curMode [module-info mode]
+#clean symbolic links
+set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile]
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
-
 #set the default path to the bin directory
 append-path PATH "$toolPath/bin"
 #add the python packages to the pythonpath so it can be used anywhere
@@ -47,7 +48,7 @@ conflict evaluation_system
 proc safe_load { mod_name } {
     if [ is-loaded $mod_name ] {
         puts stderr "*** $mod_name module already loaded!! ***"
-        puts stderr "To avoid conflicts it will be removed."
+        puts stderr "To avoid conflicts it might have been replaced."
         module unload $mod_name
     }
     module load $mod_name
