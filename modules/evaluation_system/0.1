@@ -7,28 +7,17 @@
 ### BEGIN of general part ********
 #define some variables
 set modName [module-info name]
-set toolName [exec dirname $modName]
+set toolName evaluation_system
 set curMode [module-info mode]
-set isload [is-loaded $modName]
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
-#This is only for tools
-#if { [exec basename $toolPath] ne $toolName } {
-#    #this is loaded from the evaluation_system module central location
-#    #correct the path
-#    set toolPath "$toolPath/tools/$toolName"
-#}
 
 #set the default path to the bin directory
 append-path PATH "$toolPath/bin"
+#add the python packages to the pythonpath so it can be used anywhere
+append-path PYTHONPATH "$toolPath/src"
+#add al binaries to the path
+append-path PATH "$toolPath/bin"
 
-#check if we have any howto.txt show it to the user
-set howToFile "$toolPath/doc/howto.txt"                                                   
-if { $curMode eq "load" && [file exists $howToFile] } {
-    puts stderr [exec cat $howToFile]
-}
-
-
-### END of general part ********
 
 module-whatis   "evaluation_system v0.1"
 proc ModulesHelp { } {
@@ -64,18 +53,13 @@ proc safe_load { mod_name } {
     module load $mod_name
 }
 
-set evaluation_system_dir "/miklip/integration/evaluation_system"
 
-#add the python packages to the pythonpath so it can be used anywhere
-append-path PYTHONPATH "$evaluation_system_dir/src"
-#add al binaries to the path
-append-path PATH "$evaluation_system_dir/bin"
 
 
 if { $curMode eq "load" } {
     safe_load python
     safe_load cdo
-    show_info $evaluation_system_dir
+    show_info $toolPath
 } elseif { $curMode eq "remove" } {
     module unload cdo
     module unload python
