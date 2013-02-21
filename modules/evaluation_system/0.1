@@ -9,8 +9,8 @@
 set modName [module-info name]
 set toolName evaluation_system
 set curMode [module-info mode]
-#clean symbolic links
-set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile]
+#clean symbolic links (if any)
+catch { set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile] }
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
 #set the default path to the bin directory
 append-path PATH "$toolPath/bin"
