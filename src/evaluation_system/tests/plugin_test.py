@@ -346,10 +346,11 @@ example (default: test)
         dummy = DummyPlugin()
         import evaluation_system.tests.mocks
         import os
-        
+        import re
         self.assertTrue(evaluation_system.tests.mocks.__file__.startswith(dummy.getClassBaseDir()))
-        #module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" 
-        module_name=os.path.abspath(evaluation_system.tests.mocks.__file__)[len(dummy.getClassBaseDir())+1:].replace('/','.')[:-4]
+        #module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" or ".py" 
+        module_name=os.path.abspath(evaluation_system.tests.mocks.__file__)[len(dummy.getClassBaseDir())+1:].replace('/','.')
+        module_name = re.sub("\.pyc?$", "", module_name)
         self.assertEquals(module_name, 'evaluation_system.tests.mocks')
         
     def testSpecialVariables(self):
