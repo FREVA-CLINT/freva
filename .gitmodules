@@ -12,4 +12,4 @@
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/movie_plotter
 [submodule "tools/diffplotter"]
 	path = tools/diffplotter
-	url = ssh://miklip/miklip/integration/repositories/plot_diff.git
+	url = ssh://miklip.dkrz.de/miklip/integration/repositories/plot_diff.git
