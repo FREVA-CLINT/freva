@@ -513,10 +513,8 @@ The strings are of the type: ``key1=val1`` or ``key2``
 
         return config
         
-    def setupConfiguration(self, config_dict = None, template = None, check_cfg = True, recursion=True, substitute=True):
-        """Defines the configuration required for running this plug-in. If ``template`` was given,
-the return value is a string containing the complete configuration that results from filling out
-the template with the resulting configuration.
+    def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):
+        """Defines the configuration required for running this plug-in. 
 If not a dictionary will be returned but with all indirections being resolved. E.g.::
 
     dict(a=1, b='1.txt', c='old_1.txt') == setupConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
@@ -526,16 +524,13 @@ There are some special values pointing to user-related managed by the system def
  
 :param config_dic: dictionary with the configuration to be used when generating the configuration file.
 :type config_dic: dict or :class:`metadict`
-:param template: defines the template for the configuration.
-:type template: string.Template
 :param check_cfg: whether the method checks that the resulting configuration dictionary (i.e. the default 
                   updated by `config_dict`) has no None values after all substituions are made.
 :type check_cfg: bool
 :param recursion: Whether when resolving the template recursion will be applied, i.e. variables can be set
                   with the values of other variables, e.g. ``recursion && a==1 && b=="x${a}x" => f(b)=="x1x"`` 
 :type recursion: bool
-:return:  if a template was provided, the substituted configuration string
-          else a metadict with all defaults values plus those provided here.
+:return:  a copy of self.self.__config_metadict__ with all defaults values plus those provided here.
         """
         if config_dict:
             conf = self.__config_metadict__.copy() 
@@ -550,20 +545,23 @@ There are some special values pointing to user-related managed by the system def
             results = config_dict.copy()
 
         #Allow inheriting class to modify the final configuration before issuing it
-        results = self._postTransformCfg(results)
+        #results = self._postTransformCfg(results)
         
         if check_cfg:
             missing =[ k for k,v in results.items() if v is None and metadict.getMetaValue(config_dict, k ,'mandatory')]
             if missing:
                 raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
         
-        if template:
-            if isinstance(template, Template):
-                return template.substitute(results)
-            else:
-                return Template(template).substitute(results)
-        else:
-            return results
+        #=======================================================================
+        # if template:
+        #    if isinstance(template, Template):
+        #        return template.substitute(results)
+        #    else:
+        #        return Template(template).substitute(results)
+        # else:
+        #    return results
+        #=======================================================================
+        return results
    
     def readFromConfigParser(self, config_parser):
         """Reads a configuration from a config parser object.

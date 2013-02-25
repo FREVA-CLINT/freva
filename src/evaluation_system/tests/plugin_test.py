@@ -69,24 +69,23 @@ class Test(unittest.TestCase):
         self.assertTrue(isinstance(res,metadict))
 
         #check template
-        res = dummy.setupConfiguration(dict(num=1),template="$num", check_cfg=False)
-        self.assertTrue(isinstance(res,str))
-        self.assertEquals("1", res)
+        res = dummy.setupConfiguration(dict(num=1), check_cfg=False)
+        self.assertEquals(1, res['num'])
         
         #check indirect resolution
-        res = dummy.setupConfiguration(dict(num='${a}x', a=1),template="$num", check_cfg=False)
-        self.assertEquals("1x", res)
+        res = dummy.setupConfiguration(dict(num='${a}x', a=1), check_cfg=False)
+        self.assertEquals("1x", res['num'])
         
         #check indirect resolution can also be turned off
-        res = dummy.setupConfiguration(dict(num='${a}x', a=1),template="$num", check_cfg=False, recursion=False)
-        self.assertEquals("${a}x", res)
+        res = dummy.setupConfiguration(dict(num='${a}x', a=1), check_cfg=False, recursion=False)
+        self.assertEquals("${a}x", res['num'])
         
         #check user special values work
-        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),template="$num", check_cfg=False)
-        self.assertEquals(user.getUserBaseDir(), res)
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'), check_cfg=False)
+        self.assertEquals(user.getUserBaseDir(), res['num'])
         
-        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),template="$num", check_cfg=False, substitute=False)
-        self.assertEquals('$USER_BASE_DIR', res)
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'), check_cfg=False, substitute=False)
+        self.assertEquals('$USER_BASE_DIR', res['num'])
         
         user.cleanRandomHome()
         
@@ -312,7 +311,6 @@ example (default: test)
                                              b=2,
                                              c=('x',dict(help='Well this is just an x...')))
         def_config = dummy.setupConfiguration(check_cfg=False)
-        def_template = dummy.setupConfiguration(template='a=$a\nb=$b\nc=$c', check_cfg=False)
         from StringIO import StringIO
         res = StringIO() 
         dummy.saveConfiguration(res, def_config)
@@ -321,7 +319,6 @@ example (default: test)
         dummy.saveConfiguration(res)
         res_str2 = res.getvalue()
         print def_config
-        print def_template
         print res_str1
         self.assertEquals(res_str1, res_str2)
         
