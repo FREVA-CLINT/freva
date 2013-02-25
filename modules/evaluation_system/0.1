@@ -12,19 +12,16 @@ set curMode [module-info mode]
 #clean symbolic links (if any)
 catch { set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile] }
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
-#set the default path to the bin directory
-append-path PATH "$toolPath/bin"
-#add the python packages to the pythonpath so it can be used anywhere
-append-path PYTHONPATH "$toolPath/src"
-#add al binaries to the path
-append-path PATH "$toolPath/bin"
 
 
 module-whatis   "evaluation_system v0.1"
 proc ModulesHelp { } {
     puts stderr "evaluation_system 0.1"
 }
+### END of general part
 
+
+#help function to show user help when loading module
 proc show_info {dir}  {
     puts stderr "Evaluation System successfully loaded.
 
@@ -44,7 +41,7 @@ For more help/information check: https://code.zmaw.de/projects/miklip-d-integrat
 #only one version at a time!!
 conflict evaluation_system
 
-#load required modules
+#help function to load required modules
 proc safe_load { mod_name } {
     if [ is-loaded $mod_name ] {
         puts stderr "*** $mod_name module already loaded!! ***"
@@ -56,7 +53,7 @@ proc safe_load { mod_name } {
 
 
 
-
+#pre-requisites
 if { $curMode eq "load" } {
     safe_load python
     safe_load cdo
@@ -66,3 +63,11 @@ if { $curMode eq "load" } {
     module unload python
     puts stderr "Evaluation System successfully unloaded."
 }
+
+#set the default path to the bin directory
+append-path PATH "$toolPath/bin"
+#add the python packages to the pythonpath so it can be used anywhere
+append-path PYTHONPATH "$toolPath/src"
+#add al binaries to the path
+append-path PATH "$toolPath/bin"
+
