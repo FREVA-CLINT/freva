@@ -56,6 +56,9 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.configuration = json.loads(row[4]) if row[4] else {}
         self.results = json.loads(row[5]) if row[5] else {}
         
+    def toJson(self):
+        return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
+             version=self.version, configuration=self.configuration, results=self.results))
         
     def __eq__(self, hist_entry):
         if isinstance(hist_entry, HistoryEntry):
