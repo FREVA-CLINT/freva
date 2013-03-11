@@ -69,7 +69,7 @@ class DRSFile(object):
          "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/file_name".split('/'),
          "parts_dataset":"project.institute.experiment.realm.time_frequency".split('.'),
          "parts_versioned_dataset":"project.institute.experiment.realm.time_frequency.version".split('.'),
-         "parts_file_name":"variable-table-product-experiment-time".split('-'),
+         "parts_file_name":"variable-cmor_table-product-experiment-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
