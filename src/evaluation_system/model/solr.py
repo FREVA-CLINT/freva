@@ -47,28 +47,69 @@ class SolrFindFiles(object):
         """Wipes out the complete Solr index"""
         self.post(dict(delete=dict(query="*:*")), auto_list=False)
     
-    def update(self):
+    def update(self, data_types=None, processors=5):
         """Updated the Solr index, by ingesting every file in to it"""
-        batch_count=1
-        batch_size = 100
-        batch = []
-        for data_type in [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]:
-            for nc_file in DRSFile.search(data_type, latest_version=False):
-                
-                metadata = nc_file.dict['parts'].copy()
-                metadata['file'] = nc_file.to_path()
-                metadata['timestamp'] = os.path.getmtime(nc_file.to_path())
-                batch.append(metadata)
-                if len(batch) >= batch_size:
-                    print "Sending batch %s" % batch_count
-                    self.post(batch)
-                    batch = []
-                    batch_count += 1
+        if data_types is None:
+            data_types = [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]
+
+        from multiprocessing import Queue, Process
+        q = Queue(1000)
+        handle_file_init(q, batch_size=500)
+        end_token = '*END-OF-QUEUE*'
+        p = Process(target=find_files, args=(q,data_types,))
+        p.start()
+
+        procs = [None]*processors
+        for i in range(processors):
+            procs[i] = Process(target=handle_file, args=(i,end_token,))
+            procs[i].start()
         
-        if batch:
-            self.post(batch)
+        print "Waiting for all processors to finish..."
+        p.join()
+        print "No more input. Finishing procs."
+        handle_file.running = False
+        q.put(end_token)
+        for i in range(processors):
+            procs[i].join()
+
+
+def find_files(q, data_types):
+    if not isinstance(data_types, list): 
+        data_types = [ data_types]
+    for data_type in data_types:
+        for nc_file in DRSFile.search(data_type, latest_version=False):
+            metadata = nc_file.dict['parts'].copy()
+            metadata['data_type'] = data_type
+            metadata['file'] = nc_file.to_path()
+            #don't do this now, this takes a while
+            #metadata['timestamp'] = os.path.getmtime(nc_file.to_path())
+            q.put(metadata)
+
+def handle_file_init(q, batch_size=100):
+    handle_file.batch_size = batch_size
+    handle_file.running = True
+    handle_file.q = q
+
+def handle_file(number, end_token):
+    print "starting proc %s" % number
+    batch_count=1
+    batch = []
+    solr = SolrFindFiles()
+    while handle_file.running:
+        value = handle_file.q.get()
+        if value == end_token:
+            handle_file.q.put(end_token)
+            break
+        value['timestamp'] = os.path.getmtime(value['file'])
+        batch.append(value)
+        if len(batch) >= handle_file.batch_size:
+            print "Sending Entry %s from %s" % (batch_count * handle_file.batch_size, number)
+            solr.post(batch)
             batch = []
-
-
+            batch_count += 1
+        
+    if batch:
+        solr.post(batch)
+    print "proc %s done!" % number
 
 
