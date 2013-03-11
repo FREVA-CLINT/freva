@@ -194,7 +194,8 @@ class DRSFile(object):
             
         log.debug("Path: %s\nFile_parts:%s\ndrs_structure_parts:%s", path, parts, bl['parts_file_name'])
         for i in range(len(bl['parts_file_name'])):
-            result['parts'][bl['parts_file_name'][i]] = parts[i]
+            if bl['parts_file_name'][i] not in result['parts']:
+                result['parts'][bl['parts_file_name'][i]] = parts[i]
         
         bl_file = DRSFile(result, drs_structure=drs_structure)
         
