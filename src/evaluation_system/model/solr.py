@@ -53,7 +53,7 @@ class SolrFindFiles(object):
         batch_size = 100
         batch = []
         for data_type in [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]:
-            for nc_file in DRSFile.search(data_type):
+            for nc_file in DRSFile.search(data_type, latest_version=False):
                 
                 metadata = nc_file.dict['parts'].copy()
                 metadata['file'] = nc_file.to_path()
