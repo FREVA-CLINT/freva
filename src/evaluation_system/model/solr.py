@@ -153,7 +153,7 @@ class SolrFindFiles(object):
                     metadata['file'] = file_path
                     metadata['data_type'] = data_type
                     metadata['timestamp'] = float(timestamp)
-
+                    metadata['dataset'] = drs_file.to_dataset()
                     batch.append(metadata)
 
                     if len(batch) >= batch_size:
