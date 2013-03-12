@@ -25,6 +25,8 @@ REANALYSIS = 'reanalysis'
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
+    #Lazy initialized in find_structure_from_path
+    DRS_STRUCTURE_PATH_TYPE = None
     DRS_STRUCTURE = {
         #Cmip5 data      
         CMIP5 : {
@@ -157,13 +159,35 @@ class DRSFile(object):
             return None
     
     @staticmethod
-    def from_path(path, drs_structure=BASELINE0):
+    def find_structure_from_path(file_path):
+        #if required initialize
+        if DRSFile.DRS_STRUCTURE_PATH_TYPE is None:
+            DRSFile.DRS_STRUCTURE_PATH_TYPE = {}
+            for st_type in DRSFile.DRS_STRUCTURE:
+                path_prefix = DRSFile.DRS_STRUCTURE[st_type]['root_dir']
+                for part in DRSFile.DRS_STRUCTURE[st_type]['parts_dir']:
+                    if part in DRSFile.DRS_STRUCTURE[st_type]['defaults']:
+                        path_prefix += '/' + DRSFile.DRS_STRUCTURE[st_type]['defaults'][part]
+                    else: 
+                        break
+                DRSFile.DRS_STRUCTURE_PATH_TYPE[path_prefix] = st_type
+                
+        for path_prefix, st_type in DRSFile.DRS_STRUCTURE_PATH_TYPE.items():
+            if file_path.startswith(path_prefix):
+                return st_type
+        
+        raise Exception("Unrecognized path format %s" % file_path)
+        
+    @staticmethod
+    def from_path(path, drs_structure=None):
         """Extract a DRSFile object out of a path.
 :param path: path to a file that is part of the ``drs_structure``.
 :type param: str
 :param drs_structure: Which structure is going to be used with this file.
 :type drs_structure: key value of :class:`DRSFile.DRS_STRUCTURE` 
 """
+        if drs_structure is None:
+            drs_structure = DRSFile.find_structure_from_path(path)
         path = os.path.abspath(path)
         bl = DRSFile._getDrsStructure(drs_structure)
     
