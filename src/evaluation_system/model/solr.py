@@ -34,9 +34,12 @@ class SolrFindFiles(object):
         
         return urllib2.urlopen(req).read()
     
-    def get_json(self, endpoint):
+    def get_json(self, endpoint, raw_endpoint=False):
         """Return some json from server"""
-        req=urllib2.Request(self.core_url + endpoint)    
+        if raw_endpoint:
+            req=urllib2.Request(self.solr_url + endpoint)    
+        else:
+            req=urllib2.Request(self.core_url + endpoint)    
         
         return json.loads(urllib2.urlopen(req).read())
     
@@ -112,6 +115,20 @@ class SolrFindFiles(object):
         s = SolrFindFiles()
         return s._search(partial_dict)
 
+    @staticmethod
+    def to_solr_dict(drs_file):
+        metadata = drs_file.dict['parts'].copy()
+        metadata['file'] = drs_file.to_path()
+        if 'version' in metadata:
+            metadata['file_no_version'] = metadata['file'].replace('/%s/' % metadata['version'], '/')
+        else:
+            metadata['file_no_version'] = metadata['file']
+        metadata['data_type'] = drs_file.drs_structure
+        #metadata['timestamp'] = float(timestamp)
+        #metadata['dataset'] = drs_file.to_dataset()
+        
+        return metadata
+
     def dump(self, dump_file=None, batch_size=1000):
         if dump_file is None:
             from datetime import datetime
@@ -121,7 +138,7 @@ class SolrFindFiles(object):
         def cache(batch_size):
             offset = 0
             while True:
-                url_query = '/select?wt=json&fl=file,timestamp&start=%s&rows=%s&sort=file+desc&q=*' % (offset, batch_size)
+                url_query = '/select?wt=json&fl=file,timestamp&start=%s&rows=%s&q=*' % (offset, batch_size)
                 print "Calling %s" % url_query
                 answer = self.get_json(url_query)
                 offset = answer['response']['start']
@@ -137,7 +154,7 @@ class SolrFindFiles(object):
             for file_path, timestamp in cache(batch_size=batch_size):
                 f.write('%s,%s\n' % (file_path, timestamp))
 
-    def load(self, dump_file=None, batch_size=1000):
+    def load(self, dump_file=None, batch_size=1000, abort_on_error=True):
         if dump_file is None:
             from datetime import datetime
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
@@ -147,13 +164,8 @@ class SolrFindFiles(object):
         with open(dump_file, 'r') as f:
             for file_path, timestamp in (line.split(',') for line in f):
                 try:
-                    data_type = DRSFile.find_structure_from_path(file_path)
-                    drs_file = DRSFile.from_path(file_path, drs_structure=data_type)
-                    metadata = drs_file.dict['parts'].copy()
-                    metadata['file'] = file_path
-                    metadata['data_type'] = data_type
+                    metadata = SolrFindFiles.to_solr_dict(DRSFile.from_path(file_path))
                     metadata['timestamp'] = float(timestamp)
-                    metadata['dataset'] = drs_file.to_dataset()
                     batch.append(metadata)
 
                     if len(batch) >= batch_size:
@@ -164,6 +176,7 @@ class SolrFindFiles(object):
 
                 except:
                     print "Can't ingest file %s" % file_path
+                    if abort_on_error: raise
 
         #flush the batch queue
         if batch:
@@ -179,14 +192,8 @@ def find_files(q, data_types):
     if not isinstance(data_types, list): 
         data_types = [ data_types]
     for data_type in data_types:
-        for nc_file in DRSFile.search(data_type, latest_version=False):
-            metadata = nc_file.dict['parts'].copy()
-            metadata['data_type'] = data_type
-            metadata['file'] = nc_file.to_path()
-            metadata['dataset'] = nc_file.to_dataset()
-            #don't do this now, this takes a while
-            #metadata['timestamp'] = os.path.getmtime(nc_file.to_path())
-            q.put(metadata)
+        for drs_file in DRSFile.search(data_type, latest_version=False):
+            q.put(SolrFindFiles.to_solr_dict(drs_file))
 
 def handle_file_init(q, batch_size=100):
     handle_file.batch_size = batch_size
