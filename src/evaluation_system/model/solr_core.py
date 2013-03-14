@@ -220,7 +220,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
     
     def update_from_search(self, processors=1, batch_size=1000, data_types=None, **search_dict):
         """Updated the Solr index, by ingesting the results obtained from the find_files command.
-This is a simple file system search à la find. The search is performed not caring about latest versions
+This is a simple file system search a la find. The search is performed not caring about latest versions
 as it makes no sense there.
 
 :param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
