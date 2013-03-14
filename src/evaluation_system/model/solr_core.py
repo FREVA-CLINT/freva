@@ -78,6 +78,13 @@ class SolrCore(object):
         return self.get_json('admin/luke')['fields']
     
     def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml'):
+        """Creates (actually "register") this core. The Core configuration and directories must
+be generated beforehand (not the data one). You may clone an existing one or start from scratch.
+
+:param instance_dir: main directory for this core
+:param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
+:param config: The configuration file (expected in instance_dir/conf)
+:param schema: The schema file (expected in instance_dir/conf)"""
         #check basic configuration (it must exists!)
         if instance_dir is None and self.instance_dir is None:
             raise Exception("No Instance directory defined!")
@@ -96,9 +103,12 @@ class SolrCore(object):
                     + '&dataDir=%s' % self.data_dir, use_core=False)
     
     def reload(self):
+        """Reload the core. Usefull after schema changes.
+Be aware that you might need to reingest everything if there were changes to the indexing part of the schema."""
         return self.get_json('admin/cores?action=RELOAD&core=' + self.core, use_core=False)
     
     def unload(self):
+        """Unload the core."""
         return self.get_json('admin/cores?action=UNLOAD&core=' + self.core, use_core=False)
     
     def swap(self, other_core):
@@ -106,6 +116,9 @@ class SolrCore(object):
         return self.get_json('admin/cores?action=SWAP&core=%s&other=%s' % (self.core, other_core), use_core=False)
     
     def status(self, general=False):
+        """Return status information about this core or the whole Solr server.
+
+:param general: If True return all information as provided by the server, otherwise just the status info from this core."""
         url_str = 'admin/cores?action=STATUS'
         if not general:
             url_str += '&core=' + self.core
@@ -116,6 +129,11 @@ class SolrCore(object):
             return response['status'][self.core]
     
     def clone(self, new_instance_dir, data_dir='data', copy_data=False):
+        """Copies a core somewhere else.
+:param new_instance_dir: the new location for the clone.
+:param data_dir: the location of the data directory for this new clone.
+:param copy_data: If the data should also be copied (Warning, this is done on the-fly so be sure to unload the core first)
+or assure otherwise there's no chance of getting corrupted data (I don't know any other way besides unloading the original code))"""
         try:
             os.makedirs(new_instance_dir)
         except:
@@ -125,7 +143,7 @@ class SolrCore(object):
             shutil.copytree(os.path.join(self.instance_dir, self.data_dir), os.path.join(new_instance_dir, data_dir))
     
     def delete(self, query):
-        """Wipes out the complete Solr index"""
+        """Isue a delete command, there's no default query for this to avoid unintentional deletion."""
         self.post(dict(delete=dict(query=query)), auto_list=False)
     
     def _update(self, processors=1, batch_size=1000, start_dir=None, abort_on_error=True, data_types=None, search_dict={}):
@@ -201,21 +219,35 @@ and the rest performing the data preparation and ingesting it into Solr."""
                 self.post(batch)
     
     def update_from_search(self, processors=1, batch_size=1000, data_types=None, **search_dict):
-        """Updated the Solr index, by ingesting every file in to it"""
+        """Updated the Solr index, by ingesting the results obtained from the find_files command.
+This is a simple file system search à la find. The search is performed not caring about latest versions
+as it makes no sense there.
+
+:param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
+is used for searching and the rest for preparing and ingesting data.
+:param batch_size: The amount of entries that will be sent to Solr on one commit.
+:param data_types: The type of data to be ingested. See evaluation_system.model.file.DRSFile.DRS_STRUCTURE 
+:param search_dict: All other search parameters."""
         if data_types is None:
             data_types = [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]
         
         self._update(processors=processors, batch_size=batch_size, data_types=data_types, search_dict=search_dict)
     
     def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=1000,):
-        """Updated the Solr index, by ingesting every file in start_dir into it"""
+        """Updated the Solr index, by ingesting every file found by crawling from start_dir.
 
+:param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
+is used for searching and the rest for preparing and ingesting data.
+:param batch_size: The amount of entries that will be sent to Solr on one commit.
+:param start_dir: Root directory to start crawling.
+:param abort_on_error: If False then instead of raising an exception print the error and continue."""
         #clean start dir
         start_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(start_dir)))
         self._update(processors=processors, batch_size=batch_size, start_dir=start_dir, abort_on_error=abort_on_error)
     
     @staticmethod
     def to_solr_dict(drs_file):
+        """Extracts from a DRSFile the information that will be stored in Solr"""
         metadata = drs_file.dict['parts'].copy()
         metadata['file'] = drs_file.to_path()
         if 'version' in metadata:
@@ -229,6 +261,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
         return metadata
     
     def dump(self, dump_file=None, batch_size=1000):
+        """Dump a list of files and their timestamps that can be ingested afterwards"""
         if dump_file is None:
             #just to store where and how we are storing this
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
@@ -253,6 +286,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
                 f.write('%s,%s\n' % (file_path, timestamp))
     
     def load(self, dump_file=None, batch_size=1000, abort_on_error=True):
+        """Loads a csv as created by dump."""
         if dump_file is None:
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
         
@@ -284,6 +318,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
             self.post(batch)
 
 def timestamp_to_solr_date(timestamp):
+    """Transform a timestamp (float) into a string parseable by Solr"""
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 #-- These are for multiple processes... 
@@ -313,13 +348,6 @@ def enqueue_from_search(q, data_types, search_dir):
 def enqueue_from_dir(q, start_dir, abort_on_error=True):
     for metadata in dir_iter(start_dir, abort_on_error=abort_on_error):
         q.put(metadata)
-        
-def find_files(q, data_types):
-    if not isinstance(data_types, list): 
-        data_types = [ data_types]
-    for data_type in data_types:
-        for drs_file in DRSFile.search(data_type, latest_version=False):
-            q.put(SolrCore.to_solr_dict(drs_file))
 
 def handle_file_init(q, core, batch_size=100):
     handle_file.batch_size = batch_size
