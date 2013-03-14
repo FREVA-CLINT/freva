@@ -36,6 +36,7 @@ class DRSFile(object):
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
+         "data_type": CMIP5,
          "defaults" : {"project":"cmip5" }
         },
         #baseline 0 data      
@@ -46,6 +47,7 @@ class DRSFile(object):
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
+         "data_type": BASELINE0,
          "defaults" : {"project":"baseline0", "institute":"MPI-M", "model":"MPI-ESM-LR"}
         },
         #baseline 1 data
@@ -55,6 +57,7 @@ class DRSFile(object):
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
+         "data_type": BASELINE1,
          "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
          },
          OBSERVATIONS : {
@@ -64,6 +67,7 @@ class DRSFile(object):
          "parts_versioned_dataset":"project.institute.source.time_frequency.version".split('.'),
          "parts_file_name":"variable-source-level-time".split('-'),
          "parts_time":"start_time-end_time",
+         "data_type": OBSERVATIONS,
          "defaults" : {"project":"obs4MIPS", "product":"observations", "data_structure":"grid"}
          },
          REANALYSIS : {
@@ -72,6 +76,7 @@ class DRSFile(object):
          "parts_dataset":"project.institute.experiment.realm.time_frequency.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
+         "data_type": REANALYSIS,
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
         }
