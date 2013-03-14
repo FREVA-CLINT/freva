@@ -14,9 +14,9 @@ from evaluation_system.misc.utils import find_similar_words
 
 CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
-BASELINE0 = 'baseline 0'
+BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
-BASELINE1 = 'baseline 1'
+BASELINE1 = 'baseline1'
 """DRS structure for Baseline 0 Data"""
 OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
@@ -68,10 +68,9 @@ class DRSFile(object):
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/file_name".split('/'),
-         "parts_dataset":"project.institute.experiment.realm.time_frequency".split('.'),
-         "parts_versioned_dataset":"project.institute.experiment.realm.time_frequency.version".split('.'),
-         "parts_file_name":"variable-cmor_table-product-experiment-time".split('-'),
+         "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset":"project.institute.experiment.realm.time_frequency.ensemble".split('.'),
+         "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
