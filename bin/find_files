@@ -156,7 +156,7 @@ Current defaults: %s""" % (data_type, search_options, search_defaults)
 
 _short_args = 'hd'
 _args = ['baseline=', 'help', 'debug', 'multiversion',
-        'observations', 'reanalysis', 'cmip5']
+        'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1']
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -185,6 +185,10 @@ def main(argv=None): # IGNORE:C0111
                 except:
                     print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
                     return 1
+            elif flag == '--baseline0':             #alias, same as --baseline 0
+                drs_struct = mf.BASELINE0
+            elif flag == '--baseline1':             #alias, same as --baseline 1
+                drs_struct = mf.BASELINE1
             elif flag == '--cmip5':                 #search for cmip5 data (includes baseline 0)
                 drs_struct = mf.CMIP5
             elif flag == '--observations':          #search for observational data
