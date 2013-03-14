@@ -15,6 +15,7 @@ import os
 import shutil
 import urllib2
 import json
+from datetime import datetime
 
 from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1, CMIP5, OBSERVATIONS, REANALYSIS
 
@@ -127,26 +128,33 @@ class SolrCore(object):
         """Wipes out the complete Solr index"""
         self.post(dict(delete=dict(query=query)), auto_list=False)
     
-    def _update(self, method, processors=1, batch_size=1000, start_dir=None, abort_on_error=True, data_types=None, search_dir={}):
-        """Updated the Solr index, by ingesting every file in to it"""
+    def _update(self, processors=1, batch_size=1000, start_dir=None, abort_on_error=True, data_types=None, search_dict={}):
+        """Refactored method to centralize all ingest methods. 
+It allows to ingest file by crawling a subdirectory (start_dir != None) 
+or by performing a file system search (data_types != None).
+In both cases the ingest will be done either serial (processors=1)
+or in parallel (processors >1) with one process handling the search/crawling
+and the rest performing the data preparation and ingesting it into Solr."""
         if processors > 1:
             from multiprocessing import Queue
             q = Queue(processors * batch_size)  #just store one extra batch load for every processor
-
-        if method == 'search':
-            enqueue_function = enqueue_from_search
-            enqueue_args = (q, data_types, search_dir,)
-            method_iter = search_iter(data_types,search_dir)
+        
+        if start_dir is not None and data_types is not None:
+            raise Exception("Can't define both a search and a recursive crawling at this time.")
+        
+        if data_types is not None:
+            if processors > 1:
+                enqueue_function = enqueue_from_search
+                enqueue_args = (q, data_types, search_dict,)
+            method_iter = search_iter(data_types,search_dict)
         elif start_dir is not None:
-            enqueue_function = enqueue_from_dir
-            enqueue_args = (q, start_dir, abort_on_error,)
+            if processors > 1:
+                enqueue_function = enqueue_from_dir
+                enqueue_args = (q, start_dir, abort_on_error,)
             method_iter = dir_iter(start_dir, abort_on_error=abort_on_error)
         else:
             raise Exception('Invalid parameters either set start_dir or data_types')
             
-        if data_types is None:
-            data_types = [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]
-        
         if processors > 1:
             #use one process for generating the file list
             from multiprocessing import Process
@@ -170,13 +178,16 @@ class SolrCore(object):
             for i in range(processors):
                 procs[i].join()
         else:
-            batch_count=1
+            batch_count=0
             batch = []
             for metadata in method_iter:
                 #import scipy.io.netcdf
                 #with scipy.io.netcdf.netcdf_file(metadata['file'], 'r') as f:
                 #    metadata.update(f._attributes)
-                metadata['timestamp'] = os.path.getmtime(metadata['file'])
+                ts = os.path.getmtime(metadata['file'])
+                metadata['timestamp'] = ts
+                metadata['creation_time'] = timestamp_to_solr_date(ts)
+
                 batch.append(metadata)
                 if len(batch) >= batch_size:
                     print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
@@ -189,79 +200,19 @@ class SolrCore(object):
                 print "Sending last %s entries." % (len(batch))
                 self.post(batch)
     
-    def update_from_search(self, processors=1, batch_size=1000, data_types=None, **search_dir):
+    def update_from_search(self, processors=1, batch_size=1000, data_types=None, **search_dict):
         """Updated the Solr index, by ingesting every file in to it"""
         if data_types is None:
             data_types = [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]
         
-        if processors > 1:
-            #use one process for generating the file list
-            from multiprocessing import Queue, Process
-            q = Queue(processors * batch_size)  #just store one extra batch load for every processor
-            handle_file_init(q, self.core, batch_size=batch_size)
-            end_token = '*END-OF-QUEUE*'
-            p = Process(target=enqueue_from_search, args=(q,data_types, search_dir,))
-            p.start()
-
-            #the rest for consuming it
-            processors -= 1            
-            procs = [None]*processors
-            for i in range(processors):
-                procs[i] = Process(target=handle_file, args=(i,end_token,))
-                procs[i].start()
-            
-            print "Waiting for all processors to finish..."
-            p.join()
-            print "No more input. Finishing procs."
-            handle_file.running = False
-            q.put(end_token)
-            for i in range(processors):
-                procs[i].join()
-        else:
-            batch_count=1
-            batch = []
-            for metadata in search_iter(data_types,search_dir):
-                #import scipy.io.netcdf
-                #with scipy.io.netcdf.netcdf_file(metadata['file'], 'r') as f:
-                #    metadata.update(f._attributes)
-                metadata['timestamp'] = os.path.getmtime(metadata['file'])
-                batch.append(metadata)
-                if len(batch) >= batch_size:
-                    print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
-                    self.post(batch)
-                    batch = []
-                    batch_count += 1
-            
-            #flush the batch queue
-            if batch:
-                print "Sending last %s entries." % (len(batch))
-                self.post(batch)
+        self._update(processors=processors, batch_size=batch_size, data_types=data_types, search_dict=search_dict)
     
-    def update_from_dir(self, start_dir, batch_size=1000, abort_on_error=False):
+    def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=1000,):
         """Updated the Solr index, by ingesting every file in start_dir into it"""
-        
+
         #clean start dir
         start_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(start_dir)))
-        
-        batch_count=1
-        batch = []
-        
-        for metadata in dir_iter(start_dir, abort_on_error=abort_on_error):
-            #import scipy.io.netcdf
-            #with scipy.io.netcdf.netcdf_file(metadata['file'], 'r') as f:
-            #    metadata.update(f._attributes)
-            metadata['timestamp'] = os.path.getmtime(metadata['file'])
-            batch.append(metadata)
-            if len(batch) >= batch_size:
-                print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
-                self.post(batch)
-                batch = []
-                batch_count += 1
-        
-        #flush the batch queue
-        if batch:
-            print "Sending last %s entries." % (len(batch))
-            self.post(batch)
+        self._update(processors=processors, batch_size=batch_size, start_dir=start_dir, abort_on_error=abort_on_error)
     
     @staticmethod
     def to_solr_dict(drs_file):
@@ -279,7 +230,6 @@ class SolrCore(object):
     
     def dump(self, dump_file=None, batch_size=1000):
         if dump_file is None:
-            from datetime import datetime
             #just to store where and how we are storing this
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
         
@@ -304,7 +254,6 @@ class SolrCore(object):
     
     def load(self, dump_file=None, batch_size=1000, abort_on_error=True):
         if dump_file is None:
-            from datetime import datetime
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
         
         batch_count=0
@@ -313,7 +262,10 @@ class SolrCore(object):
             for file_path, timestamp in (line.split(',') for line in f):
                 try:
                     metadata = SolrCore.to_solr_dict(DRSFile.from_path(file_path))
-                    metadata['timestamp'] = float(timestamp)
+                    ts = float(timestamp)
+                    metadata['timestamp'] = ts
+                    metadata['creation_time'] = timestamp_to_solr_date(ts)
+
                     batch.append(metadata)
 
                     if len(batch) >= batch_size:
@@ -330,6 +282,9 @@ class SolrCore(object):
         if batch:
             print "Sending last %s entries." % (len(batch))
             self.post(batch)
+
+def timestamp_to_solr_date(timestamp):
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 #-- These are for multiple processes... 
 #but There's no benefit for having multiple threads at this time
@@ -374,7 +329,7 @@ def handle_file_init(q, core, batch_size=100):
 
 def handle_file(number, end_token):
     print "starting proc %s" % number
-    batch_count=1
+    batch_count=0
     batch = []
     solr = SolrCore(core=handle_file.core)
     while handle_file.running:
@@ -385,15 +340,18 @@ def handle_file(number, end_token):
         #import scipy.io.netcdf
         #with scipy.io.netcdf.netcdf_file(value['file'], 'r') as f:
         #    value.update(f._attributes)
-        value['timestamp'] = os.path.getmtime(value['file'])
+        ts = os.path.getmtime(value['file'])
+        value['timestamp'] = ts
+        value['creation_time'] = timestamp_to_solr_date(ts)
         batch.append(value)
         if len(batch) >= handle_file.batch_size:
-            print "Sending Entry %s from %s" % (batch_count * handle_file.batch_size, number)
+            print "Sending entries %s-%s from %s" % (batch_count * handle_file.batch_size, (batch_count+1) * handle_file.batch_size, number)
             solr.post(batch)
             batch = []
             batch_count += 1
         
     if batch:
+        print "Sending last %s entries from %s." % (len(batch), number)
         solr.post(batch)
     print "proc %s done!" % number
 
