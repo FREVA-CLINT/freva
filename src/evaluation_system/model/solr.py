@@ -34,7 +34,7 @@ and read from the configuration file."""
             params.append(('fq', constraint,))
         return urllib.urlencode(params)
     
-    def _search(self, batch_size=1000, latest_version=True, **partial_dict):
+    def _search(self, batch_size=10000, latest_version=True, **partial_dict):
         offset = 0
         if 'free_text' in partial_dict:
             free_text = partial_dict.pop('free_text')
@@ -75,7 +75,7 @@ and read from the configuration file."""
                     offset += batch_size
         
     @staticmethod
-    def search (batch_size=1000, latest_version=True, **partial_dict):
+    def search (batch_size=10000, latest_version=True, **partial_dict):
         #use default
         s = SolrFindFiles()
         return s._search(batch_size=batch_size, latest_version=latest_version, **partial_dict)

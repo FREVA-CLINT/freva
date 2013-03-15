@@ -27,7 +27,7 @@ class SolrCore(object):
         """Create the connection pointing to the proper solr url and core"""
         if host is None: host = config.get(config.SOLR_HOST)
         if port is None: port = config.get(config.SOLR_PORT)
-        if core is None: port = config.get(config.SOLR_CORE)
+        if core is None: core = config.get(config.SOLR_CORE)
             
         self.solr_url = 'http://%s:%s/solr/' % (host, port)
         self.core = core
@@ -44,11 +44,13 @@ class SolrCore(object):
         else:
             self.data_dir = 'data'
         
-    def post(self, list_of_dicts, auto_list=True):
+    def post(self, list_of_dicts, auto_list=True, commit=True):
         """Sends some json to Solr"""
         if auto_list and not isinstance(list_of_dicts, list): list_of_dicts=[list_of_dicts]
-        
-        req=urllib2.Request(self.core_url + 'update/json?commit=true', json.dumps(list_of_dicts))
+        endpoint = 'update/json?'
+        if commit:
+            endpoint += 'commit=true'
+        req=urllib2.Request(self.core_url + endpoint, json.dumps(list_of_dicts))
         req.add_header("Content-type", "application/json")
         
         if self.echo:
@@ -150,7 +152,7 @@ or assure otherwise there's no chance of getting corrupted data (I don't know an
         """Isue a delete command, there's no default query for this to avoid unintentional deletion."""
         self.post(dict(delete=dict(query=query)), auto_list=False)
     
-    def _update(self, processors=1, batch_size=1000, start_dir=None, abort_on_error=True, data_types=None, search_dict={}):
+    def _update(self, processors=1, batch_size=10000, start_dir=None, abort_on_error=True, data_types=None, search_dict={}):
         """Refactored method to centralize all ingest methods. 
 It allows to ingest file by crawling a subdirectory (start_dir != None) 
 or by performing a file system search (data_types != None).
@@ -222,7 +224,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
                 print "Sending last %s entries." % (len(batch))
                 self.post(batch)
     
-    def update_from_search(self, processors=1, batch_size=1000, data_types=None, **search_dict):
+    def update_from_search(self, processors=1, batch_size=10000, data_types=None, **search_dict):
         """Updated the Solr index, by ingesting the results obtained from the find_files command.
 This is a simple file system search a la find. The search is performed not caring about latest versions
 as it makes no sense there.
@@ -237,7 +239,7 @@ is used for searching and the rest for preparing and ingesting data.
         
         self._update(processors=processors, batch_size=batch_size, data_types=data_types, search_dict=search_dict)
     
-    def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=1000,):
+    def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=10000,):
         """Updated the Solr index, by ingesting every file found by crawling from start_dir.
 
 :param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
@@ -264,7 +266,7 @@ is used for searching and the rest for preparing and ingesting data.
         
         return metadata
     
-    def dump(self, dump_file=None, batch_size=1000):
+    def dump(self, dump_file=None, batch_size=10000):
         """Dump a list of files and their timestamps that can be ingested afterwards"""
         if dump_file is None:
             #just to store where and how we are storing this
@@ -301,7 +303,7 @@ is used for searching and the rest for preparing and ingesting data.
                 for file_path, timestamp in cache(batch_size=batch_size):
                     f.write('%s,%s\n' % (file_path, timestamp))
     
-    def load(self, dump_file=None, batch_size=1000, abort_on_error=True):
+    def load(self, dump_file=None, batch_size=10000, abort_on_error=True):
         """Loads a csv as created by dump."""
         if dump_file is None:
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
@@ -374,7 +376,7 @@ def enqueue_from_dir(q, start_dir, abort_on_error=True):
     for metadata in dir_iter(start_dir, abort_on_error=abort_on_error):
         q.put(metadata)
 
-def handle_file_init(q, core, batch_size=100):
+def handle_file_init(q, core, batch_size=10000):
     handle_file.batch_size = batch_size
     handle_file.running = True
     handle_file.q = q
