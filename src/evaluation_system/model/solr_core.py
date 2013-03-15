@@ -280,19 +280,37 @@ is used for searching and the rest for preparing and ingesting data.
                     break   #we are done
                 else:
                     offset += batch_size
-        
-        with open(dump_file, 'w') as f:
-            for file_path, timestamp in cache(batch_size=batch_size):
-                f.write('%s,%s\n' % (file_path, timestamp))
+
+        if dump_file.endswith('.gz'):
+            print "Using gzip"
+            import gzip
+            #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
+            #Let's leave this python 2.6 compatible...
+            f = gzip.open(dump_file, 'wb')
+            try:
+                for file_path, timestamp in cache(batch_size=batch_size):
+                    f.write('%s,%s\n' % (file_path, timestamp))
+            finally:
+                f.close()
+        else:
+            with open(dump_file, 'w') as f:
+                for file_path, timestamp in cache(batch_size=batch_size):
+                    f.write('%s,%s\n' % (file_path, timestamp))
     
     def load(self, dump_file=None, batch_size=1000, abort_on_error=True):
         """Loads a csv as created by dump."""
         if dump_file is None:
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
         
+        if dump_file.endswith('.gz'):
+            import gzip
+            print "Using gzip"
+            f = gzip.open(dump_file)
+        else:
+            f = open(dump_file, 'r')
         batch_count=0
         batch = []
-        with open(dump_file, 'r') as f:
+        try:
             for file_path, timestamp in (line.split(',') for line in f):
                 try:
                     metadata = SolrCore.to_solr_dict(DRSFile.from_path(file_path))
@@ -311,6 +329,9 @@ is used for searching and the rest for preparing and ingesting data.
                 except:
                     print "Can't ingest file %s" % file_path
                     if abort_on_error: raise
+        finally:
+            #because of gzip we are not using wiith here anymore...
+            f.close()
         
         #flush the batch queue
         if batch:
