@@ -218,7 +218,7 @@ def main(argv=None): # IGNORE:C0111
             items = arg.split('=')
             search_dict[items[0]] = ''.join(items[1:])
             
-        log.debug("Searching string: %s\n", search_dict)
+        log.debug("Searching dictionary: %s\n", search_dict)
 
         if not search_dict and drs_struct == mf.BASELINE0 and latest:
             sys.stderr.write("This search will take a while, since we have to parse all files to get the latest version.\nTry constraining your query for faster results\n")

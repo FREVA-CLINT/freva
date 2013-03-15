@@ -328,3 +328,26 @@ This means the values might contain jokers like '\*1960*'.
             #then return the results stored in datasets
             for latest_version_file in [v for sub in datasets.values() for v in sub]:
                 yield latest_version_file
+
+    @staticmethod
+    def solr_search(drs_structure=None, latest_version=True, path_only=False, batch_size=10000, **partial_dict):
+        """Search for files by relying on a Solr Index.*'.
+
+:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`). This isn't mandatory anymore.
+:type drs_structure: str 
+:param latest_version: if this should be only the latest version available.
+:type latest_version: bool
+:param path_only: If true rertuns a string with the path only, otherwise a complete DRSFile object.
+:param batch_size: The size of the number of results that will be returned by each Solr call. 
+:type batch_size: int
+:param partial_dict: a dictionary with some DRS components representing the query. 
+:returns: Generator returning matching files"""
+        from evaluation_system.model.solr import SolrFindFiles
+        if drs_structure is not None:
+            partial_dict['data_type'] = drs_structure
+        if path_only:
+            for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
+                yield path
+        else:
+            for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
+                yield DRSFile.from_path(path)

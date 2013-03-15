@@ -360,8 +360,8 @@ def search_iter(data_types, search_dict):
         for drs_file in DRSFile.search(data_type, latest_version=False, **search_dict):
             yield SolrCore.to_solr_dict(drs_file)
 
-def dir_iter(start_dir, abort_on_error=True):
-    for base_dir, _, files in os.walk(start_dir):
+def dir_iter(start_dir, abort_on_error=True, followlinks=True):
+    for base_dir, _, files in os.walk(start_dir, followlinks=followlinks):
         try:
             for f in files:
                 path = os.path.join(base_dir,f)
