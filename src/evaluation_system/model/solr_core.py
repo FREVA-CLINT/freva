@@ -270,7 +270,7 @@ is used for searching and the rest for preparing and ingesting data.
         """Dump a list of files and their timestamps that can be ingested afterwards"""
         if dump_file is None:
             #just to store where and how we are storing this
-            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
+            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv.gz')
         
         def cache(batch_size):
             offset = 0
@@ -306,7 +306,7 @@ is used for searching and the rest for preparing and ingesting data.
     def load(self, dump_file=None, batch_size=10000, abort_on_error=True):
         """Loads a csv as created by dump."""
         if dump_file is None:
-            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv')
+            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv.gz')
         
         if dump_file.endswith('.gz'):
             import gzip
