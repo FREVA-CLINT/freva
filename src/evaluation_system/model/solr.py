@@ -13,8 +13,10 @@ from evaluation_system.model.solr_core import SolrCore
 
 class SolrFindFiles(object):
     """Encapsulate access to Solr like the find files command"""
-    def __init__(self, core='files', host='localhost', port=8983):
-        """Create the connection pointing to the proper solr url and core"""
+    def __init__(self, core=None, host=None, port=None):
+        """Create the connection pointing to the proper solr url and core. 
+The default values of these parameters are setup in evaluation_system.model.solr_core.SolrCore
+and read from the configuration file."""
         self.solr = SolrCore(core, host=host, port=port)
     
     def to_solr_query(self, partial_dict):
@@ -32,8 +34,7 @@ class SolrFindFiles(object):
             params.append(('fq', constraint,))
         return urllib.urlencode(params)
     
-    def _search(self, latest_version=True, **partial_dict):
-        batch_size = 100
+    def _search(self, batch_size=1000, latest_version=True, **partial_dict):
         offset = 0
         if 'free_text' in partial_dict:
             free_text = partial_dict.pop('free_text')
@@ -74,8 +75,8 @@ class SolrFindFiles(object):
                     offset += batch_size
         
     @staticmethod
-    def search (latest_version=True, **partial_dict):
+    def search (batch_size=1000, latest_version=True, **partial_dict):
         #use default
         s = SolrFindFiles()
-        return s._search(latest_version=latest_version, **partial_dict)
+        return s._search(batch_size=batch_size, latest_version=latest_version, **partial_dict)
 

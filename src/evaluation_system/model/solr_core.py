@@ -18,13 +18,17 @@ import json
 from datetime import datetime
 
 from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1, CMIP5, OBSERVATIONS, REANALYSIS
-
+from evaluation_system.misc import config
 
 class SolrCore(object):
     """Encapsulate access to a Solr instance"""
     
-    def __init__(self, core, host='localhost', port=8983, echo=False, instance_dir=None, data_dir=None):
+    def __init__(self, core=None, host=None, port=None, echo=False, instance_dir=None, data_dir=None):
         """Create the connection pointing to the proper solr url and core"""
+        if host is None: host = config.get(config.SOLR_HOST)
+        if port is None: port = config.get(config.SOLR_PORT)
+        if core is None: port = config.get(config.SOLR_CORE)
+            
         self.solr_url = 'http://%s:%s/solr/' % (host, port)
         self.core = core
         self.core_url = self.solr_url + core + '/'

@@ -54,6 +54,17 @@ PLUGIN_PYTHON_PATH = 'python_path'
 PLUGIN_MODULE = 'module'
 "The full qualified module name where the plug-in is implemented."
 
+#: Solr #########################
+SOLR_HOST = 'solr.host'
+"Hostname of the Solr instance."
+
+SOLR_PORT = 'solr.port'
+"Port number of the Solr instance."
+
+SOLR_CORE = 'solr.core'
+"Core name of the Solr instance."
+
+
 class ConfigurationException(Exception):
     """Mark exceptions thrown in this package"""
     pass
