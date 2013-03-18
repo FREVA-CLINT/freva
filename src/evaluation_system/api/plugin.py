@@ -17,7 +17,6 @@ import os
 import sys
 from time import time
 from datetime import datetime
-from string import Template
 from ConfigParser import SafeConfigParser
 from copy import deepcopy
 import logging
@@ -25,6 +24,7 @@ log = logging.getLogger(__name__)
 
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict, find_similar_words
+from evaluation_system.api.plugin_types import ParameterType
 
 __version__ = (1,0,0)
 
@@ -428,16 +428,6 @@ Since it returns a string, the implementing class might use it and extend it if 
         """:returns: the :class:`evaluation_system.model.user.User` for which this instance was generated."""
         return self._user
         
-    @staticmethod
-    def __to_bool(bool_str):
-        """Parses a string for a boolean value"""
-        if isinstance(bool_str, basestring) and bool_str: 
-            if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']: return True
-            elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: return False
-            
-        #if here we couldn't parse it
-        raise ValueError("'%s' is no recognized as a boolean value" % bool_str)
-        
     def _parseConfigStrValue(self, key, str_value, fail_on_missing=True):
         """Try to parse the string in ``str_value`` into the most appropriate value according 
 to the following logic:
@@ -475,21 +465,24 @@ string ``"None"`` without any quotes.
         #if no metadata is present infer from default str_value
         if key_type is None: 
             if key in self.__config_metadict__:
-                key_type = type(self.__config_metadict__[key])
+                try:
+                    key_type = ParameterType.infer_type(self.__config_metadict__[key])
+                except ValueError:
+                    raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
             else:
                 mesg = "Unknown parameter %s" % key
                 similar_words = find_similar_words(key, self.__config_metadict__)
                 if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
                 raise ConfigurationError(mesg)
+        elif not isinstance(key_type, ParameterType):
+            key_type = ParameterType.infer_type(key_type)
         try:
             if key_type is type(None):
                 raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
-            elif key_type is bool:
-                return PluginAbstract.__to_bool(str_value)
             else:
-                return key_type(str_value)
+                return key_type.parse(str_value)
         except ValueError:
-            raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type.__name__))
+            raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type))
         
     def parseArguments(self, opt_arr):
         """Parses an array of strings and return a configuration dictionary.
