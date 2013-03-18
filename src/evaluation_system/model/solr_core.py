@@ -266,7 +266,7 @@ is used for searching and the rest for preparing and ingesting data.
         
         return metadata
     
-    def dump(self, dump_file=None, batch_size=10000):
+    def dump(self, dump_file=None, batch_size=10000, sort_results=True):
         """Dump a list of files and their timestamps that can be ingested afterwards"""
         if dump_file is None:
             #just to store where and how we are storing this
@@ -276,6 +276,8 @@ is used for searching and the rest for preparing and ingesting data.
             offset = 0
             while True:
                 url_query = 'select?fl=file,timestamp&start=%s&rows=%s&q=*' % (offset, batch_size)
+                if sort_results:
+                    url_query += '&sort=file+desc'
                 print "Calling %s" % url_query
                 answer = self.get_json(url_query)
                 offset = answer['response']['start']
@@ -294,13 +296,13 @@ is used for searching and the rest for preparing and ingesting data.
             #Let's leave this python 2.6 compatible...
             f = gzip.open(dump_file, 'wb')
             try:
-                for file_path, timestamp in cache(batch_size=batch_size):
+                for file_path, timestamp in cache(batch_size):
                     f.write('%s,%s\n' % (file_path, timestamp))
             finally:
                 f.close()
         else:
             with open(dump_file, 'w') as f:
-                for file_path, timestamp in cache(batch_size=batch_size):
+                for file_path, timestamp in cache(batch_size):
                     f.write('%s,%s\n' % (file_path, timestamp))
     
     def load(self, dump_file=None, batch_size=10000, abort_on_error=True):
