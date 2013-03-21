@@ -1,0 +1,252 @@
+#!/usr/bin/env python
+
+'''
+solr_admin -- manage Solr cores
+
+@copyright:  2013 FU Berlin. All rights reserved.
+        
+@contact:    estanislao.gonzalez@met.fu-berlin.de
+
+@license:    BSD
+
+Copyright (c) 2012, FU Berlin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this 
+    list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+
+import sys
+import getopt
+
+import logging
+log = logging.getLogger(__name__)
+if not log.handlers:
+    class SpecialFormatter(logging.Formatter):
+        FORMATS = {logging.DEBUG :"DBG: %(module)s: %(lineno)d: %(message)s",
+                   logging.ERROR : "ERROR: %(message)s",
+                   logging.INFO : "%(message)s",
+                   'DEFAULT' : "%(levelname)s: %(message)s"}
+    
+        def format(self, record):
+            self._fmt = self.FORMATS.get(record.levelno, self.FORMATS['DEFAULT'])
+            return logging.Formatter.format(self, record)
+        
+    hdlr = logging.StreamHandler(sys.stderr)
+    hdlr.setFormatter(SpecialFormatter())
+    logging.root.addHandler(hdlr)
+    logging.root.setLevel(logging.INFO)
+
+from evaluation_system.misc.utils import find_similar_words
+import evaluation_system.model.file as mf
+from evaluation_system.model.solr_core import SolrCore
+
+__all__ = []
+__version__ = 0.1
+__date__ = '2013-03-14'
+
+
+class CommandError(Exception):
+    '''Generic exception to raise and log different fatal errors.'''
+    def __init__(self, msg):
+        super(CommandError).__init__(type(self))
+        
+        self.msg = " %s\nUse --help for getting help" % msg
+    def __str__(self):
+        return self.msg
+    def __unicode__(self):
+        return self.msg
+
+def call(cmd_str):
+    from subprocess import Popen, PIPE
+    return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
+
+def getEnvironment():
+    """Parses required variablems from the environment and return a dictionary of them"""
+    result = {}
+    console_size = call('stty size')[0]
+    if console_size:
+        rows, columns = console_size.strip().split()
+        rows, columns = int(rows), int(columns)
+    else:
+        rows, columns = 25, 80
+    
+    result['rows'] = rows
+    result['columns'] = columns
+    return result
+
+def auto_doc(message=None):
+    import re, os
+    script_file = sys.argv[0]
+    script_name = os.path.basename(script_file)
+    #check if in unit tests (runfiles.py is starting the unit test)
+    if script_name == 'runfiles.py':
+        print "No auto doc for unit test."
+        return
+    
+    re_start = re.compile('.*\*!!!\*$')
+    re_end = re.compile('^[ \t]*$')
+    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
+    parsing=False
+    
+    args_w_param = ['-%s' % _short_args[i-1] for i in range(len(_short_args)) if _short_args[i] == ':'] + ['--'+ar[:-1] for ar in _args if ar[-1] == '=']
+    results = []
+    for line in open(script_file, 'r'):
+        if parsing:
+            items = re_entries.match(line)
+            if items:
+                flag, flag_opt, mesg = items.groups()
+                #if multiple flags, all should accept parameters!
+                has_param = flag in args_w_param
+                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
+                if has_param:
+                    flag = '%s <value>' % flag
+                results.append((flag, mesg))
+            if re_end.match(line): break
+        elif re_start.match(line): parsing = True
+
+    #Help must be written as just one line comment, here we wrap it properly
+    import textwrap
+    env = getEnvironment()
+    if results:
+        max_length = max([len(i[0]) for i in results])
+    else: max_length = 0
+    wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
+    results = [wrapper.fill(('  %-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
+    
+    if message: message = ': ' + message
+    else: message = ''
+    if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
+    else: print '%s %s' % (script_name, message)
+
+
+_short_args = 'hd'
+_args = ['baseline=', 'crawl=', 'core=', 'debug',
+        'observations', 'reanalysis', 'cmip5',
+        'processors=', 'batch-size=']
+
+def main(argv=None): # IGNORE:C0111
+    '''Command line options.'''
+    
+    if argv is None:
+        argv = sys.argv[1:]
+
+
+    DEBUG = False
+    try:
+        # Setup argument parser
+        args, lastargs = getopt.getopt(argv, _short_args, _args)
+        #defaults
+        processors=1
+        batch_size=1000
+        drs_struct=None
+        crawl_dir=None
+        abort_on_error=False
+        solr_core='files'
+        
+        #parse arguments *!!!*
+        for flag, arg in args:
+            if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
+                auto_doc()
+                return 0
+            elif flag == '--baseline':              #search for baseline n data 
+                try:
+                    baseline = int(arg)
+                    drs_struct = {0: mf.BASELINE0, 1:mf.BASELINE1}[baseline]
+                except:
+                    print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
+                    return 1
+            elif flag == '--cmip5':                 #search for cmip5 data (includes baseline 0)
+                drs_struct = mf.CMIP5
+            elif flag == '--observations':          #search for observational data
+                drs_struct = mf.OBSERVATIONS
+            elif flag == '--reanalysis':            #search for reanalysis data
+                drs_struct = mf.REANALYSIS
+            elif flag == '--crawl':                 #Instead of searching, crawl the given directory
+                crawl_dir=arg
+            elif flag == '--core':                  #Define the solr core to be used (don't use it, if you don't know what it's for)
+                solr_core=arg
+            elif flag == '--processors':            #Number of processors to use. Default is one (serial) more than 2 is shown to be counter productive. Test for yourself.
+                processors=int(arg)
+            elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
+                batch_size=int(arg)
+            elif flag == '-d' or flag == '--debug': #turn on debugging info
+                abort_on_error=True
+                DEBUG = True
+                logging.getLogger().setLevel(logging.DEBUG)
+        
+        if drs_struct is None and crawl_dir is None:
+            raise CommandError('You must select a search type. One of: --%s' % ', --'.join(mf.DRSFile.DRS_STRUCTURE)
+                               + '\nOr use --crawl <target_dir> to cral the given target dir for data.')
+         
+        search_dict = {}
+        for arg in lastargs:
+            if '=' not in arg:
+                raise CommandError("Invalid format for query: %s" % arg)
+            
+            items = arg.split('=')
+            search_dict[items[0]] = ''.join(items[1:])
+        
+        if crawl_dir and (search_dict or drs_struct):
+            raise CommandError("Defining a search and a crawling directory at the same time is not allowed.")
+         
+        log.debug("Searching string: %s\n", search_dict)
+
+        #flush stderr in case we have something pending
+        sys.stderr.flush()
+        
+        #Ingest the files!
+        s = SolrCore(solr_core)
+        if crawl_dir:
+            s.update_from_dir(crawl_dir, abort_on_error=abort_on_error, processors=processors, batch_size=batch_size)
+        else:
+            s.update_from_search(processors=processors, batch_size=batch_size, data_types=drs_struct, **search_dict)
+        
+        
+    except KeyboardInterrupt:
+        ### handle keyboard interrupt ###
+        return 0
+    except getopt.GetoptError as e:
+        #Did you mean functionality
+        similar_words = None
+        if len(e.opt) > 1:
+            trimmed_args = []
+            for arg in _args:
+                if arg[-1] == '=': trimmed_args.append(arg[:-1])
+                else: trimmed_args.append(arg)
+            similar_words = find_similar_words(e.opt, trimmed_args)
+        mesg = e.msg
+        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        print mesg
+
+        return 2
+    except Exception as e:
+        if isinstance(e, IOError) and e.errno == 32:
+            #this is just a broken pipe, which mean the stdout was closed 
+            #(e.g when using head after 10 lines are read)
+            #just stop normally
+            return 0
+        if DEBUG or __name__ != "__main__":
+            raise
+        else: print "ERROR: ",sys.exc_info()[1]
+        return 2
+
+if __name__ == "__main__":
+    sys.exit(main())

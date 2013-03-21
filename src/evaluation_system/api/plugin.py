@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict, find_similar_words
-from evaluation_system.api.plugin_types import ParameterType
+from evaluation_system.api.parameters import ParameterType
 
 __version__ = (1,0,0)
 

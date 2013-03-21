@@ -44,6 +44,13 @@ class SolrCore(object):
         else:
             self.data_dir = 'data'
         
+        #Other Defaults
+        import socket
+        socket.setdefaulttimeout(20)
+            
+    def __str__(self):
+        return '<SolrCore %s>' % self.core_url
+        
     def post(self, list_of_dicts, auto_list=True, commit=True):
         """Sends some json to Solr"""
         if auto_list and not isinstance(list_of_dicts, list): list_of_dicts=[list_of_dicts]
