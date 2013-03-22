@@ -13,3 +13,6 @@
 [submodule "tools/diffplotter"]
 	path = tools/diffplotter
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/plot_diff.git
+[submodule "tools/zykpak"]
+	path = tools/zykpak
+	url = ssh://miklip.dkrz.de/miklip/integration/repositories/zykpak.git
