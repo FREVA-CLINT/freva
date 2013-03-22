@@ -6,7 +6,7 @@ Created on 15.03.2013
 This types represent the type of parameter a plugin expects and gives some metadata about them.
 '''
 
-from types import TypeType
+from types import TypeType, StringType, IntType, FloatType, LongType, BooleanType
 
 class ValidationError(Exception):
     pass
@@ -14,9 +14,11 @@ class ValidationError(Exception):
 class ParameterType(object):
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
+    base_type = None
     
-    def __init__(self, base_type, mandatory=False, max_items=1, item_separator=',', regex=None):
-        self.base_type = base_type
+    def __init__(self, dafault=None, mandatory=False, max_items=1, item_separator=',', regex=None, help='No help available.'):
+        self.default = dafault
+        self.help = help
         self.regex = regex
         self.mandatory = mandatory
         self.max_items = max_items
@@ -55,10 +57,10 @@ class ParameterType(object):
                     return [self.base_type(v) for v in self._verified(value)]
                 except TypeError:
                     #it was not iterable... but we expect more than one, so return always a list
-                    return [self._verified(self.base_type(value))]
+                    return [self.base_type(self._verified(value))]
                     
         
-        return self._verified(self.base_type(value))
+        return self.base_type(self._verified(value))
     
     def str(self):
         return self.__class__.__name__
@@ -76,32 +78,30 @@ class ParameterType(object):
             raise ValueError("Can't infer type for value '%s'." % value)
 
 class String(ParameterType):
-    def __init__(self, **kwargs):
-        ParameterType.__init__(self, str, **kwargs)
+    base_type = StringType
 
 class Integer(ParameterType):
-    def __init__(self, regex='^[0-9]+$', **kwargs):
-        ParameterType.__init__(self, int, regex=regex, **kwargs)
+    base_type = IntType
+    def __init__(self, regex='^[+-]?[0-9]+$', **kwargs):
+        ParameterType.__init__(self, regex=regex, **kwargs)
 
-class Long(ParameterType):
-    def __init__(self, regex='^[0-9]+$', **kwargs):
-        ParameterType.__init__(self, long, regex=regex, **kwargs)
+class Long(Integer):
+    base_type = LongType
 
 class Float(ParameterType):
-    def __init__(self, regex='^[0-9]+(?:\.[0-9]+)?$', **kwargs):
-        ParameterType.__init__(self, float, **kwargs)
+    base_type = FloatType
+    def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
+        ParameterType.__init__(self, regex=regex, **kwargs)
 
-class File(ParameterType):
-    def __init__(self, **kwargs):
-        ParameterType.__init__(self, str, **kwargs)
+class File(String):
+    pass
 
-class Date(ParameterType):
-    def __init__(self, **kwargs):
-        ParameterType.__init__(self, str, **kwargs)
+class Date(String):
+    pass
 
 class Bool(ParameterType):
-    def __init__(self, **kwargs):
-        ParameterType.__init__(self, bool, **kwargs)
+    base_type = BooleanType
+
     def parse(self, bool_str):
         if isinstance(bool_str, basestring) and bool_str: 
             if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']: return True

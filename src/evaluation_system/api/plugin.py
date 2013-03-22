@@ -164,18 +164,7 @@ For more general (and less technical) information refer to the wiki: https://cod
 """
     
     __metaclass__ = abc.ABCMeta
-    #===========================================================================
-    # class __metaclass__(abc.ABCMeta):
-    #    """This metaclass encapsulates the abstract class from abc and allows plugin self-registration
-    #    and control. All plugin "classes" inheriting from this class will go through this method
-    #    while being defined"""
-    #    def __init__(self, name, bases, namespace):
-    #        if name != 'PluginAbstract':
-    #            #This is a new subclass. We may register it on the fly now.
-    #            pass
-    #            return abc.ABCMeta.__init__(PluginAbstract, name, bases, namespace)
-    #        return abc.ABCMeta.__init__(abc.ABCMeta, name, bases, namespace)
-    #===========================================================================
+
     special_variables = None
     """This dictionary is used to resolve the *special variables* that are available
 to the plug-ins for defining some values of their parameters in a standardize manner.
