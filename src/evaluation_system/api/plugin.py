@@ -45,12 +45,12 @@ Where dict1 is the dictionary attached to the key providing its meta-data (key2 
         self.metainfo = {}
         compact_creation = kw.pop('compact_creation', False)
         if compact_creation:
-            #separate the special "value" in the first field from the dictionary in the second
+            #separate the special "default" in the first field from the dictionary in the second
             super(metadict,self).__init__()
             for key, values in kw.items():
                 if isinstance(values, tuple):
                     if len(values) != 2: 
-                        raise AttributeError("On compact creation a tuple with only 2 values is expected: (value, metadata)")
+                        raise AttributeError("On compact creation a tuple with only 2 values is expected: (default, metadata)")
                     if not isinstance(values[1],dict): 
                         raise AttributeError("metadata entry must be a dictionary")
                     self[key] = values[0]

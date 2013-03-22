@@ -168,7 +168,7 @@ class Test(unittest.TestCase):
         self.failUnlessRaises(ConfigurationError, dummy.readFromConfigParser, conf)
         #wrong type
         dummy.__config_metadict__ = dict(b=1)
-        self.failUnlessRaises(ConfigurationError, dummy.readFromConfigParser, conf)
+        self.failUnlessRaises(Exception, dummy.readFromConfigParser, conf)
         
     def testSaveConfig(self):
         from StringIO import StringIO
