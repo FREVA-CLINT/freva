@@ -6,7 +6,7 @@ Created on 03.12.2012
 import unittest
 from evaluation_system.api.plugin import PluginAbstract, ConfigurationError
 from evaluation_system.api.parameters import ParameterDictionary, String, Integer, Float,\
-    Bool, ValidationError
+    Bool, Directory, ValidationError
 
 from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
@@ -213,6 +213,21 @@ dj1yfk"""))
             
             conf_dict = dummy.readConfiguration(res_str)
             self.assertEqual(conf_dict, expected_dict)
+    
+    def testSubstitution(self):
+        dummy = DummyPlugin()
+        dummy.__parameters__ = ParameterDictionary(Integer(name='a'),
+                                                  String(name='b', default='value:$a'),
+                                                  Directory(name='c', default='$USER_OUTPUT_DIR'))
+        
+        
+        cfg_str = dummy.getCurrentConfig({'a':72})
+        self.assertTrue('value:72' in cfg_str)
+        self.assertTrue(cfg_str.startswith("""a: 72
+b: - (default: value:$a [value:72])
+c: - (default: $USER_OUTPUT_DIR ["""))
+        
+        
     
     def _verifyConfingParser(self, config_parser, section, dict_opt):
         #clean up by dumping to string and reloading

@@ -236,6 +236,9 @@ class Float(ParameterType):
 class File(String):
     pass
 
+class Directory(String):
+    pass
+
 class Date(String):
     pass
 
@@ -246,7 +249,9 @@ class Bool(ParameterType):
         if isinstance(bool_str, basestring) and bool_str: 
             if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']: return True
             elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: return False
-        
+        elif isinstance(bool_str, bool):
+            #it was no bool after all...
+            return bool_str 
         #if here we couldn't parse it
         raise ValueError("'%s' is no recognized as a boolean default" % bool_str)
 

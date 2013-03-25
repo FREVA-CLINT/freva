@@ -156,6 +156,15 @@ class Test(unittest.TestCase):
         p = ParameterDictionary(Integer(name='a', default='0'))
         self.assertEquals(p.complete(add_missing_defaults=True), {'a':0})
         
+    def testDefaults(self):
+        #All these should cause no exception
+        Bool(name='a', default=True)
+        Bool(name='a', default="True")
+        Bool(name='a', default="0")
+        Float(name='a', default=1.2e-2)
+        Float(name='a', default="1.2e-2")
+        Integer(name='a', default='1232')
+        
     def testValidateErrors(self):
         p_dict = ParameterDictionary(Integer(name='int', mandatory=True), 
                                      File(name='file', max_items=2, item_separator=':'),
