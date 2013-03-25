@@ -7,18 +7,21 @@ import tempfile
 import shutil
 import os
 
-from evaluation_system.api.plugin import PluginAbstract, metadict
+from evaluation_system.api.plugin import PluginAbstract
+from evaluation_system.api.parameters import ParameterDictionary, Integer, Float, String
+
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
 
 class DummyPlugin(PluginAbstract):
-    """Stub class for implementing the abstrac one"""
+    """Stub class for implementing the abstract one"""
     __short_description__ = None
     __version__ = (0,0,0)
-    __config_metadict__ =  metadict(compact_creation=True, 
-                                    number=(None, dict(type=int,help='This is just a number, not really important')),
-                                    the_number=(None, dict(type=int,mandatory=True,help='This is *THE* number. Please provide it')), 
-                                    something='test', other=1.4)
+    __parameters__ =  ParameterDictionary(
+                                   Integer(name='number', help='This is just a number, not really important'),
+                                   Integer(name='the_number',mandatory=True,help='This is *THE* number. Please provide it'), 
+                                   String(name='something',default='test'), 
+                                   Float(name='other',default=1.4))
     _runs = []
     _template = "${number} - $something - $other"
     def runTool(self, config_dict=None):

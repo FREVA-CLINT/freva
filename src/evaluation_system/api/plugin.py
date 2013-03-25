@@ -18,13 +18,11 @@ import sys
 from time import time
 from datetime import datetime
 from ConfigParser import SafeConfigParser
-from copy import deepcopy
 import logging
 log = logging.getLogger(__name__)
 
 from evaluation_system.model.user import User
-from evaluation_system.misc.utils import TemplateDict, find_similar_words
-from evaluation_system.api.parameters import ParameterType
+from evaluation_system.misc.utils import TemplateDict
 
 __version__ = (1,0,0)
 
@@ -32,87 +30,7 @@ class ConfigurationError(Exception):
     """Signals the configuration failed somehow."""
     pass
 
-class metadict(dict):
-    """A dictionary extension for storing metadata along with the keys.
-In all other cases, it behaves like a normal dictionary."""
-    def __init__(self, *args, **kw):
-        """Creates a metadict dictionary. 
-If the keyword ``compact_creation`` is used and set to ``True`` the entries will be given like this: 
 
-    key1=(value1, dict1) or key2=value2
-    
-Where dict1 is the dictionary attached to the key providing its meta-data (key2 has no meta-data, by the way)."""
-        self.metainfo = {}
-        compact_creation = kw.pop('compact_creation', False)
-        if compact_creation:
-            #separate the special "default" in the first field from the dictionary in the second
-            super(metadict,self).__init__()
-            for key, values in kw.items():
-                if isinstance(values, tuple):
-                    if len(values) != 2: 
-                        raise AttributeError("On compact creation a tuple with only 2 values is expected: (default, metadata)")
-                    if not isinstance(values[1],dict): 
-                        raise AttributeError("metadata entry must be a dictionary")
-                    self[key] = values[0]
-                    self.metainfo[key] = values[1]
-                else:
-                    self[key] = values
-        else:
-            super(metadict,self).__init__(*args, **kw)
-        
-    def copy(self):
-        """:return: a deep copy of this metadict."""
-        return deepcopy(self)
-    
-    def getMetadata(self, key):
-        """:return: The meta-data value associated with this key or ``None`` if no meta-data was stored."""
-        if key in self.metainfo: return self.metainfo[key]
-        else: return None
-        
-    def setMetadata(self, key, **meta_dict):
-        """Store/replace the meta-data allocated for the given key.
-
-:raises: KeyError if key is not present."""
-        if key not in self: raise KeyError(key)
-        if key not in self.metainfo: self.metainfo[key] = {}
-        self.metainfo[key].update(meta_dict)
-    
-    def clearMetadata(self, key):
-        """Clear all meta-data allocated under the given key.
-
-:raises: KeyError if key is not present."""
-        if key not in self: raise KeyError(key)
-        if key in self.metainfo: del self.metainfo[key]
-        
-    def put(self, key, value, **meta_dict):
-        """Puts a key,value pair into the dictionary and all other keywords are added
-as meta-data to this key. If key was already present, it will be over-written and its
-meta-data will be removed (even if no new meta-data is provided)."""
-        self[key] = value
-        if meta_dict:
-            self.clearMetadata(key)
-            self.setMetadata(key, **meta_dict)
-
-    @staticmethod
-    def hasMetadata(some_dict, key=None):
-        """if the given dictionary has meta-data for the given key or, if no key was given,
- if the dictionary can hold meta-data at all.
-
-:returns: if ``some_dict`` has stored meta-data for ``key`` or any meta-data at all if ``key==None``."""
-        if key is None:
-            return hasattr(some_dict, 'getMetadata')
-        else:
-            return hasattr(some_dict, 'getMetadata') and bool(some_dict.getMetadata(key))
-    
-    @staticmethod
-    def getMetaValue(some_dict, key, meta_key):
-        """This method allows to work both with normal dictionaries and metadict transparently.
-        
-:returns: the meta-data associated with the key if any or None if not found or
-          this is not a metadict at all."""
-        if metadict.hasMetadata(some_dict):
-            meta = some_dict.getMetadata(key)
-            if meta and meta_key in meta: return meta[meta_key]
 
 
         
@@ -232,33 +150,11 @@ when listing all plug-ins."""
         raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractproperty
-    def __config_metadict__(self):
+    def __parameters__(self):
         """``@abc.abstractproperty``
 
-A :class:`metadict` containing the definition of all known configurable parameters for the
-implementing class. The meta-data items used from it are:
-
-type
-    defines the class of the parameter, it will also be used for casting the string values stored
-    in configurations files. Normally is one of str, int, float or bool. It's only required if there's
-    no default value, i.e. it's ``None``, and therefore the type cannot be inferred from it.
-    
-help
-    A string providing some explanation regarding the parameter, this will get written in the 
-    configuration file and displayed to the user when requesting help.
-    
-mandatory
-    boolean equivalent that tells if this attribute is mandatory (if not present, it is not)
-
-You may use the ``compact_creation`` special key to create the dictionary in a compact manner::
-
-    metadict('compact_creation' = True, 
-        a_number = (None, dict(type = int, mandatory = True, help = 'Just a number.')),
-        another = (1.4, dict(help = 'Some optional parameter with a default value')),
-        nothing = 'a string')
-
-You may use a simple dictionary too, but there are huge limitations applied by doing so, e.g. all values *must* have
-default values and there will be no help whatsoever."""
+A :class:`evaluation_system.plugin.parameters.ParametersDictionary` containing the definition of all known configurable 
+parameters for the implementing class."""
         raise NotImplementedError("This attribute must be implemented")
 
     @abc.abstractmethod
@@ -270,7 +166,7 @@ paths to the created files and some info about them. This can be directly handle
 a list (or anything iterable) to :class:`prepareOutput` .
 
 
-:param config_dict: A dict/metadict with the current configuration with which the tool will be run
+:param config_dict: A dict with the current configuration (param name, value) with which the tool will be run
 :return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
@@ -332,49 +228,26 @@ Use it for the return call of runTool.
                     metadata['type'] = 'data'
         
         
-    def getHelp(self):
+    def getHelp(self, width=80):
         """This method uses the information from the implementing class name, :class:`__version__`, 
 :class:`__short_description__` and :class:`__config_metadict__` to create a proper help.
 Since it returns a string, the implementing class might use it and extend it if required. 
 
+:param width: Wrap text to this width.
 :returns: a string containing the help."""
-        import textwrap
-        separator=''
-        help_str = ['%s (v%s): %s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), self.__short_description__)]
-        #compute maximal param length for better viewing
-        max_size= max([len(k) for k in self.__config_metadict__] + [0])
-        if max_size > 0:
-            wrapper = textwrap.TextWrapper(width=80, initial_indent=' '*(max_size+1), subsequent_indent=' '*(max_size+1), replace_whitespace=False)
-            help_str.append('Options:')
+        return '%s (v%s): %s\n%s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), \
+                                     self.__short_description__, self.__parameters__.getHelpString())
         
-         
-            for key in sorted(self.__config_metadict__):
-                value = self.__config_metadict__[key]
-
-                param_format = '%%-%ss (default: %%s)' % (max_size) 
-                help_str.append(param_format % (key, value))
-                if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
-                    help_str[-1] = help_str[-1] + ' [mandatory]'
-
-                key_help = metadict.getMetaValue(self.__config_metadict__, key, 'help')
-                if key_help:
-                    #wrap it properly
-                    help_str.append('\n'.join(wrapper.fill(line) for line in 
-                           key_help.splitlines()))
-                help_str.append(separator)
-        
-        return '\n'.join(help_str)
-    
     def getCurrentConfig(self, config_dict = {}):
         """
-:param config_dict: the dict/metadict containing the current configuration being displayed. 
+:param config_dict: the dict containing the current configuration being displayed. 
                     This info will update the default values.
 :return: the current configuration in a string for displaying."""
-        max_size= max([len(k) for k in self.__config_metadict__])
+        max_size= max([len(k) for k in self.__parameters__])
         
         current_conf = []
         config_dict_resolved = self.setupConfiguration(config_dict=config_dict, check_cfg=False)
-        config_dict_orig = dict(self.__config_metadict__)
+        config_dict_orig = dict(self.__parameters__)
         config_dict_orig.update(config_dict)
         
         def show_key(key):
@@ -384,7 +257,7 @@ Since it returns a string, the implementing class might use it and extend it if 
             else:
                 return '%s [%s]' % (config_dict_orig[key], config_dict_resolved[key]) 
         
-        for key in sorted(self.__config_metadict__):
+        for key in self.__parameters__:
             line_format = '%%%ss: %%s' % max_size
             
             
@@ -393,9 +266,9 @@ Since it returns a string, the implementing class might use it and extend it if 
                 curr_val = show_key(key)
             else:
                 #default value
-                default_value = self.__config_metadict__[key]
+                default_value = self.__parameters__[key]
                 if default_value is None: 
-                    if metadict.getMetaValue(self.__config_metadict__, key, 'mandatory'):
+                    if self.__parameters__.get_parameter(key).mandatory:
                         curr_val = '- *MUST BE DEFINED!*'
                     else:
                         curr_val = '-'
@@ -417,26 +290,18 @@ Since it returns a string, the implementing class might use it and extend it if 
         """:returns: the :class:`evaluation_system.model.user.User` for which this instance was generated."""
         return self._user
         
-    def _parseConfigStrValue(self, key, str_value, fail_on_missing=True):
+    def _parseConfigStrValue(self, param_name, str_value, fail_on_missing=True):
         """Try to parse the string in ``str_value`` into the most appropriate value according 
-to the following logic:
+to the parameter logic.
 
-#. if there's no :class:`__config_metadict__` ``str_value`` is returned as is.
-#. if the :class:`__config_metadict__` is a :class:`metadict` and has a *type* 
-   metadata attribute, this will be used for casting.
-#. if the :class:`__config_metadict__` has a value for ``key``, then ``type(``:class:`__config_metadict__` ``[key]``) will be used.
-#. if ``key`` is not found in the reference :class:`__config_metadict__` an exception will be thrown unless
-   ``fail_on_missing`` was set to `False`, in which case it will return ``str_value``. 
-#. if the type results in NoneType an exception will be thrown
+The string *None* will be mapped to the value ``None``. On the other hand the quoted word *"None"* will remain as the
+string ``"None"`` without any quotes.
 
-The string *None* will be mapped to the value ``None``. On the other hand the wuoted word *"None"* will remain as the
-string ``"None"`` without any quotes. 
-
-:param key: Reference to the value being parsed.
-:type key: str
+:param param_name: Parameter name to which the string belongs.
+:type param_name: str
 :param str_value: The string that will be parsed.
 :type str_value: str
-:param fail_on_missing: If the an exception should be risen in case the key is not found in :class:`__config_metadict__`
+:param fail_on_missing: If the an exception should be risen in case the param_name is not found in :class:`__parameters__`
 :type fail_on_missing: bool
 :return: the parsed string, or the string itself if it couldn't be parsed, but no exception was thrown.
 :raises: ( :class:`ConfigurationError` ) if parsing couldn't succeed.
@@ -445,33 +310,13 @@ string ``"None"`` without any quotes.
         if str_value == "None": return None
         elif str_value == '"None"': str_value = "None"
         
-        if self.__config_metadict__ is None or (not fail_on_missing and key not in self.__config_metadict__):
-            #if there's no dictionary reference or the key is not in it and we are not failing
+        if self.__parameters__ is None or (not fail_on_missing and param_name not in self.__parameters__):
+            #if there's no dictionary reference or the param_name is not in it and we are not failing
             #just return the str_value 
-            return str_value 
-        key_type = metadict.getMetaValue(self.__config_metadict__, key, 'type')
+            return str_value
         
-        #if no metadata is present infer from default str_value
-        if key_type is None: 
-            if key in self.__config_metadict__:
-                try:
-                    key_type = ParameterType.infer_type(self.__config_metadict__[key])
-                except ValueError:
-                    raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
-            else:
-                mesg = "Unknown parameter %s" % key
-                similar_words = find_similar_words(key, self.__config_metadict__)
-                if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-                raise ConfigurationError(mesg)
-        elif not isinstance(key_type, ParameterType):
-            key_type = ParameterType.infer_type(key_type)
-        try:
-            if key_type is type(None):
-                raise ConfigurationError("Default arguments type missing. Can't infer argument type.")
-            else:
-                return key_type.parse(str_value)
-        except ValueError:
-            raise ConfigurationError("Can't parse str_value %s for option %s. Expected type: %s" % (str_value, key, key_type))
+        else:
+            return self.__parameters__.get_parameter(param_name).parse(str_value) 
         
     def parseArguments(self, opt_arr):
         """Parses an array of strings and return a configuration dictionary.
@@ -480,20 +325,8 @@ The strings are of the type: ``key1=val1`` or ``key2``
 :type opt_arr: List of strings
 :param opt_arr: See :class:`_parseConfigStrValue` for more information on how the parsing is done.
 """
-        config = {}
+        return self.__parameters__.parseArguments(opt_arr)
         
-        for option in opt_arr:            
-            parts = option.split('=')
-            if len(parts) == 1:
-                key, value = parts[0], 'true'
-            else:
-                key = parts[0]
-                #just in case there were multiple '=' characters
-                value = '='.join(parts[1:])
-                
-            config[key] = self._parseConfigStrValue(key, value)
-
-        return config
         
     def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):
         """Defines the configuration required for running this plug-in. 
@@ -501,7 +334,7 @@ If not a dictionary will be returned but with all indirections being resolved. E
 
     dict(a=1, b='1.txt', c='old_1.txt') == setupConfiguration(config_dict=dict(a=1, b='$a.txt', c='old_$b'))
 
-Basically :class:`__config_metadict__` will be updated with the values from ``config_dict``.
+Basically the default values from :class:`__parameters__` will be updated with the values from ``config_dict``.
 There are some special values pointing to user-related managed by the system defined in :class:`evaluation_system.model.user.User.getUserVarDict` .
  
 :param config_dic: dictionary with the configuration to be used when generating the configuration file.
@@ -515,11 +348,11 @@ There are some special values pointing to user-related managed by the system def
 :return:  a copy of self.self.__config_metadict__ with all defaults values plus those provided here.
         """
         if config_dict:
-            conf = self.__config_metadict__.copy() 
+            conf = dict(self.__parameters__) 
             conf.update(config_dict)
             config_dict = conf
         else:
-            config_dict = self.__config_metadict__.copy()
+            config_dict = dict(self.__parameters__)
         
         if substitute:
             results = self._special_variables.substitute(config_dict, recursive=recursion)
@@ -530,7 +363,7 @@ There are some special values pointing to user-related managed by the system def
         #results = self._postTransformCfg(results)
         
         if check_cfg:
-            missing =[ k for k,v in results.items() if v is None and metadict.getMetaValue(config_dict, k ,'mandatory')]
+            missing =[ k for k,v in results.items() if v is None and self.__parameters__.get_parameter(k).mandatory]
             if missing:
                 raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
         
@@ -556,7 +389,7 @@ The values are assumed to be in a section named just like the class implementing
         
         section = self.__class__.__name__
         #create a copy of metadict
-        result = self.__config_metadict__.copy()
+        result = dict(self.__parameters__)
         #we do this to avoid having problems with the "DEFAULT" section as it might define
         #more options that what this plugin requires
         keys = set(result).intersection(config_parser.options(section))
@@ -576,7 +409,7 @@ The values are assumed to be in a section named just like the class implementing
         config_parser.readfp(fp)
         return self.readFromConfigParser(config_parser)
 
-    def saveConfiguration(self, fp, config_dict=None):
+    def saveConfiguration(self, fp, config_dict=None, include_defaults=False):
         """Stores the given configuration to the provided file object.
 if no configuration is provided the default one will be used.
 
@@ -590,28 +423,51 @@ if no configuration is provided the default one will be used.
         fp.write('[%s]\n' % self.__class__.__name__)
 
         import textwrap
-        wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,drop_whitespace=False,break_on_hyphens=False,expand_tabs=False)
-
-        for key in sorted(config_dict):
-            value = config_dict[key]
-            key_help = metadict.getMetaValue(config_dict, key, 'help')
-            isMandatory = metadict.getMetaValue(config_dict, key, 'mandatory')
-            if key_help:
-                    #make sure all new lines are comments!
-                    help_lines = key_help.splitlines()                    
+        wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,break_on_hyphens=False,expand_tabs=False)
+        
+        #preserve order
+        for param_name in self.__parameters__:
+            if include_defaults:
+                param = self.__parameters__.get_parameter(param_name)
+                if param.help:
+                        #make sure all new lines are comments!
+                        help_lines = param.help.splitlines()                    
+                        if param.mandatory:
+                            help_lines[0] = '[mandatory] ' + help_lines[0]
+                        fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
+                        fp.write('\n')
+                value = config_dict.get(param_name, None)
+                if value is None:
+                    #means this is not setup
+                    if param.mandatory:
+                        value="<THIS MUST BE DEFINED!>"
+                    else:
+                        value=param.default
+                        param_name='#'+ param_name
+                fp.write('%s=%s\n\n' % (param_name, value))
+                fp.flush()  #in case we want to stream this for a very awkward reason...
+                
+            elif param_name in config_dict:
+                param = self.__parameters__.get_parameter(param_name)
+                value = config_dict[param_name]
+                key_help = param.help
+                isMandatory = param.mandatory
+                if key_help:
+                        #make sure all new lines are comments!
+                        help_lines = key_help.splitlines()                    
+                        if isMandatory:
+                            help_lines[0] = '[mandatory] ' + help_lines[0]
+                        fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
+                        fp.write('\n')
+                if value is None:
+                    #means this is not setup
                     if isMandatory:
-                        help_lines[0] = '[mandatory] ' + help_lines[0]
-                    fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
-                    fp.write('\n')
-            if value is None:
-                #means this is not setup
-                if isMandatory:
-                    value="<THIS MUST BE DEFINED!>"
-                else:
-                    value=""
-                    key='#'+key
-            fp.write('%s=%s\n\n' % (key, value))
-            fp.flush()  #in case we want to stream this for a very awkward reason...
+                        value="<THIS MUST BE DEFINED!>"
+                    else:
+                        value=""
+                        param_name='#'+ param_name
+                fp.write('%s=%s\n\n' % (param_name, value))
+                fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
         
     

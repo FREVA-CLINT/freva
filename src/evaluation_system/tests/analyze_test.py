@@ -8,14 +8,16 @@ import os
 import tempfile
 import logging
 from evaluation_system.model.db import HistoryEntry
-import datetime
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
-    
+
+#load the test configuration before anything else
+os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.conf'
+
 from evaluation_system.tests.capture_std_streams import stdout
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.tests.mocks import DummyPlugin
-from evaluation_system.api.plugin import metadict
+from evaluation_system.api.parameters import ParameterDictionary, Integer, String
 from evaluation_system.api.plugin_manager import PluginManagerException
 from evaluation_system.model.user import User
 
@@ -97,7 +99,7 @@ class Test(unittest.TestCase):
         stdout.reset()
         analyze.main("--tool dummyplugin --help".split())
         help_str = stdout.getvalue()
-        self.assertEqual(help_str, 'DummyPlugin (v0.0.0): None\nOptions:\nnumber     (default: None)\n           This is just a number, not really important\n\nother      (default: 1.4)\n\nsomething  (default: test)\n\nthe_number (default: None) [mandatory]\n           This is *THE* number. Please provide it\n\n')
+        self.assertEqual(help_str, 'DummyPlugin (v0.0.0): None\nOptions:\nnumber     (default: <undefined>)\n           This is just a number, not really important\nthe_number (default: <undefined>) [mandatory]\n           This is *THE* number. Please provide it\nsomething  (default: test)\n           No help available.\nother      (default: 1.4)\n           No help available.\n')
         stdout.reset()
         self.assertTrue(len(DummyPlugin._runs) == 0)
         analyze.main("--tool dummyplugin other=0.5 the_number=4738".split())
@@ -150,13 +152,13 @@ class Test(unittest.TestCase):
         
         
     def testShowConfig(self):
-        old = DummyPlugin.__config_metadict__
-        DummyPlugin.__config_metadict__ = metadict(compact_creation=True,
-                                                   variable1=1,
-                                                   variable2=(None,dict(type=int)),
-                                                   variable3=(None,dict(mandatory=True)))
+        old = DummyPlugin.__parameters__
+        DummyPlugin.__parameters__ = ParameterDictionary(
+                                                   Integer(name='variable1', default=1),
+                                                   Integer(name='variable2'),
+                                                   String(name='variable3', mandatory=True))
         analyze.main("--tool dummyplugin --show-config".split())
-        DummyPlugin.__config_metadict__ = old
+        DummyPlugin.__parameters__ = old
         
     def testHistory(self):
         import re

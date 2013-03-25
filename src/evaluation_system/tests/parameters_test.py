@@ -151,6 +151,10 @@ class Test(unittest.TestCase):
 
         self.assertEquals(p_dict.complete(), {'file': '/tmp/file1'})
         self.assertEquals(p_dict.complete(add_missing_defaults=True), {'int': None, 'date': None, 'file': '/tmp/file1'})
+
+        #assure default value gets parsed (i.e. validated) when creating Parameter
+        p = ParameterDictionary(Integer(name='a', default='0'))
+        self.assertEquals(p.complete(add_missing_defaults=True), {'a':0})
         
     def testValidateErrors(self):
         p_dict = ParameterDictionary(Integer(name='int', mandatory=True), 
@@ -164,6 +168,7 @@ class Test(unittest.TestCase):
                           {'too_many_items': [('int',1)], 'missing': ['float']})
         self.assertEquals(p_dict.validate_errors({'int':[1,2,3,4,5]}), 
                           {'too_many_items': [('int',1)], 'missing': ['float']})
+        
         
     def testHelp(self):
         p_dict = ParameterDictionary(

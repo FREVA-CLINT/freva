@@ -95,11 +95,6 @@ class Test(unittest.TestCase):
         generator = DRSFile.search(non_existing_query_str='does not matter')
         #assure we got an exception
         self.failUnlessRaises(Exception, generator.next)
-        stderr.stopCapturing()
-        #assure we got a proper warning being displayed
-        msg = stderr.getvalue()
-        if msg:
-            self.assertTrue('unused constraints' in msg, msg)
              
     def test_dataset(self):
         bl = DRSFile.from_json(self.real_json)

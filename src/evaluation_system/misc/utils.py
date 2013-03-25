@@ -7,6 +7,8 @@ import copy
 from difflib import get_close_matches
 from string import Template
 from re import split
+from copy import deepcopy
+
 
 class Struct(object):
     """This class is used for converting dictionaries into classes in order to access them
@@ -210,4 +212,86 @@ It's used for helping the user find the right word.
         
     result =  get_close_matches(word, expand_list)
     return [w for parts in result for w in expand_list[parts]]
+
+
+class metadict(dict):
+    """A dictionary extension for storing metadata along with the keys.
+In all other cases, it behaves like a normal dictionary."""
+    def __init__(self, *args, **kw):
+        """Creates a metadict dictionary. 
+If the keyword ``compact_creation`` is used and set to ``True`` the entries will be given like this: 
+
+    key1=(value1, dict1) or key2=value2
     
+Where dict1 is the dictionary attached to the key providing its meta-data (key2 has no meta-data, by the way)."""
+        self.metainfo = {}
+        compact_creation = kw.pop('compact_creation', False)
+        if compact_creation:
+            #separate the special "default" in the first field from the dictionary in the second
+            super(metadict,self).__init__()
+            for key, values in kw.items():
+                if isinstance(values, tuple):
+                    if len(values) != 2: 
+                        raise AttributeError("On compact creation a tuple with only 2 values is expected: (default, metadata)")
+                    if not isinstance(values[1],dict): 
+                        raise AttributeError("metadata entry must be a dictionary")
+                    self[key] = values[0]
+                    self.metainfo[key] = values[1]
+                else:
+                    self[key] = values
+        else:
+            super(metadict,self).__init__(*args, **kw)
+        
+    def copy(self):
+        """:return: a deep copy of this metadict."""
+        return deepcopy(self)
+    
+    def getMetadata(self, key):
+        """:return: The meta-data value associated with this key or ``None`` if no meta-data was stored."""
+        if key in self.metainfo: return self.metainfo[key]
+        else: return None
+        
+    def setMetadata(self, key, **meta_dict):
+        """Store/replace the meta-data allocated for the given key.
+
+:raises: KeyError if key is not present."""
+        if key not in self: raise KeyError(key)
+        if key not in self.metainfo: self.metainfo[key] = {}
+        self.metainfo[key].update(meta_dict)
+    
+    def clearMetadata(self, key):
+        """Clear all meta-data allocated under the given key.
+
+:raises: KeyError if key is not present."""
+        if key not in self: raise KeyError(key)
+        if key in self.metainfo: del self.metainfo[key]
+        
+    def put(self, key, value, **meta_dict):
+        """Puts a key,value pair into the dictionary and all other keywords are added
+as meta-data to this key. If key was already present, it will be over-written and its
+meta-data will be removed (even if no new meta-data is provided)."""
+        self[key] = value
+        if meta_dict:
+            self.clearMetadata(key)
+            self.setMetadata(key, **meta_dict)
+
+    @staticmethod
+    def hasMetadata(some_dict, key=None):
+        """if the given dictionary has meta-data for the given key or, if no key was given,
+ if the dictionary can hold meta-data at all.
+
+:returns: if ``some_dict`` has stored meta-data for ``key`` or any meta-data at all if ``key==None``."""
+        if key is None:
+            return hasattr(some_dict, 'getMetadata')
+        else:
+            return hasattr(some_dict, 'getMetadata') and bool(some_dict.getMetadata(key))
+    
+    @staticmethod
+    def getMetaValue(some_dict, key, meta_key):
+        """This method allows to work both with normal dictionaries and metadict transparently.
+        
+:returns: the meta-data associated with the key if any or None if not found or
+          this is not a metadict at all."""
+        if metadict.hasMetadata(some_dict):
+            meta = some_dict.getMetadata(key)
+            if meta and meta_key in meta: return meta[meta_key]

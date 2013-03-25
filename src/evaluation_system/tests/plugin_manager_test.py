@@ -11,14 +11,24 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
+#load the test configuration before anything else
+os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.conf'
+import evaluation_system.misc.config as config
+
 from evaluation_system.api.plugin import ConfigurationError
-import evaluation_system.api.plugin_manager as pm
 from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
-        
+import evaluation_system.api.plugin_manager as pm
+
+print "XXX123 4", "done",  config._config[config.PLUGINS]
+print pm.getPlugins()
 class Test(unittest.TestCase):
     
     def setUp(self):
+        #this gets overwritten by the nosetest framework (it reloads all modules again)
+        #we have to reset it every time.
+        os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.conf'
+        config.reloadConfiguration()
         pm.reloadPlugins()
     
 
@@ -200,13 +210,14 @@ class Test(unittest.TestCase):
         basic_plugin = """
 from sys import modules
 plugin = modules['evaluation_system.api.plugin']
+parameters = modules['evaluation_system.api.parameters']
 
 class %s(plugin.PluginAbstract):
     __short_description__ = "Test"
     __version__ = (0,0,1)
-    __config_metadict__ =  plugin.metadict(compact_creation=True,                          
-                                    output=("/tmp/file", dict(help='output')),
-                                    input=(None, dict(type=str, mandatory=True, help="some input")))
+    __parameters__ =  parameters.ParameterDictionary(                          
+                                    parameters.File(name="output", default="/tmp/file", help='output'),
+                                    parameters.File(name="input", mandatory=True, help="some input"))
 
     def runTool(self, config_dict=None):
         print "%s", config_dict"""

@@ -26,9 +26,15 @@ class ParameterDictionary(OrderedDict):
                 raise ValueError("Parameters name must be unique. Got second %s key." % param.name)
             self._params[param.name] = param
             self[param.name] = param.default
-    
-    def get_parameter(self, name):
-        return self._params[name]
+    def __str__(self):
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(['%s<%s>: %s' % (k, self._params[k], v)for k,v in self.items()]))
+    def get_parameter(self, param_name):
+        if param_name not in self:
+            mesg = "Unknown parameter %s" % param_name
+            similar_words = find_similar_words(param_name, self.keys())
+            if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+            raise ValidationError(mesg)
+        return self._params[param_name]
     
     def parameters(self):
         return self._params.values()
@@ -74,11 +80,7 @@ defining the same key multiple times or by using the item_separator character
                 #just in case there were multiple '=' characters
                 value = '='.join(parts[1:])
             
-            if key not in self:
-                mesg = "Unknown parameter %s" % key
-                similar_words = find_similar_words(key, self.keys())
-                if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-                raise ValidationError(mesg)
+
             param = self.get_parameter(key)
             if key in config:
                 if not isinstance(config[key], list):
@@ -135,7 +137,6 @@ class ParameterType(object):
                  print_format='%s'):
         
         self.name = name
-        self.default = default
         
         self.mandatory = mandatory
         self.max_items = max_items
@@ -145,6 +146,12 @@ class ParameterType(object):
         self.help = help
         
         self.print_format = print_format 
+        
+        #this assures we get a valid default!
+        if default is None:
+            self.default = None
+        else:
+            self.default = self.parse(default)
         
     def _verified(self, orig_values):
         
@@ -193,7 +200,7 @@ class ParameterType(object):
         return self.print_format % value
                 
     
-    def str(self):
+    def __str__(self):
         return self.__class__.__name__
     
     @staticmethod
