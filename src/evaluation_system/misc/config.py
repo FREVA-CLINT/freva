@@ -83,6 +83,8 @@ framework is restarted every time an analysis is performed."""
     
     #now check if we have a configuration file, and read the defaults from there
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION)
+    
+    log.debug("Loading configuration file from: %s", config_file)
     if config_file and os.path.isfile(config_file):
         config_parser = SafeConfigParser()
         with open(config_file, 'r') as fp:

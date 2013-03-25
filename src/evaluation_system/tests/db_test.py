@@ -13,7 +13,6 @@ if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
 from evaluation_system.tests.mocks import DummyUser, DummyPlugin
-from evaluation_system.api.plugin import metadict
 from evaluation_system.model.db import HistoryEntry
 
 class Test(unittest.TestCase):
@@ -67,7 +66,7 @@ class Test(unittest.TestCase):
     def testGetHistory(self):
         db = self.user.getUserDB()
         self.assertEqual(db._getConnection().execute("SELECT count(*) from history;").fetchone()[0], 0)
-        test_dicts = [dict(a=1), dict(a=1,b=2), metadict(compact_creation=True,a=(None,dict(type=str)),b=2)]
+        test_dicts = [dict(a=1), dict(a=1,b=2), dict(a=None,b=2)]
         for td in test_dicts:
             db.storeHistory(DummyPlugin(), td)
         
