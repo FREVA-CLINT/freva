@@ -7,7 +7,7 @@ Classes available after 2.7 to make it run also for 2.6
 
 try:
     import collections
-    OrederedDict = collections.OrderedDict
+    OrderedDict = collections.OrderedDict
 except:
     # Copyright (c) 2009 Raymond Hettinger
     #
