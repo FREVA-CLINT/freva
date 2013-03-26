@@ -20,8 +20,6 @@ from evaluation_system.tests.mocks import DummyPlugin, DummyUser
 
 import evaluation_system.api.plugin_manager as pm
 
-print "XXX123 4", "done",  config._config[config.PLUGINS]
-print pm.getPlugins()
 class Test(unittest.TestCase):
     
     def setUp(self):
