@@ -187,7 +187,7 @@ defaults
                     #if we have more info use it to generate a unique root path
                     #(e.g. cmip5 and baseline0 or baseline1 share the same root path!)
                     if part in DRSFile.DRS_STRUCTURE[st_type]['defaults'] and \
-                            all([char not in DRSFile.DRS_STRUCTURE[st_type]['defaults'] for char in '*?']):
+                            all([char not in DRSFile.DRS_STRUCTURE[st_type]['defaults'][part] for char in '*?']):
                         #but only use it if it's a plain string, no globing.
                         path_prefix += '/' + DRSFile.DRS_STRUCTURE[st_type]['defaults'][part]
                     else: 
