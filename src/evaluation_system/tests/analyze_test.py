@@ -17,7 +17,8 @@ os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.
 from evaluation_system.tests.capture_std_streams import stdout
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.tests.mocks import DummyPlugin
-from evaluation_system.api.parameters import ParameterDictionary, Integer, String
+from evaluation_system.api.parameters import ParameterDictionary, Integer, String,\
+    ValidationError
 from evaluation_system.api.plugin_manager import PluginManagerException
 from evaluation_system.model.user import User
 
@@ -255,6 +256,10 @@ class Test(unittest.TestCase):
         
         #clean up create file
         os.unlink(tmpfile)
+        
+    def testParametersParsing(self):
+        #too any parameters
+        self.failUnlessRaises(ValidationError, analyze.main, ['--tool','dummyplugin', 'the_number=23', 'the_number=21'])
         
     def _testPCA(self):
         tmpfile = tempfile.mkstemp("_pca-test.nc")

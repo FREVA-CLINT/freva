@@ -134,6 +134,7 @@ class Test(unittest.TestCase):
                                      Date(name='date', item_separator='/'))
         self.assertEquals(p_dict.parseArguments(["file=a:b"]), dict(file=['a','b']))
         self.failUnlessRaises(ValidationError, p_dict.parseArguments, ["file=a:b:c"])
+        self.failUnlessRaises(ValidationError, p_dict.parseArguments, ["file=a","file=b", "file=c"])
         #this should still work since max_items defaults to 1 and in that case no splitting happens
         self.assertEquals(p_dict.parseArguments(["date=a/b"]), dict(date="a/b"))
         self.assertEquals(p_dict.parseArguments(["file=a", "file=b"]), dict(file=['a','b']))

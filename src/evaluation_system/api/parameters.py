@@ -97,7 +97,17 @@ defining the same key multiple times or by using the item_separator character
                 config[key] = self._params[key].parse(value)
         if use_defaults:
             self.complete(config, add_missing_defaults=complete_defaults)
-            
+        
+        errors= self.validate_errors(config)
+        if errors:
+            missing = errors['missing']
+            too_many = errors['too_many_items']
+            msg="Error found when parsing parameters. "
+            if missing:
+                msg += "Missing mandatory parameters: %s" % ', '.join(missing)
+            if too_many:
+                msg += "Too many entries for these parameters: %s" % ', '.join(['%s(max:%s, found:%s)' % (param, max, len(config[param])) for param, max in too_many])
+            raise ValidationError(msg)
         return config
     
     def getHelpString(self, width=80):
