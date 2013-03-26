@@ -138,7 +138,7 @@ def auto_doc(message=None):
 
 
 _short_args = 'hd'
-_args = ['baseline=', 'crawl=', 'core=', 'debug',
+_args = ['baseline=', 'crawl=', 'core=', 'debug', 'help',
         'observations', 'reanalysis', 'cmip5',
         'processors=', 'batch-size=']
 
