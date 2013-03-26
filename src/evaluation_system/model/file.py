@@ -28,7 +28,7 @@ class DRSFile(object):
     #Lazy initialized in find_structure_from_path
     DRS_STRUCTURE_PATH_TYPE = None
     DRS_STRUCTURE = {
-        #Cmip5 data      
+        #Cmip5 data
         CMIP5 : {
          "root_dir":"/miklip/integration/data4miklip/model",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
@@ -58,7 +58,7 @@ class DRSFile(object):
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": BASELINE1,
-         "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-LR"}
+         "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
@@ -80,7 +80,21 @@ class DRSFile(object):
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
         }
-    """Describes the DRS structure of different types of data"""
+    """Describes the DRS structure of different types of data. The key values of this dictionary are:
+root_dir
+    Directory from where this files are to be found
+parts_dir
+    list of subdirectory category names the values they refer to (e.g. ['model', 'experiment'])
+parts_dataset
+    The components of a dataset name (this data should also be found in parts_dir)
+parts_versioned_dataset (optional)
+    If this datasets are versioned then define the version structure of them (i.e. include the version number in the dataset name)
+parts_file_name
+    elements composing the file name (no ".nc" though)
+data_type
+    same value as this key structure (for reverse traverse)
+defaults
+    list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)"""
     
     def __init__(self, file_dict=None, drs_structure=BASELINE0):
         """Creates a DRSfile out of the dictionary containing information about the file or from scratch.
@@ -170,7 +184,11 @@ class DRSFile(object):
             for st_type in DRSFile.DRS_STRUCTURE:
                 path_prefix = DRSFile.DRS_STRUCTURE[st_type]['root_dir']
                 for part in DRSFile.DRS_STRUCTURE[st_type]['parts_dir']:
-                    if part in DRSFile.DRS_STRUCTURE[st_type]['defaults']:
+                    #if we have more info use it to generate a unique root path
+                    #(e.g. cmip5 and baseline0 or baseline1 share the same root path!)
+                    if part in DRSFile.DRS_STRUCTURE[st_type]['defaults'] and \
+                            all([char not in DRSFile.DRS_STRUCTURE[st_type]['defaults'] for char in '*?']):
+                        #but only use it if it's a plain string, no globing.
                         path_prefix += '/' + DRSFile.DRS_STRUCTURE[st_type]['defaults'][part]
                     else: 
                         break
