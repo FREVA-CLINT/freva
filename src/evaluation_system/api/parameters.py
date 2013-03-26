@@ -145,10 +145,24 @@ class ParameterType(object):
                  mandatory=False, max_items=1, item_separator=',', regex=None,
                  help='No help available.', 
                  print_format='%s'):
+        """Creates a Parameter with the following information:
         
+:param name: name of the parameter
+:param default: the default value if none is provided 
+ (this value will also be validated and parsed, so it must be a *valid* parameter value!)
+:param mandatory: if the parameter is required 
+ (note that if there's a default value, the user might not be required to set it, and can always change it, though he/she is not allowed to *unset* it)
+: param max_items: If set to > 1 it will cause the values to be returned in a list (even if the user only provided 1). An error will be risen if more values than those are passed to the plugin
+:param item_separator: The string used to separate multiple values for this parameter. In some cases (at the shell, web interface, etc) the user have always the option to provide multiple values by re-using the same parameter name (e.g. @param1=a param1=b@ produces @{'param1': ['a', 'b']}@). But the configuration file does not allow this at this time. Therefore is better to setup a separator, even though the user might not use it while giving input. It must not be a character, it can be any string (make sure it's not a valid value!!)
+:param regex: A regular expression defining valid "string" values before parsing them to their defining classes (e.g. an Integer might define a regex of "[0-9]+" to prevent getting negative numbers). This will be used also on Javascript so don't use fancy expressions or make sure they are understood by both python and Javascript.
+:param help: The help string describing what this parameter is good for.
+:param print_format: A python string format that will be used when displaying the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
+ """
         self.name = name
         
         self.mandatory = mandatory
+        if max_items < 1:
+            raise ValidationError("max_items must be set to a value >= 1. Current='%s'" % max_items)
         self.max_items = max_items
         self.item_separator = item_separator
 
@@ -207,6 +221,7 @@ class ParameterType(object):
                 return "<undefined>"
             else:
                 value = self.default
+        
         return self.print_format % value
                 
     

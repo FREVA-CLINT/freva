@@ -24,7 +24,14 @@ class SolrCore(object):
     """Encapsulate access to a Solr instance"""
     
     def __init__(self, core=None, host=None, port=None, echo=False, instance_dir=None, data_dir=None):
-        """Create the connection pointing to the proper solr url and core"""
+        """Create the connection pointing to the proper solr url and core.
+:param core: The name of the core referred (default: loaded from config file)
+:param host: the hostname of the Solr server (default: loaded from config file)
+:param port: The port number of the Solr Server (default: loaded from config file)
+:param echo: If True, show all urls before issuing them.
+:param instance_dir: the core instance directory (if empty but the core exists it will get downloaded from Solr)
+:param data_dir: the directory where the data is being kept (if empty but the core exists it will get downloaded from Solr)"""
+
         if host is None: host = config.get(config.SOLR_HOST)
         if port is None: port = config.get(config.SOLR_PORT)
         if core is None: core = config.get(config.SOLR_CORE)
@@ -52,7 +59,11 @@ class SolrCore(object):
         return '<SolrCore %s>' % self.core_url
         
     def post(self, list_of_dicts, auto_list=True, commit=True):
-        """Sends some json to Solr"""
+        """Sends some json to Solr for ingestion.
+
+:param list_of_dicts: either a json or more normally a list of json instances that will be sent to Solr for ingestion
+:param auto_list: avoid packing list_of dics in a directory if it's not one
+:param commit: send also a Solr commit so that changes can be seen immediately."""
         if auto_list and not isinstance(list_of_dicts, list): list_of_dicts=[list_of_dicts]
         endpoint = 'update/json?'
         if commit:
@@ -66,7 +77,11 @@ class SolrCore(object):
         return urllib2.urlopen(req).read()
     
     def get_json(self, endpoint, use_core=True, check_response=True):
-        """Return some json from server"""
+        """Return some json from server. Is the raw access to Solr.
+        
+:param endpoint: The endpoint, path missing after the core url and all parameters encoded in it (e.g. 'select?q=*')
+:param use_core: if the core info is used for generating the endpoint. (if False, then == self.core + '/' + endpoint)
+:param check_response: If the response should be checked for errors. If True, raise an exception if something is wrong (default: True)"""
         if '?' in endpoint:
             endpoint += '&wt=json'
         else:
@@ -82,12 +97,13 @@ class SolrCore(object):
         
         response = json.loads(urllib2.urlopen(req).read())
         if response['responseHeader']['status'] != 0:
-            raise "Can't reload core %s! Response: %s" % (self.core, response)
+            raise Exception("Error while accessing Core %s. Response: %s" % (self.core, response))
         
         return response
     
     def get_solr_fields(self):
-        """Return information about the Solr fields"""
+        """Return information about the Solr fields. This is dynamically generated and because of
+dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
         return self.get_json('admin/luke')['fields']
     
     def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml'):
@@ -125,7 +141,9 @@ Be aware that you might need to reingest everything if there were changes to the
         return self.get_json('admin/cores?action=UNLOAD&core=' + self.core, use_core=False)
     
     def swap(self, other_core):
-        """Will swap this core with the given one (that means rename their references)"""
+        """Will swap this core with the given one (that means rename their references)
+        
+:param other_core: the name of the other core that this will be swapped with."""
         return self.get_json('admin/cores?action=SWAP&core=%s&other=%s' % (self.core, other_core), use_core=False)
     
     def status(self, general=False):
