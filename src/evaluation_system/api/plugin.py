@@ -315,15 +315,7 @@ string ``"None"`` without any quotes.
         
         else:
             return self.__parameters__.get_parameter(param_name).parse(str_value) 
-        
-    def parseArguments(self, opt_arr, check_errors=True):
-        """Parses an array of strings and return a configuration dictionary.
-The strings are of the type: ``key1=val1`` or ``key2``.
-
-:type opt_arr: List of strings.
-:param opt_arr: See :class:`_parseConfigStrValue` for more information on how the parsing is done.
-:param check_errors: if errors in arguments should be checked."""
-        return self.__parameters__.parseArguments(opt_arr, check_errors=check_errors)
+  
         
         
     def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):

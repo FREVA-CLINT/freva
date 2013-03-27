@@ -203,7 +203,7 @@ to be known at this stage.
     if user is None: user = User()
     
     p = getPluginInstance(plugin_name, user)
-    complete_conf = {}
+    complete_conf = p.__parameters__.parseArguments(arguments, use_defaults=True, check_errors=False)
     
     #if we are using user defaults then load them first
     if use_user_defaults:
@@ -226,7 +226,7 @@ to be known at this stage.
         complete_conf.update(p.readConfiguration(config_file))
 
     #update with user defaults if desired
-    complete_conf.update(p.parseArguments(arguments, check_errors=False))
+    complete_conf.update(p.__parameters__.parseArguments(arguments, check_errors=False))
     #we haven't check for errors because we might have a half implemented configuration
     #some required field might have already been setup (user/system defaults, files, etc)
     #but better if we check them

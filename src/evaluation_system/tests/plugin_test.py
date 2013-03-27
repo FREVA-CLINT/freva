@@ -63,27 +63,27 @@ class Test(unittest.TestCase):
     def testParseArguments(self):
         dummy = DummyPlugin()
         dummy.__parameters__ = ParameterDictionary(String(name='a'), String(name='b'))
-        res = dummy.parseArguments("a=1 b=2".split())
+        res = dummy.__parameters__.parseArguments("a=1 b=2".split())
         self.assertEqual(res, dict(a='1', b='2'))
         
         dummy.__parameters__ = ParameterDictionary(Integer(name='a', default=0),
                                                    Integer(name='b', default=0))
-        res = dummy.parseArguments("a=1 b=2".split())
+        res = dummy.__parameters__.parseArguments("a=1 b=2".split())
         self.assertEqual(res, dict(a=1, b=2))
         
         #even if the default value is different, the metadata can define the type
         dummy.__parameters__ = ParameterDictionary(Integer(name='a', default='1'),
                                                    Integer(name='b', default=2))
-        res = dummy.parseArguments("a=1 b=2".split())
+        res = dummy.__parameters__.parseArguments("a=1 b=2".split())
         self.assertEqual(res, dict(a=1, b=2))
         #more arguments than those expected
         dummy.__parameters__ = ParameterDictionary(Integer(name='a', default='1'))
-        self.failUnlessRaises(ValidationError, dummy.parseArguments, "a=1 b=2".split())
+        self.failUnlessRaises(ValidationError, dummy.__parameters__.parseArguments, "a=1 b=2".split())
         
         dummy.__parameters__ = ParameterDictionary(Bool(name='a'))
         for arg, parsed_val in [("a=1",True),("a=true",True),("a=TRUE",True),
                                 ("a=0",False),("a=false",False),("a=False",False)]:
-            res = dummy.parseArguments(arg.split())
+            res = dummy.__parameters__.parseArguments(arg.split())
             self.assertEqual(res, dict(a=parsed_val), 'Error when parsing %s, got %s' % (arg, res))
         
     def test_parseMetadict(self):

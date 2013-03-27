@@ -139,7 +139,6 @@ class Test(unittest.TestCase):
         self.assertEquals(p_dict.parseArguments(["date=a/b"]), dict(date="a/b"))
         self.assertEquals(p_dict.parseArguments(["file=a", "file=b"]), dict(file=['a','b']))
                           
-        
     def testComplete(self):
         p_dict = ParameterDictionary(Integer(name='int'), 
                                      File(name='file', default='/tmp/file1'),
@@ -165,6 +164,12 @@ class Test(unittest.TestCase):
         Float(name='a', default=1.2e-2)
         Float(name='a', default="1.2e-2")
         Integer(name='a', default='1232')
+        
+        p_dict = ParameterDictionary(File(name='file', default='/tmp/file1', mandatory=True, max_items=2, item_separator=':'),
+                             Date(name='date', item_separator='/'))
+        self.failUnlessRaises(ValidationError, p_dict.parseArguments, ["date=2"], use_defaults=False)
+        self.assertEquals(p_dict.parseArguments(["date=2"], use_defaults=True), {'date': '2', 'file': ['/tmp/file1']})
+
         
     def testValidateErrors(self):
         p_dict = ParameterDictionary(Integer(name='int', mandatory=True), 

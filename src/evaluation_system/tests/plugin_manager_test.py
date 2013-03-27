@@ -104,12 +104,12 @@ class Test(unittest.TestCase):
         self.assertTrue(os.path.isdir(home))
         
         #direct parsing
-        for args, result in [("the_number=4", dict(the_number=4))]:
+        for args, result in [("the_number=4", {'other': 1.3999999999999999, 'the_number': 4, 'something': 'test'})]:
             d = pm.parseArguments('Dummyplugin', args.split(), user=user)        
             self.assertEquals(d, result)
 
         #parsing requesting user default but without any
-        for args, result in [("the_number=4", dict(the_number=4))]:
+        for args, result in [("the_number=4", {'other': 1.3999999999999999, 'the_number': 4, 'something': 'test'})]:
             d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=user)        
             self.assertEquals(d, result)
             
