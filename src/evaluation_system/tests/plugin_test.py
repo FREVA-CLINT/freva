@@ -32,7 +32,7 @@ class Test(unittest.TestCase):
         dummy.__parameters__ = ParameterDictionary(String(name='a',mandatory=True))
         
         #the default behavior is to check for None values and fail if found
-        self.failUnlessRaises(ConfigurationError, dummy.setupConfiguration)
+        self.failUnlessRaises(ValidationError, dummy.setupConfiguration)
         
         #it can be turned off
         res = dummy.setupConfiguration(check_cfg=False)
