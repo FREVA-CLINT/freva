@@ -1,7 +1,8 @@
 api Package
 ===========
 
-This packages contains modules that manage the access to the system.
+This packages contains modules that are meant to be accessed by the developers
+extending the system.
 
 
 :mod:`plugin` Module
@@ -11,6 +12,12 @@ This packages contains modules that manage the access to the system.
     :members:
     :undoc-members:
 
+:mod:`parameters` Module
+------------------------
+
+.. automodule:: evaluation_system.api.parameters
+    :members:
+    :undoc-members:
 
 :mod:`plugin_manager` Module
 ----------------------------

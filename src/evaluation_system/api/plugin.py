@@ -46,20 +46,18 @@ between the methods so you'll have to make sure it doesn't break anything else. 
 for your own class that checks it is working as expected.
 
 This very short example that shows a complete plug-in. Although it does nothing it already show the most important part,
-the :class:`evaluation_system.api.plugin.metadict` used for defining meta-data on the parameters::
+the :class:`evaluation_system.api.parameters.ParameterDictionary` used for defining meta-data on the parameters::
 
     from evaluation_system.api import plugin, parameters
     
     class MyPlugin(plugin.PluginAbstract):
         __short_description__ = "MyPlugin short description (just to know what it does)" 
         __version__ = (0,0,1)
-        __parameters__ =  plugin.metadict(compact_creation=True, 
-                                    number=(None, dict(type=int, help='This is an optional configurable int variable named number without default value and this description')),
-                                    the_number=(None, dict(type=float, mandatory=True, help='A required float value without default')), 
-                                    something='test', #a simple optional test value with default value and no description 
-                                    other=1.4)        #another float value. 
-                                                      #You cannot define a parameter without a default value and no metadata 'type' attribute 
-                                                      #as it defines how it should be parsed from a string (for config files, command line arguments, etc).
+        __parameters__ =  parameters.ParameterDictionary(
+                            parameters.Integer(name='number', help='This is an optional configurable int variable named number without default value and this description'),
+                            parameters.Float(name='the_number',mandatory=True, help='A required float value without default'),
+                            parameters.Bool(name='really', default=False, help='a boolean parameter named really with default value of false'), 
+                            parameters.String(name='str')) #a simple optional string without any other information
     
         def runTool(self, config_dict=None):
             print "MyPlugin", config_dict
@@ -320,12 +318,11 @@ string ``"None"`` without any quotes.
         
     def parseArguments(self, opt_arr, check_errors=True):
         """Parses an array of strings and return a configuration dictionary.
-The strings are of the type: ``key1=val1`` or ``key2``
+The strings are of the type: ``key1=val1`` or ``key2``.
 
-:type opt_arr: List of strings
+:type opt_arr: List of strings.
 :param opt_arr: See :class:`_parseConfigStrValue` for more information on how the parsing is done.
-:param check_errors; if errors in arguments should be checked.
-"""
+:param check_errors: if errors in arguments should be checked."""
         return self.__parameters__.parseArguments(opt_arr, check_errors=check_errors)
         
         
