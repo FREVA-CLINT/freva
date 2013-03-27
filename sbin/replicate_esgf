@@ -42,10 +42,10 @@ import sys
 from evaluation_system.model.esgf import P2P
 
 
-def get_wget_script(output='wget.sh'):
+def get_wget_script(node='esgf-data.dkrz.de', output='wget.sh', **search):
     """Retrieves a dummy wget script used for parsing the list of files generated here"""
     from subprocess import call
-    call(['wget', 'http://esgf-data.dkrz.de/esg-search/wget?distrib=false&limit=1', '-O', output])
+    call(['wget', 'http://%s/esg-search/wget?distrib=false&limit=1' % node, '-O', output])
 
 def get_download_list(node='esgf-data.dkrz.de', output=sys.stdout, to_local=lambda no_change: no_change, **search):
     """Generates a list of files as requested from the search parameters"""
@@ -58,6 +58,23 @@ def get_download_list(node='esgf-data.dkrz.de', output=sys.stdout, to_local=lamb
         url = [url.split('|')[0] for url in f['url'] if url.split('|')[2] == 'HTTPServer'][0]
         try:
             output.write("'%s' '%s' 'MD5' '%s'\n" % (to_local(url), url, f['checksum'][0]))
+            output.flush()
+        except:
+            sys.exit(1)
+
+    if output != sys.stdout: output.close()
+
+def get_md5_list(node='esgf-data.dkrz.de', output=sys.stdout, to_local=lambda no_change: no_change, **search):
+    """Generates a list of files as requested from the search parameters"""
+    p = P2P(node=node)
+
+    if isinstance(output, basestring):
+        output = open(output, 'w')
+
+    for f in p.files(fields='url,checksum', **search):
+        url = [url.split('|')[0] for url in f['url'] if url.split('|')[2] == 'HTTPServer'][0]
+        try:
+            output.write("%s  %s\n" % (f['checksum'][0], to_local(url)))
             output.flush()
         except:
             sys.exit(1)
@@ -90,8 +107,8 @@ def get_facets(facets, node='esgf-data.dkrz.de', output=sys.stdout, **search):
     if isinstance(output, basestring):
         output = open(output, 'w')
 
-    for facet, values in p.get_facets(*facets, **search).items():
-        for value, count in values.items():
+    for facet, values in sorted(p.get_facets(*facets, **search).items()):
+        for value, count in sorted(values.items()):
             try:
                 output.write('%s\t%s\t%s\n' % (facet, value, count))
                 output.flush()
@@ -108,7 +125,7 @@ def list_facets(node='esgf-data.dkrz.de', output=sys.stdout, **search):
     #some defaults:
     if 'distrib' not in search: search['distrib'] = False
 
-    for facet in p.get_facets('*', **search):
+    for facet in sorted(p.get_facets('*', **search)):
         try:
             output.write('%s\n' % (facet))
             output.flush()
@@ -132,7 +149,7 @@ def auto_doc(message=''):
     """Just output help automatically from the parser in here"""
     import re, os
     f = sys.argv[0]
-    script_name = os.path.basename(file)
+    script_name = os.path.basename(f)
 
     re_start = re.compile('.*\*!!!\*$')
     re_end = re.compile('^[ \t]*$')
@@ -217,7 +234,7 @@ def main(argv=None):
     try:
         args, lastargs = getopt.getopt(argv, "f:o:h", ['help','facet=','wget-dummy',
                         'regex-dir=', 'node=', 'technotes', 'examples', 'facet-count=',
-                        'list-facets', 'count-files'])
+                        'list-facets', 'count-files', 'md5-list'])
     except getopt.error:
         print "We couldn't parse the option list. Verify it is correct and try again"
         print "(Use -h to see the list of available options)"
@@ -235,6 +252,8 @@ def main(argv=None):
     to_local=None
     node=None
     technotes=False
+    md5_list = False
+    wget_script = False
     count=False
     regex_path = []
     facets= []
@@ -255,8 +274,7 @@ def main(argv=None):
                 print "Wrong facet syntax. Assure it is <key>=<value> (e.g. project=CMIP5)"
                 return 1
         elif flag=='--wget-dummy':              # Generates a dummy wget script
-            get_wget_script()
-            return
+            wget_script = False
         elif flag=='-o':                        # Store output to the given file
             output=arg
         elif flag=='--node':                    #<node> Use this specific index node instead of esgf-data.dkrz.de
@@ -269,6 +287,8 @@ def main(argv=None):
             count = True
         elif flag=='--facet-count':             # Get the values and their count for a given facet. Can be defined multiple times.
             facets.append(arg)
+        elif flag=='--md5-list':                # Get a list of values that can be used with md5sum to check what was changed
+            md5_list = True
         elif flag=='--regex-dir':               #<regex>=<target> Remap url to target, e.g. --regex-dir 'https://.*/obs4MIPs/=/my_path/obs4MIPs/' Can be used multiple times.
             source, target = arg.split('=')
             regex_path.append((re.compile(source), target))
@@ -309,12 +329,16 @@ def main(argv=None):
     if node: search_query['node'] = node
     if technotes:
         get_technotes(**search_query)
+    elif wget_script:
+        get_wget_script(**search_query)
     elif _list_facets:
         list_facets(**search_query)
     elif facets:
         get_facets(facets, **search_query)
     elif count:
         count_files(**search_query)
+    elif md5_list:
+        get_md5_list(**search_query)
     else:
         get_download_list(**search_query)
 
