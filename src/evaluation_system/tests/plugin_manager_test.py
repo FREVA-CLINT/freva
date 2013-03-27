@@ -71,18 +71,17 @@ class Test(unittest.TestCase):
         #write down this default
         conf_file = pm.writeSetup('dummyplugin', config_dict=dict(the_number=42),user=user)
         
-        print conf_file
         self.assertTrue(os.path.isfile(conf_file))
         with open(conf_file, 'r') as f:
             config = f.read()
+        
         self.assertTrue('\nsomething=test\n' in config)
         
-        res = pm.parseArguments('dummyplugin', [])
-        self.assertEquals(res, {})
-        res = pm.parseArguments('dummyplugin', [], user=user)
-        self.assertEquals(res, {})        
+        self.failUnlessRaises(ConfigurationError, pm.parseArguments,'dummyplugin', [] )
+        self.failUnlessRaises(ConfigurationError, pm.parseArguments,'dummyplugin', [] ,user=user)
         res = pm.parseArguments('dummyplugin', [], use_user_defaults=True, user=user)
-        self.assertNotEquals(res, {})
+        print "xxx", res
+        self.assertEquals(res, {'other': 1.4, 'number': None, 'the_number': 42, 'something': 'test'})
         self.assertEquals(res['something'], 'test')
         
         #now change the stored configuration
@@ -104,12 +103,12 @@ class Test(unittest.TestCase):
         self.assertTrue(os.path.isdir(home))
         
         #direct parsing
-        for args, result in [("number=4", dict(number=4))]:
+        for args, result in [("the_number=4", dict(the_number=4))]:
             d = pm.parseArguments('Dummyplugin', args.split(), user=user)        
             self.assertEquals(d, result)
 
         #parsing requesting user default but without any
-        for args, result in [("number=4", dict(number=4))]:
+        for args, result in [("the_number=4", dict(the_number=4))]:
             d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=user)        
             self.assertEquals(d, result)
             

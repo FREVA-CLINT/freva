@@ -48,12 +48,12 @@ for your own class that checks it is working as expected.
 This very short example that shows a complete plug-in. Although it does nothing it already show the most important part,
 the :class:`evaluation_system.api.plugin.metadict` used for defining meta-data on the parameters::
 
-    from evaluation_system.api import plugin
+    from evaluation_system.api import plugin, parameters
     
     class MyPlugin(plugin.PluginAbstract):
         __short_description__ = "MyPlugin short description (just to know what it does)" 
         __version__ = (0,0,1)
-        __config_metadict__ =  plugin.metadict(compact_creation=True, 
+        __parameters__ =  plugin.metadict(compact_creation=True, 
                                     number=(None, dict(type=int, help='This is an optional configurable int variable named number without default value and this description')),
                                     the_number=(None, dict(type=float, mandatory=True, help='A required float value without default')), 
                                     something='test', #a simple optional test value with default value and no description 
@@ -318,14 +318,15 @@ string ``"None"`` without any quotes.
         else:
             return self.__parameters__.get_parameter(param_name).parse(str_value) 
         
-    def parseArguments(self, opt_arr):
+    def parseArguments(self, opt_arr, check_errors=True):
         """Parses an array of strings and return a configuration dictionary.
 The strings are of the type: ``key1=val1`` or ``key2``
 
 :type opt_arr: List of strings
 :param opt_arr: See :class:`_parseConfigStrValue` for more information on how the parsing is done.
+:param check_errors; if errors in arguments should be checked.
 """
-        return self.__parameters__.parseArguments(opt_arr)
+        return self.__parameters__.parseArguments(opt_arr, check_errors=check_errors)
         
         
     def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):
@@ -359,23 +360,11 @@ There are some special values pointing to user-related managed by the system def
         else:
             results = config_dict.copy()
 
-        #Allow inheriting class to modify the final configuration before issuing it
-        #results = self._postTransformCfg(results)
-        
         if check_cfg:
             missing =[ k for k,v in results.items() if v is None and self.__parameters__.get_parameter(k).mandatory]
             if missing:
                 raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
         
-        #=======================================================================
-        # if template:
-        #    if isinstance(template, Template):
-        #        return template.substitute(results)
-        #    else:
-        #        return Template(template).substitute(results)
-        # else:
-        #    return results
-        #=======================================================================
         return results
    
     def readFromConfigParser(self, config_parser):
@@ -470,17 +459,6 @@ if no configuration is provided the default one will be used.
                 fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
         
-    
-    def _postTransformCfg(self, config_dict):
-        """Allow plugins to give a final check or modification to the configuration before being issued.
-This hook is especially useful if you need to transform booleans to special values (e.g. ``0`` or ``yes``)
-or if the plug-in needs to define some values that overides what the user selects, etc.
-Checking the completenes of the dictionary happens after this call return.
-
-:param config_dict: the complete configuration dictionary as it would be used.
-:returns: the final configuration in a dictionary that will be used for starting the underlaying tool."""
-        return config_dict
-    
     def call(self, cmd_string, stdin=None, stdout=PIPE, stderr=STDOUT):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
 It means, **never** start a plug-in comming from unknown sources.

@@ -217,6 +217,7 @@ to be known at this stage.
         if config_file == '-':
             #reading from stdin
             complete_conf.update(p.readConfiguration(sys.stdin))
+            
         elif config_file is not None:
             with open(config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
@@ -224,9 +225,12 @@ to be known at this stage.
         #if it's not a string and is something, we asume is something that can be read from
         complete_conf.update(p.readConfiguration(config_file))
 
-    
     #update with user defaults if desired
-    complete_conf.update(p.parseArguments(arguments))
+    complete_conf.update(p.parseArguments(arguments, check_errors=False))
+    #we haven't check for errors because we might have a half implemented configuration
+    #some required field might have already been setup (user/system defaults, files, etc)
+    #but better if we check them
+    p.setupConfiguration(complete_conf)
     
     return complete_conf
 
