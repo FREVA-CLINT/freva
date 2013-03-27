@@ -9,6 +9,7 @@ from types import TypeType, StringType, IntType, FloatType, LongType, BooleanTyp
 
 from evaluation_system.misc.py27 import OrderedDict
 from evaluation_system.misc.utils import find_similar_words
+from symbol import raise_stmt
 
 class ValidationError(Exception):
     pass
@@ -48,7 +49,7 @@ class ParameterDictionary(OrderedDict):
                 
         return config_dict
     
-    def validate_errors(self, config_dict):
+    def validate_errors(self, config_dict, raise_exception=False):
         missing = []
         too_many_items = []
         for key, param in self._params.items():
@@ -57,7 +58,18 @@ class ParameterDictionary(OrderedDict):
             if key in config_dict and isinstance(config_dict[key], list) and len(config_dict[key]) > param.max_items:
                 too_many_items.append((key, param.max_items,)) 
         if missing or too_many_items:
-            return dict(missing=missing, too_many_items=too_many_items)
+            
+            if raise_exception:
+                msg="Error found when parsing parameters. "
+                if missing:
+                    msg += "Missing mandatory parameters: %s" % ', '.join(missing)
+                if too_many_items:
+                    msg += "Too many entries for these parameters: %s" % ', '.join(['%s(max:%s, found:%s)' % (param, max, len(config_dict[param])) for param, max in too_many_items])
+                raise ValidationError(msg)
+            else:
+                return dict(missing=missing, too_many_items=too_many_items)
+        
+    
         
     def parseArguments(self, opt_arr, use_defaults=False, complete_defaults=False, check_errors=True):
         """Parses an array of strings and return a dictionary with the parsed configuration.
@@ -98,17 +110,10 @@ defining the same key multiple times or by using the item_separator character
                 config[key] = self._params[key].parse(value)
         if use_defaults:
             self.complete(config, add_missing_defaults=complete_defaults)
+            
         if check_errors:
-            errors= self.validate_errors(config)
-            if errors:
-                missing = errors['missing']
-                too_many = errors['too_many_items']
-                msg="Error found when parsing parameters. "
-                if missing:
-                    msg += "Missing mandatory parameters: %s" % ', '.join(missing)
-                if too_many:
-                    msg += "Too many entries for these parameters: %s" % ', '.join(['%s(max:%s, found:%s)' % (param, max, len(config[param])) for param, max in too_many])
-                raise ValidationError(msg)
+            self.validate_errors(config, raise_exception=True)
+            
         return config
     
     def getHelpString(self, width=80):

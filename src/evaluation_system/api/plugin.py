@@ -358,9 +358,7 @@ There are some special values pointing to user-related managed by the system def
             results = config_dict.copy()
 
         if check_cfg:
-            missing =[ k for k,v in results.items() if v is None and self.__parameters__.get_parameter(k).mandatory]
-            if missing:
-                raise ConfigurationError("Missing required configuration for: %s" % ', '.join(missing))
+            self.__parameters__.validate_errors(results, raise_exception=True)
         
         return results
    

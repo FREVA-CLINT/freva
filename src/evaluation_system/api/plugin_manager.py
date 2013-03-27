@@ -181,7 +181,7 @@ At the current time we are just creating new instances, but this might change in
     if user is None: user = User()
     return getPluginDict(plugin_name)['plugin_class']()
 
-def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None):
+def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None, check_errors=True):
     """Manages the parsing of arguments which are passed as a list of strings. These are in turn
 sent to an instance of the plugin, that will handle the parsing. This is why the user is required
 to be known at this stage.
@@ -230,7 +230,8 @@ to be known at this stage.
     #we haven't check for errors because we might have a half implemented configuration
     #some required field might have already been setup (user/system defaults, files, etc)
     #but better if we check them
-    p.setupConfiguration(complete_conf)
+    if check_errors:
+        p.__parameters__.validate_errors(complete_conf, raise_exception=True)
     
     return complete_conf
 

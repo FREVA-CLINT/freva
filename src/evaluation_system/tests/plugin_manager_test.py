@@ -8,6 +8,7 @@ import os
 import tempfile
 import shutil
 import logging
+from evaluation_system.api.parameters import ValidationError
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -77,8 +78,8 @@ class Test(unittest.TestCase):
         
         self.assertTrue('\nsomething=test\n' in config)
         
-        self.failUnlessRaises(ConfigurationError, pm.parseArguments,'dummyplugin', [] )
-        self.failUnlessRaises(ConfigurationError, pm.parseArguments,'dummyplugin', [] ,user=user)
+        self.failUnlessRaises(ValidationError, pm.parseArguments,'dummyplugin', [] )
+        self.failUnlessRaises(ValidationError, pm.parseArguments,'dummyplugin', [] ,user=user)
         res = pm.parseArguments('dummyplugin', [], use_user_defaults=True, user=user)
         print "xxx", res
         self.assertEquals(res, {'other': 1.4, 'number': None, 'the_number': 42, 'something': 'test'})
@@ -143,7 +144,7 @@ class Test(unittest.TestCase):
         home = user.getUserHome()
         
         #no confg
-        self.failUnlessRaises(ConfigurationError, pm.runTool,'dummyplugin', user=user)
+        self.failUnlessRaises(ValidationError, pm.runTool,'dummyplugin', user=user)
         self.assertTrue(len(DummyPlugin._runs) == 0)
         
         #direct config

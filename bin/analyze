@@ -289,25 +289,29 @@ DATE FORMAT
                 
         #get the plugin
         if tool:
-            tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
+                
+            
+            if cfg_file_save:
+                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
+                if cfg_file_save == _nothing: cfg_file_save = None 
+                save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file_save)
+                log.info("Configuration file saved in %s", save_in)
+            elif show_config:
+                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
+                print pm.getPluginInstance(tool).getCurrentConfig(config_dict=tool_dict)
+            else:
+                tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
+                #now run the tool
+                log.debug('Running %s with configuration: %s', tool, tool_dict)
+                if not dry_run: 
+                    pm.runTool(tool, config_dict=tool_dict)
+
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)
                 import json
                 log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
                 
             
-            if cfg_file_save:
-                if cfg_file_save == _nothing: cfg_file_save = None 
-                save_in = pm.writeSetup(tool, tool_dict, config_file=cfg_file_save)
-                log.info("Configuration file saved in %s", save_in)
-            if show_config:
-                print pm.getPluginInstance(tool).getCurrentConfig(config_dict=tool_dict)
-                
-            
-            #now run the tool
-            log.debug('Running %s with configuration: %s', tool, tool_dict)
-            if not dry_run: 
-                pm.runTool(tool, config_dict=tool_dict)
         elif history:
             full = False
             limit=10
