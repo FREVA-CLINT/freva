@@ -330,8 +330,13 @@ is used for searching and the rest for preparing and ingesting data.
                 for file_path, timestamp in cache(batch_size):
                     f.write('%s,%s\n' % (file_path, timestamp))
     
-    def load(self, dump_file=None, batch_size=10000, abort_on_error=True):
-        """Loads a csv as created by dump."""
+    def load(self, dump_file=None, batch_size=10000, only_latest=False, abort_on_error=True):
+        """Loads a csv as created by dump. May also be gzipped.
+
+:param dump_file: full path to the file that needs to be loaded (playin csv or gzipped)
+:param batch_size: number of files to handle at once.
+:param only_latest: If only the latest version should be loaded. This assumes the dump_file is sorted in descending order.
+:param abort_on_error: If ingestion should continue after an error was found (the missing entry will be reported, but the procedure qill continue)."""
         if dump_file is None:
             dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv.gz')
         
@@ -343,10 +348,25 @@ is used for searching and the rest for preparing and ingesting data.
             f = open(dump_file, 'r')
         batch_count=0
         batch = []
+        last_dataset=None
+        last_version=None
         try:
             for file_path, timestamp in (line.split(',') for line in f):
                 try:
-                    metadata = SolrCore.to_solr_dict(DRSFile.from_path(file_path))
+                    drs_file = DRSFile.from_path(file_path)
+                    if drs_file.is_versioned():
+                        main_ds = drs_file.to_dataset(versioned=False)
+                        if last_dataset == main_ds:
+                            #we already know about this dataset
+                            if last_version != drs_file.get_version():
+                                #we already processed a different version (which we assume is newer)
+                                #skip this
+                                continue
+                            #else - it's a file from the latest version, keep processing
+                        else:
+                            #this is a new versioned dataset
+                            last_dataset = main_ds
+                    metadata = SolrCore.to_solr_dict(drs_file)
                     ts = float(timestamp)
                     metadata['timestamp'] = ts
                     metadata['creation_time'] = timestamp_to_solr_date(ts)
@@ -370,7 +390,7 @@ is used for searching and the rest for preparing and ingesting data.
         if batch:
             print "Sending last %s entries." % (len(batch))
             self.post(batch)
-
+    
 def timestamp_to_solr_date(timestamp):
     """Transform a timestamp (float) into a string parseable by Solr"""
     return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%SZ')

@@ -38,19 +38,20 @@ and read from the configuration file."""
         return urllib.urlencode(params)
     
     def _search(self, batch_size=10000, latest_version=True, **partial_dict):
+        """This encapsulates the Solr call to get documents."""
         offset = partial_dict.pop('start', 0)
         #value retrieved from sys.maxint and == 2**31-1
         max_rows = partial_dict.pop('rows', 2147483647)
             
-        if 'free_text' in partial_dict:
-            free_text = partial_dict.pop('free_text')
-        elif 'q' in partial_dict:
-            free_text = partial_dict.pop('q')
+        if 'text' in partial_dict:
+            partial_dict.update({'q': partial_dict.pop('text')})
         else:
-            free_text='*:*'
+            partial_dict.update({'q': '*:*'})
+
+        if 'fl' not in partial_dict:
+            partial_dict.update({'fl':'file'})
             
         query = self._to_solr_query(partial_dict)
-        query += '&q=%s' % free_text
         
         if latest_version:
             query += '&group=true&group.field=file_no_version&group.sort=version+desc&group.ngroups=true&group.format=simple'
@@ -58,7 +59,7 @@ and read from the configuration file."""
         while True:
             if max_rows < batch_size:
                 batch_size = max_rows
-            answer = self.solr.get_json('select?fl=file&start=%s&rows=%s&%s' % (offset, batch_size, query))
+            answer = self.solr.get_json('select?start=%s&rows=%s&%s' % (offset, batch_size, query))
             if latest_version:
                 offset = answer['grouped']['file_no_version']['doclist']['start']
                 total = answer['grouped']['file_no_version']['ngroups']
