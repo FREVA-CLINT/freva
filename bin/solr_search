@@ -138,10 +138,11 @@ def auto_doc(message=None):
     else: print '%s %s' % (script_name, message)
 
     print """
-The query is of the form key=value. <value> might use *, ?, [seq] or [!seq] (see python glob).
+The query is of the form key=value. <value> might use *, ? as wildcards or any regular expression encclosed in forward slashes. Depending on your shell and the symbols used, remeber to escape the sequences properly. 
+The safest would be to enclosed those in single quotes.
 
 For Example:
-    %s --baseline 0 model=MPI-ESM-LR experiment=decadal200[0-3] time_frequency=*hr variable=?a
+    %s --baseline 0 model=MPI-ESM-LR experiment=/decadal200[0-3]/ time_frequency=*hr variable='/ta|tas|vu/'
 """ % script_name
 
 def _showDataTypeHelp(data_type):
