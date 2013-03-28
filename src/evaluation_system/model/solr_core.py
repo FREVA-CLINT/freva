@@ -355,8 +355,7 @@ is used for searching and the rest for preparing and ingesting data.
                 try:
                     drs_file = DRSFile.from_path(file_path)
                     if drs_file.is_versioned():
-                        main_ds = drs_file.to_dataset(versioned=False)
-                        if last_dataset == main_ds:
+                        if last_dataset == drs_file.to_dataset(versioned=False):
                             #we already know about this dataset
                             if last_version != drs_file.get_version():
                                 #we already processed a different version (which we assume is newer)
@@ -365,7 +364,8 @@ is used for searching and the rest for preparing and ingesting data.
                             #else - it's a file from the latest version, keep processing
                         else:
                             #this is a new versioned dataset
-                            last_dataset = main_ds
+                            last_dataset = drs_file.to_dataset(versioned=False)
+                            last_version = drs_file.get_version()
                     metadata = SolrCore.to_solr_dict(drs_file)
                     ts = float(timestamp)
                     metadata['timestamp'] = ts
