@@ -189,10 +189,10 @@ We are assuming the dataset is a sub-path of all files in it.
             return self.dict['parts']['version']
         else:
             return None
-    
     @staticmethod
-    def find_structure_from_path(file_path):
-        #if required initialize
+    def _get_structure_prefix_map():
+        "Lazy initialization"
+        
         if DRSFile.DRS_STRUCTURE_PATH_TYPE is None:
             DRSFile.DRS_STRUCTURE_PATH_TYPE = {}
             for st_type in DRSFile.DRS_STRUCTURE:
@@ -207,12 +207,21 @@ We are assuming the dataset is a sub-path of all files in it.
                     else: 
                         break
                 DRSFile.DRS_STRUCTURE_PATH_TYPE[path_prefix] = st_type
-                
-        for path_prefix, st_type in DRSFile.DRS_STRUCTURE_PATH_TYPE.items():
+        return DRSFile.DRS_STRUCTURE_PATH_TYPE
+    
+    @staticmethod
+    def find_structure_from_path(file_path, allow_multiples=False):
+        structures = []
+        for path_prefix, st_type in DRSFile._get_structure_prefix_map.items():
             if file_path.startswith(path_prefix):
-                return st_type
-        
-        raise Exception("Unrecognized path format %s" % file_path)
+                if allow_multiples:
+                    structures.append(st_type)
+                else:
+                    return st_type
+        if not structures:
+            raise Exception("Unrecognized path format %s" % file_path)
+        else:
+            return structures
         
     @staticmethod
     def from_path(path, drs_structure=None):
