@@ -140,7 +140,7 @@ def auto_doc(message=None):
 _short_args = 'hd'
 _args = ['baseline=', 'crawl=', 'core=', 'debug', 'help',
         'observations', 'reanalysis', 'cmip5',
-        'processors=', 'batch-size=']
+        'processors=', 'batch-size=', 'output=']
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -160,6 +160,7 @@ def main(argv=None): # IGNORE:C0111
         crawl_dir=None
         abort_on_error=False
         solr_core='files'
+        output = None
         
         #parse arguments *!!!*
         for flag, arg in args:
@@ -187,6 +188,8 @@ def main(argv=None): # IGNORE:C0111
                 processors=int(arg)
             elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
                 batch_size=int(arg)
+            elif flag == '--output':                #Instead of ingesting into Solr write to this file
+                output = arg
             elif flag == '-d' or flag == '--debug': #turn on debugging info
                 abort_on_error=True
                 DEBUG = True
@@ -212,12 +215,17 @@ def main(argv=None): # IGNORE:C0111
         #flush stderr in case we have something pending
         sys.stderr.flush()
         
-        #Ingest the files!
-        s = SolrCore(solr_core)
-        if crawl_dir:
-            s.update_from_dir(crawl_dir, abort_on_error=abort_on_error, processors=processors, batch_size=batch_size)
+        if output:
+            if not crawl_dir:
+                raise Exception("At this time only directory crawling is accepted while writing output to file")
+            SolrCore.dump_fs_to_file(crawl_dir, output)
         else:
-            s.update_from_search(processors=processors, batch_size=batch_size, data_types=drs_struct, **search_dict)
+            #Ingest the files!
+            s = SolrCore(solr_core)
+            if crawl_dir:
+                s.update_from_dir(crawl_dir, abort_on_error=abort_on_error, processors=processors, batch_size=batch_size)
+            else:
+                s.update_from_search(processors=processors, batch_size=batch_size, data_types=drs_struct, **search_dict)
         
         
     except KeyboardInterrupt:

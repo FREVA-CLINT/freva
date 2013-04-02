@@ -16,6 +16,8 @@ import shutil
 import urllib2
 import json
 from datetime import datetime
+import logging
+log = logging.getLogger(__name__)
 
 from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1, CMIP5, OBSERVATIONS, REANALYSIS
 from evaluation_system.misc import config
@@ -72,11 +74,11 @@ class SolrCore(object):
         if commit:
             endpoint += 'commit=true'
 
-        query = self.core_url + endpoint, json.dumps(list_of_dicts)
+        query = self.core_url + endpoint
         if self.echo:
-            print query
+            log.debug(query)
         
-        req=urllib2.Request(query)
+        req=urllib2.Request(query, json.dumps(list_of_dicts))
         req.add_header("Content-type", "application/json")
         
         return urllib2.urlopen(req).read()
@@ -98,7 +100,7 @@ class SolrCore(object):
             query = self.solr_url + endpoint
         
         if self.echo:
-            print query
+            log.debug(query)
         
         req=urllib2.Request(query)    
         response = json.loads(urllib2.urlopen(req).read())
@@ -190,6 +192,7 @@ or by performing a file system search (data_types != None).
 In both cases the ingest will be done either serial (processors=1)
 or in parallel (processors >1) with one process handling the search/crawling
 and the rest performing the data preparation and ingesting it into Solr."""
+        log.debug('Running with start_dir=%s or search_dict=%s', start_dir, search_dict)
         if processors > 1:
             from multiprocessing import Queue
             q = Queue(processors * batch_size)  #just store one extra batch load for every processor
@@ -233,9 +236,11 @@ and the rest performing the data preparation and ingesting it into Solr."""
             for i in range(processors):
                 procs[i].join()
         else:
+            log.debug('starting sequential ingest')
             batch_count=0
             batch = []
             for path in method_iter:
+                #log.debug(path)
                 metadata = SolrCore.to_solr_dict(DRSFile.from_path(path))
                 #import scipy.io.netcdf
                 #with scipy.io.netcdf.netcdf_file(metadata['file'], 'r') as f:
@@ -255,6 +260,37 @@ and the rest performing the data preparation and ingesting it into Solr."""
             if batch:
                 print "Sending last %s entries." % (len(batch))
                 self.post(batch)
+
+    @staticmethod
+    def dump_fs_to_file(start_dir, dump_file, check=False, abort_on_errors=False):
+        log.debug('starting sequential ingest')
+        batch_count=0
+        batch = []
+
+        if dump_file.endswith('.gz'):
+            print "Using gzip"
+            import gzip
+            #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
+            #Let's leave this python 2.6 compatible...
+            f = gzip.open(dump_file, 'wb')
+        else:
+            f = open(dump_file, 'w')
+
+        try:
+            for path in dir_iter(start_dir):
+                if check:
+                    try:
+                        DRSFile.from_path(path)
+                    except:
+                        if abort_on_errors:
+                            raise
+                        else:
+                            print "Error ingensting %s" % path
+                            continue
+                ts = os.path.getmtime(path)
+                f.write('%s,%s\n' % (path, ts))
+        finally:
+            f.close()
     
     def update_from_search(self, processors=1, batch_size=10000, data_types=None, **search_dict):
         """Updated the Solr index, by ingesting the results obtained from the find_files command.
@@ -411,7 +447,8 @@ def search_iter(data_types, search_dict):
     if not isinstance(data_types, list): 
         data_types = [ data_types]
     for data_type in data_types:
-        return (file_path for file_path in DRSFile.search(data_type, latest_version=False, path_only=True, **search_dict))
+        for file_path in DRSFile.search(data_type, latest_version=False, path_only=True, **search_dict):
+            yield file_path
     #yield SolrCore.to_solr_dict(drs_file)
 
 def dir_iter(start_dir, abort_on_error=True, followlinks=True):
@@ -419,16 +456,14 @@ def dir_iter(start_dir, abort_on_error=True, followlinks=True):
         #make sure we walk them in the proper order (latest version first)
         dirs.sort(reverse=True)
         files.sort(reverse=True)    #just for consistency
-#        try:
-        return (os.path.join(base_dir,f) for f in files)
-                #path = os.path.join(base_dir,f)
-                #yield SolrCore.to_solr_dict(DRSFile.from_path(path))
-#        except:
-#            print "Can't ingest file %s" % path
-#            if abort_on_error: raise
+
+        for f in files:
+            yield os.path.join(base_dir, f)
+
 def enqueue_from_search(q, data_types, search_dir):
     for metadata in search_iter(data_types, search_dir):
         q.put(metadata)
+
 def enqueue_from_dir(q, start_dir, abort_on_error=True):
     for metadata in dir_iter(start_dir, abort_on_error=abort_on_error):
         q.put(metadata)
