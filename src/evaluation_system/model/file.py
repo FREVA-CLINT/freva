@@ -319,7 +319,7 @@ We are assuming the dataset is a sub-path of all files in it.
         return DRSFile.from_dict(json.loads(json_str), drs_structure=drs_structure)
     
     @staticmethod
-    def search(drs_structure=BASELINE0, latest_version=True, **partial_dict):
+    def search(drs_structure=BASELINE0, latest_version=True, path_only=False, **partial_dict):
         """Simple search for files. It searches locally on the file system using :py:func:`glob.iglob`.
 This means the values might contain jokers like '\*1960*'.
 
@@ -361,14 +361,19 @@ This means the values might contain jokers like '\*1960*'.
             mesg = "%s\n\nFor %s try one of: %s" % (mesg, drs_structure, ','.join(bl['parts_dir']))
                 
             raise Exception(mesg)
+        
         #if the latest version is not required we may use a generator and yield a value as soon as it is found
         #If not we need to parse all until we can give the results out. We are not storing more than the latest
         #version, but if we could assure a certain order we return values as soon as we are done with a dataset
         datasets = {}
         for path in glob.iglob(local_path):
+            
             blf = DRSFile.from_path(path, drs_structure)
             if not latest_version:
-                yield blf
+                if path_only:
+                    yield path
+                else:
+                    yield blf
             else:
                 #if not we need to check if the corresponding dataset version is recent
                 ds = blf.to_dataset(versioned=False)
@@ -382,7 +387,10 @@ This means the values might contain jokers like '\*1960*'.
         if latest_version:
             #then return the results stored in datasets
             for latest_version_file in [v for sub in datasets.values() for v in sub]:
-                yield latest_version_file
+                if path_only:
+                    latest_version_file.to_path()
+                else:
+                    yield latest_version_file
 
     @staticmethod
     def solr_search(drs_structure=None, latest_version=True, path_only=False, batch_size=10000, **partial_dict):

@@ -235,7 +235,8 @@ and the rest performing the data preparation and ingesting it into Solr."""
         else:
             batch_count=0
             batch = []
-            for metadata in method_iter:
+            for path in method_iter:
+                metadata = SolrCore.to_solr_dict(DRSFile.from_path(path))
                 #import scipy.io.netcdf
                 #with scipy.io.netcdf.netcdf_file(metadata['file'], 'r') as f:
                 #    metadata.update(f._attributes)
@@ -410,18 +411,21 @@ def search_iter(data_types, search_dict):
     if not isinstance(data_types, list): 
         data_types = [ data_types]
     for data_type in data_types:
-        for drs_file in DRSFile.search(data_type, latest_version=False, **search_dict):
-            yield SolrCore.to_solr_dict(drs_file)
+        return (file_path for file_path in DRSFile.search(data_type, latest_version=False, path_only=True, **search_dict))
+    #yield SolrCore.to_solr_dict(drs_file)
 
 def dir_iter(start_dir, abort_on_error=True, followlinks=True):
-    for base_dir, _, files in os.walk(start_dir, followlinks=followlinks):
-        try:
-            for f in files:
-                path = os.path.join(base_dir,f)
-                yield SolrCore.to_solr_dict(DRSFile.from_path(path))
-        except:
-            print "Can't ingest file %s" % path
-            if abort_on_error: raise
+    for base_dir, dirs, files in os.walk(start_dir, followlinks=followlinks):
+        #make sure we walk them in the proper order (latest version first)
+        dirs.sort(reverse=True)
+        files.sort(reverse=True)    #just for consistency
+#        try:
+        return (os.path.join(base_dir,f) for f in files)
+                #path = os.path.join(base_dir,f)
+                #yield SolrCore.to_solr_dict(DRSFile.from_path(path))
+#        except:
+#            print "Can't ingest file %s" % path
+#            if abort_on_error: raise
 def enqueue_from_search(q, data_types, search_dir):
     for metadata in search_iter(data_types, search_dir):
         q.put(metadata)
@@ -441,10 +445,11 @@ def handle_file(number, end_token):
     batch = []
     solr = SolrCore(core=handle_file.core)
     while handle_file.running:
-        value = handle_file.q.get()
-        if value == end_token:
+        path = handle_file.q.get()
+        if path == end_token:
             handle_file.q.put(end_token)
             break
+        value = SolrCore.to_solr_dict(DRSFile.from_path(path))
         #import scipy.io.netcdf
         #with scipy.io.netcdf.netcdf_file(value['file'], 'r') as f:
         #    value.update(f._attributes)
