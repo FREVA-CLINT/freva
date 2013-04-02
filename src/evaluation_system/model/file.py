@@ -212,14 +212,28 @@ We are assuming the dataset is a sub-path of all files in it.
     @staticmethod
     def find_structure_from_path(file_path, allow_multiples=False):
         structures = []
-        for path_prefix, st_type in DRSFile._get_structure_prefix_map.items():
+        for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
             if file_path.startswith(path_prefix):
                 if allow_multiples:
                     structures.append(st_type)
                 else:
                     return st_type
         if not structures:
-            raise Exception("Unrecognized path format %s" % file_path)
+            raise Exception("Unrecognized DRS structure in path %s" % file_path)
+        else:
+            return structures
+
+    @staticmethod
+    def find_structure_in_path(file_path, allow_multiples=False):
+        structures = []
+        for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
+            if path_prefix.startswith(file_path):
+                if allow_multiples:
+                    structures.append(st_type)
+                else:
+                    return st_type
+        if not structures:                                                                
+            raise Exception("No DRS structure found in %s." % file_path)
         else:
             return structures
         
