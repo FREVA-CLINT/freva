@@ -23,7 +23,7 @@ from evaluation_system.misc import config
 class SolrCore(object):
     """Encapsulate access to a Solr instance"""
     
-    def __init__(self, core=None, host=None, port=None, echo=False, instance_dir=None, data_dir=None):
+    def __init__(self, core=None, host=None, port=None, echo=False, instance_dir=None, data_dir=None, get_status=True):
         """Create the connection pointing to the proper solr url and core.
 :param core: The name of the core referred (default: loaded from config file)
 :param host: the hostname of the Solr server (default: loaded from config file)
@@ -43,7 +43,10 @@ class SolrCore(object):
         self.instance_dir = instance_dir
         self.data_dir = data_dir
     
-        st = self.status()
+        if get_status:
+            st = self.status()
+        else:
+            st = {}
         if self.instance_dir is None and 'instanceDir' in st:
             self.instance_dir = st['instanceDir']
         if self.data_dir is None and 'dataDir' in st:
@@ -68,11 +71,13 @@ class SolrCore(object):
         endpoint = 'update/json?'
         if commit:
             endpoint += 'commit=true'
-        req=urllib2.Request(self.core_url + endpoint, json.dumps(list_of_dicts))
-        req.add_header("Content-type", "application/json")
-        
+
+        query = self.core_url + endpoint, json.dumps(list_of_dicts)
         if self.echo:
-            print req.get_full_url()
+            print query
+        
+        req=urllib2.Request(query)
+        req.add_header("Content-type", "application/json")
         
         return urllib2.urlopen(req).read()
     
@@ -88,13 +93,14 @@ class SolrCore(object):
             endpoint += '?wt=json'
         
         if use_core:
-            req=urllib2.Request(self.core_url + endpoint)    
+            query = self.core_url + endpoint
         else:
-            req=urllib2.Request(self.solr_url + endpoint)    
+            query = self.solr_url + endpoint
         
         if self.echo:
-            print req.get_full_url()
+            print query
         
+        req=urllib2.Request(query)    
         response = json.loads(urllib2.urlopen(req).read())
         if response['responseHeader']['status'] != 0:
             raise Exception("Error while accessing Core %s. Response: %s" % (self.core, response))

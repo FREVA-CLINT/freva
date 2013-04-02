@@ -213,7 +213,14 @@ def main(argv=None): # IGNORE:C0111
                 raise CommandError("Invalid format for query: %s" % arg)
             
             items = arg.split('=')
-            search_dict[items[0]] = ''.join(items[1:])
+            key, value = items[0], ''.join(items[1:])
+
+            if key not in search_dict:
+                search_dict[key] = value
+            else:
+                if not isinstance(search_dict[key], list):
+                    search_dict[key] = [search_dict[key]]
+                search_dict[key].append(value)
 
         if drs_struct:
             search_dict['data_type'] = drs_struct

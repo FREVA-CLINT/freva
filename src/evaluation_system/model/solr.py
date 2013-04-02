@@ -13,11 +13,11 @@ from evaluation_system.model.solr_core import SolrCore
 
 class SolrFindFiles(object):
     """Encapsulate access to Solr like the find files command"""
-    def __init__(self, core=None, host=None, port=None):
+    def __init__(self, core=None, host=None, port=None, get_status=False):
         """Create the connection pointing to the proper solr url and core. 
 The default values of these parameters are setup in evaluation_system.model.solr_core.SolrCore
 and read from the configuration file."""
-        self.solr = SolrCore(core, host=host, port=port)
+        self.solr = SolrCore(core, host=host, port=port, get_status=get_status)
         
     def __str__(self):
         return '<SolrFindFiles %s>' % self.solr
@@ -25,16 +25,22 @@ and read from the configuration file."""
     def _to_solr_query(self, partial_dict):
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
+        #these are special Solr keys that we might get and we assume are not meant for the search
+        special_keys = "q fl fq".split()
+        
         for key, value in partial_dict.items():
-            if key.endswith('_not_'):
-                #handle negation
-                key = '-' + key[:-5]
-            if isinstance(value, list):
-                #implies an or
-                constraint = ' OR '.join(['%s:%s' % (key,v) for v in value])
+            if key in special_keys:
+                params.append((key,value)) 
             else:
-                constraint = '%s:%s' % (key, value)
-            params.append(('fq', constraint,))
+                if key.endswith('_not_'):
+                    #handle negation
+                    key = '-' + key[:-5]
+                if isinstance(value, list):
+                    #implies an or
+                    constraint = ' OR '.join(['%s:%s' % (key,v) for v in value])
+                else:
+                    constraint = '%s:%s' % (key, value)
+                params.append(('fq', constraint,))
         return urllib.urlencode(params)
     
     def _search(self, batch_size=10000, latest_version=True, **partial_dict):
