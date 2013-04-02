@@ -63,8 +63,8 @@ class DRSFile(object):
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
          "parts_dir":"product/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
-         "parts_dataset":"project.institute.source.time_frequency".split('.'),
-         "parts_versioned_dataset":"project.institute.source.time_frequency.version".split('.'),
+         "parts_dataset":"product/realm/variable/time_frequency/data_structure/institute/source".split('/'),
+         "parts_versioned_dataset":"product/realm/variable/time_frequency/data_structure/institute/source/version".split('/'),
          "parts_file_name":"variable-source-level-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
@@ -73,7 +73,7 @@ class DRSFile(object):
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
          "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.institute.experiment.realm.time_frequency.ensemble".split('.'),
+         "parts_dataset": "product/institute/model/experiment/time_frequency/realm/variable".split('/'),
          "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
@@ -139,13 +139,14 @@ defaults
             result = os.path.join(result, self.dict['parts'][key])
         return result
     
-    def to_dataset(self, versioned=False):
+    def to_dataset(self, versioned=False, to_path=False):
         """creates the dataset to which this file is part of out of the DRS information.
 
 :param versioned: If the dataset should contain inforation about the version. Note that not
                   all DRS structures are versioned, so in those cases where there is just no
                   version information this makes no difference.
-:type versioned: bool"""
+:type versioned: bool
+:param to_path: if true return the path to the dataset, otherwise returns the dataset identifier."""
         result = []
         if versioned:
             if not self.is_versioned():
@@ -159,7 +160,20 @@ defaults
                 result.append(self.dict['parts'][key])
             elif key in self.getDrsStructure()['defaults']:
                 result.append(self.getDrsStructure()['defaults'][key])
-        return '.'.join(result)
+        if to_path:
+            return self.getDrsStructure()['root_dir'] + '/' + '/'.join(result)
+        else:
+            return '.'.join(result)
+        
+    def to_dataset_path(self, versioned=False):
+        """returns the path to the current dataset. Commodity method for to_dataset.
+We are assuming the dataset is a sub-path of all files in it.
+
+:param versioned: If the dataset should contain inforation about the version. Note that not
+                  all DRS structures are versioned, so in those cases where there is just no
+                  version information this makes no difference.
+:type versioned: bool"""
+        return self.to_dataset(versioned=versioned, to_path=True)
     
     def is_versioned(self):
         """If this file is from a DRS structure that is versioned."""
