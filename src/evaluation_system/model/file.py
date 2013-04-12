@@ -276,9 +276,12 @@ We are assuming the dataset is a sub-path of all files in it.
             parts.append(None)
             
         #log.debug("Path: %s\nFile_parts:%s\ndrs_structure_parts:%s", path, parts, bl['parts_file_name'])
-        for i in range(len(bl['parts_file_name'])):
-            if bl['parts_file_name'][i] not in result['parts']:
-                result['parts'][bl['parts_file_name'][i]] = parts[i]
+        try:
+            for i in range(len(bl['parts_file_name'])):
+                if bl['parts_file_name'][i] not in result['parts']:
+                    result['parts'][bl['parts_file_name'][i]] = parts[i]
+        except IndexError:
+            raise Exception("File %s does not follow the expected naming scheme for %s" % (path, drs_structure))
         
         bl_file = DRSFile(result, drs_structure=drs_structure)
         
