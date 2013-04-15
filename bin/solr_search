@@ -221,6 +221,13 @@ def main(argv=None): # IGNORE:C0111
                 if not isinstance(search_dict[key], list):
                     search_dict[key] = [search_dict[key]]
                 search_dict[key].append(value)
+        
+        if 'version' in search_dict and latest:
+            #it makes no sense to look for a specific version just among the latest
+            #the speedup is marginal and it might not be what the user expects
+            sys.stderr.write('Turning latest of when searching for a specific version.')
+            latest = False
+            
 
         if drs_struct:
             search_dict['data_type'] = drs_struct
