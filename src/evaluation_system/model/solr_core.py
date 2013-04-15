@@ -332,13 +332,16 @@ and the rest performing the data preparation and ingesting it into Solr."""
             
             header = True
             
+            import re
+            meta = re.compile('[^ \t]{1,}[ \t]{1,}(.*)$')
+            
             for line in f:
                 line = line.strip()
                 if not line or line.startswith('#'):
                     continue
                 if header:
-                    if line.startswith(META_DATA.CRAWL_DIR):
-                        crawl_dir = '\t'.join(line.split('\t')[1:])
+                    if line.startswith(META_DATA.CRAWL_DIR):                        
+                        crawl_dir = meta.match(line).group(1).strip()
                         #we should delete these. We need to scape the first slash since Solr
                         #will expect a regexp if not (new to Solr 4.0)
                         core_all_files.delete('file:\\%s*'%crawl_dir)
@@ -367,6 +370,9 @@ and the rest performing the data preparation and ingesting it into Solr."""
                             
                             if not drs_file.get_version() < version:
                                 batch_latest.append(metadata)
+                        else:
+                            #if not version allways add to latest
+                            batch_latest.append(metadata)
       
     
                         if len(batch) >= batch_size:
