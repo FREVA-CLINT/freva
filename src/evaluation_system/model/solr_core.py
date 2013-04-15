@@ -9,6 +9,11 @@ Created on 11.03.2013
 @author: estani
 
 This package encapsulate access to a solr instance (not for search but for administration)
+We define two cores::
+
+* files: all files  - id is file (full file path)
+* latest: only those files from the latest dataset version - id is file_no_version (full file path *wothout* version information)
+
 '''
 
 import os
@@ -21,6 +26,10 @@ log = logging.getLogger(__name__)
 
 from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1, CMIP5, OBSERVATIONS, REANALYSIS
 from evaluation_system.misc import config
+
+class META_DATA(object):
+    CRAWL_DIR = 'crawl_dir'
+    DATA = 'data'
 
 class SolrCore(object):
     """Encapsulate access to a Solr instance"""
@@ -262,10 +271,8 @@ and the rest performing the data preparation and ingesting it into Solr."""
                 self.post(batch)
 
     @staticmethod
-    def dump_fs_to_file(start_dir, dump_file, check=False, abort_on_errors=False):
+    def dump_fs_to_file(start_dir, dump_file,  batch_size=1000, check=False, abort_on_errors=False):
         log.debug('starting sequential ingest')
-        batch_count=0
-        batch = []
 
         if dump_file.endswith('.gz'):
             print "Using gzip"
@@ -277,6 +284,13 @@ and the rest performing the data preparation and ingesting it into Solr."""
             f = open(dump_file, 'w')
 
         try:
+            batch_count=0
+            
+            #store metadata
+            f.write('%s\t%s\n' % (META_DATA.CRAWL_DIR, start_dir))
+            
+            #store data
+            f.write('\n%s\n' % META_DATA.DATA)
             for path in dir_iter(start_dir):
                 if check:
                     try:
@@ -289,6 +303,95 @@ and the rest performing the data preparation and ingesting it into Solr."""
                             continue
                 ts = os.path.getmtime(path)
                 f.write('%s,%s\n' % (path, ts))
+                batch_count += 1
+                if batch_count >= batch_size:
+                    f.flush()
+        finally:
+            f.close()
+
+    @staticmethod
+    def load_fs_from_file(dump_file, batch_size=10000, check=False, abort_on_errors=False, core_all_files = None, core_latest = None):
+        if dump_file.endswith('.gz'):
+            print "Using gzip"
+            import gzip
+            #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
+            #Let's leave this python 2.6 compatible...
+            f = gzip.open(dump_file, 'rb')
+        else:
+            f = open(dump_file, 'r')
+
+        if core_latest is None: core_latest = SolrCore(core='latest')
+        if core_all_files is None: core_all_files = SolrCore(core='files')
+        
+        try:
+            batch_count=0
+            batch = []
+            batch_latest = []
+            
+            latest_versions = {}
+            
+            header = True
+            
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if header:
+                    if line.startswith(META_DATA.CRAWL_DIR):
+                        crawl_dir = '\t'.join(line.split('\t')[1:])
+                        #we should delete these. We need to scape the first slash since Solr
+                        #will expect a regexp if not (new to Solr 4.0)
+                        core_all_files.delete('file:\\%s*'%crawl_dir)
+                        core_latest.delete('file:\\%s*'%crawl_dir)
+                    elif line.startswith(META_DATA.DATA):
+                        header = False
+                    continue
+                else:
+                    file_path, timestamp = line.split(',')
+                    try :
+                        drs_file = DRSFile.from_path(file_path)
+                        
+                        metadata = SolrCore.to_solr_dict(drs_file)
+                        ts = float(timestamp)
+                        metadata['timestamp'] = ts
+                        metadata['creation_time'] = timestamp_to_solr_date(ts)
+    
+                        batch.append(metadata)
+                        
+                        if drs_file.is_versioned():
+                            version = latest_versions.get(drs_file.to_dataset(versioned=False), None)
+                            if version is None or drs_file.get_version() > version:
+                                #unknown or new version, update
+                                version = drs_file.get_version()
+                                latest_versions[drs_file.to_dataset(versioned=False)] = version
+                            
+                            if not drs_file.get_version() < version:
+                                batch_latest.append(metadata)
+      
+    
+                        if len(batch) >= batch_size:
+                            print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
+                            core_all_files.post(batch)
+                            batch = []
+                            batch_count += 1
+                            if batch_latest:
+                                core_latest.post(batch_latest)
+                                batch_latest = []
+                        
+                    except:
+                        print "Can't ingest file %s" % file_path
+                        if abort_on_errors: raise
+
+            #flush 
+            if len(batch) > 0:
+                print "Sending last %s entries" % (len(batch))
+                core_all_files.post(batch)
+                batch = []
+                batch_count += 1
+                if batch_latest:
+                    core_latest.post(batch_latest)
+                    batch_latest = []
+                
         finally:
             f.close()
     
@@ -334,7 +437,7 @@ is used for searching and the rest for preparing and ingesting data.
         
         return metadata
     
-    def dump(self, dump_file=None, batch_size=10000, sort_results=True):
+    def dump(self, dump_file=None, batch_size=10000, sort_results=False):
         """Dump a list of files and their timestamps that can be ingested afterwards"""
         if dump_file is None:
             #just to store where and how we are storing this
@@ -363,76 +466,82 @@ is used for searching and the rest for preparing and ingesting data.
             #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
             #Let's leave this python 2.6 compatible...
             f = gzip.open(dump_file, 'wb')
-            try:
-                for file_path, timestamp in cache(batch_size):
-                    f.write('%s,%s\n' % (file_path, timestamp))
-            finally:
-                f.close()
         else:
-            with open(dump_file, 'w') as f:
-                for file_path, timestamp in cache(batch_size):
-                    f.write('%s,%s\n' % (file_path, timestamp))
-    
-    def load(self, dump_file=None, batch_size=10000, only_latest=False, abort_on_error=True):
-        """Loads a csv as created by dump. May also be gzipped.
+            f = open(dump_file, 'w')
 
-:param dump_file: full path to the file that needs to be loaded (playin csv or gzipped)
-:param batch_size: number of files to handle at once.
-:param only_latest: If only the latest version should be loaded. This assumes the dump_file is sorted in descending order.
-:param abort_on_error: If ingestion should continue after an error was found (the missing entry will be reported, but the procedure qill continue)."""
-        if dump_file is None:
-            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv.gz')
-        
-        if dump_file.endswith('.gz'):
-            import gzip
-            print "Using gzip"
-            f = gzip.open(dump_file)
-        else:
-            f = open(dump_file, 'r')
-        batch_count=0
-        batch = []
-        last_dataset=None
-        last_version=None
         try:
-            for file_path, timestamp in (line.split(',') for line in f):
-                try:
-                    drs_file = DRSFile.from_path(file_path)
-                    if drs_file.is_versioned():
-                        if last_dataset == drs_file.to_dataset(versioned=False):
-                            #we already know about this dataset
-                            if last_version != drs_file.get_version():
-                                #we already processed a different version (which we assume is newer)
-                                #skip this
-                                continue
-                            #else - it's a file from the latest version, keep processing
-                        else:
-                            #this is a new versioned dataset
-                            last_dataset = drs_file.to_dataset(versioned=False)
-                            last_version = drs_file.get_version()
-                    metadata = SolrCore.to_solr_dict(drs_file)
-                    ts = float(timestamp)
-                    metadata['timestamp'] = ts
-                    metadata['creation_time'] = timestamp_to_solr_date(ts)
-
-                    batch.append(metadata)
-
-                    if len(batch) >= batch_size:
-                        print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
-                        self.post(batch)
-                        batch = []
-                        batch_count += 1
-                    
-                except:
-                    print "Can't ingest file %s" % file_path
-                    if abort_on_error: raise
+            #store metadata
+            f.write('%s\t%s\n' % (META_DATA.CRAWL_DIR, '/'))
+            
+            #store data
+            f.write('\n%s\n' % META_DATA.DATA)
+            for file_path, timestamp in cache(batch_size):
+                f.write('%s,%s\n' % (file_path, timestamp))
         finally:
-            #because of gzip we are not using wiith here anymore...
             f.close()
-        
-        #flush the batch queue
-        if batch:
-            print "Sending last %s entries." % (len(batch))
-            self.post(batch)
+    
+#===============================================================================
+#    def load(self, dump_file=None, batch_size=10000, only_latest=False, abort_on_error=True):
+#        """Loads a csv as created by dump. May also be gzipped.
+# 
+# :param dump_file: full path to the file that needs to be loaded (playin csv or gzipped)
+# :param batch_size: number of files to handle at once.
+# :param only_latest: If only the latest version should be loaded. This assumes the dump_file is sorted in descending order.
+# :param abort_on_error: If ingestion should continue after an error was found (the missing entry will be reported, but the procedure qill continue)."""
+#        if dump_file is None:
+#            dump_file = datetime.now().strftime('/miklip/integration/infrastructure/solr/backup_data/%Y%m%d.csv.gz')
+#        
+#        if dump_file.endswith('.gz'):
+#            import gzip
+#            print "Using gzip"
+#            f = gzip.open(dump_file)
+#        else:
+#            f = open(dump_file, 'r')
+#        batch_count=0
+#        batch = []
+#        last_dataset=None
+#        last_version=None
+#        try:
+#            for file_path, timestamp in (line.split(',') for line in f):
+#                try:
+#                    drs_file = DRSFile.from_path(file_path)
+#                    if drs_file.is_versioned():
+#                        if last_dataset == drs_file.to_dataset(versioned=False):
+#                            #we already know about this dataset
+#                            if last_version != drs_file.get_version():
+#                                #we already processed a different version (which we assume is newer)
+#                                #skip this
+#                                continue
+#                            #else - it's a file from the latest version, keep processing
+#                        else:
+#                            #this is a new versioned dataset
+#                            last_dataset = drs_file.to_dataset(versioned=False)
+#                            last_version = drs_file.get_version()
+#                    metadata = SolrCore.to_solr_dict(drs_file)
+#                    ts = float(timestamp)
+#                    metadata['timestamp'] = ts
+#                    metadata['creation_time'] = timestamp_to_solr_date(ts)
+# 
+#                    batch.append(metadata)
+# 
+#                    if len(batch) >= batch_size:
+#                        print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
+#                        self.post(batch)
+#                        batch = []
+#                        batch_count += 1
+#                    
+#                except:
+#                    print "Can't ingest file %s" % file_path
+#                    if abort_on_error: raise
+#        finally:
+#            #because of gzip we are not using wiith here anymore...
+#            f.close()
+#        
+#        #flush the batch queue
+#        if batch:
+#            print "Sending last %s entries." % (len(batch))
+#            self.post(batch)
+#===============================================================================
     
 def timestamp_to_solr_date(timestamp):
     """Transform a timestamp (float) into a string parseable by Solr"""

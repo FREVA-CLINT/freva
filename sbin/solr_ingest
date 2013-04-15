@@ -138,9 +138,9 @@ def auto_doc(message=None):
 
 
 _short_args = 'hd'
-_args = ['baseline=', 'crawl=', 'core=', 'debug', 'help',
-        'observations', 'reanalysis', 'cmip5',
-        'processors=', 'batch-size=', 'output=']
+_args = ['crawl=', 'ingest=', 'output=',
+         'debug', 'help',
+        'batch-size=', 'solr-url=']
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -152,80 +152,65 @@ def main(argv=None): # IGNORE:C0111
     DEBUG = False
     try:
         # Setup argument parser
-        args, lastargs = getopt.getopt(argv, _short_args, _args)
+        args, _ = getopt.getopt(argv, _short_args, _args)
+        
         #defaults
-        processors=1
-        batch_size=1000
-        drs_struct=None
+        batch_size=10000
         crawl_dir=None
-        abort_on_error=False
-        solr_core='files'
+        abort_on_errors=False
         output = None
+        
+        host = None
+        port = None
         
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
                 auto_doc()
                 return 0
-            elif flag == '--baseline':              #search for baseline n data 
-                try:
-                    baseline = int(arg)
-                    drs_struct = {0: mf.BASELINE0, 1:mf.BASELINE1}[baseline]
-                except:
-                    print "Can't parse baseline argument '%s'. It should be 0 or 1." % arg
-                    return 1
-            elif flag == '--cmip5':                 #search for cmip5 data (includes baseline 0)
-                drs_struct = mf.CMIP5
-            elif flag == '--observations':          #search for observational data
-                drs_struct = mf.OBSERVATIONS
-            elif flag == '--reanalysis':            #search for reanalysis data
-                drs_struct = mf.REANALYSIS
-            elif flag == '--crawl':                 #Instead of searching, crawl the given directory
+            elif flag == '--crawl':                 #crawl the given directory
                 crawl_dir=arg
-            elif flag == '--core':                  #Define the solr core to be used (don't use it, if you don't know what it's for)
-                solr_core=arg
-            elif flag == '--processors':            #Number of processors to use. Default is one (serial) more than 2 is shown to be counter productive. Test for yourself.
-                processors=int(arg)
+            elif flag == '--ingest':                #ingest the given file (as created by crawl)
+                ingest_file=arg
+            elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
+                batch_size=int(arg)
+            elif flag == '--solr-url':              #url to solr instance
+                import re
+                mo = re.match('(?:https?://)?([^:/]{1,})(?::([0-9]{1,}))?(?:/.*|$)', arg)
+                if not mo:
+                    raise Exception("Cannot understand the solr-url %s" % arg)
+                host= mo.group(1)
+                port = int(mo.group(2))
             elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
                 batch_size=int(arg)
             elif flag == '--output':                #Instead of ingesting into Solr write to this file
                 output = arg
             elif flag == '-d' or flag == '--debug': #turn on debugging info
-                abort_on_error=True
+                abort_on_errors=True
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
         
-        if drs_struct is None and crawl_dir is None:
-            raise CommandError('You must select a search type. One of: --%s' % ', --'.join(mf.DRSFile.DRS_STRUCTURE)
-                               + '\nOr use --crawl <target_dir> to cral the given target dir for data.')
+        if crawl_dir is None and ingest_file is None:
+            raise CommandError('You must either crawl to generate a dumop file or ingest it')
          
-        search_dict = {}
-        for arg in lastargs:
-            if '=' not in arg:
-                raise CommandError("Invalid format for query: %s" % arg)
-            
-            items = arg.split('=')
-            search_dict[items[0]] = ''.join(items[1:])
-        
-        if crawl_dir and (search_dict or drs_struct):
-            raise CommandError("Defining a search and a crawling directory at the same time is not allowed.")
-         
-        log.debug("Searching string: %s\n", search_dict)
-
         #flush stderr in case we have something pending
         sys.stderr.flush()
         
-        if output:
-            if not crawl_dir:
-                raise Exception("At this time only directory crawling is accepted while writing output to file")
-            SolrCore.dump_fs_to_file(crawl_dir, output)
-        else:
+        if host:
+            core_files = SolrCore(core='files', host=host, port=port)
+            core_latest = SolrCore(core='latest', host=host, port=port)
+        
+        if crawl_dir:
+            if not output:
+                raise Exception("You need to dump a file")
+            SolrCore.dump_fs_to_file(crawl_dir, output, batch_size=batch_size, abort_on_errors=abort_on_errors)
+        elif ingest_file:
             #Ingest the files!
-            s = SolrCore(solr_core)
-            if crawl_dir:
-                s.update_from_dir(crawl_dir, abort_on_error=abort_on_error, processors=processors, batch_size=batch_size)
+            if host:
+                SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors,
+                                           core_all_files=core_files, core_latest=core_latest)
             else:
-                s.update_from_search(processors=processors, batch_size=batch_size, data_types=drs_struct, **search_dict)
+                SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors)
         
         
     except KeyboardInterrupt:

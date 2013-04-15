@@ -43,7 +43,7 @@ and read from the configuration file."""
                 params.append(('fq', constraint,))
         return urllib.urlencode(params)
     
-    def _search(self, batch_size=10000, latest_version=True, **partial_dict):
+    def _search(self, batch_size=10000, latest_version=False, **partial_dict):
         """This encapsulates the Solr call to get documents."""
         offset = partial_dict.pop('start', 0)
         #value retrieved from sys.maxint and == 2**31-1
@@ -87,9 +87,15 @@ and read from the configuration file."""
         
     @staticmethod
     def search (batch_size=10000, latest_version=True, **partial_dict):
-        #use default
-        s = SolrFindFiles()
-        return s._search(batch_size=batch_size, latest_version=latest_version, **partial_dict)
+        #use defaults, if other required use _search in the SolrFindFiles instance
+        if latest_version:
+            s = SolrFindFiles(core='latest')
+        else:
+            s = SolrFindFiles(core='files')
+        
+        #we don't use the single core latest version anymore. We store latest version in new core
+        #from now on.
+        return s._search(batch_size=batch_size, latest_version=False, **partial_dict)
 
     def facets(self, latest_version=True, facets=None, **partial_dict):
         if 'free_text' in partial_dict:
