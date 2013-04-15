@@ -1,0 +1,48 @@
+#!/bin/bash
+source_dir=$1
+credential=${2:-~/.ssh/solr}
+
+if [[ ! -f "$credential" ]]; then
+    cat <<EOF
+You need a credential to write to www-miklip.dkrz.de
+(this is required in order to ingest it into Solr)
+
+You may create one issuing:
+ ssh-keygen -f ~/.ssh/solr
+
+You must leave the passphrase empty and then add the content of the public key 
+(~/.ssh/solr.pub) to your ~/.ssh/authorized_keys at www-miklip.dkrz.de. 
+(create the file if it doesn't exist)
+
+As an additional security meassure add this before the public key entry: 
+from="miklip*",no-pty
+ 
+So ~/.ssh/authorized_keys should look something like:
+[...]
+from="miklip*",no-pty ssh-rsa AA[...]= k204198@miklip02.dkrz.de
+[...]
+
+EOF
+    exit 1
+fi
+
+dump_file=/tmp/$(date +solr_crawl_%F_%H%M%S.csv.gz)
+
+if [[ ! -d "$source_dir" ]]; then
+    echo "Directory '$source_dir' doesn't exists. Aborting."
+    exit 1
+fi
+
+. /sw/centos58-x64/modules-3.2.9/Modules/3.2.9/init/bash
+module load evaluation_system >/dev/null 2>&1
+
+solr_ingest=/miklip/integration/evaluation_system/sbin/solr_ingest
+
+#create dump file (gzipped to something of about 10Mb)
+$solr_ingest --crawl $source_dir --output $dump_file || exit 1
+
+#copy to solr node
+#you need a credential!
+scp -i $credential $dump_file www-miklip.dkrz.de:/usr/local/solr/incomming || exit 2
+
+rm $dump_file
