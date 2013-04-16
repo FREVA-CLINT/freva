@@ -35,5 +35,5 @@ _solr_search_show() {
         fi
         COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
     esac
-}
+} 2>/dev/null
 complete -o nospace -F _solr_search_show solr_search
