@@ -159,7 +159,7 @@ Current defaults: %s""" % (data_type, search_options, search_defaults)
 _short_args = 'hd'
 _args = ['baseline=', 'help', 'debug', 'multiversion',
         'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1',
-        'batch-size=']
+        'batch-size=', 'attributes', 'facet=', 'all-facets', 'count-facet-values']
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -177,6 +177,10 @@ def main(argv=None): # IGNORE:C0111
         latest=True
         drs_struct=None
         batch_size=10000
+        facets = []
+        show_facet_count=False
+        show_only_attributes = False
+        
         #parse arguments *!!!*
         for flag, arg in args:
             if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
@@ -201,8 +205,26 @@ def main(argv=None): # IGNORE:C0111
                 drs_struct = mf.REANALYSIS
             elif flag == '--multiversion':          #select not only the latest version but all of them
                 latest=False
-            elif flag == '--batch-size':            #Number of files to retri
+            elif flag == '--batch-size':            #Number of files to retrieve
                 batch_size=int(arg)
+            elif flag == '--count-facet-values':    #Show the number of files for each values in each facet
+                show_facet_count=True
+            elif flag == '--attributes':            #retrieve all possible attributes for the current search instead of the files
+                if facets != []:
+                    raise Exception("Cannot select attributes if facets already selected.")
+                show_only_attributes = True
+            elif flag == '--all-facets':            #retrieve all facets (attributes & values) instead of the files (same as --facet '*', or --facet all, or --facet any)
+                if show_only_attributes:
+                    raise Exception("Cannot select facet if attributes already selected.")
+                facets = None
+            elif flag == '--facet':                 #retrieve these facets (attributes & values) instead of the files 
+                if show_only_attributes:
+                    raise Exception("Cannot select facet if attributes already selected.")
+                if facets is not None:
+                    if arg == '*' or arg.lower() == 'all' or arg.lower() == 'any':
+                        facets = None
+                    else:
+                        facets.append(arg)
             elif flag == '-d' or flag == '--debug': #turn on debugging info
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
@@ -236,28 +258,47 @@ def main(argv=None): # IGNORE:C0111
 
         #flush stderr in case we have something pending
         sys.stderr.flush()
-        
-        #find the files and display them
-        for f in SolrFindFiles.search(batch_size=batch_size, latest_version=latest, **search_dict):
-            sys.stdout.write(str(f))
+
+        if facets != [] and not show_only_attributes:
+            for att,values in SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict).items():
+                if show_facet_count:
+                    sys.stdout.write('%s: %s' % (att, ','.join(['%s (%s)' % (v,c) for v,c in zip(*[iter(values)]*2)])))
+                else:
+                    sys.stdout.write('%s: %s' % (att, ','.join(values[::2])))
+                sys.stdout.write('\n')
+                sys.stdout.flush()
+        elif show_only_attributes:
+            #select all is none defined but this flag was set
+            if facets == []: facets = None
+            atts = ', '.join(SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict))
+            sys.stdout.write(atts)
             sys.stdout.write('\n')
             sys.stdout.flush()
+        else:
+            #find the files and display them
+            for f in SolrFindFiles.search(batch_size=batch_size, latest_version=latest, **search_dict):
+                sys.stdout.write(str(f))
+                sys.stdout.write('\n')
+                sys.stdout.flush()
         
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0
     except getopt.GetoptError as e:
-        #Did you mean functionality
-        similar_words = None
-        if len(e.opt) > 1:
-            trimmed_args = []
-            for arg in _args:
-                if arg[-1] == '=': trimmed_args.append(arg[:-1])
-                else: trimmed_args.append(arg)
-            similar_words = find_similar_words(e.opt, trimmed_args)
-        mesg = e.msg
-        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-        print mesg
+        if e.msg.endswith('not recognized'):
+            #Did you mean functionality
+            similar_words = None
+            if len(e.opt) > 1:
+                trimmed_args = []
+                for arg in _args:
+                    if arg[-1] == '=': trimmed_args.append(arg[:-1])
+                    else: trimmed_args.append(arg)
+                similar_words = find_similar_words(e.opt, trimmed_args)
+            mesg = e.msg
+            if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+            print mesg
+        else:
+            print e.msg
 
         return 2
     except Exception as e:

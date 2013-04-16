@@ -97,19 +97,20 @@ and read from the configuration file."""
         #from now on.
         return s._search(batch_size=batch_size, latest_version=False, **partial_dict)
 
-    def facets(self, latest_version=True, facets=None, **partial_dict):
-        if 'free_text' in partial_dict:
-            free_text = partial_dict.pop('free_text')
-        elif 'q' in partial_dict:
-            free_text = partial_dict.pop('q')
+    def _facets(self, latest_version=False, facets=None, **partial_dict):
+        if facets and not isinstance(facets, list):
+            if ',' in facets:
+                #we assume multiple values here
+                facets = [f.strip() for f in facets.split(',')]
+            else:
+                facets = [facets]
+        
+        if 'text' in partial_dict:
+            partial_dict.update({'q': partial_dict.pop('text')})
         else:
-            free_text='*:*'
+            partial_dict.update({'q': '*:*'})
             
         query = self._to_solr_query(partial_dict)
-        if query:
-            query += '&q=%s' % free_text
-        else:
-            query += 'q=%s' % free_text
         
         if facets is None:
             #get all minus what we don't want
@@ -127,4 +128,14 @@ and read from the configuration file."""
         answer = self.solr.get_json('select?facet=true&rows=0&%s' % query)
         return answer['facet_counts']['facet_fields']
             
+    @staticmethod
+    def facets(latest_version=True, facets=None, **partial_dict):
+        #use defaults, if other required use _search in the SolrFindFiles instance
+        if latest_version:
+            s = SolrFindFiles(core='latest')
+        else:
+            s = SolrFindFiles(core='files')
         
+        #we don't use the single core latest version anymore. We store latest version in new core
+        #from now on.
+        return s._facets(facets=facets, latest_version=False, **partial_dict)
