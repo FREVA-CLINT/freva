@@ -25,4 +25,4 @@ _solr_search_show() {
         COMPREPLY=( $(compgen -W "${opts}" "$cur") )
     esac
 }
-
+complete -o nospace -F _solr_search_show solr_search
