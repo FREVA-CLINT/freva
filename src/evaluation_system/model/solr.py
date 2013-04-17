@@ -43,7 +43,7 @@ and read from the configuration file."""
                 params.append(('fq', constraint,))
         return urllib.urlencode(params)
     
-    def _search(self, batch_size=10000, latest_version=False, **partial_dict):
+    def _search(self, batch_size=10000, latest_version=False, _retrieve_metadata=False, **partial_dict):
         """This encapsulates the Solr call to get documents."""
         offset = partial_dict.pop('start', 0)
         #value retrieved from sys.maxint and == 2**31-1
@@ -66,6 +66,11 @@ and read from the configuration file."""
             if max_rows < batch_size:
                 batch_size = max_rows
             answer = self.solr.get_json('select?start=%s&rows=%s&%s' % (offset, batch_size, query))
+            if _retrieve_metadata:
+                meta = answer['response'].copy()
+                del meta['docs']
+                yield meta
+                _retrieve_metadata = False
             if latest_version:
                 offset = answer['grouped']['file_no_version']['doclist']['start']
                 total = answer['grouped']['file_no_version']['ngroups']
@@ -86,7 +91,7 @@ and read from the configuration file."""
                     
         
     @staticmethod
-    def search (batch_size=10000, latest_version=True, **partial_dict):
+    def search (latest_version=True, **partial_dict):
         #use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')
@@ -95,7 +100,7 @@ and read from the configuration file."""
         
         #we don't use the single core latest version anymore. We store latest version in new core
         #from now on.
-        return s._search(batch_size=batch_size, latest_version=False, **partial_dict)
+        return s._search(latest_version=False, **partial_dict)
 
     def _facets(self, latest_version=False, facets=None, **partial_dict):
         if facets and not isinstance(facets, list):
