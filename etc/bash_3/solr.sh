@@ -8,7 +8,7 @@ _solr_query() {
 }
 
 _solr_search_show() {
-    local cur opts query
+    local cur opts query extra
     cur="${COMP_WORDS[COMP_CWORD]}"
     query="$(_solr_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
     case "$cur" in
@@ -26,12 +26,14 @@ _solr_search_show() {
         ;;
     *)
         prev="${COMP_WORDS[COMP_CWORD-1]}"
+        [[ -z "$cur" ]] && extra=--relevant-only
+        
         if [[ "$prev" == "--facet" ]]; then
-            opts="$(solr_search --attributes $query | sed  -e 's/,//g')"
+            opts="$(solr_search $extra --attributes $query | sed  -e 's/,//g')"
         elif [[ "$prev" == "--baseline" ]]; then
             opts="0 1"
         else
-            opts="$(solr_search --attributes $query | sed  -e 's/,/=/g')="
+            opts="$(solr_search $extra --attributes $query | sed  -e 's/,/=/g')="
         fi
         COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
     esac
