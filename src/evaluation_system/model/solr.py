@@ -26,7 +26,7 @@ and read from the configuration file."""
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
         #these are special Solr keys that we might get and we assume are not meant for the search
-        special_keys = "q fl fq".split()
+        special_keys = "q fl fq facet.limit".split()
         
         for key, value in partial_dict.items():
             if key in special_keys:

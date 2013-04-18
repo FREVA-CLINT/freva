@@ -263,13 +263,26 @@ def main(argv=None): # IGNORE:C0111
         sys.stderr.flush()
 
         if facets != [] and not show_only_attributes:
+            if 'facet.limit' in search_dict:
+                facet_limit = int(search_dict['facet.limit'])
+            else:  
+                #default
+                facet_limit = 100
             for att,values in SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict).items():
-                if relevant_only and len(values) / 2 < 2:
-                        continue
+                
+                
+                #values come in pairs: (value, count)
+                value_count = len(values)/2
+                if relevant_only and value_count < 2: continue
+                
                 if show_facet_count:
                     sys.stdout.write('%s: %s' % (att, ','.join(['%s (%s)' % (v,c) for v,c in zip(*[iter(values)]*2)])))
                 else:
                     sys.stdout.write('%s: %s' % (att, ','.join(values[::2])))
+                
+                if value_count == facet_limit: 
+                    sys.stdout.write('...')
+                
                 sys.stdout.write('\n')
                 sys.stdout.flush()
         elif show_only_attributes:
