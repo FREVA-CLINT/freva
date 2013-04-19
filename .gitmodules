@@ -16,3 +16,6 @@
 [submodule "tools/zykpak"]
 	path = tools/zykpak
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/zykpak.git
+[submodule "tools/goddard"]
+	path = tools/goddard
+	url = ssh://miklip.dkrz.de/miklip/integration/repositories/goddard.git
