@@ -10,6 +10,7 @@ from types import TypeType, StringType, IntType, FloatType, LongType, BooleanTyp
 from evaluation_system.misc.py27 import OrderedDict
 from evaluation_system.misc.utils import find_similar_words
 from symbol import raise_stmt
+import json
 
 class ValidationError(Exception):
     pass
@@ -182,6 +183,7 @@ class ParameterType(object):
             self.default = None
         else:
             self.default = self.parse(default)
+    
         
     def _verified(self, orig_values):
         
@@ -204,14 +206,35 @@ class ParameterType(object):
         
         #so it works transparent
         return orig_values            
-            
+
+    def str(self, value):
+        "Transform this value in a serializable string"
+        if self.max_items > 1:
+            if not isinstance(value, list): value = [value]
+            if self.item_separator is not None:
+                return self.item_separator.join(value)
+            else:
+                #assume is a json array:
+                print value
+                print json.dumps(value)
+                return json.dumps(value)
+                
+        else:
+            return str(value)
     def parse(self, value):
         """The default parser that just passes the work to the base_type"""
         if self.max_items > 1:
-            if isinstance(value, basestring) and self.item_separator is not None:
-                return [self.base_type(v) for v in self._verified(value.split(self.item_separator))]
+            if isinstance(value, basestring):
+                if self.item_separator is not None:
+                    return [self.base_type(v) for v in self._verified(value.split(self.item_separator))]
+                elif value[0] == '[':
+                    #assume is a json array:
+                    return [self.base_type(v) for v in self._verified(json.loads(value))]
+                else:
+                    #this is a single string, but we expect multiple, so convert appropriately (in list)
+                    return [self.base_type(self._verified(value))]
             else:
-                #assume is iterable!
+                #if here assume is iterable, if not see the scp
                 try:
                     return [self.base_type(v) for v in self._verified(value)]
                 except TypeError:

@@ -442,7 +442,7 @@ if no configuration is provided the default one will be used.
                     else:
                         value=""
                         param_name='#'+ param_name
-                fp.write('%s=%s\n\n' % (param_name, value))
+                fp.write('%s=%s\n\n' % (param_name, param.str(value)))
                 fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
         
