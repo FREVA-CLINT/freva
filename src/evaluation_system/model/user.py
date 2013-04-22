@@ -53,10 +53,15 @@ the current user, i.e. the one that started the application, is created instead.
         if uid is None: 
             uid = os.getuid()
             
+        self._userdata = None
         if isinstance(uid, basestring):
             self._userdata = pwd.getpwnam(uid)
         else:
             self._userdata = pwd.getpwuid(uid)
+        
+        if self._userdata is None:
+            raise Exception("Cannot find user %s" % uid)
+        
         self._userconfig = Config()
         #try to load teh configuration from the very first time.
         self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self._userdata.pw_dir, User.EVAL_SYS_CONFIG)])
