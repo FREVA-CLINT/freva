@@ -179,7 +179,7 @@ At the current time we are just creating new instances, but this might change in
 :return: an instance of the plug-in. Might not be unique."""
     #in case we want to cache the creation of the plugin classes.
     if user is None: user = User()
-    return getPluginDict(plugin_name)['plugin_class']()
+    return getPluginDict(plugin_name)['plugin_class'](user=user)
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None, check_errors=True):
     """Manages the parsing of arguments which are passed as a list of strings. These are in turn

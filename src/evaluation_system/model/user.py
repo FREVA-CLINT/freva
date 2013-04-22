@@ -29,6 +29,9 @@ class User(object):
     PLOTS_DIR = 'plots'
     """The directory where just plots are stored. Plots are assumed to be much smaller in size than data and might
 therefore live longer"""
+
+    PROCESSES_DIR = 'processes'
+    "The directory might handle information required for each running process."
     
     
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
@@ -47,8 +50,13 @@ the current user, i.e. the one that started the application, is created instead.
 '''
         self._dir_type = config.get(config.DIRECTORY_STRUCTURE_TYPE)
 
-        if uid is None: uid = os.getuid()
-        self._userdata = pwd.getpwuid(uid)
+        if uid is None: 
+            uid = os.getuid()
+            
+        if isinstance(uid, basestring):
+            self._userdata = pwd.getpwnam(uid)
+        else:
+            self._userdata = pwd.getpwuid(uid)
         self._userconfig = Config()
         #try to load teh configuration from the very first time.
         self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self._userdata.pw_dir, User.EVAL_SYS_CONFIG)])
@@ -62,7 +70,9 @@ the current user, i.e. the one that started the application, is created instead.
     # $USER_OUTPUT_DIR := directory where the output data for this user is stored.
     #------ $USER_PLOT_DIR := directory where the plots for this user is stored.
     # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
-        
+    
+    def __str__(self):
+        return "<User (username:%s, info:%s)>" % (self._userdata[0], str(self._userdata[2:]))
     def getUserConfig(self):
         """:returns: the user configuration object :py:class:`ConfigParser.SafeConfigParser`"""
         return self._userconfig
@@ -104,10 +114,10 @@ the current user, i.e. the one that started the application, is created instead.
         if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
             return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))
         elif self._dir_type == config.DIRECTORY_STRUCTURE.CENTRAL:
-            return os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(self.getUserID()))
+            return os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(self.getName()))
         
     def _getUserDir(self, dir_type, tool = None, create=False):
-        base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR)
+        base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
             dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
@@ -164,7 +174,18 @@ the current user, i.e. the one that started the application, is created instead.
 :type tool: str
 :returns: path to the directory."""
         return self._getUserDir('cache', tool, **kwargs)
-    
+    def getUserProcessDir(self, tool = None, **kwargs):
+        """Return directory where files required for processes can be held. Is not clear what this will
+be used for, but it should at least serve as a possibility for the future.
+
+:param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
+:param tool: tool/plug-in for which the information is returned. If None, then the directory
+             where all information for all tools reside is returned insted (normally, that would
+             be the parent directrory).
+:type tool: str
+:returns: path to the directory."""
+        return self._getUserDir('processes', tool, **kwargs)
+
     def getUserOutputDir(self, tool = None, **kwargs):
         """Return directory where output data for this user is stored.
 
