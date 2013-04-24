@@ -81,20 +81,28 @@ class DRSFile(object):
         },
         }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
+
 root_dir
     Directory from where this files are to be found
+
 parts_dir
     list of subdirectory category names the values they refer to (e.g. ['model', 'experiment'])
+
 parts_dataset
     The components of a dataset name (this data should also be found in parts_dir)
+
 parts_versioned_dataset (optional)
     If this datasets are versioned then define the version structure of them (i.e. include the version number in the dataset name)
+
 parts_file_name
     elements composing the file name (no ".nc" though)
+
 data_type
     same value as this key structure (for reverse traverse)
+
 defaults
-    list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)"""
+    list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)
+"""
     
     def __init__(self, file_dict=None, drs_structure=BASELINE0):
         """Creates a DRSfile out of the dictionary containing information about the file or from scratch.

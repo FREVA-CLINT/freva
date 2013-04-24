@@ -26,7 +26,7 @@ model Package
     :show-inheritance:
 
 :mod:`solr_core` Module
-------------------
+-----------------------
 
 .. automodule:: evaluation_system.model.solr_core
     :members:

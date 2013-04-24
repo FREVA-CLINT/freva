@@ -272,6 +272,30 @@ and the rest performing the data preparation and ingesting it into Solr."""
 
     @staticmethod
     def dump_fs_to_file(start_dir, dump_file,  batch_size=1000, check=False, abort_on_errors=False):
+        """This is the currently used method for ingestion. This method generates a file with
+a listing of paths and timestamps from the file system. The sysntax of the file looks like this::
+
+  crawl_dir    /path/to/some/directory
+  
+  data
+  /path/to/a/file,1239879.0
+  /path/to/another/file,1239879.0
+  ...
+
+The crawl_dir indicates the directory being crawled and results in the deletion of all files whose path starts with
+that one (i.e. everything under that path will be *replaced*).
+
+Generating this file takes at least 8 hours for the whole /miklip/integration/data4miklip directory. It would be
+nice to generate it in a different manner (e.g. using the gpfs policy API).
+
+:param start_dir: The directory from which the file system will be crawled
+:param dump_file: the path to the file that will contain the dump. if the file ends with '.gz' the resulting file will be gziped (preferred)
+:param batch_size: number of entries that will be written to disk at once. This might help pin-pointing crashes.
+:param check: if the paths should be checked. While checking path the resulting paths are guaranteed to be accepted later on
+ normally this is too slow for this phase, so the default is False.
+:param abort_on_errors: If dumping should get aborted as soon as an error, i.e. a file that can't be ingested, is found.
+ Most of the times there are many files being found that are no data at all."""
+
         log.debug('starting sequential ingest')
 
         if dump_file.endswith('.gz'):
@@ -311,6 +335,7 @@ and the rest performing the data preparation and ingesting it into Solr."""
 
     @staticmethod
     def load_fs_from_file(dump_file, batch_size=10000, check=False, abort_on_errors=False, core_all_files = None, core_latest = None):
+        
         if dump_file.endswith('.gz'):
             print "Using gzip"
             import gzip
@@ -407,7 +432,7 @@ This is a simple file system search a la find. The search is performed not carin
 as it makes no sense there.
 
 :param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
-is used for searching and the rest for preparing and ingesting data.
+ is used for searching and the rest for preparing and ingesting data.
 :param batch_size: The amount of entries that will be sent to Solr on one commit.
 :param data_types: The type of data to be ingested. See evaluation_system.model.file.DRSFile.DRS_STRUCTURE 
 :param search_dict: All other search parameters."""
@@ -420,7 +445,7 @@ is used for searching and the rest for preparing and ingesting data.
         """Updated the Solr index, by ingesting every file found by crawling from start_dir.
 
 :param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
-is used for searching and the rest for preparing and ingesting data.
+ is used for searching and the rest for preparing and ingesting data.
 :param batch_size: The amount of entries that will be sent to Solr on one commit.
 :param start_dir: Root directory to start crawling.
 :param abort_on_error: If False then instead of raising an exception print the error and continue."""
