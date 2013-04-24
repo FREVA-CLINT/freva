@@ -136,11 +136,11 @@ class Test(unittest.TestCase):
         testUser = DummyUser(random_home=False,  **Test.DUMMY_USER)
         
         dir1 = testUser.getUserBaseDir()
-        self.assertEquals(dir1, os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(testUser.getUserID())))
+        self.assertEquals(dir1, os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(testUser.getName())))
         dir2 = testUser.getUserOutputDir('sometool')
         self.assertEquals(dir2, 
                           os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), 
-                                       str(testUser.getUserID()),User.OUTPUT_DIR, 'sometool'))
+                                       str(testUser.getName()),User.OUTPUT_DIR, 'sometool'))
         print dir2
         
         config.reloadConfiguration()
