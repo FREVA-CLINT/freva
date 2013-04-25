@@ -16,7 +16,13 @@ class SolrFindFiles(object):
     def __init__(self, core=None, host=None, port=None, get_status=False):
         """Create the connection pointing to the proper solr url and core. 
 The default values of these parameters are setup in evaluation_system.model.solr_core.SolrCore
-and read from the configuration file."""
+and read from the configuration file.
+
+:param core: name of the solr core that will be used.
+:param host: hostname of the machine where the solr core is to be found.
+:param port: port number of the machine where the solr core is to be found.
+:param get_status: if the core should be contacted in an attempt to get more metadata.
+"""
         self.solr = SolrCore(core, host=host, port=port, get_status=get_status)
         
     def __str__(self):
@@ -44,7 +50,17 @@ and read from the configuration file."""
         return urllib.urlencode(params)
     
     def _search(self, batch_size=10000, latest_version=False, _retrieve_metadata=False, **partial_dict):
-        """This encapsulates the Solr call to get documents."""
+        """This encapsulates the Solr call to get documents and returns an iterator providing the. The special
+parameter _retrieve_metadata will affect the first value returned by the iterator.        
+
+:param batch_size: the amount of files to be buffered from Solr.
+:param latest_version: if the search should *try* to find the latest version from all contained here. Please note
+ that we don't use this anymore. Instad we have 2 cores and this is defined directly in :class:`SolrFindFiles.search`. It was
+ changed because it was slow and required too much memory.
+:param _retrieve_metadata: if set to true, the first item on the iterator is a metadata one. This is used so it can be known
+ beforehand how many values are going to be returned, even before getting them all. To avoid this we might implement a result set
+ object. But that would break the find_files compatibility. 
+"""
         offset = partial_dict.pop('start', 0)
         #value retrieved from sys.maxint and == 2**31-1
         max_rows = partial_dict.pop('rows', 2147483647)
@@ -92,6 +108,14 @@ and read from the configuration file."""
         
     @staticmethod
     def search (latest_version=True, **partial_dict):
+        """It mimics the same :class:`evaluation_system.model.file.DRSFile.search` behavior.
+The implementation contacts the required Solr cores instead of contacting the file system.
+
+:param latest_version: defines if looking for the latest version of a file only, or for any.
+:param partial_dict: the search dictionary for solr. It might also contain some special values as
+ defined in :class:`SolrFindFiles._search`
+:returns: An iterator over the results.
+"""
         #use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')

@@ -1,7 +1,6 @@
 #!/bin/env python
 """
-CREATES A REQUEST TO P2P SEARCH API BASED ON CONSTRAINTS GIVEN AS INPUT PARAMETERS
-
+This files encapsulates access to the esgf p2p system.
 """
 import json
 import urllib2
@@ -32,6 +31,7 @@ class P2P(object):
 
     def __init__(self, node='esgf-data.dkrz.de', api='esg-search/search', wget_api='esg-search/wget', defaults=None):
         """Creates a connection to the P2P search API.
+
 :param node: the p2p search node to connect to.
 :type node: str
 :param api: the url path of the service.
@@ -251,114 +251,116 @@ improve readability.
 
 
 #**** COMMAND LINE ****
-def auto_doc(message=''):
-    import re, os
-    script_file = sys.argv[0]
-
-    re_start = re.compile('.*\*!!!\*$')
-    re_end = re.compile('^[ \t]*$')
-    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
-    parsing=False
-    results = []
-    for line in open(script_file, 'r'):
-        if parsing:
-            items = re_entries.match(line)
-            if items:
-                flag, flag_opt, mesg = items.groups()
-                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
-                results.append('  %-20s : %s' % (flag, mesg))
-            if re_end.match(line): break
-        elif re_start.match(line): parsing = True
-
-    if results: print '%s%s [opt]\nopt:\n%s' % (message, os.path.basename(script_file), '\n'.join(results))
-    else: print '%s %s' % (os.path.basename(script_file), message)
-
-def usage(message=None):
-    if message: auto_doc(message)
-    else: auto_doc()
-
-
-def main(argv=None):
-    import getopt
-    import re
-    facet_pat = re.compile(r'(.*[^\\])=(.*)')
-
-    if argv is None: argv = sys.argv[1:]
-    try:
-        args, lastargs = getopt.getopt(argv, "f:hd", ['help', 'debug', 'facet=','query=', 'list-datasets', 'show-facet='])
-    except getopt.error:
-        print sys.exc_info()[:3]
-        return 1
-
-    DEBUG = False
-    datasets = False
-    facets = {}
-    query=None
-    show_facets = []
-    #parse arguments *!!!*
-    for flag, arg in args:
-        if flag=='-f' or flag=='--facet':   #       Set facet for search (e.g. institute=MPI) can be used multiple times.
-            facet, value = facet_pat.match(arg).groups()
-            if facet in facets:
-                #accept same value multiple times!
-                if not isinstance(facets[facet], list): facets[facet] = [facets[facet]]
-                facets[facet].append(value)
-            else: 
-                facets[facet] = value
-        elif flag=='--show-facet':         #<list> :List all values for the given facet (might be defined multiple times)
-            show_facets.append(arg)
-        elif flag=='--list-datasets':       #       List datasets found using the p2p interface
-            datasets = True
-        elif flag=='--query':               #<list> :Display results from <list> queried fields
-            query=arg
-        elif flag == '-d' or flag == '--debug': #turn on debuging info
-            DEBUG = True
-        elif flag=='-h' or flag=='--help':        #This help
-            usage('Interact with p2p index nodes via the search API\n')
-            return 0
-
-
-    #if empty leave it alone    
-    #handle constraints as the last items in the argument list
-    for arg in lastargs:
-        if '=' not in arg:
-            raise Exception("Invalid format for query: %s" % arg)
-        
-        items = arg.split('=')
-        if len(items==1):
-            facets[items[0]] = True
-        else:
-            facets[items[0]] = '='.join(items[1:])
-    
-    p2p = P2P()
-        
-    if DEBUG:
-        sys.stderr.write("Searching dict: %s\n" % p2p.show(facets, return_str=True))
-
-    
-
-    if datasets: print '\n'.join(['%s#%s' % d for d in sorted(p2p.get_datasets_names(**facets))])
-    if query: 
-        if len(query.split(',')) > 1:
-            #we get multiple fields queried, return in a tructured fashion
-            p2p.show(p2p.get_datasets(fields=query,**facets))
-        else:
-            #if only one then return directly
-            print '\n'.join([str(d[query]) for d in p2p.get_datasets(fields=query,**facets)])
-        
-    if show_facets:
-        results = p2p.get_facets(show_facets, **facets)
-        #render them
-        for facet_key in sorted(results):
-            print '[%s]\n\t%s' % (facet_key, '\n\t'.join([ '%s: %s' % (k,results[facet_key][k])  for k in sorted(results[facet_key])]))
-    return 0
-            
-
-
-if __name__ == '__main__':
-    result=main(None)
-    if isinstance(result, int):
-        if result != 0: usage()
-        sys.exit(result)
+#===============================================================================
+# def auto_doc(message=''):
+#    import re, os
+#    script_file = sys.argv[0]
+# 
+#    re_start = re.compile('.*\*!!!\*$')
+#    re_end = re.compile('^[ \t]*$')
+#    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
+#    parsing=False
+#    results = []
+#    for line in open(script_file, 'r'):
+#        if parsing:
+#            items = re_entries.match(line)
+#            if items:
+#                flag, flag_opt, mesg = items.groups()
+#                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
+#                results.append('  %-20s : %s' % (flag, mesg))
+#            if re_end.match(line): break
+#        elif re_start.match(line): parsing = True
+# 
+#    if results: print '%s%s [opt]\nopt:\n%s' % (message, os.path.basename(script_file), '\n'.join(results))
+#    else: print '%s %s' % (os.path.basename(script_file), message)
+# 
+# def usage(message=None):
+#    if message: auto_doc(message)
+#    else: auto_doc()
+# 
+# 
+# def main(argv=None):
+#    import getopt
+#    import re
+#    facet_pat = re.compile(r'(.*[^\\])=(.*)')
+# 
+#    if argv is None: argv = sys.argv[1:]
+#    try:
+#        args, lastargs = getopt.getopt(argv, "f:hd", ['help', 'debug', 'facet=','query=', 'list-datasets', 'show-facet='])
+#    except getopt.error:
+#        print sys.exc_info()[:3]
+#        return 1
+# 
+#    DEBUG = False
+#    datasets = False
+#    facets = {}
+#    query=None
+#    show_facets = []
+#    #parse arguments *!!!*
+#    for flag, arg in args:
+#        if flag=='-f' or flag=='--facet':   #       Set facet for search (e.g. institute=MPI) can be used multiple times.
+#            facet, value = facet_pat.match(arg).groups()
+#            if facet in facets:
+#                #accept same value multiple times!
+#                if not isinstance(facets[facet], list): facets[facet] = [facets[facet]]
+#                facets[facet].append(value)
+#            else: 
+#                facets[facet] = value
+#        elif flag=='--show-facet':         #<list> :List all values for the given facet (might be defined multiple times)
+#            show_facets.append(arg)
+#        elif flag=='--list-datasets':       #       List datasets found using the p2p interface
+#            datasets = True
+#        elif flag=='--query':               #<list> :Display results from <list> queried fields
+#            query=arg
+#        elif flag == '-d' or flag == '--debug': #turn on debuging info
+#            DEBUG = True
+#        elif flag=='-h' or flag=='--help':        #This help
+#            usage('Interact with p2p index nodes via the search API\n')
+#            return 0
+# 
+# 
+#    #if empty leave it alone    
+#    #handle constraints as the last items in the argument list
+#    for arg in lastargs:
+#        if '=' not in arg:
+#            raise Exception("Invalid format for query: %s" % arg)
+#        
+#        items = arg.split('=')
+#        if len(items==1):
+#            facets[items[0]] = True
+#        else:
+#            facets[items[0]] = '='.join(items[1:])
+#    
+#    p2p = P2P()
+#        
+#    if DEBUG:
+#        sys.stderr.write("Searching dict: %s\n" % p2p.show(facets, return_str=True))
+# 
+#    
+# 
+#    if datasets: print '\n'.join(['%s#%s' % d for d in sorted(p2p.get_datasets_names(**facets))])
+#    if query: 
+#        if len(query.split(',')) > 1:
+#            #we get multiple fields queried, return in a tructured fashion
+#            p2p.show(p2p.get_datasets(fields=query,**facets))
+#        else:
+#            #if only one then return directly
+#            print '\n'.join([str(d[query]) for d in p2p.get_datasets(fields=query,**facets)])
+#        
+#    if show_facets:
+#        results = p2p.get_facets(show_facets, **facets)
+#        #render them
+#        for facet_key in sorted(results):
+#            print '[%s]\n\t%s' % (facet_key, '\n\t'.join([ '%s: %s' % (k,results[facet_key][k])  for k in sorted(results[facet_key])]))
+#    return 0
+#            
+# 
+# 
+# if __name__ == '__main__':
+#    result=main(None)
+#    if isinstance(result, int):
+#        if result != 0: usage()
+#        sys.exit(result)
+#===============================================================================
 
 

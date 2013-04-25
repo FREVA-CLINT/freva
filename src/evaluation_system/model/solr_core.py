@@ -28,14 +28,30 @@ from evaluation_system.model.file import DRSFile, BASELINE0, BASELINE1, CMIP5, O
 from evaluation_system.misc import config
 
 class META_DATA(object):
+    """This class just holds some values for the dump file parsing/writing. Here a small example::
+
+  crawl_dir /some/dir
+  
+  data
+  /some/dir/some/other/subdir/file1.nc,123123.0
+  /some/dir/some/other/subdir/file2.nc,123123.230
+  /some/dir/yet/another/subdir/file.nc,123123.230
+  ...
+
+See more info on :class:`SolrCore.dump_fs_to_file` and :class:`SolrCore.load_fs_from_file`"""
+
     CRAWL_DIR = 'crawl_dir'
+    "The path to the directory that was crawled and from which the following list of files comes."
+    
     DATA = 'data'
+    "Marks the end of the metadata area. What follows is a list of filepaths and timestamps separated by a line break."
 
 class SolrCore(object):
     """Encapsulate access to a Solr instance"""
     
     def __init__(self, core=None, host=None, port=None, echo=False, instance_dir=None, data_dir=None, get_status=True):
         """Create the connection pointing to the proper solr url and core.
+
 :param core: The name of the core referred (default: loaded from config file)
 :param host: the hostname of the Solr server (default: loaded from config file)
 :param port: The port number of the Solr Server (default: loaded from config file)
@@ -195,7 +211,7 @@ or assure otherwise there's no chance of getting corrupted data (I don't know an
         self.post(dict(delete=dict(query=query)), auto_list=False)
     
     def _update(self, processors=1, batch_size=10000, start_dir=None, abort_on_error=True, data_types=None, search_dict={}):
-        """Refactored method to centralize all ingest methods. 
+        """[DEPRECATED] Refactored method to centralize all ingest methods. 
 It allows to ingest file by crawling a subdirectory (start_dir != None) 
 or by performing a file system search (data_types != None).
 In both cases the ingest will be done either serial (processors=1)
@@ -293,7 +309,7 @@ nice to generate it in a different manner (e.g. using the gpfs policy API).
 :param batch_size: number of entries that will be written to disk at once. This might help pin-pointing crashes.
 :param check: if the paths should be checked. While checking path the resulting paths are guaranteed to be accepted later on
  normally this is too slow for this phase, so the default is False.
-:param abort_on_errors: If dumping should get aborted as soon as an error, i.e. a file that can't be ingested, is found.
+:param abort_on_errors: If dumping should get aborted as soon as an error is found, i.e. a file that can't be ingested.
  Most of the times there are many files being found that are no data at all."""
 
         log.debug('starting sequential ingest')
@@ -334,7 +350,23 @@ nice to generate it in a different manner (e.g. using the gpfs policy API).
             f.close()
 
     @staticmethod
-    def load_fs_from_file(dump_file, batch_size=10000, check=False, abort_on_errors=False, core_all_files = None, core_latest = None):
+    def load_fs_from_file(dump_file, batch_size=10000, abort_on_errors=False, core_all_files = None, core_latest = None):
+        """This is the opposite method of :class:`SolrCore.dump_fs_to_file`. It loads the files system information to Solr
+from the given file. The syntax is defined already in the mentioned dump method.
+Contrary to what was previously done, this method loads the information from a file and decides if it should be added
+to just the common file core, holding the index of all files, or also to the *latest* core, holding information
+about the latest version of all files (remember that in CMIP5 not all files are version, just the datasets).
+
+:param dump_file: the path to the file that contains the dump. if the file ends with '.gz' the file is assumed to be gziped.
+:param batch_size: number of entries that will be written to the Solr main core (the latest core will be flushed at the same time
+ and is guaranteed to have at most as many as the other.
+:param abort_on_errors: If dumping should get aborted as soon as an error is found, i.e. a file that can't be ingested.
+ Most of the times there are many files being found in the dump file that are no data at all
+:param core_all_files: if desired you can pass the SolrCore managing all the files (if not the one named 'files'will be used, 
+ using the configuration from the config file).
+:param core_latest: if desired you can pass the SolrCore managing the latest file versions (if not the one named 'latest' will be used, 
+ using the configuration from the config file).
+"""
         
         if dump_file.endswith('.gz'):
             print "Using gzip"
@@ -427,7 +459,7 @@ nice to generate it in a different manner (e.g. using the gpfs policy API).
             f.close()
     
     def update_from_search(self, processors=1, batch_size=10000, data_types=None, **search_dict):
-        """Updated the Solr index, by ingesting the results obtained from the find_files command.
+        """[DEPRECATED]Updated the Solr index, by ingesting the results obtained from the find_files command.
 This is a simple file system search a la find. The search is performed not caring about latest versions
 as it makes no sense there.
 
@@ -442,7 +474,7 @@ as it makes no sense there.
         self._update(processors=processors, batch_size=batch_size, data_types=data_types, search_dict=search_dict)
     
     def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=10000,):
-        """Updated the Solr index, by ingesting every file found by crawling from start_dir.
+        """[DEPRECATED]Updated the Solr index, by ingesting every file found by crawling from start_dir.
 
 :param processors: The number of processors to start ingesting. If ==1 then it's run serial, otherwise 1 processor
  is used for searching and the rest for preparing and ingesting data.

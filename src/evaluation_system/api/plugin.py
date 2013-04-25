@@ -3,12 +3,7 @@
 .. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
 
 
-This module defines the basic objects for implementing a plug_in.
-
-* :class:`metadict`: It's used for defining :class:`PluginAbstract.__config_metadict__` which holds
-                     information about the parameters the plug-in will be requiring.
-* :class:`PluginAbstract`: It's an abstract class which provides many useful methods, requires
-                           some to be defined and keeps track of the classes implementing it.
+This module defines the basic objects for implementing a plug-in.
 '''
 
 import abc
@@ -30,22 +25,20 @@ class ConfigurationError(Exception):
     """Signals the configuration failed somehow."""
     pass
 
-
-
-
         
 class PluginAbstract(object):
     """This is the base class for all plug-ins. It is the only class that needs to be inherited from when implementing a plug-in.
     
 From it, you'll need to implement the few attributes and/or methods marked as abstract with the decorator
-``@abc.abstractproperty`` or ``@abc.abstractmethod`` (Sphinx can't handle decorators, so you'll see this in the code only
-though I've added them to the docs so they show in the API documentation).
+``@abc.abstractproperty`` or ``@abc.abstractmethod``. If you don't you'll get a message informing you which methods
+and or variables need to be implemented. Refer to their documentation to know what they should do.
 
-You may overwrite all methods and properties defined in here, but you'll be breaking the contract
+As usual, you may overwrite all methods and properties defined in here, but you'll be breaking the contract
 between the methods so you'll have to make sure it doesn't break anything else. Please write some tests
-for your own class that checks it is working as expected.
+for your own class that checks it is working as expected. The best practice is to use what is provided as is and only
+implement what is required (and more, if you need, just don't overwrite any methods/variable if you don't need to)
 
-This very short example that shows a complete plug-in. Although it does nothing it already show the most important part,
+This very short example shows a complete plug-in. Although it does nothing it already show the most important part,
 the :class:`evaluation_system.api.parameters.ParameterDictionary` used for defining meta-data on the parameters::
 
     from evaluation_system.api import plugin, parameters
