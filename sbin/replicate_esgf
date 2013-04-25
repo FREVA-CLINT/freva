@@ -274,7 +274,7 @@ def main(argv=None):
                 print "Wrong facet syntax. Assure it is <key>=<value> (e.g. project=CMIP5)"
                 return 1
         elif flag=='--wget-dummy':              # Generates a dummy wget script
-            wget_script = False
+            wget_script = True
         elif flag=='-o':                        # Store output to the given file
             output=arg
         elif flag=='--node':                    #<node> Use this specific index node instead of esgf-data.dkrz.de
