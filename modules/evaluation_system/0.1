@@ -59,7 +59,8 @@ proc safe_load { mod_name } {
 #pre-requisites
 if { $curMode eq "load" } {
     safe_load python
-    safe_load cdo
+    safe_load cdo/1.5.4
+#   safe_load cdo
     show_info $toolPath
     if { $shell == "bash" } {
 	    puts ". $toolPath/etc/autocomplete.bash;"
