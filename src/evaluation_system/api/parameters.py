@@ -13,12 +13,20 @@ from symbol import raise_stmt
 import json
 
 class ValidationError(Exception):
+    "Thrown if some variable contains an improper value."
     pass
 
 
 class ParameterDictionary(OrderedDict):
-    """A dictionary managing parameters for a plugin."""
+    """A dictionary managing parameters for a plugin. It works just like a normal dictionary with some added functionality
+and the fact that the contains are stored in the same order they where defined. This order helps the plugin implementor
+to define what the user should be seeing. (most important parameters first, etc).
+Accessing the dictionary directly will retrieve the default value of the parameter."""
+
     def  __init__(self, *list_of_parameters):
+        """Creates a new ParameterDictionary with the given list of parameters objects of a sub type of :class:`ParameterType`
+
+:param list_of_parameters: parameters defined in order. The order will be kept, so it's important."""
         OrderedDict.__init__(self)
         
         self._params = OrderedDict()
@@ -28,9 +36,15 @@ class ParameterDictionary(OrderedDict):
                 raise ValueError("Parameters name must be unique. Got second %s key." % param.name)
             self._params[param.name] = param
             self[param.name] = param.default
+
     def __str__(self):
         return '%s(%s)' % (self.__class__.__name__, ', '.join(['%s<%s>: %s' % (k, self._params[k], v)for k,v in self.items()]))
+
     def get_parameter(self, param_name):
+        """Return the parameter object from the given name.
+
+:param param_name: name of the parameter that will be returned.
+:raises: ValidationError if the parameter name doesn't match anything stored here."""
         if param_name not in self:
             mesg = "Unknown parameter %s" % param_name
             similar_words = find_similar_words(param_name, self.keys())
@@ -39,9 +53,15 @@ class ParameterDictionary(OrderedDict):
         return self._params[param_name]
     
     def parameters(self):
+        ":returns: all parameters stored in here (in order as they were defined)"
         return self._params.values()
     
     def complete(self, config_dict=None, add_missing_defaults=False):
+        """Completes a given dictionary with default values if required.
+
+:param config_dict: the to be completed dictionary. If None, a new dictionary will be created.
+:param add_missing_defaults: If also parameters without any defaults should be completed.   
+:returns: a dictionary with all missing parameters also configured."""
         if config_dict is None:
             config_dict = {}
         for key in set(self) - set(config_dict):
@@ -51,6 +71,11 @@ class ParameterDictionary(OrderedDict):
         return config_dict
     
     def validate_errors(self, config_dict, raise_exception=False):
+        """Checks if the given configuration dictionary is valied.
+
+:param config_dict: the dictionary to be checked.
+:param raise_exception: If an exception should be risen. In such a case only a message is elevated (this could be changed)
+:returns: a dictionary with missing items and those having to manay of them or None if no error was found."""
         missing = []
         too_many_items = []
         for key, param in self._params.items():
@@ -245,6 +270,10 @@ class ParameterType(object):
         return self.base_type(self._verified(value))
     
     def format(self, value=None):
+        """Formats the default value or the given one to a string. This could be overwriten to provide more
+control over how values are being displayed. This should probably be refactored to a static method.
+
+:param value: the value to be formated, if is set to None the default value will be used."""
         if value is None:
             if self.default is None:
                 return "<undefined>"
@@ -272,34 +301,50 @@ class ParameterType(object):
 
 
 class String(ParameterType):
+    "A simple string parameter."
     base_type = StringType
 
 class Integer(ParameterType):
+    "An integer parameter."
     base_type = IntType
     def __init__(self, regex='^[+-]?[0-9]+$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
 class Long(Integer):
+    "A long parameter, it's the same as an integer but is handled from the beginning as a long. In Python there is no real difference between a long and an integer."
     base_type = LongType
 
 class Float(ParameterType):
+    "A float parameter."
     base_type = FloatType
     def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
 class File(String):
+    "A parameter representing a file in the system."
     pass
 
 class Directory(String):
+    "A parameter representing a directory in the system. [not used]"
     pass
 
 class Date(String):
+    "A date parameter. [not used]"
     pass
 
 class Bool(ParameterType):
+    """A boolean paramter. Boolean parameters might be parsed from the strings as defined in :class:`Bool.parse`"""
     base_type = BooleanType
 
     def parse(self, bool_str):
+        """Parses a string and extract a boolean value out of it. We don't accept any value, the mapping is done
+in the following way (case insensitive)::
+
+  true, t, yes, y, on, 1 => TRUE
+  false, f, no, n, off, 2 => FALSE
+  
+:param bool_str:  the string value containing a boolean value.
+:raises ValidationException: if the given string does not match any of these values."""
         if isinstance(bool_str, basestring) and bool_str: 
             if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']: return True
             elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: return False

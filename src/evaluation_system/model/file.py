@@ -199,7 +199,7 @@ We are assuming the dataset is a sub-path of all files in it.
             return None
     @staticmethod
     def _get_structure_prefix_map():
-        "Lazy initialization"
+        ":returns: reversed map root_path->drs_struct_name (lazy initialized)."
         
         if DRSFile.DRS_STRUCTURE_PATH_TYPE is None:
             DRSFile.DRS_STRUCTURE_PATH_TYPE = {}
@@ -219,6 +219,14 @@ We are assuming the dataset is a sub-path of all files in it.
     
     @staticmethod
     def find_structure_from_path(file_path, allow_multiples=False):
+        """Return all DRS structures that might be applicable to the given path.
+This is resolved by checking if the prefix of any structure paths matches that
+of the given file path.
+
+:param file_path: full path to a file, whose drs structure is being searched for.
+:param allow_multiple: if true returns a list with all possible structures, otherwise returns the first match found.
+:returns: the name of the drs struct(s) that can be used to parse this path. The parsing is not done, so
+ it might still fail. It just guarantees that if any, only the structures returned here *might* work."""
         structures = []
         for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
             if file_path.startswith(path_prefix):
@@ -232,16 +240,22 @@ We are assuming the dataset is a sub-path of all files in it.
             return structures
 
     @staticmethod
-    def find_structure_in_path(file_path, allow_multiples=False):
+    def find_structure_in_path(dir_path, allow_multiples=False):
+        """Return all DRS structures that might be applicable to the given directory path.
+This is resolved by checking if the given path is contained within any drs structure. It's used while crawling.
+
+:param dir_path: path a directory, who might contain drs conform files.
+:param allow_multiple: if true returns a list with all possible structures, otherwise returns the first match found.
+:returns: the name of the drs struct(s) that can be used to find files within the given dir_path."""
         structures = []
         for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
-            if path_prefix.startswith(file_path):
+            if path_prefix.startswith(dir_path):
                 if allow_multiples:
                     structures.append(st_type)
                 else:
                     return st_type
         if not structures:                                                                
-            raise Exception("No DRS structure found in %s." % file_path)
+            raise Exception("No DRS structure found in %s." % dir_path)
         else:
             return structures
         
