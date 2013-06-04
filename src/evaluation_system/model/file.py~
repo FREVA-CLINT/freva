@@ -58,7 +58,7 @@ class DRSFile(object):
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": BASELINE1,
-         "defaults" : {"project":"baseline1", "institute":"MPI-M", "model":"MPI-ESM-?R"}
+         "defaults" : {"project":"baseline1", "product":"output", "institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
