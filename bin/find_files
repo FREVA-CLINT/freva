@@ -156,7 +156,7 @@ Current defaults: %s""" % (data_type, search_options, search_defaults)
 
 _short_args = 'hd'
 _args = ['baseline=', 'help', 'debug', 'multiversion',
-        'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1']
+        'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1', 'projectdata']
 
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
@@ -195,6 +195,8 @@ def main(argv=None): # IGNORE:C0111
                 drs_struct = mf.OBSERVATIONS
             elif flag == '--reanalysis':            #search for reanalysis data
                 drs_struct = mf.REANALYSIS
+            elif flag == '--projectdata':           #search for project  data
+                drs_struct = mf.PROJECTDATA
             elif flag == '--multiversion':          #select not only the latest version but all of them
                 latest=False
             elif flag == '-d' or flag == '--debug': #turn on debugging info
