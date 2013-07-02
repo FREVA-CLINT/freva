@@ -22,6 +22,8 @@ OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
+PROJECTDATA = 'projectdata'
+"""DRS structure for project data."""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -79,6 +81,16 @@ class DRSFile(object):
          "data_type": REANALYSIS,
          "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
+        #project data
+        PROJECTDATA : {
+         "root_dir":"/miklip/integration/data4miklip/model/project-data",
+         "parts_dir":"user/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset":"user.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": PROJECTDATA,
+         "defaults" : {}
+         },
         }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
