@@ -297,6 +297,10 @@ control over how values are being displayed. This should probably be refactored 
             return _type_mapping[t]()
         else:
             raise ValueError("Can't infer type for default '%s'." % value)
+        
+    def get_type(self):
+        
+        return self.__class__.__name__
 
 
 
