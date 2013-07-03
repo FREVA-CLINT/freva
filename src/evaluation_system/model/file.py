@@ -74,9 +74,9 @@ class DRSFile(object):
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset": "product/institute/model/experiment/time_frequency/realm/variable".split('/'),
-         "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
+         "parts_dir":"project/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset": "project/institute/model/experiment/time_frequency/realm/variable".split('/'),
+         "parts_file_name":"variable-cmor_table-project-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
          "defaults" : {"project":"reanalysis", "product":"reanalysis"}
