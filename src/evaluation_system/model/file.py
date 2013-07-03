@@ -64,13 +64,13 @@ class DRSFile(object):
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"product/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
-         "parts_dataset":"product/realm/variable/time_frequency/data_structure/institute/source".split('/'),
-         "parts_versioned_dataset":"product/realm/variable/time_frequency/data_structure/institute/source/version".split('/'),
+         "parts_dir":"project/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
+         "parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/source".split('/'),
+         "parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/source/version".split('/'),
          "parts_file_name":"variable-source-level-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
-         "defaults" : {"project":"obs4MIPS", "product":"observations", "data_structure":"grid"}
+         "defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
