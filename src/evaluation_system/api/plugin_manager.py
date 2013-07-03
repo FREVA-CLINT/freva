@@ -91,7 +91,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
         if os.path.isdir(py_dir):
             if py_mod in __plugin_modules__:
-                log.warn("Module '%s' is being overwritten by: %s", py_mod, py_dir)
+                log.warn("Module '%s' is test being overwritten by: %s", py_mod, py_dir)
             else:
                 log.debug("Loading '%s'", plugin_name)
                 sys.path.append(py_dir)
