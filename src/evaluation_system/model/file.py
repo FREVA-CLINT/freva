@@ -79,7 +79,7 @@ class DRSFile(object):
          "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
-         "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
+         "defaults" : {"project":"reanalysis", "product":"reanalysis"}
         },
         #project data
         PROJECTDATA : {
