@@ -64,26 +64,26 @@ class DRSFile(object):
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
-         "parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/source".split('/'),
-         "parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/source/version".split('/'),
+         "parts_dir":"product/realm/variable/time_frequency/data_structure/institute/source/version/file_name".split('/'),
+         "parts_dataset":"product/realm/variable/time_frequency/data_structure/institute/source".split('/'),
+         "parts_versioned_dataset":"product/realm/variable/time_frequency/data_structure/institute/source/version".split('/'),
          "parts_file_name":"variable-source-level-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
-         "defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
+         "defaults" : {"project":"obs4MIPS", "product":"observations", "data_structure":"grid"}
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset": "project/institute/model/experiment/time_frequency/realm/variable".split('/'),
-         "parts_file_name":"variable-cmor_table-project-experiment-ensemble-time".split('-'),
+         "parts_dir":"product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset": "product/institute/model/experiment/time_frequency/realm/variable".split('/'),
+         "parts_file_name":"variable-cmor_table-product-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
-         "defaults" : {"project":"reanalysis", "product":"reanalysis"}
+         "defaults" : {"project":"ana4MIPS", "product":"reanalysis"}
         },
         #project data
         PROJECTDATA : {
-         "root_dir":"/miklip/integration/data4miklip/projectdata",
+         "root_dir":"/miklip/integration/data4miklip/model/projectdata",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
