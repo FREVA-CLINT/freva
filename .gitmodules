@@ -19,3 +19,6 @@
 [submodule "tools/goddard"]
 	path = tools/goddard
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/goddard.git
+[submodule "tools/percentile"]
+	path = tools/percentile
+	url = /miklip/integration/repositories/percentile.git
