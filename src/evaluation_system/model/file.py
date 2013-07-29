@@ -305,15 +305,18 @@ This is resolved by checking if the given path is contained within any drs struc
         ##(extract .nc before splitting)
         parts = result['parts']['file_name'][:-3].split('_')
         if len(parts) == len( bl['parts_file_name']) - 1 \
-            and 'r0i0p0' in parts :
+            and 'fx' in parts:
+            #and 'r0i0p0' in parts :
             #no time
             parts.append(None)
             
         #log.debug("Path: %s\nFile_parts:%s\ndrs_structure_parts:%s", path, parts, bl['parts_file_name'])
+        
         try:
             for i in range(len(bl['parts_file_name'])):
                 if bl['parts_file_name'][i] not in result['parts']:
                     result['parts'][bl['parts_file_name'][i]] = parts[i]
+                
         except IndexError:
             raise Exception("File %s does not follow the expected naming scheme for %s" % (path, drs_structure))
         
