@@ -158,7 +158,7 @@ Current defaults: %s""" % (data_type, search_options, search_defaults)
 
 _short_args = 'hd'
 _args = ['baseline=', 'help', 'debug', 'multiversion',
-        'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1', 'projectdata',
+        'observations', 'reanalysis', 'cmip5', 'baseline0', 'baseline1', 'projectdata', 'miklip',
         'batch-size=', 'attributes', 'facet=', 'all-facets', 'count-facet-values',
         'relevant-only']
 
@@ -204,6 +204,8 @@ def main(argv=None): # IGNORE:C0111
                 drs_struct = mf.OBSERVATIONS
             elif flag == '--projectdata':           #search for project  data
                 drs_struct = mf.PROJECTDATA
+            elif flag == '--miklip':           		#search for miklip  data
+                drs_struct = mf.MIKLIP
             elif flag == '--reanalysis':            #search for reanalysis data
                 drs_struct = mf.REANALYSIS
             elif flag == '--multiversion':          #select not only the latest version but all of them

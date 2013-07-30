@@ -24,6 +24,8 @@ REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
 PROJECTDATA = 'projectdata'
 """DRS structure for project data."""
+MIKLIP = 'miklip'
+"""DRS structure for miklip data."""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -90,6 +92,16 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": PROJECTDATA,
          "defaults" : {}
+         },
+        #MIKLIP  data
+        MIKLIP : {
+         "root_dir":"/miklip/integration/data4miklip/model",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": MIKLIP,
+         "defaults" : {"project":"miklip", "institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
         }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
@@ -305,15 +317,18 @@ This is resolved by checking if the given path is contained within any drs struc
         ##(extract .nc before splitting)
         parts = result['parts']['file_name'][:-3].split('_')
         if len(parts) == len( bl['parts_file_name']) - 1 \
-            and 'r0i0p0' in parts :
+            and 'fx' in parts:
+            #and 'r0i0p0' in parts :
             #no time
             parts.append(None)
             
         #log.debug("Path: %s\nFile_parts:%s\ndrs_structure_parts:%s", path, parts, bl['parts_file_name'])
+        
         try:
             for i in range(len(bl['parts_file_name'])):
                 if bl['parts_file_name'][i] not in result['parts']:
                     result['parts'][bl['parts_file_name'][i]] = parts[i]
+                
         except IndexError:
             raise Exception("File %s does not follow the expected naming scheme for %s" % (path, drs_structure))
         
