@@ -36,6 +36,9 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
+SLURM_WORK_DIR = 'slurm_work_dir'
+''' Determines the folder the SLURM files will be saved in ''' 
+
 #config file section
 CONFIG_SECTION_NAME = 'evaluation_system'
 'This is the name of the section in the configuration file where the central configuration is being stored'

@@ -32,7 +32,9 @@ therefore live longer"""
 
     PROCESSES_DIR = 'processes'
     "The directory might handle information required for each running process."
-    
+
+    SLURM_DIR = 'slurm'
+    "Slurm files are written to this directory before executed by sbash"
     
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
     """The file containing a central configuration for the whole system (user-wise)"""
@@ -41,12 +43,14 @@ therefore live longer"""
     """The central default configuration file for all users. It should not be confused with the system configuration
 file that is handled by :class:`evaluation_system.api.config`."""
 
-    def __init__(self, uid = None):
+    def __init__(self, uid = None, email = None):
         '''Creates a user object for the provided id. If no id is given, a user object for
 the current user, i.e. the one that started the application, is created instead.
 
 :type uid: int
 :param uid: user id in the local system, if not provided the current user is used.
+:type email: str
+:param email: user's email address
 '''
         self._dir_type = config.get(config.DIRECTORY_STRUCTURE_TYPE)
 
@@ -58,9 +62,11 @@ the current user, i.e. the one that started the application, is created instead.
             self._userdata = pwd.getpwnam(uid)
         else:
             self._userdata = pwd.getpwuid(uid)
-        
+             
         if self._userdata is None:
             raise Exception("Cannot find user %s" % uid)
+        
+        self._email      = email;
         
         self._userconfig = Config()
         #try to load teh configuration from the very first time.
@@ -105,6 +111,12 @@ the current user, i.e. the one that started the application, is created instead.
 :rtype: str"""  
         return self._userdata.pw_name
     
+    def getEmail(self):
+        """
+        :returns: user's email address. Maybe None. :rtype: str
+        """
+        return self._email
+    
     def getUserID(self):
         """:returns: the user id.
 :rtype: int"""  
@@ -122,7 +134,8 @@ the current user, i.e. the one that started the application, is created instead.
             return os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(self.getName()))
         
     def _getUserDir(self, dir_type, tool = None, create=False):
-        base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR)
+        base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, \
+                         plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, slurm=User.SLURM_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
             dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
@@ -148,6 +161,13 @@ the current user, i.e. the one that started the application, is created instead.
 :returns: (str) path"""
         return self._getUserDir('base', **kwargs)
         
+    def getUserSlurmDir(self, **kwargs): 
+        """Returns path to where this system is managing this user data.
+
+:param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
+:returns: (str) path"""
+        return self._getUserDir('slurm', **kwargs)
+
     def getUserToolConfig(self, tool, **kwargs):
         """Returns the path to the configuration file.
 
