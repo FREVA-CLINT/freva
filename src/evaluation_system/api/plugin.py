@@ -439,6 +439,16 @@ if no configuration is provided the default one will be used.
                 fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
 
+    def suggestSlurmFileName(self):
+        """
+        Return a suggestion for the SLURM file name
+        :return: file name
+        """
+        
+        filename = datetime.now().strftime('%Y%m%d_%H%M%S_') + self.__class__.__name__
+        return filename
+        
+
     def writeSlurmFile(self, fp, config_dict=None):
         """
         Writes a file which can be executed by the SLURM scheduler
@@ -474,7 +484,6 @@ if no configuration is provided the default one will be used.
         if config_dict is None:
             #a default incomplete one
             config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
-        fp.write('[%s]\n' % self.__class__.__name__)
         
         # the parameter string
         cmd_param = "analyze --tool " + self.__class__.__name__

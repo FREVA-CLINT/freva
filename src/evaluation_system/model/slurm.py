@@ -137,7 +137,7 @@ class slurm_file(object):
         
         # if it was not successful then use a user specific directory
         if not workdir:
-            workdir = user.getUserSlurmDir(self)
+            workdir = user.getUserSlurmDir()
         
         # set the default options
         self.add_dash_option("D", workdir)
@@ -161,7 +161,7 @@ class slurm_file(object):
         :type fp: file handler
         """
         # Execute with bash
-        fp.write(self.SHELL_CMD)
+        fp.write(self.SHELL_CMD + "\n")
         
         # write options
         opts = self._options.items()
@@ -172,20 +172,20 @@ class slurm_file(object):
             option = opt[0]
             value  = opt[1][0]
             
-            string = self.SLURM_CMD + optf.format(option, value)
+            string = self.SLURM_CMD + optf.format(option, value) + "\n"
             fp.write(string)
             
         # write the modules to be loaded
         for mod in self._modules:
-            fp.write(self.MLOAD_CMD + mod)
+            fp.write(self.MLOAD_CMD + mod + "\n")
             
         # variables to export
         variables = self._variables.items()
         
         for var in variables:
-            fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]))
+            fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")
         
         # write the execution command
-        fp.write(self._cmdstring)
+        fp.write(self._cmdstring + "\n")
         
         
