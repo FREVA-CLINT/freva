@@ -307,7 +307,7 @@ def runTool(plugin_name, config_dict=None, user=None):
     #In any case we have now a complete setup in complete_conf
     result = p._runTool(config_dict=complete_conf)
     
-    if user: user.getUserDB().storeHistory(p, complete_conf, result=result)
+    if user: user.getUserDB().storeHistory(p, complete_conf, result=result, user.getUserID(), 0)
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
@@ -317,6 +317,6 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
     if plugin_name is not None: plugin_name = plugin_name.lower()
     if user is None: user = User()
     
-    return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids)
+    return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getUserID)
 
 

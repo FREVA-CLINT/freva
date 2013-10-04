@@ -39,6 +39,9 @@ BASE_DIR_LOCATION = 'base_dir_location'
 SLURM_WORK_DIR = 'slurm_work_dir'
 ''' Determines the folder the SLURM files will be saved in ''' 
 
+DATABASE_FILE = 'database_file'
+''' Determines the path of the database file '''
+
 #config file section
 CONFIG_SECTION_NAME = 'evaluation_system'
 'This is the name of the section in the configuration file where the central configuration is being stored'
