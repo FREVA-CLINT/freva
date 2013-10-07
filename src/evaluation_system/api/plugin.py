@@ -449,7 +449,7 @@ if no configuration is provided the default one will be used.
         return filename
         
 
-    def writeSlurmFile(self, fp, config_dict=None, user=self.getCurrentUser()):
+    def writeSlurmFile(self, fp, config_dict=None, user=None):
         """
         Writes a file which can be executed by the SLURM scheduler
         if no configuration is provided the default one will be used.
@@ -458,6 +458,9 @@ if no configuration is provided the default one will be used.
         :param config_dict: a metadict with the configuration to be stored. If none is provided the result from
         """
         from evaluation_system.model import  slurm
+        
+        if user is None:
+            user = self.getCurrentUser()
         
         sf = slurm.slurm_file()
         
