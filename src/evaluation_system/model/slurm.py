@@ -102,7 +102,7 @@ class slurm_file(object):
         if val is None:
             e = self.entry_format('--', '')
         else:
-            e = self.entry_format('--', ' ')
+            e = self.entry_format('--', '=')
             
         self._options[opt] = (val, e)
 
