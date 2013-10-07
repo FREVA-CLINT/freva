@@ -307,7 +307,7 @@ def runTool(plugin_name, config_dict=None, user=None):
     #In any case we have now a complete setup in complete_conf
     result = p._runTool(config_dict=complete_conf)
     
-    if user: user.getUserDB().storeHistory(p, complete_conf, result=result, user.getUserID(), 0)
+    if user: user.getUserDB().storeHistory(p, complete_conf, user.getUserID(), 0, result=result)
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
