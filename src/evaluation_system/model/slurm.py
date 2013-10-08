@@ -163,6 +163,9 @@ class slurm_file(object):
         # Execute with bash
         fp.write(self.SHELL_CMD + "\n")
         
+        # Workaround for Slurm in www-miklip
+        fp.write("source /client/etc/profile.miklip\n")
+        
         # write options
         opts = self._options.items()
 
