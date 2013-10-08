@@ -138,7 +138,7 @@ but at the present time the system works as a toolbox that the users start from 
         self._user = user
         #self._db_file = user.getUserConfigDir(create=True) + '/history.sql3'
         self._db_file = config.get(config.DATABASE_FILE, "")
-        
+        print self.db_file
         self.initialize()
     
     def _getConnection(self):
@@ -216,7 +216,7 @@ While initializing the schemas will get upgraded if required.
                 uid,
                 status)
         log.debug('Row: %s', row)
-        self._getConnection().execute("INSERT INTO history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        self._getConnection().execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
@@ -234,12 +234,12 @@ While initializing the schemas will get upgraded if required.
 """
         #ast.literal_eval(node_or_string)
         sql_params = []
-        sql_str = "SELECT rowid, * FROM history"
+        sql_str = "SELECT id, * FROM history_history"
         if tool_name or since or until or entry_ids:
             sql_str = '%s WHERE 1=1' % sql_str
             if entry_ids is not None:
                 if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND rowid in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
+                sql_str = '%s AND id in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
                 sql_str = '%s AND tool=?' % sql_str
