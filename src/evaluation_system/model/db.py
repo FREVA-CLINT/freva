@@ -9,10 +9,8 @@ import json
 import ast
 import os
 import logging
+import evaluation_system.api.plugin_manager
 from evaluation_system.misc import py27, config
-from ctypes.wintypes import INT
-from evaluation_system.api.plugin_manager import _status_scheduled,\
-    _status_not_scheduled
 log = logging.getLogger(__name__)
 
 #Store sqlite3 file and pool
@@ -222,7 +220,7 @@ While initializing the schemas will get upgraded if required.
                 status)
         log.debug('Row: %s', row)
         
-        cursor = self._getConnection() 
+        cursor = self._getConnection().cursor() 
         cursor.execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
         
         return cursor.lastrowid
@@ -239,10 +237,10 @@ While initializing the schemas will get upgraded if required.
         update_str+='WHERE id=? AND uid=? AND status=?'
         
         entries = (slurmFileName,
-                   _status_scheduled,
+                   evaluation_system.api.plugin_manager._status_scheduled,
                    row_id,
                    uid,
-                   _status_not_scheduled)
+                   evaluation_system.api.plugin_manager._status_not_scheduled)
                                   
         self._getConnection().execute(update_str, entries)
         

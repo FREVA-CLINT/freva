@@ -47,7 +47,7 @@ plugin_name=>{
     version=>(0,0,0)
     description=>"string"}"""
 
-# be aware this is a hardcoded version of history.models.History.processStatus
+# be aware this is a hard-coded version of history.models.History.processStatus
 _status_finished = 0
 _status_finished_no_output = 1
 _status_broken = 2
