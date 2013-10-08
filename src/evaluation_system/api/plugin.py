@@ -540,7 +540,7 @@ It means, **never** start a plug-in comming from unknown sources.
             bash_opt = '-c'
         p = Popen(['/bin/bash', bash_opt, cmd_string], stdout=stdout, stderr=stderr)
         
-        print p.stdout.read()
+        #print p.stdout.read()
         
         return p.communicate(stdin)
 
