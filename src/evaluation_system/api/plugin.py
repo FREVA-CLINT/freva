@@ -438,6 +438,74 @@ if no configuration is provided the default one will be used.
                 fp.write('%s=%s\n\n' % (param_name, param.str(value)))
                 fp.flush()  #in case we want to stream this for a very awkward reason...
         return fp
+
+    def suggestSlurmFileName(self):
+        """
+        Return a suggestion for the SLURM file name
+        :return: file name
+        """
+        
+        filename = datetime.now().strftime('%Y%m%d_%H%M%S_') + self.__class__.__name__
+        return filename
+        
+
+    def writeSlurmFile(self, fp, config_dict=None, user=None):
+        """
+        Writes a file which can be executed by the SLURM scheduler
+        if no configuration is provided the default one will be used.
+
+        :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
+        :param config_dict: a metadict with the configuration to be stored. If none is provided the result from
+        """
+        from evaluation_system.model import  slurm
+        
+        if user is None:
+            user = self.getCurrentUser()
+        
+        sf = slurm.slurm_file()
+        
+        sf.set_default_options(user, self.composeCommand(config_dict))
+        
+        sf.write_to_file(fp)
+        fp.flush()
+         
+    
+    class ExceptionMissingParam(Exception):
+        """
+        An exception class if a mandatory parameter has not been set
+        """
+        def __init__(self, param):
+            """
+            Exceptions constructor
+            :param param: The missing parameter
+            :type param: string
+            """
+            Exception.__init__(self, "Parameter %s has to be set" % param)
+        
+    def composeCommand(self, config_dict):
+        #store the section header
+        if config_dict is None:
+            #a default incomplete one
+            config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
+        
+        # the parameter string
+        cmd_param = "analyze --tool " + self.__class__.__name__
+        
+        # compose the parameters preserve order
+        for param_name in self.__parameters__:
+            if param_name in config_dict:
+                param = self.__parameters__.get_parameter(param_name)
+                value = config_dict[param_name]
+                isMandatory = param.mandatory
+
+                if value is None:
+                    if isMandatory:
+                        raise self.ExceptionMissingParam(param_name)
+                else:
+                    cmd_param = cmd_param + " %s=%s" % (param_name, param.str(value))
+                 
+        return cmd_param
+
         
     def call(self, cmd_string, stdin=None, stdout=PIPE, stderr=STDOUT):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
@@ -458,7 +526,9 @@ It means, **never** start a plug-in comming from unknown sources.
         else:
             bash_opt = '-c'
         p = Popen(['/bin/bash', bash_opt, cmd_string], stdout=stdout, stderr=stderr)
-
+        
+        print p.stdout.read()
+        
         return p.communicate(stdin)
     
     def _splitPath(self, path):

@@ -9,6 +9,7 @@ import json
 import ast
 import os
 import logging
+from evaluation_system.misc import py27, config
 log = logging.getLogger(__name__)
 
 #Store sqlite3 file and pool
@@ -54,7 +55,10 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.tool_name = row[2]
         self.version = ast.literal_eval(row[3])
         self.configuration = json.loads(row[4]) if row[4] else {}
-        self.results = json.loads(row[5]) if row[5] else {}
+        #self.results = json.loads(row[5]) if row[5] else {}
+        self.slurm_output = row[5]
+        self.uid = row[6]
+        self.status = row[7]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -132,7 +136,9 @@ but at the present time the system works as a toolbox that the users start from 
 :type user: :class:`evaluation_system.model.user.User`
 '''
         self._user = user
-        self._db_file = user.getUserConfigDir(create=True) + '/history.sql3'
+        #self._db_file = user.getUserConfigDir(create=True) + '/history.sql3'
+        self._db_file = config.get(config.DATABASE_FILE, "")
+        
         self.initialize()
     
     def _getConnection(self):
@@ -178,19 +184,20 @@ While initializing the schemas will get upgraded if required.
     
     def isInitialized(self):
         """:returns: (bool) If this DB is initialized and its Schema up to date."""
-        try:
-            rows = self._getConnection().execute("SELECT table_name, max(version) FROM meta GROUP BY table_name;").fetchall()
-            if not rows or rows[0] is None or rows[0][0] is None: return False
-            tables = set([item[0] for item in rows])    #store the table names found
-            for row in rows:
-                table_name, max_version = row
-                if table_name in self.__tables and max(self.__tables[table_name]) > max_version:
-                    return False 
-            return not bool(tables.difference([table for table in self.__tables if not table.startswith('__')]))
-        except:
-            return False
+#        try:
+#            rows = self._getConnection().execute("SELECT table_name, max(version) FROM meta GROUP BY table_name;").fetchall()
+#            if not rows or rows[0] is None or rows[0][0] is None: return False
+#            tables = set([item[0] for item in rows])    #store the table names found
+#            for row in rows:
+#                table_name, max_version = row
+#                if table_name in self.__tables and max(self.__tables[table_name]) > max_version:
+#                    return False 
+#            return not bool(tables.difference([table for table in self.__tables if not table.startswith('__')]))
+#        except:
+#            return False
+        return True
         
-    def storeHistory(self, tool, config_dict, result = None):
+    def storeHistory(self, tool, config_dict, uid, status, slurm_output = None, result = None):
         """Store a an analysis run into the DB.
 
 :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
@@ -199,15 +206,19 @@ While initializing the schemas will get upgraded if required.
 :param result: dictionary with the results (created files).
 """
         if result is None: result = {}
+        if slurm_output is None: slurm_output = 0
         row = (datetime.now(), 
                 tool.__class__.__name__.lower(),    #for case insensitive search 
                 repr(tool.__version__), 
                 json.dumps(config_dict),
-                json.dumps(result),)
+#                json.dumps(result),
+                slurm_output,
+                uid,
+                status)
         log.debug('Row: %s', row)
-        self._getConnection().execute("INSERT INTO history(timestamp,tool,version,configuration,result) VALUES(?, ?, ?, ?,?);", row)
+        self._getConnection().execute("INSERT INTO history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
         
-    def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None):
+    def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
 
 :type tool_name: str
@@ -239,6 +250,9 @@ While initializing the schemas will get upgraded if required.
             if until is not None:
                 sql_str = '%s AND timestamp < ?' % sql_str
                 sql_params.append(until)
+            if uid is not None:
+                sql_str = '%s AND uid = ?' % sql_str
+                sql_params.append(uid)
                     
         sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:
