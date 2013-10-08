@@ -4,6 +4,9 @@
 ##
 #
 
+# Set BASH as default shell (DOESNT WORK)
+#puts "bash;"
+
 ### BEGIN of general part ********
 #define some variables
 set shell [module-info shell]
@@ -13,6 +16,9 @@ set curMode [module-info mode]
 #clean symbolic links (if any)
 catch { set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile] }
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
+
+
+
 
 
 module-whatis   "evaluation_system v0.1"
@@ -58,16 +64,18 @@ proc safe_load { mod_name } {
 
 #pre-requisites
 if { $curMode eq "load" } {
-#    /bin/bash
-    safe_load python
-    safe_load cdo/1.5.4
-#   safe_load cdo
-    show_info $toolPath
     if { $shell == "bash" } {
-	    puts ". $toolPath/etc/autocomplete.bash;"
+        safe_load python
+        safe_load cdo/1.5.4
+#       safe_load cdo
+        show_info $toolPath
+        puts ". $toolPath/etc/autocomplete.bash;"
     } else {
-	    puts stderr "\nAuto-completion is only available for the bash shell, sorry!"
-    }
+	safe_load python
+	safe_load cdo/1.5.4
+	puts stderr "WARNING: Evaluation System is NOT fully loaded, please type bash"
+	puts stderr "And load it again -> module load evaluation_system"
+	    }
 } elseif { $curMode eq "remove" } {
     module unload cdo
     module unload python
@@ -78,5 +86,6 @@ if { $curMode eq "load" } {
 append-path PATH "$toolPath/bin"
 #add the python packages to the pythonpath so it can be used anywhere
 append-path PYTHONPATH "$toolPath/src"
+
 
 

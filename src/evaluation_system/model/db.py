@@ -50,15 +50,17 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
 
 :param row: the DB row for which this entry will be created.
 """
-        self.rowid = row[0]
-        self.timestamp = row[1] #datetime object
-        self.tool_name = row[2]
-        self.version = ast.literal_eval(row[3])
-        self.configuration = json.loads(row[4]) if row[4] else {}
-        #self.results = json.loads(row[5]) if row[5] else {}
-        self.slurm_output = row[5]
-        self.uid = row[6]
-        self.status = row[7]
+	#for x in row:
+	#    print x
+        self.rowid = row[1]
+        self.timestamp = str(row[2]) #datetime object
+        self.tool_name = row[3]
+        self.version = ast.literal_eval(row[4])
+        self.configuration = json.loads(row[5]) if row[5] else {}
+        self.results = []#json.loads(row[5]) if row[5] else {}
+        self.slurm_output = row[6]
+        self.uid = row[7]
+        self.status = row[8]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -100,7 +102,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
             version = ' v%s.%s.%s' % self.version
             
         
-        return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp.strftime(HistoryEntry.TIMESTAMP_FORMAT), conf_str)
+        return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp, conf_str)
         
 class UserDB(object):
     '''Encapsulates access to the local DB of a single user.
@@ -138,7 +140,7 @@ but at the present time the system works as a toolbox that the users start from 
         self._user = user
         #self._db_file = user.getUserConfigDir(create=True) + '/history.sql3'
         self._db_file = config.get(config.DATABASE_FILE, "")
-        
+        #print self.db_file
         self.initialize()
     
     def _getConnection(self):
@@ -218,7 +220,7 @@ While initializing the schemas will get upgraded if required.
                 uid,
                 status)
         log.debug('Row: %s', row)
-        self._getConnection().execute("INSERT INTO history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        self._getConnection().execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
@@ -234,14 +236,15 @@ While initializing the schemas will get upgraded if required.
 :param entry_ids: ([int] or int) id or list thereof to be selected
 :returns: ([:class:`HistoryEntry`]) list of entries that match the query.
 """
-        #ast.literal_eval(node_or_string)
+        #print uid
+	#ast.literal_eval(node_or_string)
         sql_params = []
-        sql_str = "SELECT rowid, * FROM history"
-        if tool_name or since or until or entry_ids:
+        sql_str = "SELECT id, * FROM history_history"
+        if tool_name or since or until or entry_ids or uid:
             sql_str = '%s WHERE 1=1' % sql_str
             if entry_ids is not None:
                 if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND rowid in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
+                sql_str = '%s AND id in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
                 sql_str = '%s AND tool=?' % sql_str
@@ -260,8 +263,8 @@ While initializing the schemas will get upgraded if required.
         if limit > 0:
             sql_str = '%s LIMIT ?' % sql_str
             sql_params.append(limit)
-             
-        log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
+        #print sql_str     
+        #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
         res = self._getConnection().execute(sql_str, sql_params).fetchall()
         return [HistoryEntry(row) for row in res]
     

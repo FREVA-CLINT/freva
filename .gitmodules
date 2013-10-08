@@ -22,3 +22,6 @@
 [submodule "tools/percentile"]
 	path = tools/percentile
 	url = /miklip/integration/repositories/percentile.git
+[submodule "tools/dsi"]
+	path = tools/dsi
+	url = /miklip/integration/repositories/dsi.git
