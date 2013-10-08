@@ -449,13 +449,15 @@ if no configuration is provided the default one will be used.
         return filename
         
 
-    def writeSlurmFile(self, fp, config_dict=None, user=None):
+    def writeSlurmFile(self, fp, config_dict=None, user=None, scheduled_id=None):
         """
         Writes a file which can be executed by the SLURM scheduler
         if no configuration is provided the default one will be used.
 
         :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
         :param config_dict: a metadict with the configuration to be stored. If none is provided the result from
+        :param user: a user object
+        :param scheduled_id: The row-id of a scheduled job in history
         :return: an object of class slurm_file
         """
         from evaluation_system.model import  slurm
@@ -465,7 +467,10 @@ if no configuration is provided the default one will be used.
         
         sf = slurm.slurm_file()
         
-        sf.set_default_options(user, self.composeCommand(config_dict))
+        if scheduled_id:
+            sf.set_default_options(user, self.composeCommand(scheduled_id=scheduled_id))
+        else:
+            sf.set_default_options(user, self.composeCommand(config_dict=config_dict))
         
         sf.write_to_file(fp)
         fp.flush()
@@ -484,27 +489,33 @@ if no configuration is provided the default one will be used.
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
         
-    def composeCommand(self, config_dict):
-        #store the section header
-        if config_dict is None:
-            #a default incomplete one
-            config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
+    def composeCommand(self, config_dict=None, scheduled_id = None):
         
         # the parameter string
         cmd_param = "analyze --tool " + self.__class__.__name__
         
-        # compose the parameters preserve order
-        for param_name in self.__parameters__:
-            if param_name in config_dict:
-                param = self.__parameters__.get_parameter(param_name)
-                value = config_dict[param_name]
-                isMandatory = param.mandatory
+        # a scheduled id overrides the dictionary behavior
+        if scheduled_id:
+            cmd_param += ' --scheduled-id %i' % scheduled_id
+            
+        else:
+            #store the section header
+            if config_dict is None:
+                #a default incomplete one
+                config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
+        
+                # compose the parameters preserve order
+                for param_name in self.__parameters__:
+                    if param_name in config_dict:
+                        param = self.__parameters__.get_parameter(param_name)
+                        value = config_dict[param_name]
+                        isMandatory = param.mandatory
 
-                if value is None:
-                    if isMandatory:
-                        raise self.ExceptionMissingParam(param_name)
-                else:
-                    cmd_param = cmd_param + " %s=%s" % (param_name, param.str(value))
+                    if value is None:
+                        if isMandatory:
+                            raise self.ExceptionMissingParam(param_name)
+                        else:
+                            cmd_param += " %s=%s" % (param_name, param.str(value))
                  
         return cmd_param
 

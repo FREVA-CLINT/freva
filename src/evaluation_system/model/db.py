@@ -10,6 +10,9 @@ import ast
 import os
 import logging
 from evaluation_system.misc import py27, config
+from ctypes.wintypes import INT
+from evaluation_system.api.plugin_manager import _status_scheduled,\
+    _status_not_scheduled
 log = logging.getLogger(__name__)
 
 #Store sqlite3 file and pool
@@ -50,8 +53,6 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
 
 :param row: the DB row for which this entry will be created.
 """
-	#for x in row:
-	#    print x
         self.rowid = row[1]
         self.timestamp = str(row[2]) #datetime object
         self.tool_name = row[3]
@@ -220,7 +221,65 @@ While initializing the schemas will get upgraded if required.
                 uid,
                 status)
         log.debug('Row: %s', row)
-        self._getConnection().execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        
+        cursor = self._getConnection() 
+        cursor.execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        
+        return cursor.lastrowid
+
+    def scheduleEntry(self, row_id, uid, slurmFileName):
+        """
+        :param row_id: The index in the history table
+        :param uid: the user id
+        :param slurmFileName: The slurm file belonging to the history entry
+        Sets the name of the slurm file 
+        """
+        
+        update_str='UPDATE history_history SET slurm_output=?, status=?' 
+        update_str+='WHERE id=? AND uid=? AND status=?'
+        
+        entries = (slurmFileName,
+                   _status_scheduled,
+                   row_id,
+                   uid,
+                   _status_not_scheduled)
+                                  
+        self._getConnection().execute(update_str, entries)
+        
+    class ExceptionStatusUpgrade(Exception):
+        """
+        Exception class for failing status upgrades
+        """
+        def __init__(self, msg="Status could not be upgraded"):
+            Exception.__init__(msg)
+        
+        
+    def upgradeStatus(self, row_id, uid, status):
+        """
+        :param row_id: The index in the history table
+        :param uid: the user id
+        :param status: the new status 
+        After validation the status will be upgraded. 
+        """
+        
+        select_str='SELECT status FROM history_history WHERE id=? AND uid=?'
+        
+        row = self._getConnection().execute(select_str, (row_id, uid))
+        
+        # check if only one entry is in the database
+        if len(row) != 1:
+            raise self.ExceptionStatusUpgrade("No unique database entry found!")
+        
+        # only a status with a smaller number can be set
+        st = int(row[0])
+        
+        if(st < status):
+            raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
+        
+        # finally, do the SQL update
+        update_str='UPDATE history_history SET status=? WHERE id=? AND uid=?'                  
+        self._getConnection().execute(update_str, (status, row_id, uid))
+        
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.

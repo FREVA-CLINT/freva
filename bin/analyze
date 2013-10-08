@@ -166,6 +166,7 @@ def main(argv=None): # IGNORE:C0111
         #defaults
         help_opt=False
         tool = None
+        scheduled_id = None
         env = getEnvironment()
         
         show_config=False
@@ -213,6 +214,9 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
+            elif flag == '--scheduled-id':      #Runs a scheduled job from database
+                scheduled_id = int(arg)
+                
             elif flag == '-d' or flag == '--debug': #turn on debugging info and show stack trace on exceptions.
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
@@ -300,6 +304,12 @@ DATE FORMAT
             elif show_config:
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
                 print pm.getPluginInstance(tool).getCurrentConfig(config_dict=tool_dict)
+           
+            elif scheduled_id:
+                log.debug('Running %s as scheduled in history with ID %i', tool, scheduled_id)
+                if not dry_run: 
+                    pm.runTool(tool, scheduled_id=scheduled_id)
+                                     
             else:
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
                 #now run the tool

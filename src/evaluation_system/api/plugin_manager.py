@@ -46,6 +46,14 @@ plugin_name=>{
     plugin_class=>class,
     version=>(0,0,0)
     description=>"string"}"""
+
+# be aware this is a hardcoded version of history.models.History.processStatus
+_status_finished = 0
+_status_finished_no_output = 1
+_status_broken = 2
+_status_running = 3
+_status_scheduled = 4
+_status_not_scheduled = 5
  
 def munge( seq ):
     """Generator to remove duplicates from a list without changing it's order.
@@ -272,7 +280,7 @@ any other method.
     
     return config_file
 
-def runTool(plugin_name, config_dict=None, user=None):
+def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
@@ -281,6 +289,7 @@ def runTool(plugin_name, config_dict=None, user=None):
 :param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
     this might be incomplete.
 :type user: :class:`evaluation_system.model.user.User`
+:param scheduled_id: if the process is already scheduled then put the row id here
 """
     
     plugin_name = plugin_name.lower()
@@ -288,6 +297,11 @@ def runTool(plugin_name, config_dict=None, user=None):
     
     p = getPluginInstance(plugin_name, user)
     complete_conf = None
+    
+    # check whether a scheduled id is given
+    if scheduled_id:
+        config_dict = loadScheduledConf(plugin_name, scheduled_id, user) 
+    
     if config_dict is None:
         conf_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(conf_file):
@@ -304,10 +318,15 @@ def runTool(plugin_name, config_dict=None, user=None):
      
     log.debug('Running %s with %s', plugin_name, complete_conf)
     
+    if scheduled_id:
+        user.getUserDB().upgradeStatus(scheduled_id, user.getName(), _status_running)
+    elif user:
+        user.getUserDB().storeHistory(p, complete_conf, user.getName(), _status_running)
+
     #In any case we have now a complete setup in complete_conf
     result = p._runTool(config_dict=complete_conf)
     
-    if user: user.getUserDB().storeHistory(p, complete_conf, user.getName(), 0, result=result)
+    return result
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
@@ -320,3 +339,16 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
     return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getName())
 
 
+def loadScheduledConf(plugin_name, entry_id, user):
+    """
+    This routine loads the configuration from a scheduled plug-in
+    """
+    h = getHistory(plugin_name=plugin_name , entry_ids=entry_id, user=user)
+    
+    # scheduled jobs only
+    if h.status != _status_scheduled:
+        raise Exception("This is not a scheduled job!")
+            
+    return h.configuration
+    
+    
