@@ -456,6 +456,7 @@ if no configuration is provided the default one will be used.
 
         :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
         :param config_dict: a metadict with the configuration to be stored. If none is provided the result from
+        :return: an object of class slurm_file
         """
         from evaluation_system.model import  slurm
         
@@ -468,7 +469,8 @@ if no configuration is provided the default one will be used.
         
         sf.write_to_file(fp)
         fp.flush()
-         
+        
+        return sf 
     
     class ExceptionMissingParam(Exception):
         """
@@ -530,6 +532,7 @@ It means, **never** start a plug-in comming from unknown sources.
         print p.stdout.read()
         
         return p.communicate(stdin)
+
     
     def _splitPath(self, path):
         """Help function to split a path"""

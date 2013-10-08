@@ -203,6 +203,8 @@ While initializing the schemas will get upgraded if required.
 :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
 :param tool: the plugin for which we are storing the information.
 :param config_dict: dictionary with the configuration used for this run,
+:param uid: the user id (useful in a global database)
+:param status: the process status
 :param result: dictionary with the results (created files).
 """
         if result is None: result = {}
