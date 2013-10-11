@@ -63,7 +63,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
-             version=self.version, configuration=self.configuration, results=self.results))
+             version=self.version, configuration=self.configuration, results=self.results,status=self.status))
         
     def __eq__(self, hist_entry):
         if isinstance(hist_entry, HistoryEntry):
@@ -234,7 +234,7 @@ While initializing the schemas will get upgraded if required.
         """
         
         update_str='UPDATE history_history SET slurm_output=?, status=?' 
-        update_str+='WHERE id=? AND uid=? AND status=?'
+        update_str+='WHERE rowid=? AND uid=? AND status=?'
         
         entries = (slurmFileName,
                    evaluation_system.api.plugin_manager._status_scheduled,
@@ -260,22 +260,23 @@ While initializing the schemas will get upgraded if required.
         After validation the status will be upgraded. 
         """
         
-        select_str='SELECT status FROM history_history WHERE id=? AND uid=?'
+        select_str='SELECT status FROM history_history WHERE rowid=? AND uid=?'
         
-        row = self._getConnection().execute(select_str, (row_id, uid))
+        cur = self._getConnection().execute(select_str, (row_id, uid))
+        rows = cur.fetchall()
         
         # check if only one entry is in the database
-        if len(row) != 1:
+        if len(rows) != 1:
             raise self.ExceptionStatusUpgrade("No unique database entry found!")
         
         # only a status with a smaller number can be set
-        st = int(row[0])
+        st = int(rows[0][0])
         
         if(st < status):
             raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
         
         # finally, do the SQL update
-        update_str='UPDATE history_history SET status=? WHERE id=? AND uid=?'                  
+        update_str='UPDATE history_history SET status=? WHERE rowid=? AND uid=?'                  
         self._getConnection().execute(update_str, (status, row_id, uid))
         
         

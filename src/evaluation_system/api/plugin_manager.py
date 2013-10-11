@@ -301,7 +301,6 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = loadScheduledConf(plugin_name, scheduled_id, user) 
-    
     if config_dict is None:
         conf_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(conf_file):
@@ -344,11 +343,14 @@ def loadScheduledConf(plugin_name, entry_id, user):
     This routine loads the configuration from a scheduled plug-in
     """
     h = getHistory(plugin_name=plugin_name , entry_ids=entry_id, user=user)
-    
+
+    # only one row should be selected
+    row = h[0]
+
     # scheduled jobs only
-    if h.status != _status_scheduled:
+    if row.status != _status_scheduled:
         raise Exception("This is not a scheduled job!")
             
-    return h.configuration
+    return row.configuration
     
     
