@@ -317,13 +317,28 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
      
     log.debug('Running %s with %s', plugin_name, complete_conf)
     
+    rowid = 0
+    
     if scheduled_id:
-        user.getUserDB().upgradeStatus(scheduled_id, user.getName(), _status_running)
+        user.getUserDB().upgradeStatus(scheduled_id,
+                                       user.getName(),
+                                       _status_running)
+        rowid = scheduled_id
     elif user:
-        user.getUserDB().storeHistory(p, complete_conf, user.getName(), _status_running)
+        rowid = user.getUserDB().storeHistory(p,
+                                              complete_conf,
+                                              user.getName(),
+                                              _status_running)
+        
+    try:
+        #In any case we have now a complete setup in complete_conf
+        result = p._runTool(config_dict=complete_conf)
+    except Exception, e:
+        user.getUserDB().upgradeStatus(rowid,
+                                       user.getName(),
+                                       _status_broken)
 
-    #In any case we have now a complete setup in complete_conf
-    result = p._runTool(config_dict=complete_conf)
+        raise e
     
     return result
 
