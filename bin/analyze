@@ -150,7 +150,7 @@ _short_args = "hnd"
 _args = ['tool=', 'list-tools',
     'help', 'debug', 'dry-run',
     'history', 'use-defaults',
-    'config-file=', 'save-config=', 'save', 'show-config']
+    'config-file=', 'save-config=', 'save', 'show-config','scheduled-id=']
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
