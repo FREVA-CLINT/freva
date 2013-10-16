@@ -403,8 +403,6 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
                                     user.getName(),
                                     full_path)
 
-    print 'command', command
-    
     # run this with bash
     (stdout, stderr) = p.call(command)
 

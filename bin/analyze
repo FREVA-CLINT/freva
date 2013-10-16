@@ -200,7 +200,7 @@ def main(argv=None): # IGNORE:C0111
                 batchmode = mode in ['true', '1', 'yes', 'on', 'web',]
                 
                 if not batchmode and mode not in ['false', '0', 'no', 'off',]:
-                    raise exception.ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
+                    raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
             elif flag == '--mail':
                 email = arg.lower()
             elif flag == '--list-tools':        #lists all available tools.
@@ -333,9 +333,11 @@ DATE FORMAT
                 log.debug('Running %s with configuration: %s', tool, tool_dict)
                 if not dry_run:
                     if batchmode:
-                        pm.scheduleTool(tool,
-                                        config_dict=tool_dict,
-                                        user=user.User(email=email))
+                        id = pm.scheduleTool(tool,
+                                             config_dict=tool_dict,
+                                             user=user.User(email=email))
+
+                        print 'Scheduled job with row id', id
                     else:
                         pm.runTool(tool, config_dict=tool_dict)
 
