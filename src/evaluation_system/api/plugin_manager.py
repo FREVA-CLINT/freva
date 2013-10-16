@@ -20,6 +20,7 @@ denotes where the source is to be found, and the package the module name in whic
 import os
 import sys
 import logging
+from evaluation_system.model import slurm
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
@@ -341,6 +342,91 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
         raise e
     
     return result
+
+def scheduleTool(plugin_name, config_dict=None, user=None):
+    """Schedules  a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
+    
+:type plugin_name: str
+:param plugin_name: name of the referred plugin.
+:type config_dict: dict or metadict 
+:param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
+    this might be incomplete.
+:type user: :class:`evaluation_system.model.user.User`
+:param scheduled_id: if the process is already scheduled then put the row id here
+"""
+    
+    plugin_name = plugin_name.lower()
+    if user is None: user = User()
+    
+    p = getPluginInstance(plugin_name, user)
+    complete_conf = None
+    
+    # check whether a scheduled id is given
+    if config_dict is None:
+        conf_file = user.getUserToolConfig(plugin_name)
+        if os.path.isfile(conf_file):
+            log.debug('Loading config file %s', conf_file)
+            with open(conf_file, 'r') as f:
+                complete_conf = p.readConfiguration(f)
+        else:
+            log.debug('No config file was found in %s', conf_file)
+    if complete_conf is None:
+        #at this stage we want to resolve or tokens and perform some kind of sanity check before going further 
+        complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
+        
+    
+     
+    log.debug('Schedule %s with %s', plugin_name, complete_conf)
+    
+    rowid = user.getUserDB().storeHistory(p,
+                                          complete_conf,
+                                          user.getName(),
+                                          _status_not_scheduled)
+    
+    slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
+    if not os.path.exists(slurmindir):
+        os.makedirs(slurmindir)
+        
+    full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
+
+            
+    with open(full_path, 'w') as fp:
+        p.writeSlurmFile(fp, scheduled_id=rowid, user=user)   
+            
+    # set the SLURM output directory
+    slurmoutdir = config.get(config.SCHEDULER_OUTPUT_DIR, "")
+    if not os.path.exists(slurmoutdir):
+        os.makedirs(slurmoutdir)
+
+    # create the batch command
+    command = '%s --uid=%s %s\n' % (slurm.slurm_file.SLURM_CMD,
+                                    user.getName(),
+                                    full_path)
+    
+    # run this with bash
+    (stdout, stderr) = p.call(command)
+    
+    logging.debug("scheduler call output:\n" + stdout)
+    logging.debug("scheduler call error:\n" + stderr)
+            
+    # get the very first line only
+    out_first_line = stdout.split('\n')[0]
+            
+    # read the id from stdout
+    if out_first_line.split(' ')[0] == 'Submitted':
+        slurm_id = int(out_first_line.split(' ')[-1])
+    else:
+        slurm_id = 0
+        raise Exception('Unexpected scheduler output:\n%s' % out_first_line)
+             
+    slurm_out = os.path.join(slurmoutdir,
+                             'slurm-%i.out' % slurm_id)
+                             
+            
+    # set the slurm output file 
+    user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
+
+    return rowid
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):

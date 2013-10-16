@@ -12,6 +12,7 @@ class slurm_file(object):
     MLOAD_CMD  = "module load "
     EXPORT_CMT = "EXPORT"
     
+    
     class entry_format:
         """
         This class describes the format of an option for SLURM.
@@ -133,16 +134,15 @@ class slurm_file(object):
         """
         
         # read working directory from configuration
-        workdir = config.get(config.SLURM_WORK_DIR, "")
-        
-        # if it was not successful then use a user specific directory
-        if not workdir:
-            workdir = user.getUserSlurmDir()
+        workdir = config.SCHEDULER_OUTPUT_DIR
+                
+        email = user.getEmail()
         
         # set the default options
         self.add_dash_option("D", workdir)
         self.add_dash_option("p", "serial")
-        self.add_ddash_option("mail-user", user.getEmail())
+        if email:
+            self.add_ddash_option("mail-user", email)
         self.add_ddash_option("ntasks-per-node", 24)
         self.add_ddash_option("mem", "4800mb")
         self.add_ddash_option("share", None)

@@ -32,10 +32,7 @@ therefore live longer"""
 
     PROCESSES_DIR = 'processes'
     "The directory might handle information required for each running process."
-
-    SLURM_DIR = 'slurm'
-    "Slurm files are written to this directory before executed by sbash"
-    
+        
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
     """The file containing a central configuration for the whole system (user-wise)"""
     
@@ -135,7 +132,7 @@ the current user, i.e. the one that started the application, is created instead.
         
     def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, \
-                         plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, slurm=User.SLURM_DIR)
+                         plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, scheduler=config.SCHEDULER_INPUT_DIR)
         if tool is None:
             #return the directory where the tool configuration files are stored
             dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
@@ -161,12 +158,12 @@ the current user, i.e. the one that started the application, is created instead.
 :returns: (str) path"""
         return self._getUserDir('base', **kwargs)
         
-    def getUserSlurmDir(self, **kwargs): 
+    def getUserSchedulerInputDir(self, **kwargs): 
         """Returns path to where this system is managing this user data.
 
 :param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
 :returns: (str) path"""
-        return self._getUserDir('slurm', **kwargs)
+        return self._getUserDir('scheduler', **kwargs)
 
     def getUserToolConfig(self, tool, **kwargs):
         """Returns the path to the configuration file.

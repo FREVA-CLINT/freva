@@ -534,7 +534,7 @@ It means, **never** start a plug-in comming from unknown sources.
                Default is to forward ``stderr`` to ``stdout``. 
 :type stderr: see :py:class:`subprocess.Popen`"""
         log.debug("Calling: %s", cmd_string)
-	# if you enter -x to the bash options the validation algorithm
+	    # if you enter -x to the bash options the validation algorithm
         # after calling SLURM fails. Use -x temporary for debugging only
         if log.isEnabledFor(logging.DEBUG):
             bash_opt = '-c'

@@ -37,6 +37,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 import getopt
 import logging
+import exception
+
 log = logging.getLogger(__name__)
 if not log.handlers:
     class SpecialFormatter(logging.Formatter):
@@ -58,6 +60,7 @@ if not log.handlers:
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model.db import HistoryEntry
 from evaluation_system.misc.utils import find_similar_words
+from evaluation_system.model import user
 
 __version__ = 0.4
 __date__ = '2012-11-26'
@@ -150,7 +153,12 @@ _short_args = "hnd"
 _args = ['tool=', 'list-tools',
     'help', 'debug', 'dry-run',
     'history', 'use-defaults',
-    'config-file=', 'save-config=', 'save', 'show-config','scheduled-id=']
+    'config-file=', 'save-config=', 'save',
+    'show-config','scheduled-id=',
+    'mail=', 'batchmode=',]
+
+ 
+
 def main(argv=None): # IGNORE:C0111
     '''Command line options.'''
     
@@ -174,6 +182,8 @@ def main(argv=None): # IGNORE:C0111
         dry_run = False
         history=False
         use_user_defaults=True
+        batchmode = False
+        email = ''
         
         _nothing = object        
         #parse arguments *!!!*
@@ -186,6 +196,14 @@ def main(argv=None): # IGNORE:C0111
                 tool=arg.lower()
             elif flag == '--use-defaults':      #skips user configuration and use system defaults.
                 use_user_defaults=False
+            elif flag == '--batchmode':         # creates a SLURM job
+                mode = arg.lower()
+                batchmode = mode in ['true', '1', 'yes', 'on', 'web',]
+                
+                if not batchmode and mode not in ['false', '0', 'no', 'off',]:
+                    raise exception.ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
+            elif flag == '--mail':
+                email = arg.lower()
             elif flag == '--list-tools':        #lists all available tools.
                 import textwrap
                 #we just have to show the list and stop processing
@@ -314,8 +332,13 @@ DATE FORMAT
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
                 #now run the tool
                 log.debug('Running %s with configuration: %s', tool, tool_dict)
-                if not dry_run: 
-                    pm.runTool(tool, config_dict=tool_dict)
+                if not dry_run:
+                    if batchmode:
+                        pm.scheduleTool(tool,
+                                        config_dict=tool_dict,
+                                        user=user.User(email=mail))
+                    else:
+                        pm.runTool(tool, config_dict=tool_dict)
 
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)
