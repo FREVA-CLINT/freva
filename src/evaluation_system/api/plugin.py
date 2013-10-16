@@ -489,15 +489,18 @@ if no configuration is provided the default one will be used.
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
         
-    def composeCommand(self, config_dict=None, scheduled_id = None):
+    def composeCommand(self, config_dict=None, scheduled_id = None, batchmode=False):
         
         # the parameter string
         cmd_param = "analyze --tool " + self.__class__.__name__
+
+        # write explicitly if batchmode is requested
+        cmd_param += ' --batchmode=%s' % str(batchmode)
         
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:
             cmd_param += ' --scheduled-id %i' % scheduled_id
-            
+                        
         else:
             #store the section header
             if config_dict is None:
