@@ -37,7 +37,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 import sys
 import getopt
 import logging
-import exception
 
 log = logging.getLogger(__name__)
 if not log.handlers:
@@ -336,7 +335,7 @@ DATE FORMAT
                     if batchmode:
                         pm.scheduleTool(tool,
                                         config_dict=tool_dict,
-                                        user=user.User(email=mail))
+                                        user=user.User(email=email))
                     else:
                         pm.runTool(tool, config_dict=tool_dict)
 

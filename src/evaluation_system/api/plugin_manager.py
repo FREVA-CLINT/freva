@@ -378,36 +378,38 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
      
     log.debug('Schedule %s with %s', plugin_name, complete_conf)
     
+    slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
+    if not os.path.exists(slurmindir):
+        os.makedirs(slurmindir)
+
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
                                           user.getName(),
                                           _status_not_scheduled)
     
-    slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
-    if not os.path.exists(slurmindir):
-        os.makedirs(slurmindir)
-        
+       
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
 
-            
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp, scheduled_id=rowid, user=user)   
             
     # set the SLURM output directory
-    slurmoutdir = config.get(config.SCHEDULER_OUTPUT_DIR, "")
+    slurmoutdir = config.SCHEDULER_OUTPUT_DIR
     if not os.path.exists(slurmoutdir):
         os.makedirs(slurmoutdir)
 
     # create the batch command
-    command = '%s --uid=%s %s\n' % (slurm.slurm_file.SLURM_CMD,
+    command = '%s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
                                     user.getName(),
                                     full_path)
+
+    print 'command', command
     
     # run this with bash
     (stdout, stderr) = p.call(command)
-    
-    logging.debug("scheduler call output:\n" + stdout)
-    logging.debug("scheduler call error:\n" + stderr)
+
+    logging.debug("scheduler call output:\n" + str(stdout))
+    logging.debug("scheduler call error:\n" + str(stderr))
             
     # get the very first line only
     out_first_line = stdout.split('\n')[0]
