@@ -36,8 +36,18 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
-SLURM_WORK_DIR = 'slurm_work_dir'
-''' Determines the folder the SLURM files will be saved in ''' 
+SCHEDULER_OUTPUT_DIR = '/usr/local/evaluation_system/slurm/'
+''' Determines the folder the SLURM output files will be saved in ''' 
+
+SCHEDULER_INPUT_DIR = 'slurm'
+"""
+Determines the folder the SLURM input files will be saved in.
+This variable is  read by the User object,
+use always user.getUserSchedulerInputDir()!
+"""  
+
+SCHEDULER_COMMAND='/client/bin/sbatch'
+''' The command for the scheduler '''
 
 DATABASE_FILE = 'database_file'
 ''' Determines the path of the database file '''
