@@ -489,7 +489,7 @@ if no configuration is provided the default one will be used.
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
         
-    def composeCommand(self, config_dict=None, scheduled_id = None, batchmode=False):
+    def composeCommand(self, config_dict=None, scheduled_id=None, batchmode=False, email=None):
         logging.debug('config dict:' + str(config_dict))
         logging.debug('scheduled_id:' + str(scheduled_id))
         
@@ -502,6 +502,10 @@ if no configuration is provided the default one will be used.
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:
             cmd_param += ' --scheduled-id %i' % scheduled_id
+            
+        # add a given e-mail
+        if email:
+            cmd_param += ' --mail=%s' % email
                         
         else:
             #store the section header
