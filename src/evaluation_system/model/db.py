@@ -9,12 +9,20 @@ import json
 import ast
 import os
 import logging
-import evaluation_system.api.plugin_manager
 from evaluation_system.misc import py27, config
 log = logging.getLogger(__name__)
 
 #Store sqlite3 file and pool
 _connection_pool = {}
+
+# be aware this is a hard-coded version of history.models.History.processStatus
+_status_finished = 0
+_status_finished_no_output = 1
+_status_broken = 2
+_status_running = 3
+_status_scheduled = 4
+_status_not_scheduled = 5
+
 
 class HistoryEntry(object):
     """This object encapsulates the access to an entry in the history DB representing an analysis
@@ -54,7 +62,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.rowid = row[1]
         self.timestamp = str(row[2]) #datetime object
         self.tool_name = row[3]
-        self.version = ast.literal_eval(row[4])
+        self.version = ast.literal_eval(row[4]) if row[4] else (None,None,None)
         self.configuration = json.loads(row[5]) if row[5] else {}
         self.results = []#json.loads(row[5]) if row[5] else {}
         self.slurm_output = row[6]
@@ -237,10 +245,10 @@ While initializing the schemas will get upgraded if required.
         update_str+='WHERE rowid=? AND uid=? AND status=?'
         
         entries = (slurmFileName,
-                   evaluation_system.api.plugin_manager._status_scheduled,
+                   _status_scheduled,
                    row_id,
                    uid,
-                   evaluation_system.api.plugin_manager._status_not_scheduled)
+                   _status_not_scheduled)
                                   
         self._getConnection().execute(update_str, entries)
         
@@ -295,7 +303,7 @@ While initializing the schemas will get upgraded if required.
 :returns: ([:class:`HistoryEntry`]) list of entries that match the query.
 """
         #print uid
-	#ast.literal_eval(node_or_string)
+        #ast.literal_eval(node_or_string)
         sql_params = []
         sql_str = "SELECT id, * FROM history_history"
         if tool_name or since or until or entry_ids or uid:

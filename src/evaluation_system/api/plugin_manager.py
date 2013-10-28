@@ -20,10 +20,10 @@ denotes where the source is to be found, and the package the module name in whic
 import os
 import sys
 import logging
-from evaluation_system.model import slurm
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
+import evaluation_system.model.db as db
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
 
@@ -48,13 +48,6 @@ plugin_name=>{
     version=>(0,0,0)
     description=>"string"}"""
 
-# be aware this is a hard-coded version of history.models.History.processStatus
-_status_finished = 0
-_status_finished_no_output = 1
-_status_broken = 2
-_status_running = 3
-_status_scheduled = 4
-_status_not_scheduled = 5
  
 def munge( seq ):
     """Generator to remove duplicates from a list without changing it's order.
@@ -323,13 +316,13 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     if scheduled_id:
         user.getUserDB().upgradeStatus(scheduled_id,
                                        user.getName(),
-                                       _status_running)
+                                       db._status_running)
         rowid = scheduled_id
     elif user:
         rowid = user.getUserDB().storeHistory(p,
                                               complete_conf,
                                               user.getName(),
-                                              _status_running)
+                                              db._status_running)
         
     try:
         #In any case we have now a complete setup in complete_conf
@@ -337,7 +330,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     except Exception, e:
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
-                                       _status_broken)
+                                       db._status_broken)
 
         raise e
     
@@ -385,7 +378,7 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
                                           user.getName(),
-                                          _status_not_scheduled)
+                                          db._status_not_scheduled)
     
        
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
@@ -449,7 +442,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     row = h[0]
 
     # scheduled jobs only
-    if row.status != _status_scheduled:
+    if row.status != db._status_scheduled:
         raise Exception("This is not a scheduled job!")
             
     return row.configuration

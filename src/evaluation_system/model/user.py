@@ -8,8 +8,8 @@ import pwd
 import os
 import sys
 from ConfigParser import SafeConfigParser as Config
-from evaluation_system.model.db import UserDB
 from evaluation_system.misc import config
+from evaluation_system.model.db import UserDB
 #----------------------------- from evaluation_system.api.plugin import metadict
 
 class User(object):
