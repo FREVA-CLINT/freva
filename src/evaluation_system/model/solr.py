@@ -145,7 +145,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
             #get all minus what we don't want
             facets = set(self.solr.get_solr_fields())\
                 - set(['', '_version_', 'file_no_version', 'level', 'timestamp', 
-                       'time', 'creation_time', 'product', 'source', 'version', 'file',
+                       'time', 'creation_time', 'source', 'version', 'file',
                        'file_name'])
             
         if facets:

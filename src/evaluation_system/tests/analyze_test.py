@@ -7,7 +7,6 @@ import unittest
 import os
 import tempfile
 import logging
-from evaluation_system.model.db import HistoryEntry
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -16,6 +15,7 @@ os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.
 
 from evaluation_system.tests.capture_std_streams import stdout
 import evaluation_system.api.plugin_manager as pm
+from evaluation_system.model.db import HistoryEntry
 from evaluation_system.tests.mocks import DummyPlugin
 from evaluation_system.api.parameters import ParameterDictionary, Integer, String,\
     ValidationError
@@ -68,7 +68,7 @@ class Test(unittest.TestCase):
         
     def tearDown(self):
         #just remove the calls to dummyplugin...
-        print User().getUserDB()._getConnection().execute("DELETE FROM history WHERE tool = 'dummyplugin';")
+        print User().getUserDB()._getConnection().execute("DELETE FROM history_history WHERE tool = 'dummyplugin';")
         
         
     def testGetEnvironment(self):
@@ -175,9 +175,11 @@ class Test(unittest.TestCase):
         [int(line.split(')')[0]) for line in res.splitlines()]
         stdout.reset()
         analyze.main("--history full_text".split())
-        print stdout.getvalue()
-        re_pat = re.compile(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\nConfiguration:\n((?:.*=.*\n)*)Output.*\n', flags=re.MULTILINE)
-        result = re_pat.search(stdout.getvalue()).groups()
+        output = stdout.getvalue() 
+        re_pat = re.compile(r'([0-9]{1,})[)] ([^ ]{1,}) v([^ ]{1,}) (.*) *\nConfiguration:\n((?:.*=.*\n)*)', flags=re.MULTILINE)
+        s = re_pat.search(output)
+        print str(s)
+        result = re_pat.search(output).groups()
         self.assertEqual(result[1], 'dummyplugin')
         self.assertEqual(result[2], '0.0.0')
         res_run = {}

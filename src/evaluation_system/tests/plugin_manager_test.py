@@ -8,6 +8,8 @@ import os
 import tempfile
 import shutil
 import logging
+import re
+
 from evaluation_system.api.parameters import ValidationError
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -55,12 +57,10 @@ class Test(unittest.TestCase):
         self.assertTrue(os.path.isfile(conf_file))
         with open(conf_file, 'r')as f:
             print f.read()
-        
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
-            
+
+        # clean the data base from test user entries
+        self.cleanDataBase(user)
+                    
     def testPluginConfigStorage(self):
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
@@ -92,11 +92,8 @@ class Test(unittest.TestCase):
         res = pm.parseArguments('dummyplugin', [], use_user_defaults=True, user=user)
         self.assertEquals(res['something'], 'super_test')
 
-        
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
+        # clean the data base from test user entries
+        self.cleanDataBase(user)
             
     def testParseArguments(self):
         user = DummyUser(random_home=True, pw_name='test_user')
@@ -132,11 +129,9 @@ class Test(unittest.TestCase):
         with open(f) as fp:
             num_line =  [line for line in fp.read().splitlines() if line.startswith('number')][0]
             self.assertEqual(num_line, 'number=$the_number')
-        
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
+
+        # clean the data base from test user entries
+        self.cleanDataBase(user)
 
         
     def testRun(self):
@@ -166,15 +161,13 @@ class Test(unittest.TestCase):
         DummyPlugin._runs = []
 
         #check the run was stored
-        res =  user.getUserDB().getHistory()
+        res =  user.getUserDB().getHistory(uid=user.getName())
         self.assertEqual(len(res), 2)
         #last call should be first returned
         self.assertEqual(res[0].configuration, run)
-        
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
+
+        # clean the data base from test user entries
+        self.cleanDataBase(user)
             
     def testGetHistory(self):
         user = DummyUser(random_home=True, pw_name='test_user')
@@ -185,6 +178,7 @@ class Test(unittest.TestCase):
         DummyPlugin._runs.pop()
         
         res = pm.getHistory(user=user)
+        print res
         self.assertEqual(len(res), 1)
         res = res[0]
         import re
@@ -199,11 +193,15 @@ class Test(unittest.TestCase):
         self.assertEqual(g1[1], g2[1])
         self.assertEqual(g1[3], g2[2])
         
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
+        self.cleanDataBase(user)
             
+    def cleanDataBase(self, user):
+        self.assertFalse(re.match('.*[tT]est.*', user.getName()) is None,
+                         'The user\'s name should include the word \"test\"')
+        
+        db =  user.getUserDB()
+        db._getConnection().execute('DELETE FROM history_history WHERE uid="%s"' % user.getName())
+        
     def testDynamicPluginLoading(self):
         basic_plugin = """
 from sys import modules

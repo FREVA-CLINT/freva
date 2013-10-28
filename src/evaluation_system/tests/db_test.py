@@ -12,11 +12,11 @@ import logging
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
+from evaluation_system.model.db import HistoryEntry, _status_running
 from evaluation_system.tests.mocks import DummyUser, DummyPlugin
-from evaluation_system.model.db import HistoryEntry
 
 class Test(unittest.TestCase):
-    """Test the User construct used for managing the configuratio of a user"""
+    """Test the User construct used for managing the configuration of a user"""
     DUMMY_USER = {'pw_name':'someone'}
 
     def setUp(self):
@@ -24,6 +24,10 @@ class Test(unittest.TestCase):
         
 
     def tearDown(self):
+        # remove the test entries from the database
+        db = self.user.getUserDB()
+        db._getConnection().execute("DELETE from history_history where uid='Test';")
+        
         home = self.user.getUserHome()
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
@@ -35,7 +39,8 @@ class Test(unittest.TestCase):
         home = user.getUserHome()
         
         db = user.getUserDB()
-        self.assertTrue(db._db_file.startswith(home))
+        # this assertion makes no sense for a global db
+        # self.assertTrue(db._db_file.startswith(home))
         self.assertTrue(db.isInitialized())
         self.assertTrue(os.path.isfile(db._db_file))
         
@@ -46,14 +51,15 @@ class Test(unittest.TestCase):
         
     def testInserts(self):
         db = self.user.getUserDB()
-        self.assertEqual(db._getConnection().execute("SELECT count(*) from history;").fetchone()[0], 0)
-        db.storeHistory(DummyPlugin(), dict(a=1))
-        self.assertEqual(db._getConnection().execute("SELECT count(*) from history;").fetchone()[0], 1)
+        entries = db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0]
+        db.storeHistory(DummyPlugin(), dict(a=1), uid='Test', status=_status_running)
+        self.assertEqual(db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0],
+                         entries + 1)
         
-        res = db._getConnection().execute("SELECT * from history;").fetchall()
+        res = db._getConnection().execute("SELECT * from history_history where uid='Test';").fetchall()
         self.assertEqual(len(res), 1)
         res = res[0]
-        self.assertEqual(res[1:4], ('dummyplugin', '(0, 0, 0)', '{"a": 1}'))
+        self.assertEqual(res[2:5], ('dummyplugin', '(0, 0, 0)', '{"a": 1}'))
         
     def _timedeltaToDays(self, date_time):
         #=======================================================================
@@ -65,14 +71,14 @@ class Test(unittest.TestCase):
     
     def testGetHistory(self):
         db = self.user.getUserDB()
-        self.assertEqual(db._getConnection().execute("SELECT count(*) from history;").fetchone()[0], 0)
+        self.assertEqual(db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0], 0)
         test_dicts = [dict(a=1), dict(a=1,b=2), dict(a=None,b=2)]
         for td in test_dicts:
-            db.storeHistory(DummyPlugin(), td)
+            db.storeHistory(DummyPlugin(), td, uid='Test', status=_status_running)
         
-        res = db._getConnection().execute("SELECT * from history;").fetchall()
+        res = db._getConnection().execute("SELECT * from history_history where uid='Test';").fetchall()
         self.assertEqual(len(res), len(test_dicts))
-        all_res = db.getHistory()
+        all_res = db.getHistory(uid='Test')
         self.assertEqual(len(all_res), len(test_dicts))
         
         #check the content and also the order. should be LIFO ordered
@@ -82,8 +88,9 @@ class Test(unittest.TestCase):
         version=(0,0,0)
         tool_name='DummyPlugin'.lower()
         for rd in all_res:
-            self.assertTrue(rd.timestamp < old_time)
-            old_time = rd.timestamp
+            tstamp = HistoryEntry.timestampFromString(rd.timestamp)
+            self.assertTrue(tstamp < old_time)
+            old_time = tstamp
             self.assertEqual(rd.tool_name, tool_name)
             self.assertEqual(rd.version, version)
             self.assertEqual(rd.configuration, test_dicts[count])
@@ -95,10 +102,10 @@ class Test(unittest.TestCase):
         import time
         time.sleep(0.1)
         now1 = datetime.now()
-        db.storeHistory(DummyPlugin(), dict(special='time1'))
+        db.storeHistory(DummyPlugin(), dict(special='time1'), uid='Test', status=_status_running)
         time.sleep(0.1)
         now2 = datetime.now()
-        db.storeHistory(DummyPlugin(), dict(special='time2'))
+        db.storeHistory(DummyPlugin(), dict(special='time2'), uid='Test', status=_status_running)
         
         #check we get time1 and time2 when going 0.5 before now1
         res = db.getHistory(since=self._timedeltaToDays(now1-timedelta(seconds=0.05)))
@@ -120,7 +127,9 @@ class Test(unittest.TestCase):
     def testHistoryEntry(self):
         db = self.user.getUserDB()
         db.storeHistory(DummyPlugin(), dict(a=1), result={'/dummy/tmp/test/file1.png':{'timestamp':1,'type':'plot'},
-                                                          '/dummy/tmp/test/file1.nc':{'timestamp':1,'type':'data'},})
+                                                          '/dummy/tmp/test/file1.nc':{'timestamp':1,'type':'data'},},
+                        uid='Test',
+                        status=_status_running)
         all_entries = db.getHistory()
         print all_entries
         print all_entries[0].__str__()
