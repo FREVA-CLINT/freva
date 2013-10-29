@@ -7,7 +7,7 @@ This module defines the basic objects for implementing a plug-in.
 '''
 
 import abc
-from subprocess import Popen, PIPE, STDOUT
+import subprocess as sub
 import os
 import sys
 from time import time
@@ -527,19 +527,20 @@ if no configuration is provided the default one will be used.
         return cmd_param
 
         
-    def call(self, cmd_string, stdin=None, stdout=PIPE, stderr=STDOUT):
+    def call(self, cmd_string, stdin=None, stdout=None, stderr=None):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
 It means, **never** start a plug-in comming from unknown sources.
 
 :param cmd_string: the command to be issued in a string.
 :type cmd_string: str
-:param stdin: a string that will be forwarded to the stdin of the started process.
-:type stdin: str
-:param stdout: link the standard output of this command call to the given file descriptor. passing None will shut it up.
-:type stdout: see :py:class:`subprocess.Popen`
-:param stderr: link the standard error of this command call to the given file descriptor. Passing None will shut it up.
-               Default is to forward ``stderr`` to ``stdout``. 
-:type stderr: see :py:class:`subprocess.Popen`"""
+:param stdin: This parameter became obsolete
+:type stdin: None
+:param stdout: This parameter became obsolete 
+:type stdout: None
+:param stderr: This parameter became obsolete 
+:type stderr: None
+:return return code: Return code of the process  
+"""
         log.debug("Calling: %s", cmd_string)
         # if you enter -x to the bash options the validation algorithm
         # after calling SLURM fails. Use -x temporary for debugging only
@@ -547,9 +548,13 @@ It means, **never** start a plug-in comming from unknown sources.
             bash_opt = '-c'
         else:
             bash_opt = '-c'
-        p = Popen(['/bin/bash', bash_opt, cmd_string], stdout=stdout, stderr=stderr)
+            
+        if stdin or stdout or stderr:
+            raise  Exception('stdin, stdout and stderr are no longer supported')
         
-        return p.communicate(stdin)
+        p = sub.call(['/bin/bash', bash_opt, cmd_string])
+        
+        return p
 
     
     def _splitPath(self, path):

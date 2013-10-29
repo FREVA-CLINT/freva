@@ -26,6 +26,7 @@ import evaluation_system.api.plugin as plugin
 import evaluation_system.model.db as db
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
+from subprocess import Popen, STDOUT, PIPE
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
@@ -392,12 +393,13 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
         os.makedirs(slurmoutdir)
 
     # create the batch command
-    command = '%s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
-                                    user.getName(),
-                                    full_path)
+    command = 'bash -c %s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
+                                             user.getName(),
+                                             full_path)
 
-    # run this with bash
-    (stdout, stderr) = p.call(command)
+    # run this 
+    p = Popen(command, stdout=PIPE, stderr=STDOUT)
+    (stdout, stderr) = p.communicate()
 
     logging.debug("scheduler call output:\n" + str(stdout))
     logging.debug("scheduler call error:\n" + str(stderr))
