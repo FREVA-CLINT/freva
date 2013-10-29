@@ -492,40 +492,44 @@ if no configuration is provided the default one will be used.
     def composeCommand(self, config_dict=None, scheduled_id=None, batchmode=False, email=None):
         logging.debug('config dict:' + str(config_dict))
         logging.debug('scheduled_id:' + str(scheduled_id))
-        
-        # the parameter string
-        cmd_param = "analyze --tool " + self.__class__.__name__
+
+        cmd_param = 'analyze '
 
         # write explicitly if batchmode is requested
         cmd_param += ' --batchmode=%s' % str(batchmode)
         
+        # add a given e-mail
+        if email:
+            cmd_param += ' --mail=%s' % email
+
+         # the parameter string
+        cmd_param += ' --tool ' + self.__class__.__name__
+       
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:
             cmd_param += ' --scheduled-id %i' % scheduled_id
             
-        # add a given e-mail
-        if email:
-            cmd_param += ' --mail=%s' % email
-                        
-        #store the section header
-        if config_dict is None:
-            #a default incomplete one
-            config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
+                       
         else:
-            config_dict = self.setupConfiguration(config_dict = config_dict, check_cfg = False, substitute=False)
-    
-        # compose the parameters preserve order
-        for param_name in self.__parameters__:
-            if param_name in config_dict:
-                param = self.__parameters__.get_parameter(param_name)
-                value = config_dict[param_name]
-                isMandatory = param.mandatory
-
-            if value is None:
-                if isMandatory:
-                    raise self.ExceptionMissingParam(param_name)
+            #store the section header
+            if config_dict is None:
+                #a default incomplete one
+                config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
             else:
-                cmd_param += " %s=%s" % (param_name, param.str(value))
+                config_dict = self.setupConfiguration(config_dict = config_dict, check_cfg = False, substitute=False)
+        
+            # compose the parameters preserve order
+            for param_name in self.__parameters__:
+                if param_name in config_dict:
+                    param = self.__parameters__.get_parameter(param_name)
+                    value = config_dict[param_name]
+                    isMandatory = param.mandatory
+
+                if value is None:
+                    if isMandatory:
+                        raise self.ExceptionMissingParam(param_name)
+                else:
+                    cmd_param += " %s=%s" % (param_name, param.str(value))
              
         return cmd_param
 
@@ -555,7 +559,7 @@ It means, **never** start a plug-in comming from unknown sources.
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
         
-        p = sub.call(['/bin/bash', bash_opt, cmd_string])
+        p = sub.call(['/bin/bash', bash_opt, cmd_string].join())
         
         return p
 

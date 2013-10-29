@@ -393,11 +393,15 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
         os.makedirs(slurmoutdir)
 
     # create the batch command
-    command = 'bash -c %s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
-                                             user.getName(),
-                                             full_path)
+    command = ['/bin/bash',
+               '-c',
+               '%s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
+                                     user.getName(),
+                                     full_path)
+              ]
 
     # run this 
+    logging.debug("Command: " + str(command))
     p = Popen(command, stdout=PIPE, stderr=STDOUT)
     (stdout, stderr) = p.communicate()
 
