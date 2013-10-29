@@ -507,27 +507,26 @@ if no configuration is provided the default one will be used.
         if email:
             cmd_param += ' --mail=%s' % email
                         
+        #store the section header
+        if config_dict is None:
+            #a default incomplete one
+            config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
         else:
-            #store the section header
-            if config_dict is None:
-                #a default incomplete one
-                config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
-            else:
-                config_dict = self.setupConfiguration(config_dict = config_dict, check_cfg = False, substitute=False)
-        
-            # compose the parameters preserve order
-            for param_name in self.__parameters__:
-                if param_name in config_dict:
-                    param = self.__parameters__.get_parameter(param_name)
-                    value = config_dict[param_name]
-                    isMandatory = param.mandatory
+            config_dict = self.setupConfiguration(config_dict = config_dict, check_cfg = False, substitute=False)
+    
+        # compose the parameters preserve order
+        for param_name in self.__parameters__:
+            if param_name in config_dict:
+                param = self.__parameters__.get_parameter(param_name)
+                value = config_dict[param_name]
+                isMandatory = param.mandatory
 
-                if value is None:
-                    if isMandatory:
-                        raise self.ExceptionMissingParam(param_name)
-                else:
-                    cmd_param += " %s=%s" % (param_name, param.str(value))
-                 
+            if value is None:
+                if isMandatory:
+                    raise self.ExceptionMissingParam(param_name)
+            else:
+                cmd_param += " %s=%s" % (param_name, param.str(value))
+             
         return cmd_param
 
         
