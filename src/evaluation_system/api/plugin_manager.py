@@ -388,7 +388,8 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
         p.writeSlurmFile(fp, scheduled_id=rowid, user=user)   
             
     # set the SLURM output directory
-    slurmoutdir = config.SCHEDULER_OUTPUT_DIR
+    slurmoutdir = config.get('slurm_output_dir'',
+                             config.SCHEDULER_OUTPUT_DIR)
     if not os.path.exists(slurmoutdir):
         os.makedirs(slurmoutdir)
 
