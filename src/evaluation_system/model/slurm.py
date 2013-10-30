@@ -134,7 +134,8 @@ class slurm_file(object):
         """
         
         # read working directory from configuration
-        workdir = config.SCHEDULER_OUTPUT_DIR
+        workdir = config.get('scheduler_output_dir',
+                             config.SCHEDULER_OUTPUT_DIR)
                 
         email = user.getEmail()
         
