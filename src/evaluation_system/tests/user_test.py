@@ -107,6 +107,8 @@ class Test(unittest.TestCase):
                         testUser.getUserOutputDir(), testUser.getUserPlotsDir()]
         for directory in created_dirs:
             self.assertTrue(os.path.isdir(directory))
+            if directory == testUser.getUserConfigDir():
+                os.unlink(testUser.getUserDB()._db_file)
             os.rmdir(directory)
 
         #clean everything up
