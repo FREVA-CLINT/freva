@@ -132,7 +132,10 @@ the current user, i.e. the one that started the application, is created instead.
         
     def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, \
-                         plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, scheduler=config.SCHEDULER_INPUT_DIR)
+                         plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, \
+                         scheduler_in=config.get('scheduler_input_dir', config.SCHEDULER_INPUT_DIR), \
+                         scheduler_out=config.get('scheduler_output_dir', config.SCHEDULER_OUTPUT_DIR))
+         
         if tool is None:
             #return the directory where the tool configuration files are stored
             dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
@@ -154,16 +157,23 @@ the current user, i.e. the one that started the application, is created instead.
     def getUserBaseDir(self, **kwargs): 
         """Returns path to where this system is managing this user data.
 
-:param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
-:returns: (str) path"""
+        :param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
+        :returns: (str) path"""
         return self._getUserDir('base', **kwargs)
         
     def getUserSchedulerInputDir(self, **kwargs): 
         """Returns path to where this system is managing this user data.
 
-:param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
-:returns: (str) path"""
-        return self._getUserDir('scheduler', **kwargs)
+        :param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
+        :returns: (str) path"""
+        return self._getUserDir('scheduler_in', **kwargs)
+
+    def getUserSchedulerOutputDir(self, **kwargs): 
+        """Returns path to where this system is managing this user data.
+
+        :param kwargs: ``create`` := If ``True`` assure the directory exists after the call is done.
+        :returns: (str) path"""
+        return self._getUserDir('scheduler_out', **kwargs)
 
     def getUserToolConfig(self, tool, **kwargs):
         """Returns the path to the configuration file.
@@ -242,7 +252,14 @@ be used for, but it should at least serve as a possibility for the future.
         
         #create directory for the framework
         #create all required subdirectories
-        dir_creators = [self.getUserBaseDir, self.getUserConfigDir, self.getUserCacheDir, self.getUserOutputDir, self.getUserPlotsDir]
+        dir_creators = [self.getUserBaseDir,
+                        self.getUserConfigDir,
+                        self.getUserCacheDir,
+                        self.getUserOutputDir,
+                        self.getUserPlotsDir,
+                        self.getUserSchedulerInputDir,
+                        self.getUserSchedulerOutputDir,]
+        
         for f in dir_creators:
             f(create=True)
 

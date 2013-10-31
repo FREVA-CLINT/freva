@@ -133,9 +133,8 @@ class slurm_file(object):
         :type cmdstring: string
         """
         
-        # read working directory from configuration
-        workdir = config.get('scheduler_output_dir',
-                             config.SCHEDULER_OUTPUT_DIR)
+        # read output directory from configuration
+        workdir = user.getUserSchedulerOutputDir()
                 
         email = user.getEmail()
         
