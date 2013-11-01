@@ -139,7 +139,7 @@ class slurm_file(object):
         email = user.getEmail()
         
         # set the default options
-        self.add_dash_option("D", workdir)
+        self.add_dash_option("D", outdir)
         self.add_dash_option("p", "serial")
         if email:
             self.add_ddash_option("mail-user", email)
