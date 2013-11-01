@@ -137,8 +137,13 @@ the current user, i.e. the one that started the application, is created instead.
                          scheduler_out=config.get('scheduler_output_dir', config.SCHEDULER_OUTPUT_DIR))
          
         if tool is None:
-            #return the directory where the tool configuration files are stored
-            dir_name = os.path.join(self._getUserBaseDir(), base_dir[dir_type])
+            bd = base_dir[dir_type]
+            # concatenate relative paths only
+            if bd and bd[0]=='/':
+                dir_name = bd
+            else:
+                #return the directory where the tool configuration files are stored
+                dir_name = os.path.join(self._getUserBaseDir(), bd)
         else:
             #It's too confusing if we create case sensitive directories...
             tool = tool.lower()
