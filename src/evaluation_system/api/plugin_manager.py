@@ -337,11 +337,13 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     
     return result
 
-def scheduleTool(plugin_name, config_dict=None, user=None):
+def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     """Schedules  a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
 :param plugin_name: name of the referred plugin.
+:type slurmoutdir: string 
+:param slurmoutdir: directory for the output
 :type config_dict: dict or metadict 
 :param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
     this might be incomplete.
@@ -388,8 +390,8 @@ def scheduleTool(plugin_name, config_dict=None, user=None):
         p.writeSlurmFile(fp, scheduled_id=rowid, user=user)   
             
     # set the SLURM output directory
-    slurmoutdir = config.get('slurm_output_dir',
-                             config.SCHEDULER_OUTPUT_DIR)
+    if not slurmoutdir:
+        slurmoutdir = user.getSchedulerOutputDir()
     if not os.path.exists(slurmoutdir):
         os.makedirs(slurmoutdir)
 
