@@ -433,7 +433,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     # set the slurm output file 
     user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
 
-    return rowid
+    return (rowid, slurm_out)
 
 
 def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):

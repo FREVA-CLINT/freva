@@ -333,11 +333,14 @@ DATE FORMAT
                 log.debug('Running %s with configuration: %s', tool, tool_dict)
                 if not dry_run:
                     if batchmode:
-                        id = pm.scheduleTool(tool,
-                                             config_dict=tool_dict,
-                                             user=user.User(email=email))
+                        [id, file] = pm.scheduleTool(tool,
+                                                     config_dict=tool_dict,
+                                                     user=user.User(email=email))
 
                         print 'Scheduled job with row id', id
+                        print 'You can view the job\'s status with the command squeue'
+                        print 'Your job\'s progress will be shown with the command'
+                        print 'tail -f ', file
                     else:
                         pm.runTool(tool, config_dict=tool_dict)
 
