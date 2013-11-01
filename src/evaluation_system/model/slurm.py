@@ -144,7 +144,7 @@ class slurm_file(object):
         if email:
             self.add_ddash_option("mail-user", email)
         self.add_ddash_option("ntasks-per-node", 24)
-        self.add_ddash_option("mem", "4800mb")
+        self.add_ddash_option("mem", "48000mb")
         self.add_ddash_option("share", None)
         self.add_ddash_option("ntasks", 1)
         self.add_ddash_option("time", "240:00")
