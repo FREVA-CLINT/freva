@@ -563,10 +563,11 @@ It means, **never** start a plug-in comming from unknown sources.
             
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
-        
-        p = sub.call(' '.join(['/bin/bash', bash_opt, cmd_string]))
-        
-        return p
+
+        p = sub.call(['/bin/bash', bash_opt, cmd_string])
+
+        # this is due to backward compatibility
+        return ' '
 
     
     def _splitPath(self, path):
