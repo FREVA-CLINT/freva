@@ -337,7 +337,7 @@ DATE FORMAT
                                                      config_dict=tool_dict,
                                                      user=user.User(email=email))
 
-                        print 'Scheduled job with row id', id
+                        print 'Scheduled job with history id', id
                         print 'You can view the job\'s status with the command squeue'
                         print 'Your job\'s progress will be shown with the command'
                         print 'tail -f ', file
