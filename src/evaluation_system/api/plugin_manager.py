@@ -392,6 +392,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     # set the SLURM output directory
     if not slurmoutdir:
         slurmoutdir = user.getSchedulerOutputDir()
+
     if not os.path.exists(slurmoutdir):
         os.makedirs(slurmoutdir)
 

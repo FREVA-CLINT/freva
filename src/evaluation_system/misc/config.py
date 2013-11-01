@@ -36,10 +36,10 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
-SCHEDULER_OUTPUT_DIR = '/tmp/slurm/output/'
+SCHEDULER_OUTPUT_DIR = 'slurm/output/'
 ''' Determines the folder the SLURM output files will be saved in ''' 
 
-SCHEDULER_INPUT_DIR = '/tmp/slurm/input/'
+SCHEDULER_INPUT_DIR = 'slurm/input/'
 """
 Determines the folder the SLURM input files will be saved in.
 This variable is  read by the User object,
@@ -99,7 +99,7 @@ framework is restarted every time an analysis is performed."""
     
     #now check if we have a configuration file, and read the defaults from there
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION)
-    
+
     log.debug("Loading configuration file from: %s", config_file)
     if config_file and os.path.isfile(config_file):
         config_parser = SafeConfigParser()
