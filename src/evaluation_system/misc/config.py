@@ -36,10 +36,10 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
-SCHEDULER_OUTPUT_DIR = '/tmp/slurm_output/'
+SCHEDULER_OUTPUT_DIR = '/tmp/slurm/output/'
 ''' Determines the folder the SLURM output files will be saved in ''' 
 
-SCHEDULER_INPUT_DIR = 'slurm'
+SCHEDULER_INPUT_DIR = '/tmp/slurm/input/'
 """
 Determines the folder the SLURM input files will be saved in.
 This variable is  read by the User object,
