@@ -12,7 +12,6 @@ class slurm_file(object):
     MLOAD_CMD  = "module load "
     EXPORT_CMT = "EXPORT"
     
-    
     class entry_format:
         """
         This class describes the format of an option for SLURM.
@@ -123,7 +122,7 @@ class slurm_file(object):
         """
         self._cmdstring = cmdstring
         
-    def set_default_options(self, user, cmdstring):
+    def set_default_options(self, user, cmdstring, outdir=None):
         """
         Sets the default options for a given user and a
         given commandstring.
@@ -134,8 +133,9 @@ class slurm_file(object):
         """
         
         # read output directory from configuration
-        workdir = user.getUserSchedulerOutputDir()
-                
+        if not outdir:
+            outdir = user.getUserSchedulerOutputDir()
+
         email = user.getEmail()
         
         # set the default options

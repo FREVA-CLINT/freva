@@ -449,7 +449,8 @@ if no configuration is provided the default one will be used.
         return filename
         
 
-    def writeSlurmFile(self, fp, config_dict=None, user=None, scheduled_id=None):
+    def writeSlurmFile(self, fp, config_dict=None, user=None,
+                       scheduled_id=None, slurmoutdir=None):
         """
         Writes a file which can be executed by the SLURM scheduler
         if no configuration is provided the default one will be used.
@@ -468,9 +469,13 @@ if no configuration is provided the default one will be used.
         sf = slurm.slurm_file()
         
         if scheduled_id:
-            sf.set_default_options(user, self.composeCommand(scheduled_id=scheduled_id))
+            sf.set_default_options(user,
+                                   self.composeCommand(scheduled_id=scheduled_id),
+                                   outdir=slurmoutdir)
         else:
-            sf.set_default_options(user, self.composeCommand(config_dict=config_dict))
+            sf.set_default_options(user,
+                                   self.composeCommand(config_dict=config_dict),
+                                   outdir=slurmoutdir)
         
         sf.write_to_file(fp)
         fp.flush()

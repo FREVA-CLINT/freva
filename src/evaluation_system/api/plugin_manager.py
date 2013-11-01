@@ -386,17 +386,20 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
        
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
 
-    with open(full_path, 'w') as fp:
-        p.writeSlurmFile(fp, scheduled_id=rowid, user=user)   
-            
     # set the SLURM output directory
     if not slurmoutdir:
-        slurmoutdir = user.getSchedulerOutputDir()
+        slurmoutdir = user.getUserSchedulerOutputDir()
         slurmoutdir = os.path.join(slurmoutdir, plugin_name)
 
     if not os.path.exists(slurmoutdir):
         os.makedirs(slurmoutdir)
 
+    with open(full_path, 'w') as fp:
+        p.writeSlurmFile(fp,
+                         scheduled_id=rowid,
+                         user=user,
+                         slurmoutdir=slurmoutdir)
+            
     # create the batch command
     command = ['/bin/bash',
                '-c',
