@@ -507,7 +507,7 @@ if no configuration is provided the default one will be used.
         if email:
             cmd_param += ' --mail=%s' % email
 
-         # the parameter string
+        # the parameter string
         cmd_param += ' --tool ' + self.__class__.__name__
        
         # a scheduled id overrides the dictionary behavior

@@ -49,6 +49,8 @@ use always user.getUserSchedulerInputDir()!
 SCHEDULER_COMMAND='/client/bin/sbatch'
 ''' The command for the scheduler '''
 
+SCHEDULER_OPTIONS='--begin=now+1'
+
 DATABASE_FILE = 'database_file'
 ''' Determines the path of the database file '''
 

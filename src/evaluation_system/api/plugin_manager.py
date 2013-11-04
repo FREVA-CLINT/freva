@@ -403,9 +403,10 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     # create the batch command
     command = ['/bin/bash',
                '-c',
-               '%s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
-                                     user.getName(),
-                                     full_path)
+               '%s %s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
+                                        config.SCHEDULER_OPTIONS,
+                                        user.getName(),
+                                        full_path)
               ]
 
     # run this 
@@ -428,8 +429,14 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
              
     slurm_out = os.path.join(slurmoutdir,
                              'slurm-%i.out' % slurm_id)
-                             
-            
+    
+    # create a standard slurm file to view with less
+    with open(slurm_out, 'w') as the_file:
+        the_file.write('Certainly, your job is pending with id %i.\n' % slurm_id)
+        the_file.write('You can get further information using the command squeue.\n')
+        the_file.write('\nThis file was automatically created by the evaluation system.\n')
+        the_file.write('It will be overwritten by the output of %s.\n' % plugin_name)
+        
     # set the slurm output file 
     user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
 
