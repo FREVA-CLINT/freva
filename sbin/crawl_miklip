@@ -4,14 +4,14 @@ credential=${2:-~/.ssh/solr}
 
 if [[ ! -f "$credential" ]]; then
     cat <<EOF
-You need a credential to write to www-miklip.dkrz.de
+You need a credential to write to www-miklipdev.dkrz.de
 (this is required in order to ingest it into Solr)
 
 You may create one issuing:
  ssh-keygen -f ~/.ssh/solr
 
 You must leave the passphrase empty and then add the content of the public key 
-(~/.ssh/solr.pub) to your ~/.ssh/authorized_keys at www-miklip.dkrz.de. 
+(~/.ssh/solr.pub) to your ~/.ssh/authorized_keys at www-miklipdev.dkrz.de. 
 (create the file if it doesn't exist)
 
 As an additional security meassure add this before the public key entry: 
@@ -43,6 +43,6 @@ $solr_ingest --crawl $source_dir --output $dump_file || exit 1
 
 #copy to solr node
 #you need a credential!
-scp -i $credential $dump_file www-miklip.dkrz.de:/usr/local/solr/incoming || exit 2
+scp -i $credential $dump_file www-miklipdev.dkrz.de:/usr/local/solr/incoming || exit 2
 
 rm $dump_file
