@@ -11,7 +11,12 @@ _solr_query() {
 }
 _solr_search_show() {
     local cur opts query extra
-    cur="${COMP_WORDS[COMP_CWORD]}"
+    # in bash4 this line converts the entries to lower case, s.t. a completion
+    # becomes case insensitive
+    cur="${COMP_WORDS[COMP_CWORD],,}"
+    # if the is some trouble with case insensitivity then uncomment the
+    # following line of code
+    # cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     #if we have no value we will concentrate on relevant ones, if applicable
     #(if not, we have to consider all of them)
