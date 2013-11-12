@@ -365,5 +365,81 @@ _type_mapping = {
                 long : Long,
                 bool: Bool
                 }
+        
+
 """These are the mapping of the default Python types to those of this framework.
 This is mapping is used by the infer_type function to infer the type of a given parameter default."""
+
+
+            
+class Range(String):
+    """
+    A range parameter. I.e passing experiment lists (1970,1975,...,2000).
+    """
+    
+    
+    class PrintableList(list):
+        """
+        Helper class which overwrites the __str__ function of list objects
+        """
+        def __str__(self):
+            '''
+            :returns: String with comma separated list entries
+            '''
+            return ','.join(map(str,self))
+    
+    def __init__(self,*args,**kwargs):
+        #set max_items to a very large number...
+        kwargs['max_items'] = 1e20
+        self.base_type = IntType#self.PrintableList
+        super(Range,self).__init__(*args,**kwargs)
+    
+    def _parseColon(self, str):
+        """
+        Parse colon separated strings
+        
+        :param str: 'start:step:stop'
+        :returns: list with integers
+        """
+        tmp = map(int,str.split(':'))
+        if len(tmp) == 2:
+            return range(tmp[0],tmp[1]+1)
+        elif len(tmp) == 3:
+            return range(tmp[0],tmp[2]+1,tmp[1])
+        elif len(tmp) == 1:
+            return tmp
+        else:
+            raise ValueError("'%s' is no recognized as a range value" % str)
+    
+    def _parseComma(self,str):
+        '''
+        Parses comma separated strings and checks each part for colon separated strings
+        
+        :param str: 'comma separated list
+        :returns: list with integers
+        '''
+        parts = str.split(',')
+        res_list = list()
+        for part in parts:
+            res_list += self._parseColon(part)
+        return res_list
+    
+    def parse(self, value):
+        """
+        Parses a "RangeString" and returns a "PrintableList"
+        Value can be a comma separated string, colon separated or a combination
+        Values after "-" are deleted from the resulting list
+        
+        :param value: 'start:step:stop-value' --> 1970:5:2000-1985 or 1970:2000,1980-1990:1995
+        :returns: PrintableList object 
+        """
+        try:
+            main_parts = value.split('-')
+            result = self._parseComma(main_parts[0])
+            del_list = self.PrintableList()
+            for part in main_parts[1:]:
+                del_list += self._parseComma(part)
+            return self.PrintableList(sorted([x for x in result if x not in del_list]))
+        except AttributeError:
+            raise ValueError("'%s' is no recognized as a range value" % value)         
+    

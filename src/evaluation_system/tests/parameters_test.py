@@ -8,7 +8,7 @@ Created on 15.03.2013
 import unittest
 from evaluation_system.api.parameters import \
     ParameterType, ParameterDictionary, \
-    String, Float, Long, Integer, Bool, File, Date, \
+    String, Float, Long, Integer, Bool, File, Date, Range,\
     ValidationError
 
 class Test(unittest.TestCase):
@@ -48,6 +48,10 @@ class Test(unittest.TestCase):
                             [('1',True),('0', False),('True',True), ('false', False),
                              ('no', False), ('YES', True)],    #Do we really want this?!
                             ['maybe', '', None]),
+                      (Range(),
+                            [('1960:1970',range(1960,1970+1)), ('1970,1971,1972', [1970,1971,1972]), ('1980:5:2000', range(1980,2000+1,5)),
+                             ('1970:1971-1970',[1971]), ('1950:10:1980,1985-1960:1970', [1950,1980,1985])],
+                            ['1:1:1:1', '', None, 'ab:c', []])
                       
                       ]
         for case_type, positive_cases, negative_cases in test_cases:
@@ -109,15 +113,16 @@ class Test(unittest.TestCase):
                                      Bool(name='bool'),
                                      String(name='string'),
                                      File(name='file', default='/tmp/file1'),
-                                     Date(name='date'))
+                                     Date(name='date'),
+                                     Range(name='range'))
         res = p_dict.parseArguments("int=1 long=1 date=1 bool=1".split())
         self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L))
         
         res = p_dict.parseArguments("int=1 long=1 date=1 bool=1".split(), use_defaults=True)
         self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L, file='/tmp/file1'))
 
-        res = p_dict.parseArguments("int=1 long=1 date=1 bool=1".split(), use_defaults=True, complete_defaults=True)
-        self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L, file='/tmp/file1', float=None, string=None))
+        res = p_dict.parseArguments("int=1 long=1 date=1 bool=1 range=1:5".split(), use_defaults=True, complete_defaults=True)
+        self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L, range=range(1,6), file='/tmp/file1', float=None, string=None))
 
         for arg, parsed_val in [("bool=1",True),("bool=true",True),("bool=TRUE",True),
                                ("bool=0",False),("bool=false",False),("bool=False",False),
@@ -164,6 +169,7 @@ class Test(unittest.TestCase):
         Float(name='a', default=1.2e-2)
         Float(name='a', default="1.2e-2")
         Integer(name='a', default='1232')
+        Range(name='a', default='1:5:100')
         
         p_dict = ParameterDictionary(File(name='file', default='/tmp/file1', mandatory=True, max_items=2, item_separator=':'),
                              Date(name='date', item_separator='/'))
@@ -182,14 +188,22 @@ class Test(unittest.TestCase):
         self.assertEquals(p_dict.validate_errors({'int':[1,2,3,4,5]}), 
                           {'too_many_items': [('int',1)], 'missing': ['float']})
         self.assertEquals(p_dict.validate_errors({'int':[1,2,3,4,5]}), 
-                          {'too_many_items': [('int',1)], 'missing': ['float']})
-        
+                          {'too_many_items': [('int',1)], 'missing': ['float']})        
         
     def testHelp(self):
         p_dict = ParameterDictionary(
                      Integer(name='answer',help='just some value', default=42, print_format='%sm'),
                      Float(name='other',help='just some super float', default=71.7, print_format='%.2f'))
         print p_dict.getHelpString()
+        
+    def testSpecialCases(self):
+        #test __str__ of Range()
+        test_cases = [('1960:1970',range(1960,1970+1)), ('1970,1971,1972', [1970,1971,1972]), ('1980:5:2000', range(1980,2000+1,5)),
+                     ('1970:1971-1970',[1971]), ('1950:10:1980,1985-1960:1970', [1950,1980,1985])]
+        case_type = Range()
+        for case,result in test_cases:
+            self.assertEqual(str(case_type.parse(case)), ','.join(map(str,result)))
+        
         
 
 if __name__ == "__main__":
