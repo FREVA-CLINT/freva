@@ -9,7 +9,10 @@ _solr_query() {
 
 _solr_search_show() {
     local cur opts query extra
-    cur="${COMP_WORDS[COMP_CWORD]}"
+    # convert upper case letters to lower ones
+    cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
+# this is the former version, pls uncomment if case problems occur
+#    cur="${COMP_WORDS[COMP_CWORD]}"
     query="$(_solr_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
     case "$cur" in
     -*)
