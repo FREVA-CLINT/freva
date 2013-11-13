@@ -295,3 +295,21 @@ meta-data will be removed (even if no new meta-data is provided)."""
         if metadict.hasMetadata(some_dict):
             meta = some_dict.getMetadata(key)
             if meta and meta_key in meta: return meta[meta_key]
+
+
+class PrintableList(list):
+    """
+    Helper class which overwrites the __str__ function of list objects
+    """    
+    def __init__(self,*args,**kwargs):
+        try:
+            self.seperator = kwargs.pop('seperator')
+        except KeyError:
+            self.seperator = ','
+        super(PrintableList,self).__init__(*args,**kwargs)
+    
+    def __str__(self):
+        '''
+        :returns: String with comma separated list entries
+        '''
+        return self.seperator.join(map(str,self))

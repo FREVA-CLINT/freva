@@ -8,7 +8,7 @@ This types represent the type of parameter a plugin expects and gives some metad
 from types import TypeType, StringType, IntType, FloatType, LongType, BooleanType
 
 from evaluation_system.misc.py27 import OrderedDict
-from evaluation_system.misc.utils import find_similar_words
+from evaluation_system.misc.utils import find_similar_words, PrintableList
 from symbol import raise_stmt
 import json
 
@@ -375,19 +375,7 @@ This is mapping is used by the infer_type function to infer the type of a given 
 class Range(String):
     """
     A range parameter. I.e passing experiment lists (1970,1975,...,2000).
-    """
-    
-    
-    class PrintableList(list):
-        """
-        Helper class which overwrites the __str__ function of list objects
-        """
-        def __str__(self):
-            '''
-            :returns: String with comma separated list entries
-            '''
-            return ','.join(map(str,self))
-    
+    """   
     def __init__(self,*args,**kwargs):
         #set max_items to a very large number...
         kwargs['max_items'] = 1e20
@@ -436,10 +424,10 @@ class Range(String):
         try:
             main_parts = value.split('-')
             result = self._parseComma(main_parts[0])
-            del_list = self.PrintableList()
+            del_list = PrintableList()
             for part in main_parts[1:]:
                 del_list += self._parseComma(part)
-            return self.PrintableList(sorted([x for x in result if x not in del_list]))
+            return PrintableList(sorted([x for x in result if x not in del_list]))
         except AttributeError:
             raise ValueError("'%s' is no recognized as a range value" % value)         
     

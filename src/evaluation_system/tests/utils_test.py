@@ -5,7 +5,7 @@ Created on 18.01.2013
 '''
 import unittest
 
-from evaluation_system.misc.utils import Struct, TemplateDict, metadict
+from evaluation_system.misc.utils import Struct, TemplateDict, metadict, PrintableList
 
 class Test(unittest.TestCase):
 
@@ -93,7 +93,15 @@ class Test(unittest.TestCase):
         n = m.copy()
         n['c'][0] = 0
         #check we have a deepcopy of the items
-        self.assertTrue(n['c'][0] != m['c'][0])        
+        self.assertTrue(n['c'][0] != m['c'][0])   
+        
+    def testPrintableList(self):
+        a = [2,3,4,5]
+        p_list = PrintableList(a)
+        self.assertEqual(p_list,a) #list creation
+        self.assertEqual(str(p_list), '2,3,4,5') #string functionality
+        p_list = PrintableList(a,seperator=':')
+        self.assertEqual(str(p_list), '2:3:4:5') #string functionality 
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testStruct']
