@@ -36,6 +36,12 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
+DATABASE_TIMEOUT = 10
+'''Time out in seconds for the SQLite database'''
+
+SCHEDULER_WAITING_TIME = 11
+'''Waiting time in seconds before the scheduler runs the job'''
+
 SCHEDULER_OUTPUT_DIR = 'slurm/output/'
 ''' Determines the folder the SLURM output files will be saved in ''' 
 
@@ -49,7 +55,7 @@ use always user.getUserSchedulerInputDir()!
 SCHEDULER_COMMAND='/client/bin/sbatch'
 ''' The command for the scheduler '''
 
-SCHEDULER_OPTIONS='--begin=now+1'
+SCHEDULER_OPTIONS='--begin=now+'+str(SCHEDULER_WAITING_TIME)
 
 DATABASE_FILE = 'database_file'
 ''' Determines the path of the database file '''
