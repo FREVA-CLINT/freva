@@ -154,7 +154,7 @@ but at the present time the system works as a toolbox that the users start from 
         #trying to avoid holding a lock to the DB for too long
         if self._db_file not in _connection_pool:
             _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
-                                                              timeout=1,
+                                                              timeout=config.DATABASE_TIMEOUT,
                                                               isolation_level=None,
                                                               detect_types=sqlite3.PARSE_DECLTYPES)
         return _connection_pool[self._db_file]
@@ -233,7 +233,6 @@ While initializing the schemas will get upgraded if required.
         
         cursor = self._getConnection().cursor() 
         cursor.execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
-        self._getConnection().commit()
         
         return cursor.lastrowid
 
@@ -253,11 +252,7 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-        a = datetime.now()
         self._getConnection().execute(update_str, entries)
-        self._getConnection().commit()
-        b = datetime.now()
-        print 'Scheduling speed', b - a
         
         
     class ExceptionStatusUpgrade(Exception):
@@ -294,7 +289,6 @@ While initializing the schemas will get upgraded if required.
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=? WHERE rowid=? AND uid=?'                  
         self._getConnection().execute(update_str, (status, row_id, uid))
-        self._getConnection().commit()
         
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
