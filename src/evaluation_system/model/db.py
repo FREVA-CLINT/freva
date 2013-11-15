@@ -233,6 +233,7 @@ While initializing the schemas will get upgraded if required.
         
         cursor = self._getConnection().cursor() 
         cursor.execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        self._getConnection().commit()
         
         return cursor.lastrowid
 
@@ -254,6 +255,7 @@ While initializing the schemas will get upgraded if required.
                    _status_not_scheduled)
         a = datetime.now()
         self._getConnection().execute(update_str, entries)
+        self._getConnection().commit()
         b = datetime.now()
         print 'Scheduling speed', b - a
         
@@ -292,6 +294,7 @@ While initializing the schemas will get upgraded if required.
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=? WHERE rowid=? AND uid=?'                  
         self._getConnection().execute(update_str, (status, row_id, uid))
+        self._getConnection().commit()
         
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
