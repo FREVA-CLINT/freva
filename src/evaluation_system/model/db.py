@@ -252,8 +252,11 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-                                  
+        a = datetime.now()
         self._getConnection().execute(update_str, entries)
+        b = datetime.now()
+        print 'Scheduling speed', b - a
+        
         
     class ExceptionStatusUpgrade(Exception):
         """
