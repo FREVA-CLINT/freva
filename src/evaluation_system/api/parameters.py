@@ -439,6 +439,10 @@ class SolrField(String):
     def __init__(self, *args, **kwargs):
         
         self.facet = kwargs.pop('facet')
+        try:
+            self.group = kwargs.pop('group')
+        except KeyError:
+            self.group = 1
         super(SolrField,self).__init__(*args,**kwargs)
         
     
