@@ -429,5 +429,21 @@ class Range(String):
                 del_list += self._parseComma(part)
             return PrintableList(sorted([x for x in result if x not in del_list]))
         except AttributeError:
-            raise ValueError("'%s' is no recognized as a range value" % value)         
+            raise ValueError("'%s' is no recognized as a range value" % value)      
+        
+class SolrField(String):
+    '''
+    A parameter using solr for finding valid values
+    '''   
     
+    def __init__(self, *args, **kwargs):
+        
+        self.facet = kwargs.pop('facet')
+        super(SolrField,self).__init__(*args,**kwargs)
+        
+    
+#    def parse(self, value):
+#        
+#        return self.facet
+        
+        
