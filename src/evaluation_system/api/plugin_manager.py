@@ -328,12 +328,18 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     try:
         #In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf)
-    except Exception, e:
+
+        # temporary set all processes to finished
+        user.getUserDB().upgradeStatus(rowid,
+                                       user.getName(),
+                                       db._status_finished)
+
+    except:
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
                                        db._status_broken)
 
-        raise e
+        raise 
     
     return result
 
