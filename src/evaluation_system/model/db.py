@@ -153,7 +153,10 @@ but at the present time the system works as a toolbox that the users start from 
     def _getConnection(self):
         #trying to avoid holding a lock to the DB for too long
         if self._db_file not in _connection_pool:
-            _connection_pool[self._db_file] = sqlite3.connect(self._db_file, isolation_level=None, detect_types=sqlite3.PARSE_DECLTYPES)
+            _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
+                                                              timeout=config.DATABASE_TIMEOUT,
+                                                              isolation_level=None,
+                                                              detect_types=sqlite3.PARSE_DECLTYPES)
         return _connection_pool[self._db_file]
     
     def initialize(self, tool_name=None):
@@ -249,8 +252,8 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-                                  
         self._getConnection().execute(update_str, entries)
+        
         
     class ExceptionStatusUpgrade(Exception):
         """
