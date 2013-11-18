@@ -271,7 +271,7 @@ def main(argv=None): # IGNORE:C0111
                 facet_limit = int(search_dict['facet.limit'])
             else:  
                 #default
-                facet_limit = 100
+                facet_limit = -1
             for att,values in SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict).items():
                 
                 
