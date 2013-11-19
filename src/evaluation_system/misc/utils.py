@@ -4,10 +4,28 @@
 This module provides different utilities that does not depend on any other internal package.
 '''
 import copy
+import os
 from difflib import get_close_matches
 from string import Template
 from re import split
 from copy import deepcopy
+
+
+def supermakedirs(path, mode):
+    """
+    This snippet of code was taken from stackoverflow.com
+    On some systems the parameter for the access rights are ignored when using os.makedirs.
+    This routine overcomes this problem.
+    """
+    if not path or os.path.exists(path):
+        return []
+    (head, tail) = os.path.split(path)
+    res = supermakedirs(head, mode)
+    os.mkdir(path)
+    os.chmod(path, mode)
+    res += [path]
+    return res
+
 
 
 class Struct(object):
