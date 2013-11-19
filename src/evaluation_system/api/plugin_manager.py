@@ -382,7 +382,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
     if not os.path.exists(slurmindir):
-        os.makedirs(slurmindir)
+        utils.supermakedirs(slurmindir, 0777)
 
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
