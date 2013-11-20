@@ -76,6 +76,7 @@ if { $curMode eq "load" } {
 	show_info $toolPath
         puts stderr "Welcome to the SLURM daemon, I schedule your analysis"
      } else {
+	puts stderr $shell
 	safe_load python
 	safe_load cdo/1.5.4
 	puts stderr "WARNING: Evaluation System is NOT fully loaded, please type bash"
