@@ -13,12 +13,9 @@ set shell [module-info shell]
 set modName [module-info name]
 set toolName evaluation_system
 set curMode [module-info mode]
-set sys [system echo \${0}]
 #clean symbolic links (if any)
 catch { set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile] }
 set toolPath [file normalize "$ModulesCurrentModulefile/../../.."]
-
-puts stderr $sys
 
 module-whatis   "evaluation_system v0.1"
 proc ModulesHelp { } {
@@ -69,12 +66,7 @@ if { $curMode eq "load" } {
 #       safe_load cdo
         show_info $toolPath
         puts ". $toolPath/etc/autocomplete.bash;"
-     } elseif { $shell eq "sh" } {
-        safe_load python
-        safe_load cdo/1.5.4
-	show_info $toolPath
-        puts stderr "Welcome to the SLURM daemon, I schedule your analysis"
-     } else {
+    } else {
 	puts stderr $shell
 	safe_load python
 	safe_load cdo/1.5.4
