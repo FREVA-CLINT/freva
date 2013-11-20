@@ -70,7 +70,13 @@ if { $curMode eq "load" } {
 #       safe_load cdo
         show_info $toolPath
         puts ". $toolPath/etc/autocomplete.bash;"
-    } else {
+     } elseif { $shell eq "slurmd" } {
+        safe_load python
+        safe_load cdo/1.5.4
+	show_info $toolPath
+        puts stderr "Welcome to the SLURM daemon, I schedule your analysis"
+     } else {
+	puts stderr $shell
 	safe_load python
 	safe_load cdo/1.5.4
 	puts stderr "WARNING: Evaluation System is NOT fully loaded, please type bash"
