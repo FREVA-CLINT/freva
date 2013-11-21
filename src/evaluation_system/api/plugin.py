@@ -208,6 +208,7 @@ Use it for the return call of runTool.
         fstat=os.stat(file_path)
         
         if 'timestamp' not in metadata:
+            print 'ctime of file: ', file_path
             metadata['timestamp'] = fstat[os.stat.ST_CTIME]
             # metadata['timestamp'] = os.path.getctime(file_path)
         if 'size' not in metadata:
