@@ -10,6 +10,7 @@ import abc
 import subprocess as sub
 import os
 import sys
+import stat
 from time import time
 from datetime import datetime
 from ConfigParser import SafeConfigParser
@@ -208,11 +209,10 @@ Use it for the return call of runTool.
         fstat=os.stat(file_path)
         
         if 'timestamp' not in metadata:
-            print 'ctime of file: ', file_path
-            metadata['timestamp'] = fstat[os.stat.ST_CTIME]
+            metadata['timestamp'] = fstat[stat.ST_CTIME]
             # metadata['timestamp'] = os.path.getctime(file_path)
         if 'size' not in metadata:
-            metadata['size'] = fstat[os.stat.ST_SIZE]
+            metadata['size'] = fstat[stat.ST_SIZE]
             # metadata['size'] = os.path.getsize(file_path)
         if 'type' not in metadata:    
             ext = os.path.splitext(file_path)
