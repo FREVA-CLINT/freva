@@ -205,10 +205,14 @@ Use it for the return call of runTool.
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
+        fstat=os.stat(file_path)
+        
         if 'timestamp' not in metadata:
-            metadata['timestamp'] = os.path.getctime(file_path)
+            metadata['timestamp'] = fstat[os.stat.ST_CTIME]
+            # metadata['timestamp'] = os.path.getctime(file_path)
         if 'size' not in metadata:
-            metadata['size'] = os.path.getsize(file_path)
+            metadata['size'] = fstat[os.stat.ST_SIZE]
+            # metadata['size'] = os.path.getsize(file_path)
         if 'type' not in metadata:    
             ext = os.path.splitext(file_path)
             if ext:
