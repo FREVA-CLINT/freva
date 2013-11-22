@@ -346,9 +346,10 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     :param metadata: the meta-data for the file, to access timestamp
     """
     path = config.PREVIEW_PATH
+    subdir = datetime.datetime.now().strftime('%Y%m%d')
     name = __preview_generate_name(plugin_name, file_name, metadata) 
     name = name + ext
-    full_name = os.path.join(path, name)
+    full_name = os.path.join(path, subdir, name)
     
     if not os.path.isdir(path):
         utils.supermakedirs(path, 0777)
@@ -369,8 +370,6 @@ def _preview_create(plugin_name, result):
     """
 
     preview = dict()
-
-    logging.debug(str(result))
     
     for file_name in result:
         metadata = result[file_name]
@@ -451,7 +450,14 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
 
         
         # create the preview
+        logging.debug('Converting....')
         _preview_create(plugin_name, result)
+        logging.debug('finished')
+
+        # write the created files to the database
+        logging.debug('Storing results into data base....')
+        user.getUserDB().storeResults(rowid, result)
+        logging.debug('finished')
 
         # temporary set all processes to finished
         user.getUserDB().upgradeStatus(rowid,
