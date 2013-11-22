@@ -24,7 +24,8 @@ import string
 import datetime
 import shutil
 import logging
-import Image
+import subprocess as sub
+# import Image
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
@@ -299,8 +300,14 @@ def __preview_convert(source_path, dest_path):
     :type dest_path: str
     :param dest_path: The file name of the converted file
     """
-    im = Image.open(source_path)
-    im.save(dest_path)
+    
+    # a not very pythonic work-around
+    command = ['convert', source_path, dest_path]
+    sub.call(command)
+
+    # The following is preferable when supported by the installed PIT version
+    # im = Image.open(source_path)
+    # im.save(dest_path)
 
 def __preview_generate_name(plugin_name, file_name, metadata):
     """
