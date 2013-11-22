@@ -34,7 +34,7 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         #Cmip5 data
         CMIP5 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -45,7 +45,7 @@ class DRSFile(object):
         },
         #baseline 0 data      
         BASELINE0 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -56,7 +56,7 @@ class DRSFile(object):
         },
         #baseline 1 data
         BASELINE1 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
@@ -95,7 +95,7 @@ class DRSFile(object):
          },
         #MIKLIP  data
         MIKLIP : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
@@ -103,6 +103,16 @@ class DRSFile(object):
          "data_type": MIKLIP,
          "defaults" : {"project":"miklip", "institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
+        ##REGIONAL data
+        #CORDEX data
+         CORDEX : {
+         "root_dir":"/miklip/integration/data4miklip/model/regional",
+         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/version/time_frequency/variable/file_name".split('/'),
+         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.version.time_frequency.variable".split('.'),
+         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-version-time_frequency-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": CORDEX,
+         "defaults" : {"project":"cordex"}
         }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
