@@ -260,7 +260,7 @@ While initializing the schemas will get upgraded if required.
         Exception class for failing status upgrades
         """
         def __init__(self, msg="Status could not be upgraded"):
-            super(ExceptionStatusUpgrade, self).__init__(msg)
+            super(UserDB.ExceptionStatusUpgrade, self).__init__(msg)
         
         
     def upgradeStatus(self, row_id, uid, status):
