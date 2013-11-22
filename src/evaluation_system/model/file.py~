@@ -103,6 +103,16 @@ class DRSFile(object):
          "data_type": MIKLIP,
          "defaults" : {"project":"miklip", "institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
+        ##REGIONAL data
+        #CORDEX data
+         CORDEX : {
+         "root_dir":"/miklip/integration/data4miklip/model/regional",
+         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/version/time_frequency/variable/file_name".split('/'),
+         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.version.time_frequency.variable".split('.'),
+         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-version-time_frequency-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": CORDEX,
+         "defaults" : {"project":"cordex"}
         }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
