@@ -281,7 +281,7 @@ any other method.
     return config_file
 
         
-def __preview_copy(self, source_path, dest_path):
+def __preview_copy(source_path, dest_path):
     """
     Copy images for preview
     :type source_path: str
@@ -291,7 +291,7 @@ def __preview_copy(self, source_path, dest_path):
     """
     shutil.copyfile(source_path, dest_path)
 
-def __preview_convert(self, source_path, dest_path):
+def __preview_convert(source_path, dest_path):
     """
     Converts images
     :type source_path: str
@@ -302,7 +302,7 @@ def __preview_convert(self, source_path, dest_path):
     im = Image.open(source_path)
     im.save(dest_path)
 
-def __preview_generate_name(self, plugin_name, file_name, metadata):
+def __preview_generate_name(plugin_name, file_name, metadata):
     """
     Creates a filename  according to the plugin_name, timestamp and
     an eight character random string
@@ -326,7 +326,7 @@ def __preview_generate_name(self, plugin_name, file_name, metadata):
         
     return plugin_name + '_' + ctime + random_suffix
 
-def __preview_unique_file(self, plugin_name, file_name, ext, metadata):
+def __preview_unique_file(plugin_name, file_name, ext, metadata):
     """
     This routine creates a unique filename for the preview
     :type plugin_name: str
@@ -339,7 +339,7 @@ def __preview_unique_file(self, plugin_name, file_name, ext, metadata):
     :param metadata: the meta-data for the file, to access timestamp
     """
     path = config.PREVIEW_PATH
-    name = self.__preview_generate_name(self, plugin_name, file_name, metadata) 
+    name = __preview_generate_name(plugin_name, file_name, metadata) 
     name = name + ext
     full_name = os.path.join(path, name)
     
@@ -347,11 +347,11 @@ def __preview_unique_file(self, plugin_name, file_name, ext, metadata):
         utils.supermakedirs(path, 0777)
         
     if os.path.isfile(full_name):
-        return self.__preview_unique_file(plugin_name, file_name, ext, metadata)
+        return __preview_unique_file(plugin_name, file_name, ext, metadata)
     
     return full_name
 
-def _preview_create(self, plugin_name, result):
+def _preview_create(plugin_name, result):
     """
     This routine creates the preview. And adds the created files
     to the result dictionary.
@@ -369,15 +369,15 @@ def _preview_create(self, plugin_name, result):
         
         if todo == 'copy':
             ext = os.path.splitext(file_name)
-            target_name = self.__preview_unique_file(plugin_name, file_name, ext, metadata)
-            self.__preview_copy(file_name, target_name)
+            target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
+            __preview_copy(file_name, target_name)
             prev_meta = dict()
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
             
         elif todo == 'convert':
-            target_name = self.__preview_unique_file(plugin_name, file_name, '.png', metadata)
-            self.__preview_convert(file_name, target_name)
+            target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
+            __preview_convert(file_name, target_name)
             prev_meta = dict()
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
@@ -439,13 +439,14 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
         #In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf)
 
+        
+        # create the preview
+        _preview_create(plugin_name, result)
+
         # temporary set all processes to finished
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
                                        db._status_finished)
-        
-        # create the preview
-        self._create_preview(plugin_name, result)
 
     except:
         user.getUserDB().upgradeStatus(rowid,
