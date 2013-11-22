@@ -207,7 +207,7 @@ Use it for the return call of runTool.
 
     def _extend_output_metadata(self, file_path, metadata):
         fstat=os.stat(file_path)
-        
+              
         if 'timestamp' not in metadata:
             metadata['timestamp'] = fstat[stat.ST_CTIME]
             # metadata['timestamp'] = os.path.getctime(file_path)
@@ -218,12 +218,22 @@ Use it for the return call of runTool.
             ext = os.path.splitext(file_path)
             if ext:
                 ext = ext[-1].lower()
-                if ext in '.jpg .jpeg .png .gif .tif .svg .pdf .ps .eps .tex'.split():
+                if ext in '.jpg .jpeg .png .gif'.split():
                     metadata['type'] = 'plot'
+                    metadata['todo'] = 'copy'
+                    
+                if ext in '.tif .svg .pdf .ps .eps'.split():
+                    metadata['type'] = 'plot'
+                    metadata['todo'] = 'convert'
+
+                if ext in '.tex'.split():
+                    metadata['type'] = 'plot'
+                    
                 elif ext in '.nc .bin .ascii'.split():
                     metadata['type'] = 'data'
-        
-        
+                                     
+                           
+    
     def getHelp(self, width=80):
         """This method uses the information from the implementing class name, :class:`__version__`, 
 :class:`__short_description__` and :class:`__config_metadict__` to create a proper help.

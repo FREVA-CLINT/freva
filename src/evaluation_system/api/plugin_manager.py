@@ -19,7 +19,12 @@ denotes where the source is to be found, and the package the module name in whic
 #*** Initialize the plugin
 import os
 import sys
+import random
+import string
+import datetime
+import shutil
 import logging
+import Image
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
@@ -275,6 +280,111 @@ any other method.
     
     return config_file
 
+        
+def __preview_copy(self, source_path, dest_path):
+    """
+    Copy images for preview
+    :type source_path: str
+    :param source_path: the source
+    :type dest_path: str
+    :param dest_path: the destination
+    """
+    shutil.copyfile(source_path, dest_path)
+
+def __preview_convert(self, source_path, dest_path):
+    """
+    Converts images
+    :type source_path: str
+    :param source_path: the file name of the file to convert
+    :type dest_path: str
+    :param dest_path: The file name of the converted file
+    """
+    im = Image.open(source_path)
+    im.save(dest_path)
+
+def __preview_generate_name(self, plugin_name, file_name, metadata):
+    """
+    Creates a filename  according to the plugin_name, timestamp and
+    an eight character random string
+    :type plugin_name: str
+    :param plugin_name: name of the referred plugin.
+    :type file_name: str
+    :param file_name: the file to create a preview name for
+    :type ext: str
+    :param ext: the extension of the file to be created
+    :type metadata: dict
+    :param metadata: the meta-data for the file, to access timestamp
+    """
+    random_suffix = ''.join(random.choice(string.letters) for i in xrange(8))
+
+    ctime = metadata.get('timestamp', '')
+    
+    if ctime:
+        time_string = datetime.datetime.fromtimestamp(ctime).strftime('%Y%m%d_%H%M%S') 
+        ctime = '%s_' % time_string
+        
+        
+    return plugin_name + '_' + ctime + random_suffix
+
+def __preview_unique_file(self, plugin_name, file_name, ext, metadata):
+    """
+    This routine creates a unique filename for the preview
+    :type plugin_name: str
+    :param plugin_name: name of the referred plugin.
+    :type file_name: str
+    :param file_name: the file to create a preview name for
+    :type ext: str
+    :param ext: the extension of the file to be created
+    :type metadata: dict
+    :param metadata: the meta-data for the file, to access timestamp
+    """
+    path = config.PREVIEW_PATH
+    name = self.__preview_generate_name(self, plugin_name, file_name, metadata) 
+    name = name + ext
+    full_name = os.path.join(path, name)
+    
+    if not os.path.isdir(path):
+        utils.supermakedirs(path, 0777)
+        
+    if os.path.isfile(full_name):
+        return self.__preview_unique_file(plugin_name, file_name, ext, metadata)
+    
+    return full_name
+
+def _preview_create(self, plugin_name, result):
+    """
+    This routine creates the preview. And adds the created files
+    to the result dictionary.
+    :type plugin_name: str
+    :param plugin_name: name of the referred plugin.
+    :type result: meta_dict
+    :param result: a meta dictionary describing the result files
+    """
+
+    preview = dict()
+    
+    for file_name, metadata in result:
+        todo=metadata.get('todo', '')
+        
+        
+        if todo == 'copy':
+            ext = os.path.splitext(file_name)
+            target_name = self.__preview_unique_file(plugin_name, file_name, ext, metadata)
+            self.__preview_copy(file_name, target_name)
+            prev_meta = dict()
+            prev_meta['type']='preview'
+            preview[target_name]=prev_meta
+            
+        elif todo == 'convert':
+            target_name = self.__preview_unique_file(plugin_name, file_name, '.png', metadata)
+            self.__preview_convert(file_name, target_name)
+            prev_meta = dict()
+            prev_meta['type']='preview'
+            preview[target_name]=prev_meta
+            
+        result.update(preview)
+
+
 def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
@@ -333,6 +443,9 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
                                        db._status_finished)
+        
+        # create the preview
+        self._create_preview(plugin_name, result)
 
     except:
         user.getUserDB().upgradeStatus(rowid,
