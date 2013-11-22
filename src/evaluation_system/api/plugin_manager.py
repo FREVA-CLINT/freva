@@ -24,7 +24,7 @@ import string
 import datetime
 import shutil
 import logging
-import Image
+from PIL import Image
 log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
@@ -362,8 +362,11 @@ def _preview_create(plugin_name, result):
     """
 
     preview = dict()
+
+    logging.debug(str(result))
     
-    for file_name, metadata in result:
+    for file_name in result:
+        metadata = result[file_name]
         todo=metadata.get('todo', '')
         
         
