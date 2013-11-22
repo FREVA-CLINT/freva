@@ -392,7 +392,7 @@ def _preview_create(plugin_name, result):
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
             
-        result.update(preview)
+    result.update(preview)
 
 
 def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
