@@ -28,7 +28,7 @@ MIKLIP = 'miklip'
 """DRS structure for miklip data."""
 CORDEX = 'cordex'
 """DRS structure for cordex data."""
-MODULE-C = 'module-c'
+MODULEC = 'module-c'
 """DRS structure for modulec data."""
 
 
@@ -119,8 +119,8 @@ class DRSFile(object):
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
         },
-        #MODULE-C data
-         MODULE-C : {
+        #MODULEC data
+         MODULEC : {
          "root_dir":"/miklip/integration/data4miklip/model/regional",
          "parts_dir":"project/product/domain/experiment/driving_model/ensemble/miklip_project/institute/model/version/time_frequency/variable/file_name".split('/'),
          "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.miklip_project.institute.model.version.time_frequency.variable".split('.'),
