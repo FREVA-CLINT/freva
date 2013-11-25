@@ -121,10 +121,10 @@ class DRSFile(object):
         },
         #MODULEC data
          MODULEC : {
-         "root_dir":"/miklip/integration/data4miklip/model/regional",
-         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/miklip_project/institute/model/version/time_frequency/variable/file_name".split('/'),
-         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.miklip_project.institute.model.version.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-miklip_project-model-version-time_frequency-time".split('-'),
+         "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
+         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/miklip_project/institute/model/rcm_ensemble/time_frequency/variable/file_name".split('/'),
+         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.miklip_project.institute.model.rcm_ensemble.time_frequency.variable".split('.'),
+         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-miklip_project-model-rcm_ensemble-time_frequency-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": MODULEC,
          "defaults" : {"project":"baseline0"}
