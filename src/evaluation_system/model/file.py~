@@ -26,6 +26,9 @@ PROJECTDATA = 'projectdata'
 """DRS structure for project data."""
 MIKLIP = 'miklip'
 """DRS structure for miklip data."""
+CORDEX = 'cordex'
+"""DRS structure for cordex data."""
+
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -113,7 +116,8 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
-        }
+        },
+     }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
 root_dir
