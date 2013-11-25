@@ -17,6 +17,11 @@ def supermakedirs(path, mode):
     On some systems the parameter for the access rights are ignored when using os.makedirs.
     This routine overcomes this problem.
     """
+    # this is a neccessary condition,
+    # otherwise the path will be created twice
+    if path[-1] == '/':
+        path = path[:-1]
+
     if not path or os.path.exists(path):
         return []
     (head, tail) = os.path.split(path)

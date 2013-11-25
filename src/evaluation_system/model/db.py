@@ -363,17 +363,17 @@ While initializing the schemas will get upgraded if required.
             
             if type_name == 'preview':
                 type_number = _result_preview
-                
                 # we store the relative path
                 expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_DIR)
                 reg_ex = re.compile(expression)
                 file_name = '/' + reg_ex.match(file_name).group(2)
+                data_to_store.append((rowid, file_name, type_number))
             elif type_name == 'plot':
                 type_number = _result_plot
             elif type_name == 'data':
                 type_number = _result_data
                 
-            data_to_store.append((rowid, file_name, type_number))
+            # data_to_store.append((rowid, file_name, type_number))
             
             
         insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, file_type) VALUES (?, ?, ?)'

@@ -349,10 +349,11 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     subdir = datetime.datetime.now().strftime('%Y%m%d')
     name = __preview_generate_name(plugin_name, file_name, metadata) 
     name = name + ext
-    full_name = os.path.join(path, subdir, name)
+    full_path = os.path.join(path, subdir)
+    full_name = os.path.join(full_path, name)
     
-    if not os.path.isdir(path):
-        utils.supermakedirs(path, 0777)
+    if not os.path.isdir(full_path):
+        utils.supermakedirs(full_path, 0777)
         
     if os.path.isfile(full_name):
         return __preview_unique_file(plugin_name, file_name, ext, metadata)
@@ -391,7 +392,7 @@ def _preview_create(plugin_name, result):
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
             
-        result.update(preview)
+    result.update(preview)
 
 
 def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):

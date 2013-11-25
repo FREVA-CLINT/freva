@@ -70,23 +70,26 @@ PLUGINS = 'plugin:'
 This keyword is also used for retrieving all plug-ins configurations."""
 
 PLUGIN_PATH = 'plugin_path'
-"Path to the plug-in's home"
+'''"Path to the plug-in's home'''
 
 PLUGIN_PYTHON_PATH = 'python_path'
-"Path to the plug-in's python sources that should be added to python's path when being run."
+'''Path to the plug-in's python sources that should be added to python's path when being run.'''
 
 PLUGIN_MODULE = 'module'
-"The full qualified module name where the plug-in is implemented."
+'''The full qualified module name where the plug-in is implemented.'''
+
+PREVIEW_PATH = '/usr/local/evaluation_system_web/static/preview'
+'''path to preview pictures.'''
 
 #: Solr #########################
 SOLR_HOST = 'solr.host'
-"Hostname of the Solr instance."
+'''Hostname of the Solr instance.'''
 
 SOLR_PORT = 'solr.port'
-"Port number of the Solr instance."
+'''Port number of the Solr instance.'''
 
 SOLR_CORE = 'solr.core'
-"Core name of the Solr instance."
+'''Core name of the Solr instance.'''
 
 
 class ConfigurationException(Exception):
