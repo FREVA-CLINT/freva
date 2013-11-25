@@ -23,6 +23,11 @@ _status_running = 3
 _status_scheduled = 4
 _status_not_scheduled = 5
 
+_result_preview = 0
+_result_plot = 1
+_result_data = 2
+_result_unknown = 9
+
 
 class HistoryEntry(object):
     """This object encapsulates the access to an entry in the history DB representing an analysis
@@ -260,7 +265,7 @@ While initializing the schemas will get upgraded if required.
         Exception class for failing status upgrades
         """
         def __init__(self, msg="Status could not be upgraded"):
-            Exception.__init__(msg)
+            super(UserDB.ExceptionStatusUpgrade, self).__init__(msg)
         
         
     def upgradeStatus(self, row_id, uid, status):
@@ -337,4 +342,33 @@ While initializing the schemas will get upgraded if required.
         res = self._getConnection().execute(sql_str, sql_params).fetchall()
         return [HistoryEntry(row) for row in res]
     
+    def storeResults(self, rowid, results):
+        """
+        :type rowid: integer
+        :param rowid: the row id of the history entry where the results belong to
+        :type results: dict with entries {str : dict} 
+        :param results: meta-dictionary with meta-data dictionaries assigned to the file names.
+        """
         
+        data_to_store = []
+        
+        for file_name in results:
+            metadata = results[file_name]
+            
+            type_name = metadata.get('type','')
+            type_number = _result_unknown
+            
+            if type_name == 'preview':
+                type_number = _result_preview
+                data_to_store.append((rowid, file_name, type_number))
+            elif type_name == 'plot':
+                type_number = _result_plot
+            elif type_name == 'data':
+                type_number = _result_data
+                
+            # data_to_store.append((rowid, file_name, type_number))
+            
+            
+        insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, file_type) VALUES (?, ?, ?)'
+        
+        self._getConnection().executemany(insert_string, data_to_store)
