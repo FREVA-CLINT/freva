@@ -28,6 +28,8 @@ MIKLIP = 'miklip'
 """DRS structure for miklip data."""
 CORDEX = 'cordex'
 """DRS structure for cordex data."""
+MODULE-C = 'module-c'
+"""DRS structure for modulec data."""
 
 
 class DRSFile(object):
@@ -116,6 +118,16 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
+        },
+        #MODULE-C data
+         MODULE-C : {
+         "root_dir":"/miklip/integration/data4miklip/model/regional",
+         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/miklip_project/institute/model/version/time_frequency/variable/file_name".split('/'),
+         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.miklip_project.institute.model.version.time_frequency.variable".split('.'),
+         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-miklip_project_model-version-time_frequency-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": MODULE-C,
+         "defaults" : {"project":"baseline0"}
         },
      }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
