@@ -39,7 +39,7 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         #Cmip5 data
         CMIP5 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -50,7 +50,7 @@ class DRSFile(object):
         },
         #baseline 0 data      
         BASELINE0 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -61,7 +61,7 @@ class DRSFile(object):
         },
         #baseline 1 data
         BASELINE1 : {
-         "root_dir":"/miklip/integration/data4miklip/model",
+         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
@@ -98,7 +98,7 @@ class DRSFile(object):
          "data_type": PROJECTDATA,
          "defaults" : {}
          },
-        #MIKLIP  data
+        #MIKLIP  data PREPARED NOT USED
         MIKLIP : {
          "root_dir":"/miklip/integration/data4miklip/model",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
