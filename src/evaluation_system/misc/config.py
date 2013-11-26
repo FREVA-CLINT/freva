@@ -57,6 +57,8 @@ SCHEDULER_COMMAND='/client/bin/sbatch'
 
 SCHEDULER_OPTIONS='--begin=now+'+str(SCHEDULER_WAITING_TIME)
 
+NUMBER_OF_PROCESSES = 24
+
 DATABASE_FILE = 'database_file'
 ''' Determines the path of the database file '''
 

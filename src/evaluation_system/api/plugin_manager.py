@@ -397,7 +397,7 @@ def _preview_create(plugin_name, result):
             
 
     if todo_list:
-        p =  Pool(24)
+        p =  Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
             
     result.update(preview)
