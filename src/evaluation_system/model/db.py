@@ -163,6 +163,8 @@ but at the present time the system works as a toolbox that the users start from 
                                                               timeout=config.DATABASE_TIMEOUT,
                                                               isolation_level=None,
                                                               detect_types=sqlite3.PARSE_DECLTYPES)
+            # using this pragma is slightly usafe,
+            # but speeds up the access significantly
             _connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
 
         return _connection_pool[self._db_file]
