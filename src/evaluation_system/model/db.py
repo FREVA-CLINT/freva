@@ -11,8 +11,6 @@ import os
 import re
 import logging
 from evaluation_system.misc import py27, config
-from conf import settings
-import conf
 log = logging.getLogger(__name__)
 
 #Store sqlite3 file and pool
@@ -364,9 +362,9 @@ While initializing the schemas will get upgraded if required.
             if type_name == 'preview':
                 type_number = _result_preview
                 # we store the relative path
-                expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_DIR)
+                expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
                 reg_ex = re.compile(expression)
-                file_name = '/' + reg_ex.match(file_name).group(2)
+                file_name = reg_ex.match(file_name).group(2)
                 data_to_store.append((rowid, file_name, type_number))
             elif type_name == 'plot':
                 type_number = _result_plot
