@@ -36,10 +36,10 @@ DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 BASE_DIR_LOCATION = 'base_dir_location'
 '''The location of the directory defined in $base_dir.'''
 
-DATABASE_TIMEOUT = 10
+DATABASE_TIMEOUT = 2
 '''Time out in seconds for the SQLite database'''
 
-SCHEDULER_WAITING_TIME = 11
+SCHEDULER_WAITING_TIME = 3
 '''Waiting time in seconds before the scheduler runs the job'''
 
 SCHEDULER_OUTPUT_DIR = 'slurm/output/'
