@@ -33,6 +33,7 @@ import evaluation_system.model.db as db
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
 from subprocess import Popen, STDOUT, PIPE
+from multiprocessing import Pool
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
@@ -372,6 +373,8 @@ def _preview_create(plugin_name, result):
 
     preview = dict()
     
+    convert_list = []
+    
     for file_name in result:
         metadata = result[file_name]
         todo=metadata.get('todo', '')
@@ -387,10 +390,15 @@ def _preview_create(plugin_name, result):
             
         elif todo == 'convert':
             target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
-            __preview_convert(file_name, target_name)
+            convert_list.append((file_name, target_name))
+            # __preview_convert(file_name, target_name)
             prev_meta = dict()
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
+            
+    if convert_list:
+        p =  Pool(24)
+        p.map(__preview_convert, convert_list)
             
     result.update(preview)
 
