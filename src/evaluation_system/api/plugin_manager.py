@@ -373,7 +373,7 @@ def _preview_create(plugin_name, result):
 
     preview = dict()
     
-    convert_list = []
+    todo_list = []
     
     for file_name in result:
         metadata = result[file_name]
@@ -383,22 +383,22 @@ def _preview_create(plugin_name, result):
         if todo == 'copy':
             ext = os.path.splitext(file_name)[-1]
             target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
-            __preview_copy(file_name, target_name)
+            todo_list.append((__preview_copy, file_name, target_name))
             prev_meta = dict()
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
             
         elif todo == 'convert':
             target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
-            convert_list.append((file_name, target_name))
-            # __preview_convert(file_name, target_name)
+            todo_list.append((__preview_convert, file_name, target_name))
             prev_meta = dict()
             prev_meta['type']='preview'
             preview[target_name]=prev_meta
             
-    if convert_list:
+
+    if todo_list:
         p =  Pool(24)
-        p.map(__preview_convert, convert_list)
+        p.map(utils.mp_wrap_fn, todo_list)
             
     result.update(preview)
 
