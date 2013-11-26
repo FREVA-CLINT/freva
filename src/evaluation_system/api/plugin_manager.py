@@ -449,22 +449,28 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
         #In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf)
 
-        
-        # create the preview
-        logging.debug('Converting....')
-        _preview_create(plugin_name, result)
-        logging.debug('finished')
-
-        # write the created files to the database
-        logging.debug('Storing results into data base....')
-        user.getUserDB().storeResults(rowid, result)
-        logging.debug('finished')
-
-        # temporary set all processes to finished
-        user.getUserDB().upgradeStatus(rowid,
-                                       user.getName(),
-                                       db._status_finished)
-
+        # save results when existing
+        if result is None:
+            user.getUserDB().upgradeStatus(rowid,
+                                            user.getName(),
+                                            db._status_finished_no_output)
+            
+        else:
+            # create the preview
+            logging.debug('Converting....')
+            _preview_create(plugin_name, result)
+            logging.debug('finished')
+    
+            # write the created files to the database
+            logging.debug('Storing results into data base....')
+            user.getUserDB().storeResults(rowid, result)
+            logging.debug('finished')
+    
+            # temporary set all processes to finished
+            user.getUserDB().upgradeStatus(rowid,
+                                           user.getName(),
+                                           db._status_finished)
+    
     except:
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),

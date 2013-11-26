@@ -163,6 +163,10 @@ but at the present time the system works as a toolbox that the users start from 
                                                               timeout=config.DATABASE_TIMEOUT,
                                                               isolation_level=None,
                                                               detect_types=sqlite3.PARSE_DECLTYPES)
+            # using this pragma is slightly usafe,
+            # but speeds up the access significantly
+            _connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
+
         return _connection_pool[self._db_file]
     
     def initialize(self, tool_name=None):
@@ -365,13 +369,12 @@ While initializing the schemas will get upgraded if required.
                 expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
                 reg_ex = re.compile(expression)
                 file_name = reg_ex.match(file_name).group(2)
-                data_to_store.append((rowid, file_name, type_number))
             elif type_name == 'plot':
                 type_number = _result_plot
             elif type_name == 'data':
                 type_number = _result_data
                 
-            # data_to_store.append((rowid, file_name, type_number))
+            data_to_store.append((rowid, file_name, type_number))
             
             
         insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, file_type) VALUES (?, ?, ?)'
