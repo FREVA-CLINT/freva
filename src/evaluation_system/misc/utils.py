@@ -31,7 +31,17 @@ def supermakedirs(path, mode):
     res += [path]
     return res
 
-
+def mp_wrap_fn(args):
+    """
+    Wrapper for multi-processing functions with more than one argument.
+    :type args: tuple
+    :param args: the function name and its arguments 
+    """
+    
+    function_to_call = args[0]
+    args = args[1:]
+    
+    return function_to_call(*args)
 
 class Struct(object):
     """This class is used for converting dictionaries into classes in order to access them
