@@ -378,7 +378,7 @@ def _preview_create(plugin_name, result):
         
         
         if todo == 'copy':
-            ext = os.path.splitext(file_name)
+            ext = os.path.splitext(file_name)[-1]
             target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
             __preview_copy(file_name, target_name)
             prev_meta = dict()
