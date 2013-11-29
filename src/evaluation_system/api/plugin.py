@@ -118,9 +118,9 @@ the current user, i.e. the user that started this program, is created."""
         plugin_name, user = self.__class__.__name__, self._user
         self._special_variables = TemplateDict(
             USER_BASE_DIR      = user.getUserBaseDir,
-            USER_CACHE_DIR     = partial(user.getUserCacheDir, tool=plugin_name, create=True),
-            USER_PLOTS_DIR     = partial(user.getUserPlotsDir, tool=plugin_name, create=True),
-            USER_OUTPUT_DIR    = partial(user.getUserOutputDir, tool=plugin_name, create=True),
+            USER_CACHE_DIR     = partial(user.getUserCacheDir, tool=plugin_name, create=False),
+            USER_PLOTS_DIR     = partial(user.getUserPlotsDir, tool=plugin_name, create=False),
+            USER_OUTPUT_DIR    = partial(user.getUserOutputDir, tool=plugin_name, create=False),
             SYSTEM_DATE        = lambda: datetime.now().strftime('%Y%m%d'),
             SYSTEM_DATETIME    = lambda: datetime.now().strftime('%Y%m%d_%H%M%S'),
             SYSTEM_TIMESTAMP   = lambda: str(long(time() * 1000)),
