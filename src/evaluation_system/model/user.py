@@ -8,7 +8,7 @@ import pwd
 import os
 import sys
 from ConfigParser import SafeConfigParser as Config
-from evaluation_system.misc import config
+from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
 #----------------------------- from evaluation_system.api.plugin import metadict
 
@@ -155,7 +155,7 @@ the current user, i.e. the one that started the application, is created instead.
         
         if create and not os.path.isdir(dir_name):
             #we are letting this fail in case of problems.
-            os.makedirs(dir_name)
+            utils.supermakedirs(dir_name, 0777)
             
         return dir_name
 
