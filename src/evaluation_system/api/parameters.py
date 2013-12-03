@@ -443,7 +443,11 @@ class SolrField(String):
             self.group = kwargs.pop('group')
         except KeyError:
             self.group = 1
-        super(SolrField,self).__init__(*args,**kwargs)
+        try: 
+            self.multiple = kwargs.pop('multiple')
+        except KeyError:
+            self.multiple = False
+	super(SolrField,self).__init__(*args,**kwargs)
         
     
 #    def parse(self, value):
