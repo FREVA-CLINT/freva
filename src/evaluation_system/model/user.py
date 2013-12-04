@@ -155,7 +155,7 @@ the current user, i.e. the one that started the application, is created instead.
         
         if create and not os.path.isdir(dir_name):
             #we are letting this fail in case of problems.
-            utils.supermakedirs(dir_name, 0777)
+            utils.supermakedirs(dir_name, 0755)
             
         return dir_name
 

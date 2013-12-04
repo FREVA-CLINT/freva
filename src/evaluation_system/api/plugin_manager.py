@@ -354,7 +354,7 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     full_name = os.path.join(full_path, name)
     
     if not os.path.isdir(full_path):
-        utils.supermakedirs(full_path, 0777)
+        utils.supermakedirs(full_path, 0755)
         
     if os.path.isfile(full_name):
         return __preview_unique_file(plugin_name, file_name, ext, metadata)
@@ -527,7 +527,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
     if not os.path.exists(slurmindir):
-        utils.supermakedirs(slurmindir, 0777)
+        utils.supermakedirs(slurmindir, 0755)
 
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
