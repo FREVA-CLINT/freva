@@ -21,6 +21,8 @@ class Test(unittest.TestCase):
         sbatch_exe = spawn.find_executable('sbatch')
         squeue_exe = spawn.find_executable('squeue')
         
+        print 'sbatch_exe', sbatch_exe
+        
         # check weather the commands exist     
         self.assertFalse(sbatch_exe is None, "can not find 'sbatch'")
         self.assertFalse(squeue_exe is None, "can not find 'squeue'")
@@ -33,7 +35,7 @@ class Test(unittest.TestCase):
                                   testuser.getName())
         
         if not os.path.exists(slurmindir):
-            utils.supermakedirs(slurmindir, 0777)
+            utils.supermakedirs(slurmindir, 0755)
             
         # create the slurm file object
         infile = os.path.join(slurmindir, 'slurm_test_input_file')
@@ -42,26 +44,27 @@ class Test(unittest.TestCase):
         slurmoutdir = testuser.getUserSchedulerOutputDir()
 
         if not os.path.exists(slurmoutdir):
-            utils.supermakedirs(slurmoutdir, 0777)
+            utils.supermakedirs(slurmoutdir, 0755)
 
         with open(infile, 'w') as fp:
             sf = slurm.slurm_file()
         
-            sf.set_default_options(self._user,
+            sf.set_default_options(testuser,
                                    'cat $0',
-                                   outdir=self._slurmoutdir)
+                                   outdir=slurmoutdir)
         
             sf.write_to_file(fp)
             fp.flush()
 
         
         # create the batch command
+        # config.SCHEDULER_COMMAND,
         command = ['/bin/bash',
                    '-c',
-                   '%s %s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
-                                            config.SCHEDULER_OPTIONS,
-                                            self._user.getName(),
-                                            self._infile)
+                   '%s %s --uid=%s %s\n' % (sbatch_exe,
+                                            config.SCHEDULER_OPTIONS, 
+                                            testuser.getName(),
+                                            infile)
           ]
 
         # submit the job 
@@ -75,7 +78,7 @@ class Test(unittest.TestCase):
         out_first_line = stdout.split('\n')[0]
                 
         # read the id from stdout
-        self.assertTrue(out_first_line.split(' ')[0] == 'Submitted')
+        self.assertTrue(out_first_line.split(' ')[0] == 'Submitted', 'Received: ' + str(out_first_line))
         slurm_id = int(out_first_line.split(' ')[-1])
                  
         
