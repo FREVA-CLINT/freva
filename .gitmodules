@@ -25,3 +25,9 @@
 [submodule "tools/dsi"]
 	path = tools/dsi
 	url = /miklip/integration/repositories/dsi.git
+[submodule "tools/vady"]
+	path = tools/vady
+	url = /miklip/integration/repositories/vady.git
+[submodule "tools/leadtimeselektor"]
+	path = tools/leadtimeselektor
+	url = /miklip/integration/repositories/leadtimeselector.git
