@@ -40,7 +40,11 @@ DATABASE_TIMEOUT = 2
 '''Time out in seconds for the SQLite database'''
 
 SCHEDULER_WAITING_TIME = 3
-'''Waiting time in seconds before the scheduler runs the job'''
+"""
+Waiting time in seconds before the scheduler runs the job
+We suggest: DATABASE_TIMEOUT+1
+"""
+
 
 SCHEDULER_OUTPUT_DIR = 'slurm/output/'
 ''' Determines the folder the SLURM output files will be saved in ''' 
