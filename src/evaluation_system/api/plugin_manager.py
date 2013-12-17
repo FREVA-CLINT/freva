@@ -354,7 +354,7 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     full_name = os.path.join(full_path, name)
     
     if not os.path.isdir(full_path):
-        utils.supermakedirs(full_path, 0755)
+        utils.supermakedirs(full_path, 0777)
         
     if os.path.isfile(full_name):
         return __preview_unique_file(plugin_name, file_name, ext, metadata)
