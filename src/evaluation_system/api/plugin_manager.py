@@ -370,8 +370,6 @@ def _preview_create(plugin_name, result):
     :type result: meta_dict
     :param result: a meta dictionary describing the result files
     """
-
-    preview = dict()
     
     todo_list = []
     
@@ -384,24 +382,19 @@ def _preview_create(plugin_name, result):
             ext = os.path.splitext(file_name)[-1]
             target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
             todo_list.append((__preview_copy, file_name, target_name))
-            prev_meta = dict()
-            prev_meta['type']='preview'
-            preview[target_name]=prev_meta
+            metadata['prieview_path'] = target_name
             
         elif todo == 'convert':
             target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
             todo_list.append((__preview_convert, file_name, target_name))
-            prev_meta = dict()
-            prev_meta['type']='preview'
-            preview[target_name]=prev_meta
+            metadata['prieview_path'] = target_name
             
+        result[file_name]=metadata
 
     if todo_list:
         p =  Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
             
-    result.update(preview)
-
 
 def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.

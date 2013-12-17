@@ -352,6 +352,10 @@ While initializing the schemas will get upgraded if required.
         """
         
         data_to_store = []
+
+        # regex to get the relative path
+        expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
+        reg_ex = re.compile(expression)
         
         for file_name in results:
             metadata = results[file_name]
@@ -359,21 +363,22 @@ While initializing the schemas will get upgraded if required.
             type_name = metadata.get('type','')
             type_number = _result_unknown
             
-            if type_name == 'preview':
-                type_number = _result_preview
-                # we store the relative path
-                expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
-                reg_ex = re.compile(expression)
-                file_name = reg_ex.match(file_name).group(2)
-                data_to_store.append((rowid, file_name, type_number))
-            elif type_name == 'plot':
+            preview_path = metadata.get('preview_path', '')
+            preview_file = ''
+
+            if preview_path:
+                # We store the relative path for previews only.
+                # Which allows us to move the preview files to a different folder.
+                preview_file = reg_ex.match(preview_path).group(2)
+                        
+            if type_name == 'plot':
                 type_number = _result_plot
             elif type_name == 'data':
                 type_number = _result_data
                 
-            # data_to_store.append((rowid, file_name, type_number))
+            data_to_store.append((rowid, file_name, preview_file, type_number))
             
             
-        insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, file_type) VALUES (?, ?, ?)'
+        insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, preview_file, file_type) VALUES (?, ?, ?, ?)'
         
         self._getConnection().executemany(insert_string, data_to_store)
