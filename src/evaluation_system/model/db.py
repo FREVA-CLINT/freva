@@ -163,6 +163,9 @@ but at the present time the system works as a toolbox that the users start from 
                                                               timeout=config.DATABASE_TIMEOUT,
                                                               isolation_level=None,
                                                               detect_types=sqlite3.PARSE_DECLTYPES)
+            
+            _connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
+                                                   
         return _connection_pool[self._db_file]
     
     def initialize(self, tool_name=None):
