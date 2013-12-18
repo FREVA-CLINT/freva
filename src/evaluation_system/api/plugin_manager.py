@@ -382,12 +382,12 @@ def _preview_create(plugin_name, result):
             ext = os.path.splitext(file_name)[-1]
             target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
             todo_list.append((__preview_copy, file_name, target_name))
-            metadata['prieview_path'] = target_name
+            metadata['preview_path'] = target_name
             
         elif todo == 'convert':
             target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
             todo_list.append((__preview_convert, file_name, target_name))
-            metadata['prieview_path'] = target_name
+            metadata['preview_path'] = target_name
             
         result[file_name]=metadata
 
