@@ -4,6 +4,7 @@
 This modules encapsulates all access to databases.
 '''
 import sqlite3
+import MySQLdb
 from datetime import datetime
 import json
 import ast
@@ -159,10 +160,14 @@ but at the present time the system works as a toolbox that the users start from 
     def _getConnection(self):
         #trying to avoid holding a lock to the DB for too long
         if self._db_file not in _connection_pool:
-            _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
-                                                              timeout=config.DATABASE_TIMEOUT,
-                                                              isolation_level=None,
-                                                              detect_types=sqlite3.PARSE_DECLTYPES)
+#            _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
+#                                                              timeout=config.DATABASE_TIMEOUT,
+#                                                              isolation_level=None,
+#                                                              detect_types=sqlite3.PARSE_DECLTYPES)
+            _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
+                                                              user="test", # your username
+                                                              passwd="123", # your password
+                                                              db="evaluationsystem") # name of the data base
             
             _connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
                                                    
