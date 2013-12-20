@@ -67,15 +67,16 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
 
 :param row: the DB row for which this entry will be created.
 """
-        self.rowid = row[1]
-        self.timestamp = str(row[2]) #datetime object
-        self.tool_name = row[3]
-        self.version = ast.literal_eval(row[4]) if row[4] else (None,None,None)
-        self.configuration = json.loads(row[5]) if row[5] else {}
+	#print len(row)
+        self.rowid = row[0]
+        self.timestamp = str(row[1]) #datetime object
+        self.tool_name = row[2]
+        self.version = ast.literal_eval(row[3]) if row[3] else (None,None,None)
+        self.configuration = json.loads(row[4]) if row[4] else {}
         self.results = []#json.loads(row[5]) if row[5] else {}
-        self.slurm_output = row[6]
-        self.uid = row[7]
-        self.status = row[8]
+        self.slurm_output = row[5]
+        self.uid = row[6]
+        self.status = row[7]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -173,7 +174,7 @@ but at the present time the system works as a toolbox that the users start from 
             
             
 	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
-            #_connection_pool[self._db_file].paramstyle = 'qmark'                                       
+            _connection_pool[self._db_file].paramstyle = 'qmark'                                       
         return _connection_pool[self._db_file].cursor()
     
     def initialize(self, tool_name=None):
@@ -329,12 +330,12 @@ While initializing the schemas will get upgraded if required.
         #print uid
         #ast.literal_eval(node_or_string)
         sql_params = []
-        sql_str = "SELECT id, * FROM history_history"
+        sql_str = "SELECT * FROM history_history"
         if tool_name or since or until or entry_ids or uid:
-            sql_str = '%s WHERE 1=1' % sql_str
+            sql_str = '%s WHERE "1"="1"' % sql_str
             if entry_ids is not None:
                 if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND id in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
+                sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
                 sql_str = '%s AND tool=%s' % sql_str
@@ -346,17 +347,20 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND timestamp < %s' % sql_str
                 sql_params.append(until)
             if uid is not None:
-                sql_str = '%s AND uid = %s' % sql_str
+                sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        sql_str = sql_str + ' ORDER BY timestamp DESC'
+        #sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:
-            sql_str = '%s LIMIT %s' % sql_str
+            sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
-        res = self._getConnection().execute(sql_str, sql_params).fetchall()
-        return [HistoryEntry(row) for row in res]
+        res = self._getConnection()
+	res.execute(sql_str)
+	res = res.fetchall()
+        #print res
+	return [HistoryEntry(row) for row in res]
     
     def storeResults(self, rowid, results):
         """
@@ -394,6 +398,6 @@ While initializing the schemas will get upgraded if required.
             data_to_store.append((rowid, file_name, preview_file, type_number))
             
             
-        insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
+        insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
         
         self._getConnection().executemany(insert_string, data_to_store)
