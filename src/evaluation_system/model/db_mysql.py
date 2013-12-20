@@ -192,7 +192,7 @@ While initializing the schemas will get upgraded if required.
             for table_name, version in self.__tables['__order']:
                 db_perform_update_step = True
                 try:
-                    res = self._getConnection().execute('SELECT * FROM meta WHERE table_name = ? AND version = ?', (table_name, version))
+                    res = self._getConnection().execute('SELECT * FROM meta WHERE table_name = %s AND version = %s', (table_name, version))
                     res = res.fetchone();
                     if res:
                         #the expected state is done, so just skip it 
@@ -261,8 +261,8 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str='UPDATE history_history SET slurm_output=?, status=?' 
-        update_str+='WHERE rowid=? AND uid=? AND status=?'
+        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
+        update_str+='WHERE id=%s AND uid=%s AND status=%s'
         
         entries = (slurmFileName,
                    _status_scheduled,
@@ -337,21 +337,21 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = '%s AND tool=?' % sql_str
+                sql_str = '%s AND tool=%s' % sql_str
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
-                sql_str = '%s AND timestamp > ?' % sql_str
+                sql_str = '%s AND timestamp > %s' % sql_str
                 sql_params.append(since)
             if until is not None:
-                sql_str = '%s AND timestamp < ?' % sql_str
+                sql_str = '%s AND timestamp < %s' % sql_str
                 sql_params.append(until)
             if uid is not None:
-                sql_str = '%s AND uid = ?' % sql_str
+                sql_str = '%s AND uid = %s' % sql_str
                 sql_params.append(uid)
                     
         sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:
-            sql_str = '%s LIMIT ?' % sql_str
+            sql_str = '%s LIMIT %s' % sql_str
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
