@@ -4,7 +4,8 @@
 This modules encapsulates all access to databases.
 '''
 import sqlite3
-#import MySQLdb
+import MySQLdb
+MySQLdb.paramstyle = 'qmark'
 from datetime import datetime
 import json
 import ast
@@ -66,15 +67,16 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
 
 :param row: the DB row for which this entry will be created.
 """
-        self.rowid = row[1]
-        self.timestamp = str(row[2]) #datetime object
-        self.tool_name = row[3]
-        self.version = ast.literal_eval(row[4]) if row[4] else (None,None,None)
-        self.configuration = json.loads(row[5]) if row[5] else {}
+	#print len(row)
+        self.rowid = row[0]
+        self.timestamp = str(row[1]) #datetime object
+        self.tool_name = row[2]
+        self.version = ast.literal_eval(row[3]) if row[3] else (None,None,None)
+        self.configuration = json.loads(row[4]) if row[4] else {}
         self.results = []#json.loads(row[5]) if row[5] else {}
-        self.slurm_output = row[6]
-        self.uid = row[7]
-        self.status = row[8]
+        self.slurm_output = row[5]
+        self.uid = row[6]
+        self.status = row[7]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -160,18 +162,20 @@ but at the present time the system works as a toolbox that the users start from 
     def _getConnection(self):
         #trying to avoid holding a lock to the DB for too long
         if self._db_file not in _connection_pool:
-            _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
-                                                              timeout=config.DATABASE_TIMEOUT,
-                                                              isolation_level=None,
-                                                              detect_types=sqlite3.PARSE_DECLTYPES)
-#            _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
-#                                                              user="test", # your username
-#                                                              passwd="123", # your password
-#                                                              db="evaluationsystem") # name of the data base
+#            _connection_pool[self._db_file] = sqlite3.connect(self._db_file,
+#                                                              timeout=config.DATABASE_TIMEOUT,
+#                                                              isolation_level=None,
+#                                                              detect_types=sqlite3.PARSE_DECLTYPES)
+            #MySQLdb.paramstyle = 'qmark'
+	    _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
+                                                              user="test", # your username
+                                                              passwd="123", # your password
+                                                              db="evaluationsystem") # name of the data base
             
-            _connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
-                                                   
-        return _connection_pool[self._db_file]
+            
+	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
+            _connection_pool[self._db_file].paramstyle = 'qmark'                                       
+        return _connection_pool[self._db_file].cursor()
     
     def initialize(self, tool_name=None):
         """If not already initialized it will performed the required actions.
@@ -189,7 +193,7 @@ While initializing the schemas will get upgraded if required.
             for table_name, version in self.__tables['__order']:
                 db_perform_update_step = True
                 try:
-                    res = self._getConnection().execute('SELECT * FROM meta WHERE table_name = ? AND version = ?', (table_name, version))
+                    res = self._getConnection().execute('SELECT * FROM meta WHERE table_name = %s AND version = %s', (table_name, version))
                     res = res.fetchone();
                     if res:
                         #the expected state is done, so just skip it 
@@ -245,8 +249,8 @@ While initializing the schemas will get upgraded if required.
                 status)
         log.debug('Row: %s', row)
         
-        cursor = self._getConnection().cursor() 
-        cursor.execute("INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(?, ?, ?, ?, ?, ?, ?);", row)
+        cursor = self._getConnection()#.cursor() 
+        cursor.execute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(%s, %s, %s, %s, %s, %s, %s);""", row)
         
         return cursor.lastrowid
 
@@ -258,8 +262,8 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str='UPDATE history_history SET slurm_output=?, status=?' 
-        update_str+='WHERE rowid=? AND uid=? AND status=?'
+        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
+        update_str+='WHERE id=%s AND uid=%s AND status=%s'
         
         entries = (slurmFileName,
                    _status_scheduled,
@@ -285,10 +289,14 @@ While initializing the schemas will get upgraded if required.
         After validation the status will be upgraded. 
         """
         
-        select_str='SELECT status FROM history_history WHERE rowid=? AND uid=?'
+        select_str='SELECT status FROM history_history WHERE id=%s AND uid=%s'
         
-        cur = self._getConnection().execute(select_str, (row_id, uid))
-        rows = cur.fetchall()
+        cur = self._getConnection()
+	cur.execute(select_str, (row_id,uid))
+        
+	print  cur
+	print uid, row_id
+	rows = cur.fetchall()
         
         # check if only one entry is in the database
         if len(rows) != 1:
@@ -301,7 +309,7 @@ While initializing the schemas will get upgraded if required.
             raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
         
         # finally, do the SQL update
-        update_str='UPDATE history_history SET status=? WHERE rowid=? AND uid=?'                  
+        update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
         self._getConnection().execute(update_str, (status, row_id, uid))
         
         
@@ -322,34 +330,37 @@ While initializing the schemas will get upgraded if required.
         #print uid
         #ast.literal_eval(node_or_string)
         sql_params = []
-        sql_str = "SELECT id, * FROM history_history"
+        sql_str = "SELECT * FROM history_history"
         if tool_name or since or until or entry_ids or uid:
-            sql_str = '%s WHERE 1=1' % sql_str
+            sql_str = '%s WHERE "1"="1"' % sql_str
             if entry_ids is not None:
                 if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND id in (?%s)' % (sql_str, ', ?'*(len(entry_ids)-1))
+                sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = '%s AND tool=?' % sql_str
+                sql_str = '%s AND tool=%s' % sql_str
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
-                sql_str = '%s AND timestamp > ?' % sql_str
+                sql_str = '%s AND timestamp > %s' % sql_str
                 sql_params.append(since)
             if until is not None:
-                sql_str = '%s AND timestamp < ?' % sql_str
+                sql_str = '%s AND timestamp < %s' % sql_str
                 sql_params.append(until)
             if uid is not None:
-                sql_str = '%s AND uid = ?' % sql_str
+                sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        sql_str = sql_str + ' ORDER BY timestamp DESC'
+        #sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:
-            sql_str = '%s LIMIT ?' % sql_str
+            sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
-        res = self._getConnection().execute(sql_str, sql_params).fetchall()
-        return [HistoryEntry(row) for row in res]
+        res = self._getConnection()
+	res.execute(sql_str)
+	res = res.fetchall()
+        #print res
+	return [HistoryEntry(row) for row in res]
     
     def storeResults(self, rowid, results):
         """
@@ -387,6 +398,6 @@ While initializing the schemas will get upgraded if required.
             data_to_store.append((rowid, file_name, preview_file, type_number))
             
             
-        insert_string = 'INSERT INTO HISTORY_RESULT(history_id_id, output_file, preview_file, file_type) VALUES (?, ?, ?, ?)'
+        insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
         
         self._getConnection().executemany(insert_string, data_to_store)
