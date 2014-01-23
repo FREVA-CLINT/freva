@@ -523,7 +523,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
     if not os.path.exists(slurmindir):
-        utils.supermakedirs(slurmindir, 0755)
+        utils.supermakedirs(slurmindir, 0777)
 
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
@@ -539,7 +539,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
         slurmoutdir = os.path.join(slurmoutdir, plugin_name)
 
     if not os.path.exists(slurmoutdir):
-        os.makedirs(slurmoutdir)
+        utils.supermakedirs(slurmoutdir, 0755)
 
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
