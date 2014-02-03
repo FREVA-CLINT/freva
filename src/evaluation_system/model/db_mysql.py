@@ -168,8 +168,8 @@ but at the present time the system works as a toolbox that the users start from 
 #                                                              detect_types=sqlite3.PARSE_DECLTYPES)
             #MySQLdb.paramstyle = 'qmark'
 	    _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
-                                                              user="test", # your username
-                                                              passwd="123", # your password
+                                                              user="evaluationsystem", # your username
+                                                              passwd="miklip", # your password
                                                               db="evaluationsystem") # name of the data base
             
             
