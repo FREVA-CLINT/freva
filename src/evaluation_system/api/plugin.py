@@ -241,8 +241,12 @@ Since it returns a string, the implementing class might use it and extend it if 
 
 :param width: Wrap text to this width.
 :returns: a string containing the help."""
-        return '%s (v%s): %s\n%s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), \
-                                     self.__short_description__, self.__parameters__.getHelpString())
+        if hasattr(self,'__long_description__'):
+		help_txt = self.__long_description__
+	else:
+		help_txt = self.__short_description__
+	return '%s (v%s): %s\n%s' % (self.__class__.__name__, '.'.join([str(i) for i in self.__version__]), \
+                                     help_txt, self.__parameters__.getHelpString())
         
     def getCurrentConfig(self, config_dict = {}):
         """

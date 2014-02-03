@@ -31,3 +31,6 @@
 [submodule "tools/leadtimeselektor"]
 	path = tools/leadtimeselektor
 	url = /miklip/integration/repositories/leadtimeselector.git
+[submodule "tools/etccdi"]
+	path = tools/etccdi
+	url = /miklip/integration/repositories/etccdi.git
