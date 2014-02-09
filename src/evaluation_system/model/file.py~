@@ -74,7 +74,7 @@ class DRSFile(object):
          "parts_dir":"project/realm/variable/time_frequency/data_structure/institute/experiment/version/file_name".split('/'),
          "parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment".split('/'),
          "parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment/version".split('/'),
-         "parts_file_name":"variable-experiment-level-time".split('-'),
+         "parts_file_name":"variable-experiment-level-version-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
          "defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
