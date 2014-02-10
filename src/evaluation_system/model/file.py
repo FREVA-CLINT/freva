@@ -112,7 +112,7 @@ class DRSFile(object):
          "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
          "parts_dir":"project/product/domain/experiment/driving_model/ensemble/modulec_project/institute/model/rcm_ensemble/time_frequency/variable/file_name".split('/'),
          "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.modulec_project.institute.model.rcm_ensemble.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-module_project-model-rcm_ensemble-time_frequency-time".split('-'),
+         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-modulec_project-model-rcm_ensemble-time_frequency-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": MODULEC,
          "defaults" : {"project":"baseline0"}
