@@ -16,7 +16,7 @@ CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
 BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
-BASELINE1 = 'baseline1'
+MIKLIP = 'miklip'
 """DRS structure for Baseline 0 Data"""
 OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
@@ -24,8 +24,6 @@ REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
 PROJECTDATA = 'projectdata'
 """DRS structure for project data."""
-MIKLIP = 'miklip'
-"""DRS structure for miklip data."""
 CORDEX = 'cordex'
 """DRS structure for cordex data."""
 MODULEC = 'modulec'
@@ -59,15 +57,15 @@ class DRSFile(object):
          "data_type": BASELINE0,
          "defaults" : {"project":"baseline0", "institute":"MPI-M", "model":"MPI-ESM-LR"}
         },
-        #baseline 1 data
-        BASELINE1 : {
+        #miklip data
+        MIKLIP : {
          "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "data_type": BASELINE1,
-         "defaults" : {"project":"baseline1", "institute":"MPI-M", "model":"MPI-ESM-?R"}
+         "data_type": MIKLIP,
+         "defaults" : {"institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
@@ -98,16 +96,6 @@ class DRSFile(object):
          "data_type": PROJECTDATA,
          "defaults" : {}
          },
-        #MIKLIP  data PREPARED NOT USED
-        MIKLIP : {
-         "root_dir":"/miklip/integration/data4miklip/model",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": MIKLIP,
-         "defaults" : {"project":"miklip", "institute":"MPI-M", "model":"MPI-ESM-?R"}
-         },
         ##REGIONAL data
         #CORDEX data
          CORDEX : {
@@ -122,8 +110,8 @@ class DRSFile(object):
         #MODULEC data
          MODULEC : {
          "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
-         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/miklip_project/institute/model/rcm_ensemble/time_frequency/variable/file_name".split('/'),
-         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.miklip_project.institute.model.rcm_ensemble.time_frequency.variable".split('.'),
+         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/modulec_project/institute/model/rcm_ensemble/time_frequency/variable/file_name".split('/'),
+         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.modulec_project.institute.model.rcm_ensemble.time_frequency.variable".split('.'),
          "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-miklip_project-model-rcm_ensemble-time_frequency-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": MODULEC,
