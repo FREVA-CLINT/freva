@@ -86,7 +86,8 @@ These are initialized per user and plug-in. The variables are:
 USER_BASE_DIR      Absolute path to the central directory for this user in the evaluation system. 
 USER_OUTPUT_DIR    Absolute path to where the output data for this user is stored. 
 USER_PLOTS_DIR     Absolute path to where the plots for this user is stored. 
-USER_CACHE_DIR     Absolute path to where the cached data for this user is stored. 
+USER_CACHE_DIR     Absolute path to where the cached data for this user is stored.
+USER_UID           The users UID 
 SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130). 
 SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123). 
 SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. a new number every millisecond, e.g. 1358929581838).
@@ -121,6 +122,7 @@ the current user, i.e. the user that started this program, is created."""
             USER_CACHE_DIR     = partial(user.getUserCacheDir, tool=plugin_name, create=False),
             USER_PLOTS_DIR     = partial(user.getUserPlotsDir, tool=plugin_name, create=False),
             USER_OUTPUT_DIR    = partial(user.getUserOutputDir, tool=plugin_name, create=False),
+            USER_UID           = lambda: user.getName,
             SYSTEM_DATE        = lambda: datetime.now().strftime('%Y%m%d'),
             SYSTEM_DATETIME    = lambda: datetime.now().strftime('%Y%m%d_%H%M%S'),
             SYSTEM_TIMESTAMP   = lambda: str(long(time() * 1000)),
