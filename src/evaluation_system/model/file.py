@@ -48,10 +48,10 @@ class DRSFile(object):
         },
         #baseline 0 data      
         BASELINE0 : {
-         "root_dir":"/miklip/integration/data4miklip/model/global/miklip/baseline0",
-         "parts_dir":"product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "root_dir":"/miklip/integration/data4miklip/model/global/miklip/",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": BASELINE0,
@@ -65,7 +65,7 @@ class DRSFile(object):
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": MIKLIP,
-         "defaults" : {"institute":"MPI-M", "model":"MPI-ESM-?R"}
+         "defaults" : {"project":"baseline1","institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
