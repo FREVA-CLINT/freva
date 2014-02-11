@@ -34,3 +34,6 @@
 [submodule "tools/etccdi"]
 	path = tools/etccdi
 	url = /miklip/integration/repositories/etccdi.git
+[submodule "tools/monsoon"]
+	path = tools/monsoon
+	url = /miklip/integration/repositories/monsoon.git
