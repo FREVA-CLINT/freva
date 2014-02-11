@@ -17,7 +17,9 @@ CMIP5 = 'cmip5'
 BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
 MIKLIP = 'miklip'
-"""DRS structure for Baseline 0 Data"""
+"""DRS structure for MiKlip Data"""
+PROTOTYPE = 'prototype'
+"""DRS structure for Prototype Data (will be MiKlip in future) """
 OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
@@ -48,7 +50,7 @@ class DRSFile(object):
         },
         #baseline 0 data      
         BASELINE0 : {
-         "root_dir":"/miklip/integration/data4miklip/model/global/miklip/",
+         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -66,6 +68,16 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": MIKLIP,
          "defaults" : {"project":"baseline1","institute":"MPI-M", "model":"MPI-ESM-?R"}
+         },
+        #prototype data
+        PROTOTYPE : {
+         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": PROTOTYPE,
+         "defaults" : {"project":"prototype","institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
          OBSERVATIONS : {
          "root_dir":"/miklip/integration/data4miklip",
