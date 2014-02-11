@@ -129,6 +129,8 @@ the current user, i.e. the one that started the application, is created instead.
             return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))
         elif self._dir_type == config.DIRECTORY_STRUCTURE.CENTRAL:
             return os.path.join(config.get(config.BASE_DIR_LOCATION), config.get(config.BASE_DIR), str(self.getName()))
+        elif self._dir_type == config.DIRECTORY_STRUCTURE.SCRATCH:
+            return os.path.join(config.get(config.BASE_DIR_LOCATION), str(self.getName()), config.get(config.BASE_DIR))
         
     def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, \

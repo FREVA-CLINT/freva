@@ -10,11 +10,12 @@ log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
 
-DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central')
+DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central', SCRATCH='scratch')
 '''Type of directory structure that will be used to maintain state::
 
-    local := <base_dir_location>/<base_dir>... (base_dir_location is normally '~')
+    local := <home>/<base_dir>... 
     central := <base_dir_location>/<base_dir>/<user>/...
+    scratch := <base_dir_location>/<user>/<base_dir>... 
 
 We only use local at this time, but we'll be migrating to central in the future for the next project phase.'''
 
