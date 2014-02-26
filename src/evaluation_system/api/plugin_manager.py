@@ -539,7 +539,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
         slurmoutdir = os.path.join(slurmoutdir, plugin_name)
 
     if not os.path.exists(slurmoutdir):
-        utils.supermakedirs(slurmoutdir, 0755)
+        utils.supermakedirs(slurmoutdir, 0777)
 
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
