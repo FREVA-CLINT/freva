@@ -599,6 +599,37 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
     
     return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getName())
 
+def getConfigurationString(entry_id, user=None):
+    """
+    Return the parameter string of a history entry.
+    :type entry_id: integer
+    :param entry_id: the history id
+    :type user: User
+    :param user: A user to access the database
+    """
+    if user is None: user = User()
+    
+    h = user.getUserDB().getHistory(entry_ids=entry_id)
+    
+    return getConfigurationStringFromRow(h[0])
+    
+
+def getConfigurationStringFromRow(history_row):
+    """
+    Return the parameter string of a history entry.
+    :type history_row: row
+    :param history_row: row of the history table
+    """
+        
+    result = "analyze --tool %s" % history_row[0].tool 
+
+    configuration = history_row[0].configuration
+    
+    for k, v in configuration:
+        result = "%s %s=%s" % (result, str(k), str(v))
+        
+    return result
+
 
 def loadScheduledConf(plugin_name, entry_id, user):
     """

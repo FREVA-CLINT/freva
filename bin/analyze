@@ -182,6 +182,7 @@ def main(argv=None): # IGNORE:C0111
         history=False
         use_user_defaults=True
         batchmode = False
+        return_command = False
         email = ''
         
         _nothing = object        
@@ -231,6 +232,8 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
+            elif flag == '--return_command'
+                return_command = True
             elif flag == '--scheduled-id':      #Runs a scheduled job from database
                 scheduled_id = int(arg)
                 
@@ -392,7 +395,11 @@ DATE FORMAT
                     saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
                     log.info("Configuration stored in %s",  saved_in)
                 else:
-                    print '\n'.join([row.__str__(compact=not full) for row in rows])
+                    if return_command:
+                        for row in rows:
+                            print pm.getConfigurationStringFromRow(row)
+                    else:
+                        print '\n'.join([row.__str__(compact=not full) for row in rows])
             else:
                 log.error("No results. Check query.")
                 
