@@ -21,6 +21,7 @@ import os
 import sys
 import random
 import string
+import re
 import datetime
 import shutil
 import logging
@@ -624,9 +625,19 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     result = "%s %s %s" % (command_name, command_options, history_row.tool_name)
 
     configuration = history_row.configuration
+
+    # find lists
+    re_list_pattern = "^\[.*\]$"
+    re_list = re.compile(re_list_pattern)
     
     for k in configuration.keys():
-        result = "%s %s=%s" % (result, str(k), str(configuration[k]))
+        value = str(configuration[k])
+
+        # remove brackets from list
+        if re_list.match(value):
+            value = value[1:-1]
+
+        result = "%s %s='%s'" % (result, str(k), value)
         
     return result
 
