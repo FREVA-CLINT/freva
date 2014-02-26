@@ -151,7 +151,7 @@ For Example:
 _short_args = "hnd"
 _args = ['tool=', 'list-tools',
     'help', 'debug', 'dry-run',
-    'history', 'use-defaults', 'return-command',
+    'history', 'use-defaults',
     'config-file=', 'save-config=', 'save',
     'show-config','scheduled-id=',
     'mail=', 'batchmode=',]
@@ -232,8 +232,6 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
-            elif flag == '--return-command':
-                return_command = True
             elif flag == '--scheduled-id':      #Runs a scheduled job from database
                 scheduled_id = int(arg)
                 
@@ -279,6 +277,9 @@ To store the resulting configuration user --save-config output_configuration_fil
 
 Arguments
 full_text       If present shows the complete configuration stored
+
+return_command  If present the analyze commands belonging to the
+                history entries will be shown instead of the entries themself.
 
 limit=n         Where n is the number of entries to be displayed 
                 (don't set it or set it to < 0 to display all)
@@ -366,6 +367,8 @@ DATE FORMAT
                 arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
                 if flag == 'full_text':
                     full = True
+                elif flag == 'return_command':
+                    return_command = True
                 elif flag == 'limit':
                     limit=int(arg)
                 elif flag == 'tool':
