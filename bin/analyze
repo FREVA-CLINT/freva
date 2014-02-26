@@ -151,7 +151,7 @@ For Example:
 _short_args = "hnd"
 _args = ['tool=', 'list-tools',
     'help', 'debug', 'dry-run',
-    'history', 'use-defaults',
+    'history', 'use-defaults', 'return-command',
     'config-file=', 'save-config=', 'save',
     'show-config','scheduled-id=',
     'mail=', 'batchmode=',]
@@ -232,7 +232,7 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--show-config':       #shows the resulting configuration (implies dry-run).
                 show_config=True
                 dry_run=True
-            elif flag == '--return_command'
+            elif flag == '--return-command':
                 return_command = True
             elif flag == '--scheduled-id':      #Runs a scheduled job from database
                 scheduled_id = int(arg)
@@ -382,7 +382,9 @@ DATE FORMAT
                     if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
                     raise AnalyzeError(mesg)
                     
-            log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
+            # this suspresses this debug info for generating commands
+            if not return_command:
+                log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
             rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
             if rows:
                 if store_file:                
@@ -398,7 +400,7 @@ DATE FORMAT
                     # pass some option for generating the command string
                     if return_command:
                         for row in rows:
-                            command_name = __file__
+                            command_name = sys.argv[0]
                             command_options = '--tool'
                             
                             if batchmode:
@@ -406,13 +408,13 @@ DATE FORMAT
                             if DEBUG:
                                 command_options = "-d %s" % command_options
                                 
-                            pm.getCommandStringFromRow(history_row, command_name, command_options)
+                            command_string = pm.getCommandStringFromRow(row, command_name, command_options)
                             
                             if len(rows) > 1:
-                                print pm.getCommandStringFromRow(row) + ';\n'
+                                print command_string + ';'
                                 
-                            else
-                                print pm.getCommandStringFromRow(row)
+                            else:
+                                print command_string
                     else:
                         print '\n'.join([row.__str__(compact=not full) for row in rows])
             else:

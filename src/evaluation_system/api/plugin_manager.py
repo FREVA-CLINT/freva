@@ -611,7 +611,7 @@ def getCommandString(entry_id, user=None, command_name='analyze', command_option
     
     h = user.getUserDB().getHistory(entry_ids=entry_id)
     
-    return getCommandStringFromRow(h[0])
+    return getCommandStringFromRow(h[0], command_name, command_options)
     
 
 def getCommandStringFromRow(history_row, command_name='analyze', command_options='--tool'):
@@ -621,12 +621,12 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     :param history_row: row of the history table
     """
         
-    result = "%s %s %s", (command_name, command_options, history_row[0].tool) 
+    result = "%s %s %s" % (command_name, command_options, history_row.tool_name)
 
-    configuration = history_row[0].configuration
+    configuration = history_row.configuration
     
-    for k, v in configuration:
-        result = "%s %s=%s" % (result, str(k), str(v))
+    for k in configuration.keys():
+        result = "%s %s=%s" % (result, str(k), str(configuration[k]))
         
     return result
 
