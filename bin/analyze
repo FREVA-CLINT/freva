@@ -395,9 +395,24 @@ DATE FORMAT
                     saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
                     log.info("Configuration stored in %s",  saved_in)
                 else:
+                    # pass some option for generating the command string
                     if return_command:
                         for row in rows:
-                            print pm.getConfigurationStringFromRow(row)
+                            command_name = __file__
+                            command_options = '--tool'
+                            
+                            if batchmode:
+                                command_options = "--batchmode true %s" % command_options
+                            if DEBUG:
+                                command_options = "-d %s" % command_options
+                                
+                            pm.getCommandStringFromRow(history_row, command_name, command_options)
+                            
+                            if len(rows) > 1:
+                                print pm.getCommandStringFromRow(row) + ';\n'
+                                
+                            else
+                                print pm.getCommandStringFromRow(row)
                     else:
                         print '\n'.join([row.__str__(compact=not full) for row in rows])
             else:

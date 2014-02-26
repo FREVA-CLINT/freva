@@ -599,7 +599,7 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
     
     return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getName())
 
-def getConfigurationString(entry_id, user=None):
+def getCommandString(entry_id, user=None, command_name='analyze', command_options='--tool'):
     """
     Return the parameter string of a history entry.
     :type entry_id: integer
@@ -611,17 +611,17 @@ def getConfigurationString(entry_id, user=None):
     
     h = user.getUserDB().getHistory(entry_ids=entry_id)
     
-    return getConfigurationStringFromRow(h[0])
+    return getCommandStringFromRow(h[0])
     
 
-def getConfigurationStringFromRow(history_row):
+def getCommandStringFromRow(history_row, command_name='analyze', command_options='--tool'):
     """
     Return the parameter string of a history entry.
     :type history_row: row
     :param history_row: row of the history table
     """
         
-    result = "analyze --tool %s" % history_row[0].tool 
+    result = "%s %s %s", (command_name, command_options, history_row[0].tool) 
 
     configuration = history_row[0].configuration
     
