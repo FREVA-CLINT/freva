@@ -631,13 +631,17 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     re_list = re.compile(re_list_pattern)
     
     for k in configuration.keys():
-        value = str(configuration[k])
+        value = configuration[k]
 
-        # remove brackets from list
-        if re_list.match(value):
-            value = value[1:-1]
+        if not value is None:
+            # convert non-None values to string
+            value = str(value)
 
-        result = "%s %s='%s'" % (result, str(k), value)
+            # remove brackets from list
+            if re_list.match(value):
+                value = value[1:-1]
+
+            result = "%s %s='%s'" % (result, str(k), value)
         
     return result
 
