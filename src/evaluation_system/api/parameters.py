@@ -447,6 +447,10 @@ class SolrField(String):
             self.multiple = kwargs.pop('multiple')
         except KeyError:
             self.multiple = False
+        try:
+            self.predefined_facets = kwargs.pop('predefined_facets')
+        except KeyError:
+            self.predefined_facets = None 
 	super(SolrField,self).__init__(*args,**kwargs)
         
     
