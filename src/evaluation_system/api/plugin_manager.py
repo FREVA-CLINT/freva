@@ -610,7 +610,7 @@ def getCommandString(entry_id, user=None, command_name='analyze', command_option
     """
     if user is None: user = User()
     
-    h = user.getUserDB().getHistory(entry_ids=entry_id)
+    h = user.getUserDB().getHistory(entry_ids=int(entry_id))
     
     return getCommandStringFromRow(h[0], command_name, command_options)
     
