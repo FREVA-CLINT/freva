@@ -175,6 +175,13 @@ but at the present time the system works as a toolbox that the users start from 
             
 	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
             _connection_pool[self._db_file].paramstyle = 'qmark'                                       
+        else:
+            #check if still connected
+            if not _connection_pool[self._db_file].open:
+                # remove db from dictionary and try again
+                _connection_pool.pop(self._db_file, None)
+                return self._getConnection()
+
         return _connection_pool[self._db_file].cursor()
     
     def initialize(self, tool_name=None):
