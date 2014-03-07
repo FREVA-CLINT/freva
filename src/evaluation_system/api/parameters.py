@@ -453,7 +453,28 @@ class SolrField(String):
             self.predefined_facets = None 
 	super(SolrField,self).__init__(*args,**kwargs)
         
+
+class SelectField(String):
     
+    def __init__(self, *args, **kwargs):
+        
+        try:
+            self.options = kwargs.pop('options')
+        except KeyError:
+            raise KeyError, 'You have to specifiy an options dictionary for this field type!'    
+        super(SolrField,self).__init__(*args,**kwargs)
+        
+    def _verified(self, orig_values):
+        
+        if orig_values not in self.options.values():
+            raise ValueError, 'Only the following values are allowed %s' % (','.join(self.options.values()))
+    
+    def parse(self, value):
+        for key, val in self.options.iteritems():
+            if value == val:
+                return key
+        
+                    
 #    def parse(self, value):
 #        
 #        return self.facet
