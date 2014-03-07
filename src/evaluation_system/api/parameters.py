@@ -462,7 +462,7 @@ class SelectField(String):
             self.options = kwargs.pop('options')
         except KeyError:
             raise KeyError, 'You have to specifiy an options dictionary for this field type!'    
-        super(SolrField,self).__init__(*args,**kwargs)
+        super(SelectField,self).__init__(*args,**kwargs)
         
     def _verified(self, orig_values):
         
