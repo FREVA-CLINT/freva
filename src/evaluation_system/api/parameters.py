@@ -470,9 +470,10 @@ class SelectField(String):
             raise ValueError, 'Only the following values are allowed %s' % (','.join(self.options.values()))
     
     def parse(self, value):
-        for key, val in self.options.iteritems():
-            if value == val:
-                return key
+        if self._verified(value):
+            for key, val in self.options.iteritems():
+                if value == val:
+                    return key
         
                     
 #    def parse(self, value):
