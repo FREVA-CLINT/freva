@@ -467,8 +467,9 @@ class SelectField(String):
     def _verified(self, orig_values):
         
         if orig_values not in self.options.values():
-            raise ValueError, 'Only the following values are allowed %s' % (','.join(self.options.values()))
-    
+            raise ValueError, 'Only the following values are allowed for "%s": %s' % (self.name, ','.join(self.options.values()))
+   	return True
+	 
     def parse(self, value):
         if self._verified(value):
             for key, val in self.options.iteritems():
