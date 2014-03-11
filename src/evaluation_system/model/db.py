@@ -31,6 +31,8 @@ _result_plot = 1
 _result_data = 2
 _result_unknown = 9
 
+_resulttag_caption = 0
+
 
 class HistoryEntry(object):
     """This object encapsulates the access to an entry in the history DB representing an analysis
@@ -175,6 +177,13 @@ but at the present time the system works as a toolbox that the users start from 
             
 	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
             _connection_pool[self._db_file].paramstyle = 'qmark'                                       
+        else:
+            #check if still connected
+            if not _connection_pool[self._db_file].open:
+                # remove db from dictionary and try again
+                _connection_pool.pop(self._db_file, None)
+                return self._getConnection()
+
         return _connection_pool[self._db_file].cursor()
     
     def initialize(self, tool_name=None):
@@ -262,8 +271,8 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str="UPDATE history_history SET slurm_output=%s, status=%s " 
-        update_str+="WHERE id=%s AND uid=%s AND status=%s"
+        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
+        update_str+='WHERE id=%s AND uid=%s AND status=%s'
         
         entries = (slurmFileName,
                    _status_scheduled,
@@ -292,11 +301,9 @@ While initializing the schemas will get upgraded if required.
         select_str='SELECT status FROM history_history WHERE id=%s AND uid=%s'
         
         cur = self._getConnection()
-	cur.execute(select_str, (row_id,uid))
+        cur.execute(select_str, (row_id,uid))
         
-	#print  cur
-	#print uid, row_id
-	rows = cur.fetchall()
+        rows = cur.fetchall()
         
         # check if only one entry is in the database
         if len(rows) != 1:
@@ -338,19 +345,19 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = "%s AND tool='%s'" % (sql_str,tool_name.lower())
+                sql_str = '%s AND tool=%s' % sql_str
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
-                sql_str = '%s AND timestamp > %s' % (sql_str,since)
+                sql_str = '%s AND timestamp > %s' % sql_str
                 sql_params.append(since)
             if until is not None:
-                sql_str = '%s AND timestamp < %s' % (sql_str,until)
+                sql_str = '%s AND timestamp < %s' % sql_str
                 sql_params.append(until)
             if uid is not None:
                 sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        sql_str = sql_str + ' ORDER BY id DESC'
+        #sql_str = sql_str + ' ORDER BY timestamp DESC'
         if limit > 0:
             sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
@@ -375,6 +382,9 @@ While initializing the schemas will get upgraded if required.
         # regex to get the relative path
         expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
         reg_ex = re.compile(expression)
+
+        # get db connection
+        cur = self._getConnection()
         
         for file_name in results:
             metadata = results[file_name]
@@ -395,9 +405,34 @@ While initializing the schemas will get upgraded if required.
             elif type_name == 'data':
                 type_number = _result_data
                 
-            data_to_store.append((rowid, file_name, preview_file, type_number))
+            data_to_store = (rowid, file_name, preview_file, type_number)
             
             
-        insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
+            insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
+        
+            cur.execute(insert_string, data_to_store)
+            result_id = cur.lastrowid
+            self._storeResultTags(result_id, metadata)
+            
+
+
+    def _storeResultTags(self, result_id, metadata):
+        """
+        :type result_id: integer
+        :param result_id: the id of the result entry where the tag belongs to
+        :type metadata: dict with entries {str : dict} 
+        :param metadata: meta-dictionary with meta-data dictionaries assigned to the file names.
+        """
+        
+        data_to_store = []
+
+
+        # append new tags here        
+        caption = metadata.get('caption', None)
+
+        if caption:
+            data_to_store.append((result_id, _resulttag_caption, caption))
+                        
+        insert_string = 'INSERT INTO history_resulttag(result_id_id, type, text) VALUES (%s, %s, %s)'
         
         self._getConnection().executemany(insert_string, data_to_store)
