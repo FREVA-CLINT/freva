@@ -269,8 +269,8 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
-        update_str+='WHERE id=%s AND uid=%s AND status=%s'
+        update_str="UPDATE history_history SET slurm_output=%s, status=%s " 
+        update_str+="WHERE id=%s AND uid=%s AND status=%s"
         
         entries = (slurmFileName,
                    _status_scheduled,
@@ -301,8 +301,8 @@ While initializing the schemas will get upgraded if required.
         cur = self._getConnection()
 	cur.execute(select_str, (row_id,uid))
         
-	print  cur
-	print uid, row_id
+	#print  cur
+	#print uid, row_id
 	rows = cur.fetchall()
         
         # check if only one entry is in the database
@@ -345,19 +345,19 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = '%s AND tool=%s' % sql_str
+                sql_str = "%s AND tool='%s'" % (sql_str,tool_name.lower())
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
-                sql_str = '%s AND timestamp > %s' % sql_str
+                sql_str = '%s AND timestamp > %s' % (sql_str,since)
                 sql_params.append(since)
             if until is not None:
-                sql_str = '%s AND timestamp < %s' % sql_str
+                sql_str = '%s AND timestamp < %s' % (sql_str,until)
                 sql_params.append(until)
             if uid is not None:
                 sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        #sql_str = sql_str + ' ORDER BY timestamp DESC'
+        sql_str = sql_str + ' ORDER BY id DESC'
         if limit > 0:
             sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
