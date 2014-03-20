@@ -143,6 +143,37 @@ of the DB considerably without the risk of loosing information.'''
     The structure is: {<table_name>: {<version_number>:[list of sql cmds required]},...
                         __order: [list of tuples (<tble_name>, <version>) marking the cronological
                                         ordering of updates]"""
+                                        
+    def safeExecute(self, *args, **kwargs):
+        '''
+        This is a wrapper for the execute function.
+        It reconnects to the database when needed.
+        '''
+        ret = None
+        
+        try:
+            ret = self._getConnection().execute(*args, **kwargs)
+        except (AttributeError, MySQLdb.OperationalError):
+            _connection_pool.pop(self._db_file, None)
+            ret = self._getConnection().execute(*args, **kwargs)
+            
+        return ret
+
+    def safeExecutemany(self, *args, **kwargs):
+        '''
+        This is a wrapper for the execute function.
+        It reconnects to the database when needed.
+        '''
+        ret = None
+        
+        try:
+            ret = self._getConnection().executemany(*args, **kwargs)
+        except (AttributeError, MySQLdb.OperationalError):
+            _connection_pool.pop(self._db_file, None)
+            ret = self._getConnection().executemany(*args, **kwargs)
+            
+        return ret
+
 
     def __init__(self, user):
         '''As it is related to a user the user should be known at construction time.
@@ -200,7 +231,7 @@ While initializing the schemas will get upgraded if required.
             for table_name, version in self.__tables['__order']:
                 db_perform_update_step = True
                 try:
-                    res = self._getConnection().execute('SELECT * FROM meta WHERE table_name = %s AND version = %s', (table_name, version))
+                    res = self.safeExecute('SELECT * FROM meta WHERE table_name = %s AND version = %s', (table_name, version))
                     res = res.fetchone();
                     if res:
                         #the expected state is done, so just skip it 
@@ -217,7 +248,7 @@ While initializing the schemas will get upgraded if required.
                     log.debug('Updating %s to version %s', table_name, version)
                     for sql_item in self.__tables[table_name][version]:
                         log.debug('Updating Schema: %s', sql_item)
-                        self._getConnection().execute(sql_item)
+                        self.safeExecute(sql_item)
     
     def isInitialized(self):
         """:returns: (bool) If this DB is initialized and its Schema up to date."""
@@ -256,8 +287,8 @@ While initializing the schemas will get upgraded if required.
                 status)
         log.debug('Row: %s', row)
         
+        self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(%s, %s, %s, %s, %s, %s, %s);""", row)
         cursor = self._getConnection()#.cursor() 
-        cursor.execute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(%s, %s, %s, %s, %s, %s, %s);""", row)
         
         return cursor.lastrowid
 
@@ -277,7 +308,7 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-        self._getConnection().execute(update_str, entries)
+        self.safeExecute(update_str, entries)
         
         
     class ExceptionStatusUpgrade(Exception):
@@ -298,12 +329,10 @@ While initializing the schemas will get upgraded if required.
         
         select_str='SELECT status FROM history_history WHERE id=%s AND uid=%s'
         
+	    self.safeExecute(select_str, (row_id,uid))
+
         cur = self._getConnection()
-	cur.execute(select_str, (row_id,uid))
-        
-	#print  cur
-	#print uid, row_id
-	rows = cur.fetchall()
+        rows = cur.fetchall()
         
         # check if only one entry is in the database
         if len(rows) != 1:
@@ -317,7 +346,7 @@ While initializing the schemas will get upgraded if required.
         
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
-        self._getConnection().execute(update_str, (status, row_id, uid))
+        self.safeExecute(update_str, (status, row_id, uid))
         
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
@@ -363,11 +392,10 @@ While initializing the schemas will get upgraded if required.
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
+        self.safeExecute(sql_str)
         res = self._getConnection()
-	res.execute(sql_str)
-	res = res.fetchall()
-        #print res
-	return [HistoryEntry(row) for row in res]
+        res = res.fetchall()
+        return [HistoryEntry(row) for row in res]
     
     def storeResults(self, rowid, results):
         """
@@ -407,4 +435,4 @@ While initializing the schemas will get upgraded if required.
             
         insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
         
-        self._getConnection().executemany(insert_string, data_to_store)
+        self.safeExecutemany(insert_string, data_to_store)
