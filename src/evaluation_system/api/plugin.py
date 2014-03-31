@@ -14,6 +14,7 @@ import stat
 from time import time
 from datetime import datetime
 from ConfigParser import SafeConfigParser
+from exceptions import ValueError
 import logging
 log = logging.getLogger(__name__)
 
@@ -192,17 +193,23 @@ Use it for the return call of runTool.
         result = {}
         if isinstance(output_files, basestring): output_files = [output_files]
         for file_path in output_files:
-            if isinstance(output_files, dict): metadata = output_files
-            else: metadata = {}
+            metadata = {}
+
+            # we expect a meta data dictionary
+            if isinstance(output_files, dict):
+                metadata = output_files[file_path]
+                if not isinstance(metadata, dict):
+                    raise ValueError('Meta information must be of type dict')
+
             if os.path.isfile(file_path):
                 self._extend_output_metadata(file_path, metadata)
                 result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
                 #ok, we got a directory, so parse the contents recursively
                 for file_path in [os.path.join(r,f) for r,_,files in os.walk(file_path) for f in files]:
-                    metadata = {}
-                    self._extend_output_metadata(file_path, metadata)
-                    result[os.path.abspath(file_path)] = metadata
+                    filemetadata = metadata.copy()
+                    self._extend_output_metadata(file_path, filemetadata)
+                    result[os.path.abspath(file_path)] = filemetadata
             else:
                 result[os.path.abspath(file_path)] = metadata
         return result

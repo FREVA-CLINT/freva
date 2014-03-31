@@ -7,6 +7,7 @@ import tempfile
 import shutil
 import os
 
+from evaluation_system.api import parameters
 from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.api.parameters import ParameterDictionary, Integer, Float, String
 
@@ -66,4 +67,22 @@ class DummyUser(User):
         if self.__random_home and os.path.isdir(self.__random_home) and self.__random_home.startswith(tempfile.gettempdir()):
             #make sure the home is a temporary one!!!
             shutil.rmtree(self.__random_home)
-        
+            
+
+
+class ResultTagTest(PluginAbstract):
+    """
+    This Plugin tests the functionality of the resulttags
+    """
+    
+    __parameters__ = parameters.ParameterDictionary(
+                            parameters.File(name='input', mandatory=True))
+
+
+    __short_description__ = 'Test tool inserting results'
+
+    __version__ = '(0,0,2)'
+
+    def runTool(self, config_dict = None):
+        output = {config_dict['input'] : {'caption' : 'Manually added result'}}
+        return self.prepareOutput(output)
