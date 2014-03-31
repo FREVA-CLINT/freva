@@ -380,7 +380,7 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = '%s AND tool=%s' % (sql_str, tool_name)
+                sql_str = "%s AND tool='%s'" % (sql_str, tool_name)
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
                 sql_str = '%s AND timestamp > %s' % (sql_str, since)
