@@ -79,6 +79,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.slurm_output = row[5]
         self.uid = row[6]
         self.status = row[7]
+        self.flag = row[8]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -380,7 +381,7 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = "%s AND tool='%s'" % (sql_str, tool_name)
+                sql_str = "%s AND tool='%s'" % (sql_str, tool_name.lower())
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
                 sql_str = '%s AND timestamp > %s' % (sql_str, since)
@@ -398,8 +399,9 @@ While initializing the schemas will get upgraded if required.
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
-        (conn, ret) = self.safeExecute(sql_str)
-        res = conn.fetchall()
+        log.debug('Execute: %s' % sql_str)
+        (cur, ret) = self.safeExecute(sql_str)
+        res = cur.fetchall()
         return [HistoryEntry(row) for row in res]
     
     def storeResults(self, rowid, results):
