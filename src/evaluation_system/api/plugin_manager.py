@@ -657,7 +657,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
 
     # scheduled jobs only
     if row.status != db._status_scheduled:
-        raise Exception("This is not a scheduled job!")
+        raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
     return row.configuration
     
