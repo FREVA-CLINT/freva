@@ -309,7 +309,7 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
+        update_str='UPDATE history_history SET slurm_output=%s, status=%s ' 
         update_str+='WHERE id=%s AND uid=%s AND status=%s'
         
         entries = (slurmFileName,
