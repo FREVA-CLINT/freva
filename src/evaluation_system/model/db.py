@@ -153,8 +153,6 @@ of the DB considerably without the risk of loosing information.'''
         '''
         ret = None
         
-        print args
-
         try:
             cur = self._getConnection()
             res = cur.execute(*args, **kwargs)
