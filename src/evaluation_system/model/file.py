@@ -112,8 +112,8 @@ class DRSFile(object):
         #CORDEX data
          CORDEX : {
          "root_dir":"/miklip/integration/data4miklip/model/regional",
-         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/version/time_frequency/variable/file_name".split('/'),
-         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.version.time_frequency.variable".split('.'),
+         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
+         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
          "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-version-time_frequency-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
