@@ -393,7 +393,7 @@ While initializing the schemas will get upgraded if required.
                 sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        #sql_str = sql_str + ' ORDER BY timestamp DESC'
+        sql_str = sql_str + ' ORDER BY id DESC'
         if limit > 0:
             sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
