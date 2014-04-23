@@ -207,13 +207,13 @@ but at the present time the system works as a toolbox that the users start from 
 #                                                              isolation_level=None,
 #                                                              detect_types=sqlite3.PARSE_DECLTYPES)
             #MySQLdb.paramstyle = 'qmark'
-	    _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
+            _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
                                                               user="evaluationsystem", # your username
                                                               passwd="miklip", # your password
                                                               db="evaluationsystem") # name of the data base
             
             
-	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
+            #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
             _connection_pool[self._db_file].paramstyle = 'qmark'                                       
         else:
             #check if still connected
@@ -355,6 +355,27 @@ While initializing the schemas will get upgraded if required.
         update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
         self.safeExecute(update_str, (status, row_id, uid))
         
+    def changeFlag(self, row_id, uid, flag):
+        """
+        :param row_id: The index in the history table
+        :param uid: the user id
+        :param flag: the new flag 
+        After validation the status will be upgraded. 
+        """
+        
+        select_str='SELECT flag FROM history_history WHERE id=%s AND uid=%s'
+        
+        (cur, res) = self.safeExecute(select_str, (row_id,uid))
+
+        rows = cur.fetchall()
+        
+        # check if only one entry is in the database
+        if len(rows) != 1:
+            raise self.ExceptionStatusUpgrade("No unique database entry found!")
+                
+        # finally, do the SQL update
+        update_str='UPDATE history_history SET flag=%s WHERE id=%s AND uid=%s'                  
+        self.safeExecute(update_str, (flag, row_id, uid))
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
