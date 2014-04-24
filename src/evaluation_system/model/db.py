@@ -363,7 +363,8 @@ While initializing the schemas will get upgraded if required.
         After validation the status will be upgraded. 
         """
         
-        select_str='SELECT flag FROM history_history WHERE id=%s AND uid=%s'
+        select_str="SELECT flag FROM history_history WHERE id=%s AND uid=%s"
+
         
         (cur, res) = self.safeExecute(select_str, (row_id,uid))
 
@@ -371,6 +372,7 @@ While initializing the schemas will get upgraded if required.
         
         # check if only one entry is in the database
         if len(rows) != 1:
+            print "SQL: ", select_str, row_id, uid, rows, len(rows), res, rows[0]
             raise self.ExceptionStatusUpgrade("No unique database entry found!")
                 
         # finally, do the SQL update

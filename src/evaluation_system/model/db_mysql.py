@@ -79,6 +79,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.slurm_output = row[5]
         self.uid = row[6]
         self.status = row[7]
+        self.flag = row[8]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -153,8 +154,6 @@ of the DB considerably without the risk of loosing information.'''
         '''
         ret = None
         
-        print args
-
         try:
             cur = self._getConnection()
             res = cur.execute(*args, **kwargs)
@@ -208,13 +207,13 @@ but at the present time the system works as a toolbox that the users start from 
 #                                                              isolation_level=None,
 #                                                              detect_types=sqlite3.PARSE_DECLTYPES)
             #MySQLdb.paramstyle = 'qmark'
-	    _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
+            _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
                                                               user="evaluationsystem", # your username
                                                               passwd="miklip", # your password
                                                               db="evaluationsystemtest") # name of the data base
             
             
-	    #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
+            #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
             _connection_pool[self._db_file].paramstyle = 'qmark'                                       
         else:
             #check if still connected
@@ -309,7 +308,7 @@ While initializing the schemas will get upgraded if required.
         Sets the name of the slurm file 
         """
         
-        update_str='UPDATE history_history SET slurm_output=%s, status=%s' 
+        update_str='UPDATE history_history SET slurm_output=%s, status=%s ' 
         update_str+='WHERE id=%s AND uid=%s AND status=%s'
         
         entries = (slurmFileName,
@@ -360,11 +359,12 @@ While initializing the schemas will get upgraded if required.
         """
         :param row_id: The index in the history table
         :param uid: the user id
-        :param status: the new status 
+        :param flag: the new flag 
         After validation the status will be upgraded. 
         """
         
-        select_str='SELECT status FROM history_history WHERE id=%s AND uid=%s'
+        select_str="SELECT flag FROM history_history WHERE id=%s AND uid=%s"
+
         
         (cur, res) = self.safeExecute(select_str, (row_id,uid))
 
@@ -372,12 +372,12 @@ While initializing the schemas will get upgraded if required.
         
         # check if only one entry is in the database
         if len(rows) != 1:
+            print "SQL: ", select_str, row_id, uid, rows, len(rows), res, rows[0]
             raise self.ExceptionStatusUpgrade("No unique database entry found!")
                 
         # finally, do the SQL update
         update_str='UPDATE history_history SET flag=%s WHERE id=%s AND uid=%s'                  
         self.safeExecute(update_str, (flag, row_id, uid))
-        
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
@@ -404,26 +404,27 @@ While initializing the schemas will get upgraded if required.
                 sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
                 sql_params.extend(entry_ids)
             if tool_name is not None:
-                sql_str = '%s AND tool=%s' % sql_str
+                sql_str = "%s AND tool='%s'" % (sql_str, tool_name.lower())
                 sql_params.append(tool_name.lower())    #make search case insensitive
             if since is not None:
-                sql_str = '%s AND timestamp > %s' % sql_str
+                sql_str = '%s AND timestamp > %s' % (sql_str, since)
                 sql_params.append(since)
             if until is not None:
-                sql_str = '%s AND timestamp < %s' % sql_str
+                sql_str = '%s AND timestamp < %s' % (sql_str, until)
                 sql_params.append(until)
             if uid is not None:
                 sql_str = "%s AND uid='%s'" % (sql_str, uid)
                 sql_params.append(uid)
                     
-        #sql_str = sql_str + ' ORDER BY timestamp DESC'
+        sql_str = sql_str + ' ORDER BY id DESC'
         if limit > 0:
             sql_str = '%s LIMIT %s' % (sql_str, limit)
             sql_params.append(limit)
         #print sql_str     
         #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
-        (conn, ret) = self.safeExecute(sql_str)
-        res = conn.fetchall()
+        log.debug('Execute: %s' % sql_str)
+        (cur, ret) = self.safeExecute(sql_str)
+        res = cur.fetchall()
         return [HistoryEntry(row) for row in res]
     
     def storeResults(self, rowid, results):
