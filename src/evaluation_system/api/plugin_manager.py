@@ -140,6 +140,25 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPlugins()
 
+def getPluginGitVersion(pluginname):
+    from inspect import getfile
+    plugin = __plugins__.get(pluginname, None)
+    
+    version = None
+    
+    if not plugin is None:
+        srcfile = getfile(plugin)
+        (dirname, filename) = os.path.split(srcfile)
+        command = 'module load git > /dev/null 2> /dev/null;'
+        if dirname:
+            command += 'cd %s 2> /dev/null;' % dirname
+        command += 'git show-refs --heads --hash'
+        p = Popen(command, stdout=PIPE, stderr=STDOUT)
+        
+        print p
+        
+    
+    
 
 def getPlugins():
     """Return a dictionary of plug-ins holding the plug-in classes and meta-data about them.

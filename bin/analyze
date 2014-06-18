@@ -154,7 +154,7 @@ _args = ['tool=', 'list-tools',
     'history', 'use-defaults',
     'config-file=', 'save-config=', 'save',
     'show-config','scheduled-id=',
-    'mail=', 'batchmode=',]
+    'mail=', 'batchmode=', 'repos-version=']
 
  
 
@@ -173,6 +173,7 @@ def main(argv=None): # IGNORE:C0111
         #defaults
         help_opt=False
         tool = None
+        tool_version = None
         scheduled_id = None
         env = getEnvironment()
         
@@ -204,6 +205,8 @@ def main(argv=None): # IGNORE:C0111
                     raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
             elif flag == '--mail':
                 email = arg.lower()
+            elif flag == '--repos-version':
+                tool_version = arg.lower()                
             elif flag == '--list-tools':        #lists all available tools.
                 import textwrap
                 #we just have to show the list and stop processing
@@ -241,6 +244,10 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '-n' or flag == '--dry-run':   #dry-run, perform no computation. This is used for viewing and handling the configuration.
                 dry_run = True
 
+
+        if tool_version:
+            pm.getPluginGitVersion(tool_version)
+            return 0
 
         if tool and history:
             lastargs.append('tool=%s' % tool)
