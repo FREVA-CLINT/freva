@@ -205,7 +205,7 @@ def main(argv=None): # IGNORE:C0111
                     raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
             elif flag == '--mail':
                 email = arg.lower()
-            elif flag == '--repos-version':
+            elif flag == '--repos-version':     # show the version number from the repository
                 tool_version = arg.lower()                
             elif flag == '--list-tools':        #lists all available tools.
                 import textwrap
@@ -246,7 +246,11 @@ def main(argv=None): # IGNORE:C0111
 
 
         if tool_version:
-            pm.getPluginGitVersion(tool_version)
+            (stdout, stderr) = pm.getPluginGitVersion(tool_version)
+            if stderr:
+                raise Exception(stderr)
+
+            print 'Version of %s:\n%s' % (tool_version, stdout)
             return 0
 
         if tool and history:

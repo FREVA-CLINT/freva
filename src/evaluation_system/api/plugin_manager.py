@@ -142,21 +142,23 @@ reloadPlugins()
 
 def getPluginGitVersion(pluginname):
     from inspect import getfile
-    plugin = __plugins__.get(pluginname, None)
+    plugin = getPlugins().get(pluginname, None)
     
     version = None
-    
+
+
     if not plugin is None:
-        srcfile = getfile(plugin)
+        srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
         (dirname, filename) = os.path.split(srcfile)
         command = 'module load git > /dev/null 2> /dev/null;'
         if dirname:
             command += 'cd %s 2> /dev/null;' % dirname
-        command += 'git show-refs --heads --hash'
-        p = Popen(command, stdout=PIPE, stderr=STDOUT)
+        command += 'git show-ref --heads --hash'
+        bash = ['/bin/bash',  '-c',  command]
+        p = Popen(bash, stdout=PIPE, stderr=STDOUT)
         
-        print p
-        
+        (stdout, stderr) = p.communicate()
+        return (stdout, stderr)
     
     
 
