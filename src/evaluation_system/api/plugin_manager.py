@@ -144,6 +144,7 @@ def getPluginGitVersion(pluginname):
     from inspect import getfile, currentframe
     plugin = getPlugins().get(pluginname, None)
     
+    repository = 'unknown'
     version = 'unknown'
 
     srcfile = ''
@@ -160,6 +161,7 @@ def getPluginGitVersion(pluginname):
     command = 'module load git > /dev/null 2> /dev/null;'
     if dirname:
         command += 'cd %s 2> /dev/null;' % dirname
+    command += 'git config --get remote.origin.url;'
     command += 'git show-ref --heads --hash'
     bash = ['/bin/bash',  '-c',  command]
     p = Popen(bash, stdout=PIPE, stderr=STDOUT)
@@ -169,10 +171,12 @@ def getPluginGitVersion(pluginname):
     if stderr:
         raise Exception(stderr)
     else:
-        version = stdout
+        lines = stdout.split('\n')
+        repository = lines[-3]
+        version = lines[-2]
 
 
-    return version
+    return (repository, version)
 
     
     

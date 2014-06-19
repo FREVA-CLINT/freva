@@ -246,9 +246,9 @@ def main(argv=None): # IGNORE:C0111
 
 
         if tool_version:
-            stdout = pm.getPluginGitVersion(tool_version)
+            (repos, version) = pm.getPluginGitVersion(tool_version)
 
-            print 'Version of %s:\n%s' % (tool_version, stdout)
+            print 'Repository and version of %s:\n%s\n%s' % (tool_version, repos, version)
             return 0
 
         if tool and history:
