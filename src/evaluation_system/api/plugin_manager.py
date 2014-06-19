@@ -141,24 +141,39 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 reloadPlugins()
 
 def getPluginGitVersion(pluginname):
-    from inspect import getfile
+    from inspect import getfile, currentframe
     plugin = getPlugins().get(pluginname, None)
     
-    version = None
+    version = 'unknown'
 
+    srcfile = ''
 
     if not plugin is None:
         srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
-        (dirname, filename) = os.path.split(srcfile)
-        command = 'module load git > /dev/null 2> /dev/null;'
-        if dirname:
-            command += 'cd %s 2> /dev/null;' % dirname
-        command += 'git show-ref --heads --hash'
-        bash = ['/bin/bash',  '-c',  command]
-        p = Popen(bash, stdout=PIPE, stderr=STDOUT)
-        
-        (stdout, stderr) = p.communicate()
-        return (stdout, stderr)
+    elif pluginname == 'self':
+        srcfile = getfile(currentframe())
+    else:
+        mesg = 'Plugin <%s> not found' % pluginname
+        raise PluginManagerException(mesg)
+
+    (dirname, filename) = os.path.split(srcfile)
+    command = 'module load git > /dev/null 2> /dev/null;'
+    if dirname:
+        command += 'cd %s 2> /dev/null;' % dirname
+    command += 'git show-ref --heads --hash'
+    bash = ['/bin/bash',  '-c',  command]
+    p = Popen(bash, stdout=PIPE, stderr=STDOUT)
+    
+    (stdout, stderr) = p.communicate()
+
+    if stderr:
+        raise Exception(stderr)
+    else:
+        version = stdout
+
+
+    return version
+
     
     
 

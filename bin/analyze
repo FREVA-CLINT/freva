@@ -246,9 +246,7 @@ def main(argv=None): # IGNORE:C0111
 
 
         if tool_version:
-            (stdout, stderr) = pm.getPluginGitVersion(tool_version)
-            if stderr:
-                raise Exception(stderr)
+            stdout = pm.getPluginGitVersion(tool_version)
 
             print 'Version of %s:\n%s' % (tool_version, stdout)
             return 0
