@@ -85,7 +85,7 @@ PLUGIN_PYTHON_PATH = 'python_path'
 PLUGIN_MODULE = 'module'
 '''The full qualified module name where the plug-in is implemented.'''
 
-PREVIEW_PATH = '/miklip/integration/evaluation_system/database/preview'
+PREVIEW_PATH = 'preview_path'
 '''path to preview pictures.'''
 
 #: Solr #########################
