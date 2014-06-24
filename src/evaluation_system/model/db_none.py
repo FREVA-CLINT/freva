@@ -126,6 +126,8 @@ class dummyCursor:
         self.lastrowid = 1
                                        
 class dummyConnection:
+    def cursor():
+        return dummyCursor()
     def open(self, *args):
         pass
     def close(self, *args):
@@ -213,7 +215,7 @@ but at the present time the system works as a toolbox that the users start from 
         return True
         
     def storeHistory(self, tool, config_dict, uid, status, slurm_output = None, result = None):
-       return cur.lastrowid
+       return 1
 
     def scheduleEntry(self, row_id, uid, slurmFileName):
         """
