@@ -434,8 +434,10 @@ def _preview_create(plugin_name, result):
             metadata['preview_path'] = target_name
             
         result[file_name]=metadata
+        
+    preview_path = config.get(config.PREVIEW_PATH)
 
-    if todo_list:
+    if preview_path and todo_list:
         p =  Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
             
