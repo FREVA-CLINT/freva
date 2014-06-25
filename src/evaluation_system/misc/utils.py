@@ -19,8 +19,11 @@ def supermakedirs(path, mode):
     """
     # this is a neccessary condition,
     # otherwise the path will be created twice
-    if path[-1] == '/':
-        path = path[:-1]
+    try:
+        if path[-1] == '/':
+            path = path[:-1]
+    except:
+        pass
 
     if not path or os.path.exists(path):
         return []
