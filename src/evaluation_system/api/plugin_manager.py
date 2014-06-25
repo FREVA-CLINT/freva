@@ -390,7 +390,7 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     :type metadata: dict
     :param metadata: the meta-data for the file, to access timestamp
     """
-    path = config.PREVIEW_PATH
+    path = config.get(config.PREVIEW_PATH)
     subdir = datetime.datetime.now().strftime('%Y%m%d')
     name = __preview_generate_name(plugin_name, file_name, metadata) 
     name = name + ext

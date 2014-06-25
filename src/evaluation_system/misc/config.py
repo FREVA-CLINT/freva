@@ -47,10 +47,10 @@ We suggest: DATABASE_TIMEOUT+1
 """
 
 
-SCHEDULER_OUTPUT_DIR = 'slurm/output/'
+SCHEDULER_OUTPUT_DIR = 'scheduler_output_dir'
 ''' Determines the folder the SLURM output files will be saved in ''' 
 
-SCHEDULER_INPUT_DIR = 'slurm/input/'
+SCHEDULER_INPUT_DIR = 'scheduler_input_dir'
 """
 Determines the folder the SLURM input files will be saved in.
 This variable is  read by the User object,
