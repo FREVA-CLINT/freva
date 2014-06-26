@@ -397,7 +397,7 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     full_path = os.path.join(path, subdir)
     full_name = os.path.join(full_path, name)
     
-    if not os.path.isdir(full_path):
+    if path.strip() and not os.path.isdir(full_path):
         utils.supermakedirs(full_path, 0777)
         
     if os.path.isfile(full_name):
@@ -437,7 +437,7 @@ def _preview_create(plugin_name, result):
         
     preview_path = config.get(config.PREVIEW_PATH)
 
-    if preview_path and todo_list:
+    if preview_path.strip() and todo_list:
         p =  Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
             
