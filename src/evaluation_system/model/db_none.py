@@ -214,7 +214,8 @@ but at the present time the system works as a toolbox that the users start from 
     def isInitialized(self):
         return True
         
-    def storeHistory(self, tool, config_dict, uid, status, slurm_output = None, result = None):
+    def storeHistory(self, tool, config_dict, uid, status,
+                     slurm_output = None, result = None, flag = None, version_details = None):
        return 1
 
     def scheduleEntry(self, row_id, uid, slurmFileName):
@@ -260,3 +261,12 @@ but at the present time the system works as a toolbox that the users start from 
         pass
        
         
+    def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
+        return None
+
+    def newVersion(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
+        result_id = 1
+        
+        return result_id
+
+   
