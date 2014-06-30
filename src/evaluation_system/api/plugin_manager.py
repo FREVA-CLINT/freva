@@ -487,10 +487,12 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
                                        db._status_running)
         rowid = scheduled_id
     elif user:
+        version_details = getVersion(plugin_name)
         rowid = user.getUserDB().storeHistory(p,
                                               complete_conf,
                                               user.getName(),
-                                              db._status_running)
+                                              db._status_running,
+                                              version_details = version_details)
         
     try:
         #In any case we have now a complete setup in complete_conf
@@ -568,10 +570,12 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     if not os.path.exists(slurmindir):
         utils.supermakedirs(slurmindir, 0777)
 
+    version_details = getVersion(plugin_name)
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
                                           user.getName(),
-                                          db._status_not_scheduled)
+                                          db._status_not_scheduled,
+                                          version_details = version_details)
     
        
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
@@ -702,5 +706,34 @@ def loadScheduledConf(plugin_name, entry_id, user):
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
     return row.configuration
+
+
+def getVersion(pluginname): 
+    """
+    returns the internal version of a tool (index in datatable)
+    if the version is not indexed it will be created
+    """
+    tool_name =  pluginname.lower() 
+    p = getPluginInstance(pluginname)
+    version = repr(p.__versioon__)
+    (repos_tool, version_tool) = getPluginGitVersion(pluginname)
+    (repos_api, version_api) = getPluginGitVersion('self')
+         
     
+    version_id = User().getUserDB().getVersionId(tool_name,
+                                                 version,
+                                                 repos_api,
+                                                 version_api,
+                                                 repos_tool,
+                                                 version_tool)
     
+    if version_id is None:
+        version_id = User().getUserDB().newVersion(tool_name,
+                                                   version,
+                                                   repos_api,
+                                                   version_api,
+                                                   repos_tool,
+                                                   version_tool)
+    
+
+    return version_id

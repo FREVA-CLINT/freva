@@ -5,6 +5,7 @@ This modules encapsulates all access to databases.
 '''
 import sqlite3
 import MySQLdb
+from celery.bin.celery import result
 MySQLdb.paramstyle = 'qmark'
 from datetime import datetime
 import json
@@ -80,6 +81,7 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         self.uid = row[6]
         self.status = row[7]
         self.flag = row[8]
+        self.version_details_id = row[9]
         
     def toJson(self):
         return json.dumps(dict(rowid=self.rowid, timestamp=self.timestamp.isoformat(), tool_name=self.tool_name,
@@ -274,7 +276,8 @@ While initializing the schemas will get upgraded if required.
 #            return False
         return True
         
-    def storeHistory(self, tool, config_dict, uid, status, slurm_output = None, result = None):
+    def storeHistory(self, tool, config_dict, uid, status,
+                     slurm_output = None, result = None, flag = None, version_details = None):
         """Store a an analysis run into the DB.
 
 :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
@@ -286,6 +289,8 @@ While initializing the schemas will get upgraded if required.
 """
         if result is None: result = {}
         if slurm_output is None: slurm_output = 0
+        if flag is None: flag = 0
+        if version_details is None: version_details = 1
         row = (datetime.now(), 
                 tool.__class__.__name__.lower(),    #for case insensitive search 
                 repr(tool.__version__), 
@@ -293,7 +298,9 @@ While initializing the schemas will get upgraded if required.
 #                json.dumps(result),
                 slurm_output,
                 uid,
-                status)
+                status,
+                flag,
+                version_details)
         log.debug('Row: %s', row)
         
         (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(%s, %s, %s, %s, %s, %s, %s);""", row)
@@ -491,3 +498,46 @@ While initializing the schemas will get upgraded if required.
         insert_string = 'INSERT INTO history_resulttag(result_id_id, type, text) VALUES (%s, %s, %s)'
         
         self.safeExecutemany(insert_string, data_to_store)
+        
+    
+        
+    def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
+        repository = '%s:%s' % repos_tool, repos_api
+        
+        sqlstr = 'SELECT id FROM plugins_version WHERE'
+        
+        sqlstr += 'TOOL="%s"' % toolname
+        sqlstr += 'AND VERSION="%s"' % version
+        sqlstr += 'AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool
+        sqlstr += 'AND INTERNAL_VERSION_API="%s"' % internal_version_api
+        sqlstr += 'AND REPOSITORY="%s"' % repository
+
+        (cur, res) = self.safeExecute(sqlstr)
+
+        rows = cur.fetchall()
+        
+        # check if only one entry is in the database
+        if len(rows) < 1:
+            return None
+        
+        else:
+            return rows[0][0]
+
+    def newVersion(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
+        repository = '%s:%s' % repos_tool, repos_api
+        
+        sqlstr = 'INSERT INTO plugins_version '
+        sqlstr += '(TIMESTAMP, TOOL, VERSION, INTERNAL_VERSION_TOOL, INTERNAL_VERSION_API, REPOSITORY)'
+        sqlstr += '(%s, %s, %s, %s, %s, %s)'
+        
+        timestamp = HistoryEntry.timestampToString(datetime.now())
+        
+        values = (timestamp, toolname, version, internal_version_tool, internal_version_api, repository)
+
+        (cur, res) = self.safeExecute(sqlstr, values)
+
+        result_id = cur.lastrowid
+        
+        return result_id
+
+   
