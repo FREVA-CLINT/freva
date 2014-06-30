@@ -707,7 +707,6 @@ def loadScheduledConf(plugin_name, entry_id, user):
             
     return row.configuration
 
-
 def getVersion(pluginname): 
     """
     returns the internal version of a tool (index in datatable)
@@ -715,11 +714,10 @@ def getVersion(pluginname):
     """
     tool_name =  pluginname.lower() 
     p = getPluginInstance(pluginname)
-    version = repr(p.__versioon__)
+    version = repr(p.__version__)
     (repos_tool, version_tool) = getPluginGitVersion(pluginname)
     (repos_api, version_api) = getPluginGitVersion('self')
          
-    
     version_id = User().getUserDB().getVersionId(tool_name,
                                                  version,
                                                  repos_api,

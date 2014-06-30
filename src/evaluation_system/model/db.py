@@ -212,7 +212,7 @@ but at the present time the system works as a toolbox that the users start from 
             _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
                                                               user="evaluationsystem", # your username
                                                               passwd="miklip", # your password
-                                                              db="evaluationsystem") # name of the data base
+                                                              db="evaluationsystemtest") # name of the data base
             
             
             #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
@@ -303,7 +303,7 @@ While initializing the schemas will get upgraded if required.
                 version_details)
         log.debug('Row: %s', row)
         
-        (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status) VALUES(%s, %s, %s, %s, %s, %s, %s);""", row)
+        (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status,flag,version_details_id) VALUES(%s, %s, %s, %s, %s, %s, %s,%s,%s);""", row)
         
         return cur.lastrowid
 
@@ -502,15 +502,14 @@ While initializing the schemas will get upgraded if required.
     
         
     def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
-        repository = '%s:%s' % repos_tool, repos_api
+        repository = '%s;%s' % (repos_tool, repos_api)
         
         sqlstr = 'SELECT id FROM plugins_version WHERE'
-        
-        sqlstr += 'TOOL="%s"' % toolname
-        sqlstr += 'AND VERSION="%s"' % version
-        sqlstr += 'AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool
-        sqlstr += 'AND INTERNAL_VERSION_API="%s"' % internal_version_api
-        sqlstr += 'AND REPOSITORY="%s"' % repository
+        sqlstr += ' TOOL="%s"' % toolname
+        sqlstr += ' AND VERSION="%s"' % version
+        sqlstr += ' AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool
+        sqlstr += ' AND INTERNAL_VERSION_API="%s"' % internal_version_api
+        sqlstr += ' AND REPOSITORY="%s"' % repository
 
         (cur, res) = self.safeExecute(sqlstr)
 
@@ -524,16 +523,17 @@ While initializing the schemas will get upgraded if required.
             return rows[0][0]
 
     def newVersion(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
-        repository = '%s:%s' % repos_tool, repos_api
+        repository = '%s;%s' % (repos_tool, repos_api)
         
         sqlstr = 'INSERT INTO plugins_version '
         sqlstr += '(TIMESTAMP, TOOL, VERSION, INTERNAL_VERSION_TOOL, INTERNAL_VERSION_API, REPOSITORY)'
-        sqlstr += '(%s, %s, %s, %s, %s, %s)'
+        sqlstr += 'VALUES (%s, %s, %s, %s, %s, %s)'
         
         timestamp = HistoryEntry.timestampToString(datetime.now())
         
         values = (timestamp, toolname, version, internal_version_tool, internal_version_api, repository)
 
+        print sqlstr
         (cur, res) = self.safeExecute(sqlstr, values)
 
         result_id = cur.lastrowid
