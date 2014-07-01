@@ -211,7 +211,7 @@ but at the present time the system works as a toolbox that the users start from 
             _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
                                                               user="evaluationsystem", # your username
                                                               passwd="miklip", # your password
-                                                              db="evaluationsystemtest") # name of the data base
+                                                              db="evaluationsystem") # name of the data base
             
             
             #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
