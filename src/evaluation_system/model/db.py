@@ -5,7 +5,6 @@ This modules encapsulates all access to databases.
 '''
 import sqlite3
 import MySQLdb
-from celery.bin.celery import result
 MySQLdb.paramstyle = 'qmark'
 from datetime import datetime
 import json
@@ -379,7 +378,7 @@ While initializing the schemas will get upgraded if required.
         
         # check if only one entry is in the database
         if len(rows) != 1:
-            print "SQL: ", select_str, row_id, uid, rows, len(rows), res, rows[0]
+            #print "SQL: ", select_str, row_id, uid, rows, len(rows), res, rows[0]
             raise self.ExceptionStatusUpgrade("No unique database entry found!")
                 
         # finally, do the SQL update
@@ -533,7 +532,7 @@ While initializing the schemas will get upgraded if required.
         
         values = (timestamp, toolname, version, internal_version_tool, internal_version_api, repository)
 
-        print sqlstr
+        
         (cur, res) = self.safeExecute(sqlstr, values)
 
         result_id = cur.lastrowid
