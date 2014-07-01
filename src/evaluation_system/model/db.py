@@ -444,7 +444,7 @@ While initializing the schemas will get upgraded if required.
         data_to_store = []
 
         # regex to get the relative path
-        expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
+        expression = '(%s\\/*){1}(.*)' % re.escape(config.get(config.PREVIEW_PATH))
         reg_ex = re.compile(expression)
 
         for file_name in results:
