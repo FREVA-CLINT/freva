@@ -4,8 +4,8 @@
 ##
 #
 
-# source miklip stuff
-. /client/etc/profile.miklip 
+
+ 
 
 # Set BASH as default shell (DOESNT WORK)
 #puts "bash;"
@@ -72,7 +72,7 @@ if { $curMode eq "load" } {
     } else {
 	safe_load python
 	safe_load cdo/1.5.4
-	puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type bash"
+	puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
 	puts stderr "And load it again -> module load evaluation_system"
 	puts stderr "Your shell now: $shell"    }
 } elseif { $curMode eq "remove" } {
