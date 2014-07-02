@@ -163,7 +163,7 @@ def getPluginGitVersion(pluginname):
         command += 'cd %s 2> /dev/null;' % dirname
     command += 'git config --get remote.origin.url;'
     command += 'git show-ref --heads --hash'
-    bash = ['/bin/bash',  '-c',  command]
+    bash = ['/bin/bash',  '-lc',  command]
     p = Popen(bash, stdout=PIPE, stderr=STDOUT)
     
     (stdout, stderr) = p.communicate()
