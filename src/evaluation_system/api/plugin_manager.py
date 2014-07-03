@@ -164,7 +164,7 @@ def getPluginGitVersion(pluginname):
     command += 'git config --get remote.origin.url;'
     command += 'git show-ref --heads --hash'
     bash = ['/bin/bash',  '-lc',  command]
-    p = Popen(bash, stdout=PIPE, stderr=STDOUT)
+    p = Popen(bash, stdout=PIPE, stderr=PIPE)
     
     (stdout, stderr) = p.communicate()
 
@@ -710,6 +710,37 @@ def loadScheduledConf(plugin_name, entry_id, user):
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
     return row.configuration
+
+def getErrorWarning(plugin_name):
+    """
+    returns a tuple (Error, Warning) with an error message or a warning
+    read from the config file
+    """
+    error_file = config.get_plugin(plugin_name, "error_file", None)
+    error_message = config.get_plugin(plugin_name, "error_message", None)
+
+    warning_file = config.get_plugin(plugin_name, "warning_file", None)
+    warning_message = config.get_plugin(plugin_name, "warning_message", None)
+    
+    if error_file:
+        try:
+            f = open(error_file, 'r')
+            error_message = f.read()
+            f.close()
+        except Exception, e:
+            if not error_message:
+                error_message = 'Could not read error description\n%s' % str(e) 
+
+    if warning_file:
+        try:
+            f = open(warning_file, 'r')
+            warning_message = f.read()
+            f.close()
+        except Exception, e:
+            if not warning_message:
+                warning_message = 'Could not read warning\n%s' % str(e)
+                
+    return (error_message, warning_message)
 
 def getVersion(pluginname): 
     """

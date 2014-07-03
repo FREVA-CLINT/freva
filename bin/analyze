@@ -341,10 +341,20 @@ DATE FORMAT
                     pm.runTool(tool, scheduled_id=scheduled_id)
                                      
             else:
+                #now run the tool                
+                (error, warning) = pm.getErrorWarning(tool)
+                
+                if warning:
+                    log.warning(warning)
+                    
+                if error:
+                    log.error(error)
+
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
-                #now run the tool
+                
+                
                 log.debug('Running %s with configuration: %s', tool, tool_dict)
-                if not dry_run:
+                if not dry_run and (not error or DEBUG):
                     if batchmode:
                         [id, file] = pm.scheduleTool(tool,
                                                      config_dict=tool_dict,
