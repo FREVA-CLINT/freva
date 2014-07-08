@@ -716,11 +716,11 @@ def getErrorWarning(plugin_name):
     returns a tuple (Error, Warning) with an error message or a warning
     read from the config file
     """
-    error_file = config.get_plugin(plugin_name, "error_file", None)
-    error_message = config.get_plugin(plugin_name, "error_message", None)
+    error_file = config.get_plugin(plugin_name, "error_file", '')
+    error_message = config.get_plugin(plugin_name, "error_message", '')
 
-    warning_file = config.get_plugin(plugin_name, "warning_file", None)
-    warning_message = config.get_plugin(plugin_name, "warning_message", None)
+    warning_file = config.get_plugin(plugin_name, "warning_file", '')
+    warning_message = config.get_plugin(plugin_name, "warning_message", '')
     
     if error_file:
         try:
@@ -740,6 +740,9 @@ def getErrorWarning(plugin_name):
             if not warning_message:
                 warning_message = 'Could not read warning\n%s' % str(e)
                 
+    error_message = error_message.strip()
+    warning_message = warning_message.strip()
+
     return (error_message, warning_message)
 
 def getVersion(pluginname): 
