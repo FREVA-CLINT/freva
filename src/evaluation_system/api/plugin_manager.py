@@ -729,7 +729,8 @@ def getErrorWarning(plugin_name):
             f.close()
         except Exception, e:
             if not error_message:
-                error_message = 'Could not read error description\n%s' % str(e) 
+                log.warn('Could not read error description\n%s' % str(e)) 
+                error_message = ''
 
     if warning_file:
         try:
@@ -738,7 +739,8 @@ def getErrorWarning(plugin_name):
             f.close()
         except Exception, e:
             if not warning_message:
-                warning_message = 'Could not read warning\n%s' % str(e)
+                log.warn('Could not read warning\n%s' % str(e))
+                warning_message = ''
                 
     error_message = error_message.strip()
     warning_message = warning_message.strip()
