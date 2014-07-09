@@ -711,22 +711,49 @@ def loadScheduledConf(plugin_name, entry_id, user):
             
     return row.configuration
 
+def getConfigName(pluginname):
+    '''
+    Returns the name of a tool as written in the configuration file.
+    This is especially useful when accessing the configuration.
+    '''
+    from inspect import getmodule
+    
+    try:
+        plugin = getPluginInstance(pluginname.lower())
+        
+        modulename = getmodule(plugin)
+
+        for name, module in __plugin_modules__.items():
+            if modulename == getmodule(module):
+                return name
+
+    except Exception, e:
+        log.debug('[getConfigName] ' + str(e))
+    
+    return None
+
+
 def getErrorWarning(tool_name):
     """
     returns a tuple (Error, Warning) with an error message or a warning
     read from the config file
     """
-    p = getPluginInstance(tool_name)
-    
-    plugin_name = p.__name__
+    plugin_name = getConfigName(tool_name)
 
-    
-    error_file = config.get_plugin(plugin_name, "error_file", '')
-    error_message = config.get_plugin(plugin_name, "error_message", '')
+    error_file = ''
+    error_message = ''
 
-    warning_file = config.get_plugin(plugin_name, "warning_file", '')
-    warning_message = config.get_plugin(plugin_name, "warning_message", '')
-        
+    warning_file = ''
+    warning_message = ''
+    
+    try:
+        error_file = config.get_plugin(plugin_name, "error_file", '')
+        error_message = config.get_plugin(plugin_name, "error_message", '')
+
+        warning_file = config.get_plugin(plugin_name, "warning_file", '')
+        warning_message = config.get_plugin(plugin_name, "warning_message", '')
+    except Exception, e:
+        log.warn(str(e))
     
     if error_file:
         try:
