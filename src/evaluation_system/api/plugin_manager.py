@@ -711,16 +711,22 @@ def loadScheduledConf(plugin_name, entry_id, user):
             
     return row.configuration
 
-def getErrorWarning(plugin_name):
+def getErrorWarning(tool_name):
     """
     returns a tuple (Error, Warning) with an error message or a warning
     read from the config file
     """
+    p = getPluginInstance(tool_name)
+    
+    plugin_name = p.__name__
+
+    
     error_file = config.get_plugin(plugin_name, "error_file", '')
     error_message = config.get_plugin(plugin_name, "error_message", '')
 
     warning_file = config.get_plugin(plugin_name, "warning_file", '')
     warning_message = config.get_plugin(plugin_name, "warning_message", '')
+        
     
     if error_file:
         try:
