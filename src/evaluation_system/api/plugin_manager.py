@@ -753,7 +753,7 @@ def getErrorWarning(tool_name):
         warning_file = config.get_plugin(plugin_name, "warning_file", '')
         warning_message = config.get_plugin(plugin_name, "warning_message", '')
     except Exception, e:
-        log.warn(str(e))
+        log.debug(str(e))
     
     if error_file:
         try:
