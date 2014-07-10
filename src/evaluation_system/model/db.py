@@ -506,8 +506,8 @@ While initializing the schemas will get upgraded if required.
         sqlstr = 'SELECT id FROM plugins_version WHERE'
         sqlstr += ' TOOL="%s"' % toolname
         sqlstr += ' AND VERSION="%s"' % version
-        sqlstr += ' AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool
-        sqlstr += ' AND INTERNAL_VERSION_API="%s"' % internal_version_api
+        sqlstr += ' AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool[:40]
+        sqlstr += ' AND INTERNAL_VERSION_API="%s"' % internal_version_api[:40]
         sqlstr += ' AND REPOSITORY="%s"' % repository
 
         (cur, res) = self.safeExecute(sqlstr)

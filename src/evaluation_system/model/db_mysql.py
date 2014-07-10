@@ -211,7 +211,7 @@ but at the present time the system works as a toolbox that the users start from 
             _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
                                                               user="evaluationsystem", # your username
                                                               passwd="miklip", # your password
-                                                              db="evaluationsystemtest") # name of the data base
+                                                              db="evaluationsystem") # name of the data base
             
             
             #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')
@@ -444,7 +444,7 @@ While initializing the schemas will get upgraded if required.
         data_to_store = []
 
         # regex to get the relative path
-        expression = '(%s\\/*){1}(.*)' % re.escape(config.PREVIEW_PATH)
+        expression = '(%s\\/*){1}(.*)' % re.escape(config.get(config.PREVIEW_PATH))
         reg_ex = re.compile(expression)
 
         for file_name in results:
@@ -506,8 +506,8 @@ While initializing the schemas will get upgraded if required.
         sqlstr = 'SELECT id FROM plugins_version WHERE'
         sqlstr += ' TOOL="%s"' % toolname
         sqlstr += ' AND VERSION="%s"' % version
-        sqlstr += ' AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool
-        sqlstr += ' AND INTERNAL_VERSION_API="%s"' % internal_version_api
+        sqlstr += ' AND INTERNAL_VERSION_TOOL="%s"' % internal_version_tool[:40]
+        sqlstr += ' AND INTERNAL_VERSION_API="%s"' % internal_version_api[:40]
         sqlstr += ' AND REPOSITORY="%s"' % repository
 
         (cur, res) = self.safeExecute(sqlstr)
