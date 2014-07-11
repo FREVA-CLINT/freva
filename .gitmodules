@@ -37,3 +37,6 @@
 [submodule "tools/monsoon"]
 	path = tools/monsoon
 	url = /miklip/integration/repositories/monsoon.git
+[submodule "tools/movie_plotter"]
+	path = tools/movie_plotter
+	url = ssh://u290038@miklip.dkrz.de/miklip/integration/repositories/movie_plotter.git
