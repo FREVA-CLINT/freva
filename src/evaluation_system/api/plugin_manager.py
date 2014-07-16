@@ -174,7 +174,7 @@ def getPluginGitVersion(pluginname):
         version = lines[-2]
     except Exception, e:
         if not stderr:
-           stderr = str(e)
+            stderr = str(e)
            
         log.error("Git error: %s", stderr)
 
