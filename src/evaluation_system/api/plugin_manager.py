@@ -169,14 +169,15 @@ def getPluginGitVersion(pluginname):
     (stdout, stderr) = p.communicate()
 
     try:
-        if stderr:
-            log.error("Git error: %s", stderr)
-            raise Exception(stderr)
-
         lines = stdout.split('\n')
         repository = lines[-3]
         version = lines[-2]
-    except:
+    except Exception, e:
+        if not stderr:
+           stderr = str(e)
+           
+        log.error("Git error: %s", stderr)
+
         repository = 'unknown'
         version = 'unknown'
 
