@@ -176,7 +176,8 @@ def getPluginGitVersion(pluginname):
         if not stderr:
             stderr = str(e)
            
-        log.error("Git error: %s", stderr)
+        log.warn("Could not read git version")
+        log.debug("Error while reading git version:\n%s", stderr)
 
         repository = 'unknown'
         version = 'unknown'
