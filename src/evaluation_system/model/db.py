@@ -456,7 +456,7 @@ While initializing the schemas will get upgraded if required.
             data_to_store = [rowid, tagType, text, uid]
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
         
-        self.safeExecutemany(insert_string, data_to_store)
+        self.safeExecute(insert_string, data_to_store)
         
     
     def storeResults(self, rowid, results):
