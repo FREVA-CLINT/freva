@@ -366,6 +366,12 @@ DATE FORMAT
                         print 'tail -f ', file
                     else:
                         pm.runTool(tool, config_dict=tool_dict)
+                        
+                        # repeat the warning at the end of the run
+                        # for readability don't show the warning in debug mode 
+                        if warning and not DEBUG:
+                            log.warning(warning)
+  
 
             if DEBUG:
                 log.debug("Arguments: %s", lastargs)

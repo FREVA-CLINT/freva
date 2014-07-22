@@ -32,6 +32,7 @@ _result_data = 2
 _result_unknown = 9
 
 _resulttag_caption = 0
+_historytag_caption = 0
 
 
 class HistoryEntry(object):
@@ -432,6 +433,31 @@ While initializing the schemas will get upgraded if required.
         (cur, ret) = self.safeExecute(sql_str)
         res = cur.fetchall()
         return [HistoryEntry(row) for row in res]
+    
+    def addHistoryTag(self, rowid, tagType, text, uid=None):
+        """
+        :type rowid: integer
+        :param rowid: the row id of the history entry where the results belong to
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: text: string
+        :param: text: the text belonging to the tag
+        :type: uid: string
+        :param: uid: the user, default: None
+        """
+        
+        data_to_store = []
+        insert_string = ''
+        
+        if uid is None:
+            data_to_store = [rowid, tagType, text]
+            insert_string = 'INSERT INTO history_historytag(history_id_id, type, text) VALUES (%s, %s, %s)'
+        else:
+            data_to_store = [rowid, tagType, text, uid]
+            insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
+        
+        self.safeExecutemany(insert_string, data_to_store)
+        
     
     def storeResults(self, rowid, results):
         """
