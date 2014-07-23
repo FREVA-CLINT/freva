@@ -459,11 +459,11 @@ While initializing the schemas will get upgraded if required.
         self.safeExecute(insert_string, data_to_store)
         
         
-   class ExceptionTagUpdate(Exception):
+    class ExceptionTagUpdate(Exception):
         """
         Exception class for failing status upgrades
         """
-        def __init__(self, msg="Tag not found")
+        def __init__(self, msg="Tag not found"):
             super(UserDB.ExceptionTagUpdate, self).__init__(msg)
         
 
