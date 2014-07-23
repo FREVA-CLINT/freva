@@ -434,10 +434,10 @@ While initializing the schemas will get upgraded if required.
         res = cur.fetchall()
         return [HistoryEntry(row) for row in res]
     
-    def addHistoryTag(self, rowid, tagType, text, uid=None):
+    def addHistoryTag(self, hrowid, tagType, text, uid=None):
         """
-        :type rowid: integer
-        :param rowid: the row id of the history entry where the results belong to
+        :type hrowid: integer
+        :param hrowid: the row id of the history entry where the results belong to
         :type tagType: integer 
         :param tagType: the kind of tag
         :type: text: string
@@ -450,14 +450,68 @@ While initializing the schemas will get upgraded if required.
         insert_string = ''
         
         if uid is None:
-            data_to_store = [rowid, tagType, text]
+            data_to_store = [hrowid, tagType, text]
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text) VALUES (%s, %s, %s)'
         else:
-            data_to_store = [rowid, tagType, text, uid]
+            data_to_store = [hrowid, tagType, text, uid]
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
         
         self.safeExecute(insert_string, data_to_store)
         
+        
+   class ExceptionTagUpdate(Exception):
+        """
+        Exception class for failing status upgrades
+        """
+        def __init__(self, msg="Tag not found")
+            super(UserDB.ExceptionTagUpdate, self).__init__(msg)
+        
+
+    def updateHistoryTag(self, trowid, tagType=None, text=None, uid=None):
+        """
+        :type trowid: integer
+        :param trowid: the row id of the tag
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: text: string
+        :param: text: the text belonging to the tag
+        :type: uid: string
+        :param: uid: the user, default: None
+        """
+        
+        data_to_store = []
+        insert_string = ''
+        
+        select_str='SELECT type, text FROM history_historytag WHERE id=%s AND uid=%s'
+        
+        (cur, res) = self.safeExecute(select_str, (row_id,uid))
+
+        rows = cur.fetchall()
+        
+        # check if only one entry is in the database
+        if len(rows) != 1:
+            raise self.ExceptionTagUpdate("No unique database entry found!")
+        
+        field =[tagType, text]
+        
+        values = ()
+        
+        if any(not e is None for e in field):
+            update_str='UPDATE history_historytag SET'
+            
+            if not tagType is None:
+                update_str += ' type=%s,'
+                values = values + (tagType)
+                
+            if not text is None:
+                update_str += ' text=%s,'
+                values = values + (text)
+            
+            update_str = update_str[:-1] + ' WHERE id=%s AND uid=%s'
+            values = values + (trowid, uid)
+
+            self.safeExecute(update_str, (status, row_id, uid))
+
     
     def storeResults(self, rowid, results):
         """
