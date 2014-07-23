@@ -484,7 +484,7 @@ While initializing the schemas will get upgraded if required.
         
         select_str='SELECT type, text FROM history_historytag WHERE id=%s AND uid=%s'
         
-        (cur, res) = self.safeExecute(select_str, (row_id,uid))
+        (cur, res) = self.safeExecute(select_str, (trowid,uid))
 
         rows = cur.fetchall()
         
@@ -501,16 +501,16 @@ While initializing the schemas will get upgraded if required.
             
             if not tagType is None:
                 update_str += ' type=%s,'
-                values = values + (tagType)
+                values = values + tuple([tagType])
                 
             if not text is None:
                 update_str += ' text=%s,'
-                values = values + (text)
+                values = values + tuple([text])
             
             update_str = update_str[:-1] + ' WHERE id=%s AND uid=%s'
             values = values + (trowid, uid)
 
-            self.safeExecute(update_str, (status, row_id, uid))
+            self.safeExecute(update_str, values)
 
     
     def storeResults(self, rowid, results):
