@@ -209,10 +209,10 @@ but at the present time the system works as a toolbox that the users start from 
 #                                                              isolation_level=None,
 #                                                              detect_types=sqlite3.PARSE_DECLTYPES)
             #MySQLdb.paramstyle = 'qmark'
-            _connection_pool[self._db_file] = MySQLdb.connect(host="136.172.30.208", # your host, usually localhost
-                                                              user="evaluationsystem", # your username
-                                                              passwd="miklip", # your password
-                                                              db="evaluationsystem") # name of the data base
+            _connection_pool[self._db_file] = MySQLdb.connect(host=config.get(config.DB_HOST), # your host, usually localhost
+                                                              user=config.get(config.DB_USER), # your username
+                                                              passwd=config.get(config.DB_PASSWD), # your password
+                                                              db=config.get(config.DB_DB)) # name of the data base
             
             
             #_connection_pool[self._db_file].execute('PRAGMA synchronous = OFF')

@@ -88,6 +88,19 @@ PLUGIN_MODULE = 'module'
 PREVIEW_PATH = 'preview_path'
 '''path to preview pictures.'''
 
+#: database #####################
+DB_HOST = 'db.host'
+''' name of the database server '''
+
+DB_USER = 'db.user'
+''' database user '''
+
+DB_PASSWD = 'db.passwd'
+''' database password '''
+
+DB_DB = 'db.db'
+''' the database name on the server '''
+
 #: Solr #########################
 SOLR_HOST = 'solr.host'
 '''Hostname of the Solr instance.'''
