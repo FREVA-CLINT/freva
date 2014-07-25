@@ -154,7 +154,8 @@ _args = ['tool=', 'list-tools',
     'history', 'use-defaults',
     'config-file=', 'save-config=', 'save',
     'show-config','scheduled-id=',
-    'mail=', 'batchmode=', 'repos-version=', 'caption=']
+    'mail=', 'batchmode=', 'repos-version=',
+    'caption=']
 
  
 
@@ -331,7 +332,7 @@ DATE FORMAT
             caption = None
             
             if precaption:
-                caption = pm.generateCaption(precaption, toolname)    
+                caption = pm.generateCaption(precaption, tool)    
             
             if cfg_file_save:
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
