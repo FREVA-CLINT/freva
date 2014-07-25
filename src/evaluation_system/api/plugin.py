@@ -544,7 +544,9 @@ if no configuration is provided the default one will be used.
             
         # add a caption if given
         if not caption is None:
-            cmd_param += " --caption '%s'" % caption
+            quote_caption =  s.replace("\\", "\\\\")
+            quote_caption =  s.replace("'", "'\\''")
+            cmd_param += " --caption '%s'" % quote_caption
                        
         else:
             #store the section header
