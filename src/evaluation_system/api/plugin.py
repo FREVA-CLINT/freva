@@ -522,7 +522,7 @@ if no configuration is provided the default one will be used.
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
         
-    def composeCommand(self, config_dict=None, scheduled_id=None, batchmode=False, email=None):
+    def composeCommand(self, config_dict=None, scheduled_id=None, batchmode=False, email=None, caption=None):
         logging.debug('config dict:' + str(config_dict))
         logging.debug('scheduled_id:' + str(scheduled_id))
 
@@ -542,6 +542,9 @@ if no configuration is provided the default one will be used.
         if scheduled_id:
             cmd_param += ' --scheduled-id %i' % scheduled_id
             
+        # add a caption if given
+        if not caption is None:
+            cmd_param += ' --caption %s' % caption:while
                        
         else:
             #store the section header
