@@ -135,8 +135,8 @@ the current user, i.e. the one that started the application, is created instead.
     def _getUserDir(self, dir_type, tool = None, create=False):
         base_dir = dict(base='', config=User.CONFIG_DIR, cache=User.CACHE_DIR, output=User.OUTPUT_DIR, \
                          plots=User.PLOTS_DIR, processes=User.PROCESSES_DIR, \
-                         scheduler_in=config.get('scheduler_input_dir', config.SCHEDULER_INPUT_DIR), \
-                         scheduler_out=config.get('scheduler_output_dir', config.SCHEDULER_OUTPUT_DIR))
+                         scheduler_in=config.get(config.SCHEDULER_INPUT_DIR), \
+                         scheduler_out=config.get(config.SCHEDULER_OUTPUT_DIR))
          
         if tool is None:
             bd = base_dir[dir_type]

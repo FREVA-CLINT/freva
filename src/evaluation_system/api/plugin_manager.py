@@ -447,8 +447,37 @@ def _preview_create(plugin_name, result):
         p =  Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
             
+def generateCaption(caption, toolname):
+    """
+    Generates a standardized caption including the toolname.
+    :type caption: str
+    :param caption: The caption to be standardized
+    :type toolname: str
+    :param toolname: the toolname
+    :return: String containing the standardized caption
+    """ 
+    import re
 
-def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
+    caption = caption.strip().capitalize() 
+    toolname = toolname.strip().capitalize() 
+ 
+    retval = toolname 
+ 
+    if caption != toolname: 
+        pattern = "^\*"
+        if re.search(pattern, caption, re.IGNORECASE):
+            caption = caption[1:]
+        
+        pattern = '\(' + toolname + '\)$' 
+        if re.search(pattern, caption, re.IGNORECASE) is None: 
+            retval = caption + ' (' + toolname + ')' 
+        else: 
+            retval = caption
+            
+    return retval 
+ 
+
+def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption=None):
     """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
@@ -457,7 +486,11 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
 :param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
     this might be incomplete.
 :type user: :class:`evaluation_system.model.user.User`
+:param user: The user starting the tool
+:type scheduled_id: int
 :param scheduled_id: if the process is already scheduled then put the row id here
+:type caption: str
+:param caption: the caption to set.
 """
     
     plugin_name = plugin_name.lower()
@@ -499,6 +532,11 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
                                               user.getName(),
                                               db._status_running,
                                               version_details = version_details)
+
+    # after creating the entry add a given caption    
+    if not caption is None:
+        user.getUserDB().addHistoryTag(rowid, db._historytag_caption, caption)
+        
         
     try:
         #In any case we have now a complete setup in complete_conf
@@ -535,7 +573,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None):
     
     return result
 
-def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
+def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, caption=None):
     """Schedules  a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
@@ -546,7 +584,11 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
 :param config_dict: The configuration used for running the tool. If is None, the default configuration will be stored, 
     this might be incomplete.
 :type user: :class:`evaluation_system.model.user.User`
+:param user: The user starting the tool
+:type scheduled_id: int
 :param scheduled_id: if the process is already scheduled then put the row id here
+:type caption: str
+:param caption: the caption to set.
 """
     
     plugin_name = plugin_name.lower()
@@ -583,8 +625,11 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
                                           db._status_not_scheduled,
                                           version_details = version_details)
     
+
+    # after creating the entry add a given caption    
+    if not caption is None:
+        user.getUserDB().addHistoryTag(rowid, db._historytag_caption, caption)
        
-    full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
 
     # set the SLURM output directory
     if not slurmoutdir:
@@ -593,6 +638,9 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
 
     if not os.path.exists(slurmoutdir):
         utils.supermakedirs(slurmoutdir, 0777)
+
+    # write the SLURM file
+    full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
 
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
@@ -640,6 +688,8 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None):
     # set the slurm output file 
     user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
 
+           
+           
     return (rowid, slurm_out)
 
 

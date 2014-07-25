@@ -154,7 +154,7 @@ _args = ['tool=', 'list-tools',
     'history', 'use-defaults',
     'config-file=', 'save-config=', 'save',
     'show-config','scheduled-id=',
-    'mail=', 'batchmode=', 'repos-version=']
+    'mail=', 'batchmode=', 'repos-version=', 'caption=']
 
  
 
@@ -173,6 +173,7 @@ def main(argv=None): # IGNORE:C0111
         #defaults
         help_opt=False
         tool = None
+        precaption = None
         tool_version = None
         scheduled_id = None
         env = getEnvironment()
@@ -197,13 +198,16 @@ def main(argv=None): # IGNORE:C0111
                 tool=arg.lower()
             elif flag == '--use-defaults':      #skips user configuration and use system defaults.
                 use_user_defaults=False
+            elif flag == '--caption':           # sets a caption for the results
+                precaption = arg
+                
             elif flag == '--batchmode':         # creates a SLURM job
                 mode = arg.lower()
                 batchmode = mode in ['true', '1', 'yes', 'on', 'web',]
                 
                 if not batchmode and mode not in ['false', '0', 'no', 'off',]:
                     raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
-            elif flag == '--mail':
+            elif flag == '--mail':              # users email address
                 email = arg.lower()
             elif flag == '--repos-version':     # show the version number from the repository
                 tool_version = arg.lower()                
@@ -324,7 +328,10 @@ DATE FORMAT
                 
         #get the plugin
         if tool:
-                
+            caption = None
+            
+            if precaption:
+                caption = pm.generateCaption(precaption, toolname)    
             
             if cfg_file_save:
                 tool_dict = pm.parseArguments(tool,lastargs, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
@@ -358,14 +365,15 @@ DATE FORMAT
                     if batchmode:
                         [id, file] = pm.scheduleTool(tool,
                                                      config_dict=tool_dict,
-                                                     user=user.User(email=email))
+                                                     user=user.User(email=email),
+                                                     caption=caption)
 
                         print 'Scheduled job with history id', id
                         print 'You can view the job\'s status with the command squeue'
                         print 'Your job\'s progress will be shown with the command'
                         print 'tail -f ', file
                     else:
-                        pm.runTool(tool, config_dict=tool_dict)
+                        pm.runTool(tool, config_dict=tool_dict, caption=caption)
                         
                         # repeat the warning at the end of the run
                         # for readability don't show the warning in debug mode 
