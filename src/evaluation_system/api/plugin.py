@@ -544,8 +544,8 @@ if no configuration is provided the default one will be used.
             
         # add a caption if given
         if not caption is None:
-            quote_caption =  s.replace("\\", "\\\\")
-            quote_caption =  s.replace("'", "'\\''")
+            quote_caption =  caption.replace("\\", "\\\\")
+            quote_caption =  quote_caption.replace("'", "'\\''")
             cmd_param += " --caption '%s'" % quote_caption
                        
         else:
