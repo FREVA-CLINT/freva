@@ -538,17 +538,18 @@ if no configuration is provided the default one will be used.
         # the parameter string
         cmd_param += ' --tool ' + self.__class__.__name__
        
-        # a scheduled id overrides the dictionary behavior
-        if scheduled_id:
-            cmd_param += ' --scheduled-id %i' % scheduled_id
             
         # add a caption if given
-        # if not caption is None:
-        #    quote_caption = caption
-        #    #quote_caption =  caption.replace("\\", "\\\\")
-        #    #quote_caption =  quote_caption.replace("'", "'\\''")
-        #    cmd_param += " --caption '%s' " % quote_caption
-                       
+        if not caption is None:
+            quote_caption = caption
+            quote_caption =  caption.replace("\\", "\\\\")
+            quote_caption =  quote_caption.replace("'", "'\\''")
+            cmd_param += " --caption '%s'" % quote_caption
+
+         # a scheduled id overrides the dictionary behavior
+        if scheduled_id:
+            cmd_param += ' --scheduled-id %i' % scheduled_id
+                      
         else:
             #store the section header
             if config_dict is None:
@@ -569,6 +570,8 @@ if no configuration is provided the default one will be used.
                         raise self.ExceptionMissingParam(param_name)
                 else:
                     cmd_param += " %s=%s" % (param_name, param.str(value))
+
+        logging.debug('Execute command:' + cmd_param)
              
         return cmd_param
 
