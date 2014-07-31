@@ -254,6 +254,42 @@ but at the present time the system works as a toolbox that the users start from 
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         return HistoryEntry()
     
+    
+    def addHistoryTag(self, hrowid, tagType, text, uid=None):
+        """
+        :type hrowid: integer
+        :param hrowid: the row id of the history entry where the results belong to
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: text: string
+        :param: text: the text belonging to the tag
+        :type: uid: string
+        :param: uid: the user, default: None
+        """
+        pass    
+        
+    class ExceptionTagUpdate(Exception):
+        """
+        Exception class for failing status upgrades
+        """
+        def __init__(self, msg="Tag not found"):
+            super(UserDB.ExceptionTagUpdate, self).__init__(msg)
+        
+
+    def updateHistoryTag(self, trowid, tagType=None, text=None, uid=None):
+        """
+        :type trowid: integer
+        :param trowid: the row id of the tag
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: text: string
+        :param: text: the text belonging to the tag
+        :type: uid: string
+        :param: uid: the user, default: None
+        """
+        pass
+    
+    
     def storeResults(self, rowid, results):
         pass
 
