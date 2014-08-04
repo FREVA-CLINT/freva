@@ -124,6 +124,15 @@ the current user, i.e. the one that started the application, is created instead.
 :rtype: str"""  
         return self._userdata.pw_dir
     
+    def getUserScratch(self):
+        """:returns: the path to the user's scratch directory.
+:rtype: str"""  
+        path = config.get(config.SCRATCH_DIR)
+
+        path = path.replace('$USER', self.getName())
+
+        return path
+    
     def _getUserBaseDir(self):
         if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
             return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))

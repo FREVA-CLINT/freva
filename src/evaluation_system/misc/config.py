@@ -46,6 +46,9 @@ Waiting time in seconds before the scheduler runs the job
 We suggest: DATABASE_TIMEOUT+1
 """
 
+SCRATCH_DIR = 'scratch_dir'
+''' The scratch dir of the user '''
+
 
 SCHEDULER_OUTPUT_DIR = 'scheduler_output_dir'
 ''' Determines the folder the SLURM output files will be saved in ''' 
