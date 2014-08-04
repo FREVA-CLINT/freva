@@ -1,0 +1,85 @@
+[evaluation_system]
+#: The name of the directory storing the evaluation system (output, configuration, etc)
+base_dir=evaluation_system
+
+#: The location of the directory defined in $base_dir
+#: We are storing this in the user home at this time since it's being used as
+#:a tool-box.
+base_dir_location=/usr/test_scratch
+
+#: work directory for the SLURM scheduler
+#: when empty, the configuration will be read from User-object 
+scheduler_input_dir=/tmp/slurm
+scheduler_output_dir=slurm
+
+#: preview path
+preview_path=/usr/local/preview
+
+#: scratch dir
+scratch_dir=/usr/test_scratch/$USER
+
+#: Type of directory structure that will be used to maintain state:
+#:
+#:    local   := <home>/<base_dir>/...
+#:    central := <base_dir_location>/<base_dir>/<user>/...
+#:    scratch := <base_dir_location>/<user>/<base_dir>/...
+#:
+#: (no user info in local since that is in the base_dir_location already)
+directory_structure_type=scratch
+
+#: database path
+database_file = $EVALUATION_SYSTEM_HOME/database/db.db
+
+#: mySQL settings
+db.host=136.172.30.208
+db.user=evaluationsystemtest
+db.passwd=miklip
+db.db=evaluationsystemtest
+
+#: Define access to the solr instance
+solr.host=wwwdev-miklip.dkrz.de
+solr.port=8983
+solr.core=files
+
+
+[plugin:pca]
+plugin_path=$EVALUATION_SYSTEM_HOME/tools/pca
+python_path=$EVALUATION_SYSTEM_HOME/tools/pca/integration
+module=pca.api
+
+[plugin:movieplotter]
+python_path=$EVALUATION_SYSTEM_HOME/tools/movieplotter/src
+module=movieplotter
+
+[plugin:diffplotter]
+python_path=$EVALUATION_SYSTEM_HOME/tools/diffplotter/integration
+module=differenceplotter
+
+#[plugin:zykpak]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/zykpak
+#module=zykpak
+
+[plugin:goddard]
+python_path=$EVALUATION_SYSTEM_HOME/tools/goddard/integration
+module=murcss-api
+
+#[plugin:percentile]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/percentile
+#module=percentile
+
+#[plugin:dsi]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/dsi
+#module=dsitool
+
+#[plugin:vady]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/vady
+#module=vady
+
+#[plugin:leadtimeselector]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/leadtimeselektor
+#module=leadtime-api
+
+#[plugin:etccdi]
+#python_path=$EVALUATION_SYSTEM_HOME/tools/etccdi
+#module=etccdi-api
+
