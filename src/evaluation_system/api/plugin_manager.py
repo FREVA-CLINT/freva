@@ -458,7 +458,7 @@ def generateCaption(caption, toolname):
     """ 
     import re
 
-    caption = caption.strip().capitalize() 
+    caption = caption.strip()
     toolname = toolname.strip().capitalize() 
  
     retval = toolname 
