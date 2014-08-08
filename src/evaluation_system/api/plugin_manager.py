@@ -459,7 +459,7 @@ def generateCaption(caption, toolname):
     import re
 
     caption = caption.strip()
-    toolname = toolname.strip().capitalize() 
+    toolname = toolname.strip().upper()
  
     retval = toolname 
  
@@ -493,7 +493,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
 :param caption: the caption to set.
 """
     
-    plugin_name = plugin_name.upper()
+    plugin_name = plugin_name.lower()
     if user is None: user = User()
     
     p = getPluginInstance(plugin_name, user)
