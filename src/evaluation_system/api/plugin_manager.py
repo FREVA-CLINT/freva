@@ -493,7 +493,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
 :param caption: the caption to set.
 """
     
-    plugin_name = plugin_name.lower()
+    plugin_name = plugin_name.upper()
     if user is None: user = User()
     
     p = getPluginInstance(plugin_name, user)
