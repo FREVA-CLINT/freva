@@ -618,5 +618,64 @@ While initializing the schemas will get upgraded if required.
         result_id = cur.lastrowid
         
         return result_id
+    
+    
+    def getUserId(self, username):
+        sqlstr = 'SELECT id FROM auth_user WHERE'
+        sqlstr += ' USERNAME="%s"' % username
 
-   
+        (cur, res) = self.safeExecute(sqlstr)
+
+        rows = cur.fetchall()
+        
+        # check if only one entry is in the database
+        if len(rows) < 1:
+            return 0
+        
+        else:
+            return rows[0][0]
+        
+
+    def updateUserLogin(self, row_id, email = None):
+        timestamp = HistoryEntry.timestampToString(datetime.now())
+        
+        update_str='UPDATE history_historytag SET last_login = %s' 
+        values = (timestamp,)
+        
+        if not email is None:
+            update_str += ', email=\'%s\''
+            values = values + (email,)
+            
+        
+        update_str += ' WHERE id=%s'
+        values = values + (row_id,)
+
+        self.safeExecute(update_str, values)
+        
+    def createUser(self, username, email=None, first_name=None, last_name=None):
+        columns = ['username', 'date_joined', 'last_login']
+        value_mask = ['%s','%s','%s',]
+        timestamp = HistoryEntry.timestampToString(datetime.now())
+        values = [username, timestamp, timestamp]
+       
+        if not email is None:
+            columns.append('email')
+            values.append(email)
+            value_mask.append('%s')
+       
+        if not first_name is None:
+            columns.append('first_name')
+            values.append(first_name)
+            value_mask.append('%s')
+
+        if not last_name is None:
+            columns.append('last_name')
+            values.append(last_name)
+            value_mask.append('%s')
+ 
+        colstr = ",".join(columns) 
+        mskstr = ",".join(value_mask) 
+ 
+        insertstr = 'INSERT INTO auth_user (%s) VALUES (%s)' % (colstr, mskstr)
+        
+        self.safeExecute(insertstr, values)         
