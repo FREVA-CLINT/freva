@@ -71,6 +71,16 @@ the current user, i.e. the one that started the application, is created instead.
         
         self._db = UserDB(self)
         
+        row_id = self._db.getUserId(uid)
+        
+        if row_id:
+            try:
+                self._db.updateUserLogin(row_id, email)
+            except:
+                pass
+        else:
+            self._db.createUser(uid, email=email)
+            
         #-------------------------- self._meta = metadict(compact_creation=True,
         #--------------------------------- USER_BASE_DIR=)
         # """Expand the user specific values in the given string. Those values might be one of:
