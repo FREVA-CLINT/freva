@@ -652,30 +652,39 @@ While initializing the schemas will get upgraded if required.
 
         self.safeExecute(update_str, values)
         
-    def createUser(self, username, email=None, first_name=None, last_name=None):
-        columns = ['username', 'date_joined', 'last_login']
-        value_mask = ['%s','%s','%s',]
-        timestamp = HistoryEntry.timestampToString(datetime.now())
-        values = [username, timestamp, timestamp]
-       
-        if not email is None:
-            columns.append('email')
-            values.append(email)
-            value_mask.append('%s')
-       
-        if not first_name is None:
-            columns.append('first_name')
-            values.append(first_name)
-            value_mask.append('%s')
+    def createUser(self,
+                   username,
+                   email='',
+                   first_name='',
+                   last_name='',):
 
-        if not last_name is None:
-            columns.append('last_name')
-            values.append(last_name)
-            value_mask.append('%s')
+        timestamp = HistoryEntry.timestampToString(datetime.now())
+        
+        columns = ['username',
+                   'date_joined', 
+                   'last_login',
+                   'first_name',
+                   'last_name',
+                   'email',
+                   'is_active',
+                   'is_staff',
+                   'is_superuser',]
+        
+        values = [username,
+                  timestamp,
+                  timestamp, 
+                  first_name,
+                  last_name,
+                  email,
+                  True,
+                  False,
+                  False,]
+        
+        value_mask = ['%s'] * len(values)
  
         colstr = ",".join(columns) 
         mskstr = ",".join(value_mask) 
  
         insertstr = 'INSERT INTO auth_user (%s) VALUES (%s)' % (colstr, mskstr)
         
-        self.safeExecute(insertstr, values)         
+        self.safeExecute(insertstr, values)
