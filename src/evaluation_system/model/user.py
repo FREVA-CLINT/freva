@@ -63,7 +63,10 @@ the current user, i.e. the one that started the application, is created instead.
         if self._userdata is None:
             raise Exception("Cannot find user %s" % uid)
         
-        self._email      = email;
+        if email is None:
+            self._email = ''
+        else:
+            self._email = email
         
         self._userconfig = Config()
         #try to load teh configuration from the very first time.
@@ -71,15 +74,16 @@ the current user, i.e. the one that started the application, is created instead.
         
         self._db = UserDB(self)
         
-        row_id = self._db.getUserId(uid)
-        
+        row_id = self._db.getUserId(self.getName())
+
         if row_id:
             try:
                 self._db.updateUserLogin(row_id, email)
             except:
+                raise
                 pass
         else:
-            self._db.createUser(uid, email=email)
+            self._db.createUser(self.getName(), email=self._email)
             
         #-------------------------- self._meta = metadict(compact_creation=True,
         #--------------------------------- USER_BASE_DIR=)

@@ -157,14 +157,16 @@ of the DB considerably without the risk of loosing information.'''
         ret = None
         
         try:
-            cur = self._getConnection()
+            cur = self._getConnection().cursor()
             res = cur.execute(*args, **kwargs)
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
-            cur = self._getConnection()
+            cur = self._getConnection().cursor()
             res = cur.execute(*args, **kwargs)
             
+        self._getConnection().commit()
+
         return (cur, res)
 
     def safeExecutemany(self, *args, **kwargs):
@@ -175,13 +177,15 @@ of the DB considerably without the risk of loosing information.'''
         ret = None
         
         try:
-            cur = self._getConnection()
+            cur = self._getConnection().cursor()
             res = cur.executemany(*args, **kwargs)
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
-            cur = self._getConnection()
+            cur = self._getConnection().cursor()
             res = cur.executemany(*args, **kwargs)
+
+        self._getConnection().commit()
             
         return (cur, res)
 
@@ -224,7 +228,7 @@ but at the present time the system works as a toolbox that the users start from 
                 _connection_pool.pop(self._db_file, None)
                 return self._getConnection()
 
-        return _connection_pool[self._db_file].cursor()
+        return _connection_pool[self._db_file]
     
     def initialize(self, tool_name=None):
         """If not already initialized it will performed the required actions.
@@ -621,10 +625,9 @@ While initializing the schemas will get upgraded if required.
     
     
     def getUserId(self, username):
-        sqlstr = 'SELECT id FROM auth_user WHERE'
-        sqlstr += ' USERNAME="%s"' % username
+        sqlstr = 'SELECT id FROM auth_user WHERE username=%s'
 
-        (cur, res) = self.safeExecute(sqlstr)
+        (cur, res) = self.safeExecute(sqlstr, (username,))
 
         rows = cur.fetchall()
         
@@ -633,17 +636,17 @@ While initializing the schemas will get upgraded if required.
             return 0
         
         else:
-            return rows[0][0]
+            return int(rows[0][0])
         
 
     def updateUserLogin(self, row_id, email = None):
         timestamp = HistoryEntry.timestampToString(datetime.now())
         
-        update_str='UPDATE history_historytag SET last_login = %s' 
+        update_str='UPDATE auth_user SET last_login=%s' 
         values = (timestamp,)
         
         if not email is None:
-            update_str += ', email=\'%s\''
+            update_str += ', email=%s'
             values = values + (email,)
             
         
@@ -654,13 +657,14 @@ While initializing the schemas will get upgraded if required.
         
     def createUser(self,
                    username,
-                   email='',
+                   email='-',
                    first_name='',
                    last_name='',):
 
         timestamp = HistoryEntry.timestampToString(datetime.now())
         
         columns = ['username',
+                   'password',
                    'date_joined', 
                    'last_login',
                    'first_name',
@@ -671,20 +675,21 @@ While initializing the schemas will get upgraded if required.
                    'is_superuser',]
         
         values = [username,
+                  'NoPasswd',
                   timestamp,
                   timestamp, 
                   first_name,
                   last_name,
                   email,
-                  True,
-                  False,
-                  False,]
+                  1,
+                  0,
+                  0,]
         
         value_mask = ['%s'] * len(values)
  
         colstr = ",".join(columns) 
         mskstr = ",".join(value_mask) 
  
-        insertstr = 'INSERT INTO auth_user (%s) VALUES (%s)' % (colstr, mskstr)
-        
+        insertstr = 'INSERT INTO auth_user (%s) VALUES (%s);' % (colstr, mskstr)
+
         self.safeExecute(insertstr, values)
