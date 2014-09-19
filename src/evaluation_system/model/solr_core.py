@@ -24,7 +24,7 @@ from datetime import datetime
 import logging
 log = logging.getLogger(__name__)
 
-from evaluation_system.model.file import DRSFile, BASELINE0, MIKLIP, PROTOTYPE, CMIP5, OBSERVATIONS, REANALYSIS
+from evaluation_system.model.file import DRSFile, CMIP5, OBSERVATIONS, REANALYSIS
 from evaluation_system.misc import config
 
 class META_DATA(object):
