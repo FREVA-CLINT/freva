@@ -458,7 +458,7 @@ about the latest version of all files (remember that in CMIP5 not all files are 
         finally:
             f.close()
     
-    def update_from_search(self, processors=1, batch_size=10000, data_types, **search_dict):
+    def update_from_search(self, data_types, processors=1, batch_size=10000, **search_dict):
         """[DEPRECATED]Updated the Solr index, by ingesting the results obtained from the find_files command.
 This is a simple file system search a la find. The search is performed not caring about latest versions
 as it makes no sense there.
