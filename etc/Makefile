@@ -83,7 +83,7 @@ unlink:
 
 miklip:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=./evaluation_system.miklip.conf)
+	$(eval CONFIG_FILE=/miklip/integration/evaluation_system/etc/evaluation_system.miklip.conf)
 	$(eval DB_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/file_miklip.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
@@ -91,7 +91,7 @@ miklip:
 
 wwwdev:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=./evaluation_system.wwwdev.conf)
+	$(eval CONFIG_FILE=/usr/local/evaluation_system/etc/evaluation_system.wwwdev.conf)
 	$(eval DB_FILE=/usr/local/evaluation_system/src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=/usr/local/evaluation_system/src/evaluation_system/model/file_miklip.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
