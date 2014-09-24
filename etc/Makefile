@@ -84,8 +84,8 @@ unlink:
 miklip:
 	@echo 'prepare setup for $@'
 	$(eval CONFIG_FILE=./evaluation_system.miklip.conf)
-	$(eval DB_FILE=../src/evaluation_system/model/db_mysql.py)
-	$(eval SOLRFILE_FILE=../src/evaluation_system/model/file_miklip.py)
+	$(eval DB_FILE=db_mysql.py)
+	$(eval SOLRFILE_FILE=file_miklip.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 
 
