@@ -33,6 +33,8 @@ _result_unknown = 9
 
 _resulttag_caption = 0
 _historytag_caption = 0
+_historytag_follow = 4
+_historytag_unfollow = 5
 
 
 class HistoryEntry(object):
@@ -124,6 +126,18 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
             
         
         return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp, conf_str)
+        
+        
+class HistoryTagEntry(object):
+    """
+    This class encapsulates the access to the HistoryTag entries.
+    """
+    def __init__(self, row):
+        self.id = row[0]
+        self.history_id_id = row[1]
+        self.type = row[2]
+        self.uid = row[3]
+        self.text = row[4]
         
 class UserDB(object):
     '''Encapsulates access to the local DB of a single user.
@@ -461,6 +475,35 @@ While initializing the schemas will get upgraded if required.
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
         
         self.safeExecute(insert_string, data_to_store)
+        
+        
+    def getHistoryTags(self, hrowid, tagType=None, uid=None):
+        """
+        returns a set of history Tags (tagType, uid, text)
+        :type hrowid: integer
+        :param hrowid: the row id of the history entry
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: uid: string
+        :param: uid: the user, default: None                
+        """
+        
+        sqlstr = 'SELECT id, history_id_id, type, uid, text FROM history_historytag where history_id_id=%s'
+        values = (hrowid,)
+        
+        if not tagType is None:
+            sqlstr += ' AND type=%s'
+            values += (tagType,)
+            
+        if not uid is None:
+            sqlstr += ' AND uid=%s'
+            values += (uid)
+            
+        (cur, ret) = self.safeExecute(sqlstr, values)
+            
+        res = cur.fetchall()
+        
+        return [HistoryTagEntry(row) for row in res]
         
         
     class ExceptionTagUpdate(Exception):

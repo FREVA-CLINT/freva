@@ -533,6 +533,9 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
                                               db._status_running,
                                               version_details = version_details)
 
+        # follow the notes
+        followHistoryTag(rowid, user, 'Owner')
+
     # after creating the entry add a given caption    
     if not caption is None:
         user.getUserDB().addHistoryTag(rowid, db._historytag_caption, caption)
@@ -624,6 +627,9 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
                                           user.getName(),
                                           db._status_not_scheduled,
                                           version_details = version_details)
+    
+    # follow the notes
+    followHistoryTag(rowid, user, 'Owner')
     
 
     # after creating the entry add a given caption    
@@ -860,3 +866,35 @@ def getVersion(pluginname):
     
 
     return version_id
+
+def followHistoryTag(history_id, user, info=''):
+    """
+    Adds the history tag follow 
+    """
+    
+    type = db._historytag_follow
+    
+    rows = user.getUserDB().getHistoryTags(history_id,
+                                           type=type,
+                                           uid=user.getName()) 
+    
+    if len(rows==0):
+        user.getUserDB().addHistoryTag(history_id, type, info, uid=user.getName())
+        
+        
+def unfollowHistoryTag(history_id, user):
+    """
+    Update all follow history tags to unfollow for the specified
+    history entry and user 
+    """
+    
+    type = db._historytag_follow
+    
+    rows = user.getUserDB().getHistoryTags(history_id,
+                                           type=type,
+                                           uid=user.getName()) 
+    
+    for row in rows:
+        user.getUserDB()updateHistoryTag(row.id,
+                                         tagType=db._historytag_unfollow)
+        
