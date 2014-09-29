@@ -24,7 +24,7 @@ from datetime import datetime
 import logging
 log = logging.getLogger(__name__)
 
-from evaluation_system.model.file import DRSFile, BASELINE0, MIKLIP, PROTOTYPE, CMIP5, OBSERVATIONS, REANALYSIS
+from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config
 
 class META_DATA(object):
@@ -458,7 +458,7 @@ about the latest version of all files (remember that in CMIP5 not all files are 
         finally:
             f.close()
     
-    def update_from_search(self, processors=1, batch_size=10000, data_types=None, **search_dict):
+    def update_from_search(self, data_types, processors=1, batch_size=10000, **search_dict):
         """[DEPRECATED]Updated the Solr index, by ingesting the results obtained from the find_files command.
 This is a simple file system search a la find. The search is performed not caring about latest versions
 as it makes no sense there.
@@ -468,9 +468,6 @@ as it makes no sense there.
 :param batch_size: The amount of entries that will be sent to Solr on one commit.
 :param data_types: The type of data to be ingested. See evaluation_system.model.file.DRSFile.DRS_STRUCTURE 
 :param search_dict: All other search parameters."""
-        if data_types is None:
-            data_types = [REANALYSIS, OBSERVATIONS, BASELINE0, BASELINE1, CMIP5]
-        
         self._update(processors=processors, batch_size=batch_size, data_types=data_types, search_dict=search_dict)
     
     def update_from_dir(self, start_dir, abort_on_error=False, processors=1, batch_size=10000,):

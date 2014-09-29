@@ -306,3 +306,16 @@ but at the present time the system works as a toolbox that the users start from 
         return result_id
 
    
+    
+    def getUserId(self, username):
+        return 0
+
+    def updateUserLogin(self, row_id, email = None):
+        pass
+        
+    def createUser(self,
+                   username,
+                   email='-',
+                   first_name='',
+                   last_name='',):
+        pass
