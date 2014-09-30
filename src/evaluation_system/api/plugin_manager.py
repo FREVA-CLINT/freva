@@ -871,10 +871,10 @@ def followHistoryTag(history_id, user, info=''):
     """
     Adds the history tag follow 
     """
-    type = db._historytag_follow
+    tagType = db._historytag_follow
     
     rows = user.getUserDB().getHistoryTags(history_id,
-                                           type=type,
+                                           tagType=tagType,
                                            uid=user.getName()) 
     
     if len(rows==0):
