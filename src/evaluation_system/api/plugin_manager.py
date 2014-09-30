@@ -872,7 +872,7 @@ def followHistoryTag(history_id, user, info=''):
     Adds the history tag follow 
     """
     tagType = db._historytag_follow
-    
+
     rows = user.getUserDB().getHistoryTags(history_id,
                                            tagType=tagType,
                                            uid=user.getName()) 
@@ -887,10 +887,10 @@ def unfollowHistoryTag(history_id, user):
     history entry and user 
     """
     
-    type = db._historytag_follow
+    tagType = db._historytag_follow
     
     rows = user.getUserDB().getHistoryTags(history_id,
-                                           type=type,
+                                           tagType=tagType,
                                            uid=user.getName()) 
     
     for row in rows:
