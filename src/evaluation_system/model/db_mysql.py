@@ -25,6 +25,16 @@ _status_broken = 2
 _status_running = 3
 _status_scheduled = 4
 _status_not_scheduled = 5
+        
+# be aware this is a hard-coded version of history.models.History.Flag
+_flag_public = 0
+_flag_shared = 1
+_flag_private = 2
+_flag_deleted = 3
+_flag_guest = 8
+_flag_free = 9
+
+
 
 _result_preview = 0
 _result_plot = 1
