@@ -894,6 +894,6 @@ def unfollowHistoryTag(history_id, user):
                                            uid=user.getName()) 
     
     for row in rows:
-        user.getUserDB()updateHistoryTag(row.id,
+        user.getUserDB().updateHistoryTag(row.id,
                                          tagType=db._historytag_unfollow)
         
