@@ -30,7 +30,8 @@ CORDEX = 'cordex'
 """DRS structure for cordex data."""
 MODULEC = 'modulec'
 """DRS structure for modulec data."""
-
+MODULECDS2 = 'modulecds2'
+"""DRS structure for modulec data."""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -114,7 +115,7 @@ class DRSFile(object):
          "root_dir":"/miklip/integration/data4miklip/model/regional",
          "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
          "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-version-time_frequency-time".split('-'),
+         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
@@ -129,6 +130,16 @@ class DRSFile(object):
          "data_type": MODULEC,
          "defaults" : {"project":"baseline0"}
         },
+        MODULECDS2 : {
+         "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
+         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
+         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
+         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": MODULECDS2,
+         "defaults" : {"project":"baseline1"}
+        },
+        
      }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
