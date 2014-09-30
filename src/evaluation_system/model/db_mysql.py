@@ -507,7 +507,7 @@ While initializing the schemas will get upgraded if required.
             
         if not uid is None:
             sqlstr += ' AND uid=%s'
-            values += (uid)
+            values += (uid,)
             
         (cur, ret) = self.safeExecute(sqlstr, values)
             

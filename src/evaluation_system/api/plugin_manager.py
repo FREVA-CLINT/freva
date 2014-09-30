@@ -877,7 +877,7 @@ def followHistoryTag(history_id, user, info=''):
                                            tagType=tagType,
                                            uid=user.getName()) 
     
-    if len(rows==0):
+    if len(rows)==0:
         user.getUserDB().addHistoryTag(history_id, type, info, uid=user.getName())
         
         
