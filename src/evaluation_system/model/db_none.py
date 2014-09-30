@@ -24,12 +24,26 @@ _status_running = 3
 _status_scheduled = 4
 _status_not_scheduled = 5
 
+# be aware this is a hard-coded version of history.models.History.Flag
+_flag_public = 0
+_flag_shared = 1
+_flag_private = 2
+_flag_deleted = 3
+_flag_guest = 8
+_flag_free = 9
+
+
+
 _result_preview = 0
 _result_plot = 1
 _result_data = 2
 _result_unknown = 9
 
 _resulttag_caption = 0
+
+_historytag_caption = 0
+_historytag_follow = 4
+_historytag_unfollow = 5
 
 
 class HistoryEntry(object):
@@ -120,6 +134,20 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
             
         
         return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp, conf_str)
+
+
+        
+class HistoryTagEntry(object):
+    """
+    This class encapsulates the access to the HistoryTag entries.
+    """
+    def __init__(self, row):
+        self.id = row[0]
+        self.history_id_id = row[1]
+        self.type = row[2]
+        self.uid = row[3]
+        self.text = row[4]
+ 
     
 class dummyCursor:
     def __init__(self):
@@ -254,6 +282,19 @@ but at the present time the system works as a toolbox that the users start from 
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         return HistoryEntry()
     
+    def getHistoryTags(self, hrowid, tagType=None, uid=None):
+        """
+        returns a set of history Tags (tagType, uid, text)
+        :type hrowid: integer
+        :param hrowid: the row id of the history entry
+        :type tagType: integer 
+        :param tagType: the kind of tag
+        :type: uid: string
+        :param: uid: the user, default: None                
+        """
+        
+        return HistoryTagEntry()
+
     
     def addHistoryTag(self, hrowid, tagType, text, uid=None):
         """
