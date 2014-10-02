@@ -293,7 +293,7 @@ but at the present time the system works as a toolbox that the users start from 
         :param: uid: the user, default: None                
         """
         
-        return HistoryTagEntry()
+        return []
 
     
     def addHistoryTag(self, hrowid, tagType, text, uid=None):
