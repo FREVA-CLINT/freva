@@ -58,8 +58,14 @@ SOLRFILE_LINK=../src/evaluation_system/model/file.py
 CONFIG_FILE=
 CONFIG_LINK=./evaluation_system.conf
 
-ALL_LINKS=$(CONFIG_LINK) $(SOLRFILE_LINK) $(DB_LINK)
-EVALUATE_ALL_FILES=$$(CONFIG_FILE) $$(SOLRFILE_FILE) $$(DB_FILE)
+START_FILE=
+START_LINK=../bin/start.sh
+
+ADDITIONAL_COMMANDS=
+
+ALL_LINKS=$(CONFIG_LINK) $(SOLRFILE_LINK) $(DB_LINK) $(START_LINK)
+EVALUATE_ALL_FILES=$$(CONFIG_FILE) $$(SOLRFILE_FILE) $$(DB_FILE) $$(START_FILE)
+
 
 
 # set the links needed
@@ -68,6 +74,7 @@ install: $(ALL_FILES)
 	ln -s $(CONFIG_FILE) $(CONFIG_LINK)
 	ln -s $(SOLRFILE_FILE) $(SOLRFILE_LINK)
 	ln -s $(DB_FILE) $(DB_LINK)
+	$(ADDITIONAL_COMMANDS)
 
 
 # remove all links
@@ -105,8 +112,11 @@ fu:
 
 dwd:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=./evaluation_system.dwd.conf)
-	$(eval DB_FILE=../src/evaluation_system/model/db_none.py)
-	$(eval SOLRFILE_FILE=../src/evaluation_system/model/file_dwd.py)
+	$(eval HOME_DIR=/kp/kp06/integra/evaluation_system)
+	$(eval START_FILE=$(HOME_DIR)/sbin/start.dwd.sh)
+	$(eval CONFIG_FILE=$(HOME_DIR)/etc/evaluation_system.dwd.conf)
+	$(eval DB_FILE=$(HOME_DIR)/src/evaluation_system/model/db_none.py)
+	$(eval SOLRFILE_FILE=$(HOME_DIR)/src/evaluation_system/model/file_dwd.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
+	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))
 
