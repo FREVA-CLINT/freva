@@ -40,3 +40,6 @@
 [submodule "tools/movie_plotter"]
 	path = tools/movie_plotter
 	url = ssh://u290038@miklip.dkrz.de/miklip/integration/repositories/movie_plotter.git
+[submodule "tools/blocking"]
+	path = tools/blocking
+	url = /miklip/integration/repositories/blocking.git
