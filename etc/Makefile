@@ -61,10 +61,13 @@ CONFIG_LINK=./evaluation_system.conf
 START_FILE=
 START_LINK=../bin/start.sh
 
+REPOS_FILE=
+REPOS_LINK=../src/evaluation_system/model/repository.py
+
 ADDITIONAL_COMMANDS=
 
-ALL_LINKS=$(CONFIG_LINK) $(SOLRFILE_LINK) $(DB_LINK) $(START_LINK)
-EVALUATE_ALL_FILES=$$(CONFIG_FILE) $$(SOLRFILE_FILE) $$(DB_FILE) $$(START_FILE)
+ALL_LINKS=$(CONFIG_LINK) $(SOLRFILE_LINK) $(DB_LINK) $(START_LINK) $(REPOS_LINK)
+EVALUATE_ALL_FILES=$$(CONFIG_FILE) $$(SOLRFILE_FILE) $$(DB_FILE) $$(REPOS_FILE) $$(START_FILE)
 
 
 
@@ -93,6 +96,7 @@ miklip:
 	$(eval CONFIG_FILE=/miklip/integration/evaluation_system/etc/evaluation_system.miklip.conf)
 	$(eval DB_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 
 
@@ -101,6 +105,7 @@ wwwdev:
 	$(eval CONFIG_FILE=/usr/local/evaluation_system/etc/evaluation_system.wwwdev.conf)
 	$(eval DB_FILE=/usr/local/evaluation_system/src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=/usr/local/evaluation_system/src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 
 fu:
@@ -108,6 +113,7 @@ fu:
 	$(eval CONFIG_FILE=./evaluation_system.fu.conf)
 	$(eval DB_FILE=../src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=../src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 
 dwd:
@@ -118,5 +124,6 @@ dwd:
 	$(eval DB_FILE=$(HOME_DIR)/src/evaluation_system/model/db_none.py)
 	$(eval SOLRFILE_FILE=$(HOME_DIR)/src/evaluation_system/model/file_dwd.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
+	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_none.py)
 	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))
 
