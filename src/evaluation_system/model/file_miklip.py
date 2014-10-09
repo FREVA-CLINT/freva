@@ -1,5 +1,6 @@
 '''
-.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
+.. moduleauthor:: christopher kadow <christopher.kadow@met.fu-berlin.de>
+.. first version written by estanislao gonzalez
 
 The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
@@ -28,6 +29,8 @@ PROJECTDATA = 'projectdata'
 """DRS structure for project data."""
 CORDEX = 'cordex'
 """DRS structure for cordex data."""
+#CORDEXwoVers = 'cordexwovers'
+#"""DRS structure for cordex data."""
 MODULEC = 'modulec'
 """DRS structure for modulec data."""
 MODULECDS2 = 'modulecds2'
@@ -92,8 +95,8 @@ class DRSFile(object):
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset": "project/institute/model/experiment/time_frequency/realm/variable".split('/'),
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/variable".split('/'),
          "parts_file_name":"variable-cmor_table-project-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
@@ -120,6 +123,15 @@ class DRSFile(object):
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
         },
+        #CORDEXwoVers : {
+        #"root_dir":"/miklip/integration/data4miklip/model/regional",
+        #"parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/file_name".split('/'),
+        #"parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
+        #"parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
+        #"parts_time":"start_time-end_time",
+        #"data_type": CORDEXwoVers,
+        #"defaults" : {"project":"cordex"}
+        #        },
         #MODULEC data
          MODULEC : {
          "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
