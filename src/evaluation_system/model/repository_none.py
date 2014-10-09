@@ -2,7 +2,7 @@
 This module encapsulates the access to repositorys. 
 '''
 
-def getVersion(srcFile):
+def getVersion(srcfile):
     repository = 'unknown'
     version = 'unknown'
 

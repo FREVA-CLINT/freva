@@ -2,7 +2,13 @@
 This module encapsulates the access to repositorys. 
 '''
 
-def getVersion(srcFile):
+import os
+import logging
+from subprocess import Popen, PIPE
+
+log = logging.getLogger(__name__)
+
+def getVersion(srcfile):
     repository = 'unknown'
     version = 'unknown'
 

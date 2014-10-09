@@ -141,7 +141,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 reloadPlugins()
 
 def getPluginGitVersion(pluginname):
-    import evaluation_system.model.repository
+    import evaluation_system.model.repository as repository
 
     from inspect import getfile, currentframe
 
