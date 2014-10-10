@@ -77,6 +77,7 @@ install: $(ALL_FILES)
 	ln -s $(CONFIG_FILE) $(CONFIG_LINK)
 	ln -s $(SOLRFILE_FILE) $(SOLRFILE_LINK)
 	ln -s $(DB_FILE) $(DB_LINK)
+	ln -s $(REPOS_FILE) $(REPOS_LINK)
 	$(ADDITIONAL_COMMANDS)
 
 
@@ -93,37 +94,44 @@ unlink:
 
 miklip:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=/miklip/integration/evaluation_system/etc/evaluation_system.miklip.conf)
-	$(eval DB_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/db_mysql.py)
-	$(eval SOLRFILE_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/file_miklip.py)
-	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
+	$(eval BASE_DIR=/miklip/integration/evaluation_system)
+	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.miklip.conf)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 
 
 wwwdev:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=/usr/local/evaluation_system/etc/evaluation_system.wwwdev.conf)
-	$(eval DB_FILE=/usr/local/evaluation_system/src/evaluation_system/model/db_mysql.py)
-	$(eval SOLRFILE_FILE=/usr/local/evaluation_system/src/evaluation_system/model/file_miklip.py)
-	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
+	$(eval BASE_DIR=/usr/local/evaluation_system)
+	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.wwwdev.conf)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
+	$(eval START_FILE=$(BASE_DIR)/sbin/start.wwwdev.sh)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
+	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))
 
 fu:
 	@echo 'prepare setup for $@'
-	$(eval CONFIG_FILE=./evaluation_system.fu.conf)
-	$(eval DB_FILE=../src/evaluation_system/model/db_mysql.py)
-	$(eval SOLRFILE_FILE=../src/evaluation_system/model/file_miklip.py)
-	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_git.py)
+	$(eval BASE_DIR=/usr/local/evaluation_system)
+	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.fu.conf)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
+	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
+	$(eval START_FILE=$(BASE_DIR)/sbin/start.fu.sh)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
+	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))
 
 dwd:
 	@echo 'prepare setup for $@'
-	$(eval HOME_DIR=/kp/kp06/integra/evaluation_system)
-	$(eval START_FILE=$(HOME_DIR)/sbin/start.dwd.sh)
-	$(eval CONFIG_FILE=$(HOME_DIR)/etc/evaluation_system.dwd.conf)
-	$(eval DB_FILE=$(HOME_DIR)/src/evaluation_system/model/db_none.py)
-	$(eval SOLRFILE_FILE=$(HOME_DIR)/src/evaluation_system/model/file_dwd.py)
+	$(eval BASE_DIR=/kp/kp06/integra/evaluation_system)
+	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.dwd.conf)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_none.py)
+	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_dwd.py)
+	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_none.py)
+	$(eval START_FILE=$(BASE_DIR)/sbin/start.dwd.sh)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
-	$(eval REPOS_FILE=/miklip/integration/evaluation_system/src/evaluation_system/model/repository_none.py)
 	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))
 
