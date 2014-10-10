@@ -137,6 +137,18 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         
         return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp, conf_str)
         
+
+class HistoryResultEntry(object):
+    """
+    This class encapsulates the access to the results.
+    """
+    def __init__(self, row):
+        self.id = row[0]
+        self.history_id_id = row[1]
+        self.output_file = row[2]
+        self.preview_file = row[3]
+        self.filetype = row[4]
+
         
 class HistoryTagEntry(object):
     """
@@ -515,7 +527,33 @@ While initializing the schemas will get upgraded if required.
         
         return [HistoryTagEntry(row) for row in res]
         
+    def getResults(self, hrowid, filetype=None):
+        """
+        returns a set of Results
+        :type hrowid: integer
+        :param hrowid: the row id of the history entry
+        :type filetype: integer 
+        :param filetype: the kind of tag
+        """
         
+        sqlstr = 'SELECT id, history_id_id, output_file, preview_file, filetype'
+        sqlstr += ' FROM history_result where history_id_id=%s'
+        sqlstr += ' ORDER BY id'
+
+        values = (hrowid,)
+        
+        if not filetype is None:
+            sqlstr += ' AND filetype=%s'
+            values += (filetype,)
+            
+            
+        (cur, ret) = self.safeExecute(sqlstr, values)
+            
+        res = cur.fetchall()
+        
+        return [HistoryResultEntry(row) for row in res]
+        
+         
     class ExceptionTagUpdate(Exception):
         """
         Exception class for failing status upgrades

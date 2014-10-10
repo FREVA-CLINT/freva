@@ -149,7 +149,7 @@ For Example:
 
 
 _short_args = "hnd"
-_args = ['tool=', 'list-tools',
+_args = ['tool=', 'list-tools', 'results=',
     'help', 'debug', 'dry-run',
     'history', 'use-defaults',
     'config-file=', 'save-config=', 'save',
@@ -186,6 +186,8 @@ def main(argv=None): # IGNORE:C0111
         use_user_defaults=True
         batchmode = False
         return_command = False
+        result_history_id=0
+        results = False
         email = ''
         
         _nothing = object        
@@ -197,6 +199,9 @@ def main(argv=None): # IGNORE:C0111
                 history = True
             elif flag == '--tool':              #defines which tool should be used (use also --help for more help).
                 tool=arg.lower()
+            elif flag == '--result':            # shows the results for a specific history id
+                result_history_id=int(arg)
+                results = True
             elif flag == '--use-defaults':      #skips user configuration and use system defaults.
                 use_user_defaults=False
             elif flag == '--caption':           # sets a caption for the results
@@ -320,6 +325,13 @@ DATE FORMAT
    analyze --history since=2012-10-1" "10:35
    analyze --history "since=2012-10-1 10:35"
    analyze --history 'since=2012-10-1 10:35'"""
+            elif results:
+                print """ Display the results for a specific history id
+Arguments
+filter=cat      Where cat is one of 'data, plots, others'. Only results will be
+                displayed, which have been classified to the specified catagory .
+                
+                """
                 return 0
             else:
                 auto_doc()
@@ -457,10 +469,46 @@ DATE FORMAT
             else:
                 log.error("No results. Check query.")
                 
+        elif result_history_id:
+            filter = None
+            filetype = None
+            
+            fiters = {'plots' : 1, 'preview' : 1, 'data' : 2, 'others' : 9,}
+            filetypes = {1 : 'plot ', 2 : 'data ', 9 : 'other'}
+            
+            for args in lastargs:
+                tmp = args.split('=')
+                flag = tmp[0]
+                preview = False
+                
+                arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
+                if flag == 'filter':
+                    filter = arg.lower()
+            
+            if filter:
+                filetype = filters.get(filter, -1)
+                  
+                if filter == 'preview':
+                    preview = True
+                     
+                if filetype == -1:
+                    raise Exception("Invalid result filter '%s'" % filter)
+                  
+                 
+            rows = pm.getResults(history_id, filetype)
+            
+            for row in rows:
+                filetypename = filetypes.get(row.filetype, 'n/a  ')
+                if preview:
+                    print  row.id, filetypename, row.preview_file
+                else:
+                    print  row.id, filetypename, row.output_file
+
         else:
             #if no tool selected display the help.
             auto_doc()
             return 0
+    
 
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###

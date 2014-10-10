@@ -136,6 +136,18 @@ values, e.g. dropping everything with a higher resolution than minutes (i.e. dro
         return '%s) %s%s [%s] %s' % (self.rowid, self.tool_name, version, self.timestamp, conf_str)
 
 
+class HistoryResultEntry(object):
+    """
+    This class encapsulates the access to the results.
+    """
+    def __init__(self, row):
+        self.id = row[0]
+        self.history_id_id = row[1]
+        self.output_file = row[2]
+        self.preview_file = row[3]
+        self.filetype = row[4]
+
+
         
 class HistoryTagEntry(object):
     """
@@ -283,19 +295,11 @@ but at the present time the system works as a toolbox that the users start from 
         return HistoryEntry()
     
     def getHistoryTags(self, hrowid, tagType=None, uid=None):
-        """
-        returns a set of history Tags (tagType, uid, text)
-        :type hrowid: integer
-        :param hrowid: the row id of the history entry
-        :type tagType: integer 
-        :param tagType: the kind of tag
-        :type: uid: string
-        :param: uid: the user, default: None                
-        """
-        
         return []
 
-    
+    def getResults(self, hrowid, filetype=None):
+        return []
+         
     def addHistoryTag(self, hrowid, tagType, text, uid=None):
         """
         :type hrowid: integer

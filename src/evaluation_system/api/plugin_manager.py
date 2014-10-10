@@ -682,6 +682,14 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
     
     return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getName())
 
+def getResults(history_id, filetype=None, user=None):
+    """ Returns the results for a given history id
+This is a wrapper for the function defined in db.py, like getHistory. """
+    if user is None: user = User()
+    
+    return user.getUserDB().getResults(history_id, filetype)
+
+
 def getCommandString(entry_id, user=None, command_name='analyze', command_options='--tool'):
     """
     Return the parameter string of a history entry.
