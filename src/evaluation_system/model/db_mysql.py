@@ -536,16 +536,16 @@ While initializing the schemas will get upgraded if required.
         :param filetype: the kind of tag
         """
         
-        sqlstr = 'SELECT id, history_id_id, output_file, preview_file, filetype'
-        sqlstr += ' FROM history_result where history_id_id=%s'
-        sqlstr += ' ORDER BY id'
+        sqlstr = 'SELECT id, history_id_id, output_file, preview_file, file_type'
+        sqlstr += ' FROM history_result WHERE history_id_id=%s'
 
         values = (hrowid,)
         
         if not filetype is None:
-            sqlstr += ' AND filetype=%s'
+            sqlstr += ' AND file_type=%s'
             values += (filetype,)
             
+        sqlstr += ' ORDER BY id'
             
         (cur, ret) = self.safeExecute(sqlstr, values)
             

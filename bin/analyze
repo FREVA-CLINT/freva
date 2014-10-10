@@ -199,7 +199,7 @@ def main(argv=None): # IGNORE:C0111
                 history = True
             elif flag == '--tool':              #defines which tool should be used (use also --help for more help).
                 tool=arg.lower()
-            elif flag == '--result':            # shows the results for a specific history id
+            elif flag == '--results':           # shows the results for a specific history id (use also --help --results 0 for more help)
                 result_history_id=int(arg)
                 results = True
             elif flag == '--use-defaults':      #skips user configuration and use system defaults.
@@ -216,7 +216,8 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--mail':              # users email address
                 email = arg.lower()
             elif flag == '--repos-version':     # show the version number from the repository
-                tool_version = arg.lower()                
+                if not help_opt:
+                    tool_version = arg.lower()                
             elif flag == '--list-tools':        #lists all available tools.
                 import textwrap
                 #we just have to show the list and stop processing
@@ -325,6 +326,8 @@ DATE FORMAT
    analyze --history since=2012-10-1" "10:35
    analyze --history "since=2012-10-1 10:35"
    analyze --history 'since=2012-10-1 10:35'"""
+
+                return 0
             elif results:
                 print """ Display the results for a specific history id
 Arguments
@@ -472,8 +475,9 @@ filter=cat      Where cat is one of 'data, plots, others'. Only results will be
         elif result_history_id:
             filter = None
             filetype = None
+            preview = False
             
-            fiters = {'plots' : 1, 'preview' : 1, 'data' : 2, 'others' : 9,}
+            filters = {'plots' : 1, 'preview' : 1, 'data' : 2, 'others' : 9,}
             filetypes = {1 : 'plot ', 2 : 'data ', 9 : 'other'}
             
             for args in lastargs:
@@ -495,7 +499,7 @@ filter=cat      Where cat is one of 'data, plots, others'. Only results will be
                     raise Exception("Invalid result filter '%s'" % filter)
                   
                  
-            rows = pm.getResults(history_id, filetype)
+            rows = pm.getResults(result_history_id, filetype)
             
             for row in rows:
                 filetypename = filetypes.get(row.filetype, 'n/a  ')
