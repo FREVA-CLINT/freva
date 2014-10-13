@@ -128,9 +128,9 @@ dwd:
 	@echo 'prepare setup for $@'
 	$(eval BASE_DIR=/kp/kp06/integra/evaluation_system)
 	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.dwd.conf)
-	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_none.py)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
 	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_dwd.py)
-	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_none.py)
+	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
 	$(eval START_FILE=$(BASE_DIR)/sbin/start.dwd.sh)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
 	$(eval ADDITIONAL_COMMANDS=ln -s $(START_FILE) $(START_LINK))

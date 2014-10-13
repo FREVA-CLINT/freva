@@ -527,9 +527,12 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
             
         else:
             # create the preview
-            logging.debug('Converting....')
-            _preview_create(plugin_name, result)
-            logging.debug('finished')
+            preview_path = config.get(config.PREVIEW_PATH, None)
+
+            if preview_path:
+                logging.debug('Converting....')
+                _preview_create(plugin_name, result)
+                logging.debug('finished')
     
             # write the created files to the database
             logging.debug('Storing results into data base....')
