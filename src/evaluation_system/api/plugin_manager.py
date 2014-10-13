@@ -111,12 +111,10 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 sys.path.append(py_dir)
                 try:
                     __plugin_modules__[plugin_name] = __import__(py_mod)
-                except:
+                except Exception, e:
                     #this is an error in this case as is in the central system
-                    log.error("Cannot import module '%s' from %s.", py_mod, py_dir)
-                    
-                    if DEBUG:
-                        raise
+                    log.error("Cannot import module '%s' from %s. Reason:\n%s", py_mod, py_dir, str(e))
+
         else:
             log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
