@@ -617,10 +617,15 @@ While initializing the schemas will get upgraded if required.
         """
         
         data_to_store = []
+        reg_ex = None
 
         # regex to get the relative path
-        expression = '(%s\\/*){1}(.*)' % re.escape(config.get(config.PREVIEW_PATH))
-        reg_ex = re.compile(expression)
+        preview_path = config.get(config.PREVIEW_PATH, None)
+        expression = '(%s\\/*){1}(.*)' % re.escape(preview_path)
+
+        # only try to create previews, when a preview path is given
+        if preview_path:
+            reg_ex = re.compile(expression)
 
         for file_name in results:
             metadata = results[file_name]
@@ -631,7 +636,7 @@ While initializing the schemas will get upgraded if required.
             preview_path = metadata.get('preview_path', '')
             preview_file = ''
 
-            if preview_path:
+            if preview_path and not reg_ex is None:
                 # We store the relative path for previews only.
                 # Which allows us to move the preview files to a different folder.
                 preview_file = reg_ex.match(preview_path).group(2)
