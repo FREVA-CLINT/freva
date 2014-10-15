@@ -450,7 +450,11 @@ class SolrField(String):
         try:
             self.predefined_facets = kwargs.pop('predefined_facets')
         except KeyError:
-            self.predefined_facets = None 
+            self.predefined_facets = None
+	try:
+            self.editable = kwargs.pop('editable')
+        except KeyError:
+            self.editable = True 
 	super(SolrField,self).__init__(*args,**kwargs)
         
 

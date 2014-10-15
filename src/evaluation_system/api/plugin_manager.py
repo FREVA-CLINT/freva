@@ -437,7 +437,7 @@ def generateCaption(caption, toolname):
  
     retval = toolname 
  
-    if caption != toolname: 
+    if caption.lower() != toolname.lower():
         pattern = "^\*"
         if re.search(pattern, caption, re.IGNORECASE):
             caption = caption[1:]
@@ -447,6 +447,9 @@ def generateCaption(caption, toolname):
             retval = caption + ' (' + toolname + ')' 
         else: 
             retval = caption
+    else:
+        # this assures that the toolname appears in the user prefered case
+        retval = caption
             
     return retval 
  
