@@ -91,6 +91,9 @@ PLUGIN_MODULE = 'module'
 PREVIEW_PATH = 'preview_path'
 '''path to preview pictures.'''
 
+GIT_BASH_STARTOPTIONS = 'git_bash_startoptions'
+'''We use -lc, use this option if something else is required'''
+
 #: database #####################
 DB_HOST = 'db.host'
 ''' name of the database server '''
@@ -113,6 +116,7 @@ SOLR_PORT = 'solr.port'
 
 SOLR_CORE = 'solr.core'
 '''Core name of the Solr instance.'''
+
 
 
 class ConfigurationException(Exception):
