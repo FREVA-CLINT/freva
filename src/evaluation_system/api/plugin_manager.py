@@ -315,8 +315,12 @@ def __preview_copy(source_path, dest_path):
     :type dest_path: str
     :param dest_path: the destination
     """
+    ' previously used'
     shutil.copyfile(source_path, dest_path)
-
+    # a not very pythonic work-around
+    command = ['convert', '-resize', '600x>', source_path, dest_path]
+    sub.call(command)
+ 
 def __preview_convert(source_path, dest_path):
     """
     Converts images
@@ -327,7 +331,7 @@ def __preview_convert(source_path, dest_path):
     """
     
     # a not very pythonic work-around
-    command = ['convert', source_path, dest_path]
+    command = ['convert', '-resize', '600x>', source_path, dest_path]
     sub.call(command)
 
     # The following is preferable when supported by the installed PIT version
