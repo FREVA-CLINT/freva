@@ -6,6 +6,8 @@ import os
 import logging
 from subprocess import Popen, PIPE
 
+from evaluation_system.misc import config
+
 log = logging.getLogger(__name__)
 
 def getVersion(srcfile):
@@ -18,7 +20,8 @@ def getVersion(srcfile):
         command += 'cd %s 2> /dev/null;' % dirname
     command += 'git config --get remote.origin.url;'
     command += 'git show-ref --heads --hash'
-    bash = ['/bin/bash',  '-lc',  command]
+    options = config.get(config.GIT_BASH_STARTOPTIONS, '-lc')
+    bash = ['/bin/bash',  options,  command]
     p = Popen(bash, stdout=PIPE, stderr=PIPE)
     
     (stdout, stderr) = p.communicate()
