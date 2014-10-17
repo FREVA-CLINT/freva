@@ -209,6 +209,11 @@ Use it for the return call of runTool.
                 for file_path in [os.path.join(r,f) for r,_,files in os.walk(file_path) for f in files]:
                     filemetadata = metadata.copy()
                     self._extend_output_metadata(file_path, filemetadata)
+                    
+                    # update meta data with user entries
+                    usermetadata = result.get(os.path.abspath(file_path), {})
+                    filemetadata.update(usermetadata)
+                    
                     result[os.path.abspath(file_path)] = filemetadata
             else:
                 result[os.path.abspath(file_path)] = metadata
