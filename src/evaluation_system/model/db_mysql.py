@@ -190,18 +190,29 @@ of the DB considerably without the risk of loosing information.'''
         This is a wrapper for the execute function.
         It reconnects to the database when needed.
         '''
-        ret = None
+        res = None
+        cur = None
+        
+        isInsert = kwargs.pop('isInsert', False)
+        isUpdate = kwargs.pop('isUpdate', False)
         
         try:
-            cur = self._getConnection().cursor()
+            conn = self._getConnection() 
+            cur = conn.cursor()
             res = cur.execute(*args, **kwargs)
+            if isInsert:
+                res = conn.insert_id()
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
-            cur = self._getConnection().cursor()
+            conn = self._getConnection() 
+            cur = conn.cursor()
             res = cur.execute(*args, **kwargs)
+            if isInsert:
+                res = conn.insert_id()
             
-        self._getConnection().commit()
+        if isInsert or isUpdate:
+            self._getConnection().commit()
 
         return (cur, res)
 
@@ -210,21 +221,32 @@ of the DB considerably without the risk of loosing information.'''
         This is a wrapper for the execute function.
         It reconnects to the database when needed.
         '''
-        ret = None
+        res = None
+        cur = None
+
+        isInsert = kwargs.pop('isInsert', False)
+        isUpdate = kwargs.pop('isUpdate', False)
         
         try:
-            cur = self._getConnection().cursor()
+            conn = self._getConnection() 
+            cur = conn.cursor()
             res = cur.executemany(*args, **kwargs)
+            if isInsert:
+                res = conn.insert_id()
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
-            cur = self._getConnection().cursor()
+            conn = self._getConnection() 
+            cur = conn.cursor()
             res = cur.executemany(*args, **kwargs)
-
-        self._getConnection().commit()
+            if isInsert:
+                res = conn.insert_id()
             
-        return (cur, res)
+        if isInsert or isUpdate:
+            self._getConnection().commit()
 
+        return (cur, res)
+        
 
     def __init__(self, user):
         '''As it is related to a user the user should be known at construction time.
@@ -343,9 +365,10 @@ While initializing the schemas will get upgraded if required.
                 version_details)
         log.debug('Row: %s', row)
         
-        (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status,flag,version_details_id) VALUES(%s, %s, %s, %s, %s, %s, %s,%s,%s);""", row)
+        (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status,flag,version_details_id) VALUES(%s, %s, %s, %s, %s, %s, %s,%s,%s);""", row, isInsert=True)
         
-        return cur.lastrowid
+        log.debug('Row Id: %s', res)
+        return res
 
     def scheduleEntry(self, row_id, uid, slurmFileName):
         """
@@ -363,7 +386,7 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-        self.safeExecute(update_str, entries)
+        self.safeExecute(update_str, entries, isUpdate=True)
         
         
     class ExceptionStatusUpgrade(Exception):
@@ -400,7 +423,7 @@ While initializing the schemas will get upgraded if required.
         
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
-        self.safeExecute(update_str, (status, row_id, uid))
+        self.safeExecute(update_str, (status, row_id, uid), isUpdate=True)
         
     def changeFlag(self, row_id, uid, flag):
         """
@@ -424,7 +447,7 @@ While initializing the schemas will get upgraded if required.
                 
         # finally, do the SQL update
         update_str='UPDATE history_history SET flag=%s WHERE id=%s AND uid=%s'                  
-        self.safeExecute(update_str, (flag, row_id, uid))
+        self.safeExecute(update_str, (flag, row_id, uid), isUpdate=True)
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
         """Returns the stored history (run analysis) for the given tool.
@@ -496,7 +519,7 @@ While initializing the schemas will get upgraded if required.
             data_to_store = [hrowid, tagType, text, uid]
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
         
-        self.safeExecute(insert_string, data_to_store)
+        self.safeExecute(insert_string, data_to_store, isInsert=True)
         
         
     def getHistoryTags(self, hrowid, tagType=None, uid=None):
@@ -605,7 +628,7 @@ While initializing the schemas will get upgraded if required.
             update_str = update_str[:-1] + ' WHERE id=%s AND uid=%s'
             values = values + (trowid, uid)
 
-            self.safeExecute(update_str, values)
+            self.safeExecute(update_str, values, isUpdate=True)
 
     
     def storeResults(self, rowid, results):
@@ -651,7 +674,7 @@ While initializing the schemas will get upgraded if required.
             
             insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
         
-            (cur, res) =  self.safeExecute(insert_string, data_to_store)
+            (cur, res) =  self.safeExecute(insert_string, data_to_store, isInsert=True)
             result_id = cur.lastrowid
             self._storeResultTags(result_id, metadata)
             
@@ -676,7 +699,7 @@ While initializing the schemas will get upgraded if required.
                         
         insert_string = 'INSERT INTO history_resulttag(result_id_id, type, text) VALUES (%s, %s, %s)'
         
-        self.safeExecutemany(insert_string, data_to_store)
+        self.safeExecutemany(insert_string, data_to_store, isInsert = True)
         
     
         
@@ -713,7 +736,7 @@ While initializing the schemas will get upgraded if required.
         values = (timestamp, toolname, version, internal_version_tool, internal_version_api, repository)
 
         
-        (cur, res) = self.safeExecute(sqlstr, values)
+        (cur, res) = self.safeExecute(sqlstr, values, isInsert=True)
 
         result_id = cur.lastrowid
         
@@ -749,7 +772,7 @@ While initializing the schemas will get upgraded if required.
         update_str += ' WHERE id=%s'
         values = values + (row_id,)
 
-        self.safeExecute(update_str, values)
+        self.safeExecute(update_str, values, isUpdate=True)
         
     def createUser(self,
                    username,
@@ -788,4 +811,4 @@ While initializing the schemas will get upgraded if required.
  
         insertstr = 'INSERT INTO auth_user (%s) VALUES (%s);' % (colstr, mskstr)
 
-        self.safeExecute(insertstr, values)
+        self.safeExecute(insertstr, values, isInsert=True)
