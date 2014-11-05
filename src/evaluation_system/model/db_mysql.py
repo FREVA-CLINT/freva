@@ -389,7 +389,7 @@ While initializing the schemas will get upgraded if required.
                    uid,
                    _status_not_scheduled)
 
-        self.safeExecute(update_str, entries, isUpdate=True)
+        (cur, res) = self.safeExecute(update_str, entries, isUpdate=True)
         cur.close()
         
         
