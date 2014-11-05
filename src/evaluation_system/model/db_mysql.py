@@ -428,8 +428,7 @@ While initializing the schemas will get upgraded if required.
         
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
-        (cur, res) = self.safeExecute(isUpdate=True, update_str, (status, row_id, uid))
-        self.safeExecute(update_str, (status, row_id, uid), isUpdate=True)
+        (cur, res) = self.safeExecute(update_str, (status, row_id, uid), isUpdate=True)
         cur.close()
         
     def changeFlag(self, row_id, uid, flag):
