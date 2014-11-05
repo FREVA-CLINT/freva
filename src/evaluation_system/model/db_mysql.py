@@ -199,19 +199,17 @@ of the DB considerably without the risk of loosing information.'''
         try:
             conn = self._getConnection() 
             cur = conn.cursor()
+            res = cur.execute(*args, **kwargs)
             if isInsert:
                 res = conn.insert_id()
-            else:
-                res = cur.execute(*args, **kwargs)
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
             conn = self._getConnection() 
             cur = conn.cursor()
+            res = cur.execute(*args, **kwargs)
             if isInsert:
                 res = conn.insert_id()
-            else:
-                res = cur.execute(*args, **kwargs)
             
         if isInsert or isUpdate:
             self._getConnection().commit()
@@ -232,19 +230,17 @@ of the DB considerably without the risk of loosing information.'''
         try:
             conn = self._getConnection() 
             cur = conn.cursor()
+            res = cur.executemany(*args, **kwargs)
             if isInsert:
                 res = conn.insert_id()
-            else:
-                res = cur.executemany(*args, **kwargs)
         except (AttributeError, MySQLdb.OperationalError):
             log.debug('Re-connect to database')
             _connection_pool.pop(self._db_file, None)
             conn = self._getConnection() 
             cur = conn.cursor()
+            res = cur.executemany(*args, **kwargs)
             if isInsert:
                 res = conn.insert_id()
-            else:
-                res = cur.executemany(*args, **kwargs)
             
         if isInsert or isUpdate:
             self._getConnection().commit()
@@ -369,11 +365,11 @@ While initializing the schemas will get upgraded if required.
                 status,
                 flag,
                 version_details)
-        log.debug('Row: %s', row)
         
-        (cur, res) = self.safeExecute(isInsert=True, """INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status,flag,version_details_id) VALUES(%s, %s, %s, %s, %s, %s, %s,%s,%s);""", row)
+        (cur, res) = self.safeExecute("""INSERT INTO history_history(timestamp,tool,version,configuration,slurm_output,uid,status,flag,version_details_id) VALUES(%s, %s, %s, %s, %s, %s, %s,%s,%s);""", row, isInsert=True)
         cur.close()
         
+        log.debug('Row Id: %s', res)
         return res
 
     def scheduleEntry(self, row_id, uid, slurmFileName):
@@ -392,7 +388,8 @@ While initializing the schemas will get upgraded if required.
                    row_id,
                    uid,
                    _status_not_scheduled)
-        (cur, res) = self.safeExecute(isUpdate=True, update_str, entries)
+
+        self.safeExecute(update_str, entries, isUpdate=True)
         cur.close()
         
         
@@ -432,6 +429,7 @@ While initializing the schemas will get upgraded if required.
         # finally, do the SQL update
         update_str='UPDATE history_history SET status=%s WHERE id=%s AND uid=%s'                  
         (cur, res) = self.safeExecute(isUpdate=True, update_str, (status, row_id, uid))
+        self.safeExecute(update_str, (status, row_id, uid), isUpdate=True)
         cur.close()
         
     def changeFlag(self, row_id, uid, flag):
@@ -457,7 +455,7 @@ While initializing the schemas will get upgraded if required.
                 
         # finally, do the SQL update
         update_str='UPDATE history_history SET flag=%s WHERE id=%s AND uid=%s'                  
-        (cur, res) = self.safeExecute(isUpdate=True, update_str, (flag, row_id, uid))
+        (cur, res) = self.safeExecute(update_str, (flag, row_id, uid), isUpdate=True)
         cur.close()
         
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
@@ -531,7 +529,7 @@ While initializing the schemas will get upgraded if required.
             data_to_store = [hrowid, tagType, text, uid]
             insert_string = 'INSERT INTO history_historytag(history_id_id, type, text, uid) VALUES (%s, %s, %s, %s)'                        
         
-        (cur, res) = self.safeExecute(isInsert=True, insert_string, data_to_store)
+        (cur, res) = self.safeExecute(insert_string, data_to_store, isInsert=True)
         cur.close()
         
         
@@ -644,9 +642,8 @@ While initializing the schemas will get upgraded if required.
             update_str = update_str[:-1] + ' WHERE id=%s AND uid=%s'
             values = values + (trowid, uid)
 
-            (cur, res) = self.safeExecute(isUpdate=True, update_str, values)
+            (cur, res) = self.safeExecute(update_str, values, isUpdate=True)
             cur.close()
-
     
     def storeResults(self, rowid, results):
         """
@@ -691,7 +688,7 @@ While initializing the schemas will get upgraded if required.
             
             insert_string = 'INSERT INTO history_result(history_id_id, output_file, preview_file, file_type) VALUES (%s, %s, %s, %s)'
         
-            (cur, res) =  self.safeExecute(isInsert=True, insert_string, data_to_store)
+            (cur, res) =  self.safeExecute(insert_string, data_to_store, isInsert=True)
             result_id = cur.lastrowid
             self._storeResultTags(result_id, metadata)
             cur.close()
@@ -716,7 +713,7 @@ While initializing the schemas will get upgraded if required.
                         
         insert_string = 'INSERT INTO history_resulttag(result_id_id, type, text) VALUES (%s, %s, %s)'
         
-        (cur, res) = self.safeExecutemany(isInsert = True, insert_string, data_to_store)
+        (cur, res) = self.safeExecutemany(insert_string, data_to_store, isInsert=True)
         cur.close()
     
         
@@ -754,7 +751,7 @@ While initializing the schemas will get upgraded if required.
         values = (timestamp, toolname, version, internal_version_tool, internal_version_api, repository)
 
         
-        (cur, res) = self.safeExecute(isInsert=True, sqlstr, values)
+        (cur, res) = self.safeExecute(sqlstr, values, isInsert=True)
 
         result_id = cur.lastrowid
         cur.close()
@@ -792,7 +789,7 @@ While initializing the schemas will get upgraded if required.
         update_str += ' WHERE id=%s'
         values = values + (row_id,)
 
-        (cur, res) = self.safeExecute(isUpdate=True, update_str, values)
+        (cur, res) = self.safeExecute(update_str, values, isUpdate=True)
         cur.close()
         
     def createUser(self,
@@ -832,5 +829,5 @@ While initializing the schemas will get upgraded if required.
  
         insertstr = 'INSERT INTO auth_user (%s) VALUES (%s);' % (colstr, mskstr)
 
-        (cur, res) = self.safeExecute(isInser=True, insertstr, values)
+        (cur, res) = self.safeExecute(insertstr, values, isInsert=True)
         cur.close()
