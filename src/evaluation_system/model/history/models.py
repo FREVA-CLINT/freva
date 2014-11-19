@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from plugins.models import Version
+from evaluation_system.model.plugins.models import Version
 
 import json
 
