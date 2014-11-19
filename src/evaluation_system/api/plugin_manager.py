@@ -26,6 +26,7 @@ import datetime
 import shutil
 import logging
 import subprocess as sub
+from evaluation_system.model.history.models import History, HistoryTag
 #from PIL import Image
 log = logging.getLogger(__name__)
 
@@ -504,14 +505,14 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
     if scheduled_id:
         user.getUserDB().upgradeStatus(scheduled_id,
                                        user.getName(),
-                                       db._status_running)
+                                       History.processStatus.running)
         rowid = scheduled_id
     elif user:
         version_details = getVersion(plugin_name)
         rowid = user.getUserDB().storeHistory(p,
                                               complete_conf,
                                               user.getName(),
-                                              db._status_running,
+                                              History.processStatus.running,
                                               version_details = version_details)
 
         # follow the notes
@@ -519,7 +520,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
 
     # after creating the entry add a given caption    
     if not caption is None:
-        user.getUserDB().addHistoryTag(rowid, db._historytag_caption, caption)
+        user.getUserDB().addHistoryTag(rowid, HistoryTag.tagType.caption, caption)
         
         
     try:
@@ -530,7 +531,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
         if result is None:
             user.getUserDB().upgradeStatus(rowid,
                                             user.getName(),
-                                            db._status_finished_no_output)
+                                            History.processStatus.finished_no_output)
             
         else:
             # create the preview
@@ -549,12 +550,13 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
             # temporary set all processes to finished
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
-                                           db._status_finished)
+                                           History.processStatus.finished)
+            
     
     except:
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
-                                       db._status_broken)
+                                       History.processStatus.broken)
 
         raise 
     
@@ -609,7 +611,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
                                           user.getName(),
-                                          db._status_not_scheduled,
+                                          History.processStatus.not_scheduled,
                                           version_details = version_details)
     
     # follow the notes
@@ -618,7 +620,9 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
 
     # after creating the entry add a given caption    
     if not caption is None:
-        user.getUserDB().addHistoryTag(rowid, db._historytag_caption, caption)
+        user.getUserDB().addHistoryTag(rowid,
+                                       HistoryTag.tagType.caption,
+                                       caption)
        
 
     # set the SLURM output directory
@@ -756,7 +760,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     row = h[0]
 
     # scheduled jobs only
-    if row.status != db._status_scheduled:
+    if row.status != History.processStatus.scheduled
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
     return row.configuration
@@ -863,7 +867,7 @@ def followHistoryTag(history_id, user, info=''):
     """
     Adds the history tag follow 
     """
-    tagType = db._historytag_follow
+    tagType = HistoryTag.tagType.follow
 
     rows = user.getUserDB().getHistoryTags(history_id,
                                            tagType=tagType,
@@ -879,7 +883,7 @@ def unfollowHistoryTag(history_id, user):
     history entry and user 
     """
     
-    tagType = db._historytag_follow
+    tagType = HistoryTag.tagType.follow
     
     rows = user.getUserDB().getHistoryTags(history_id,
                                            tagType=tagType,
@@ -887,6 +891,6 @@ def unfollowHistoryTag(history_id, user):
     
     for row in rows:
         user.getUserDB().updateHistoryTag(row.id,
-                                         tagType=db._historytag_unfollow,
-                                         uid=user.getName())
+                                          HistoryTag.tagType.unfollow,
+                                          uid=user.getName())
         
