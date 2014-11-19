@@ -760,7 +760,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     row = h[0]
 
     # scheduled jobs only
-    if row.status != History.processStatus.scheduled
+    if row.status != History.processStatus.scheduled:
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
     return row.configuration
