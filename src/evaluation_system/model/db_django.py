@@ -6,8 +6,7 @@ This modules encapsulates all access to databases.
 import history.models as hist
 import plugins.models as pin
 
-from django.auth.models import User
-from django.core.exceptions import DoesNotExist
+from django.contrib.auth.models import User
 
 from datetime import datetime
 import json
@@ -338,38 +337,35 @@ While initializing the schemas will get upgraded if required.
         #print uid
         #ast.literal_eval(node_or_string)
         sql_params = []
+
+	filter_dict = {}
+
+        o = None
+
         sql_str = "SELECT * FROM history_history"
-        if tool_name or since or until or entry_ids or uid:
-            sql_str = '%s WHERE "1"="1"' % sql_str
-            if entry_ids is not None:
-                if isinstance(entry_ids, int): entry_ids=[entry_ids]
-                sql_str = '%s AND id in (%s)' % (sql_str, ','.join(map(str,entry_ids)))
-                sql_params.extend(entry_ids)
-            if tool_name is not None:
-                sql_str = "%s AND tool='%s'" % (sql_str, tool_name.lower())
-                sql_params.append(tool_name.lower())    #make search case insensitive
-            if since is not None:
-                sql_str = '%s AND timestamp > %s' % (sql_str, since)
-                sql_params.append(since)
-            if until is not None:
-                sql_str = '%s AND timestamp < %s' % (sql_str, until)
-                sql_params.append(until)
-            if uid is not None:
-                sql_str = "%s AND uid='%s'" % (sql_str, uid)
-                sql_params.append(uid)
-                    
-        sql_str = sql_str + ' ORDER BY id DESC'
+        if entry_ids is not None:
+            if isinstance(entry_ids, int): entry_ids=[entry_ids]
+            filter_dict['id__in'] = entry_ids
+
+        if tool_name is not None:
+            filter_dict['tool'] = tool_name
+
+        if since is not None:
+            filter_dict['timestamp__gte'] = since
+
+        if until is not None:
+            filter_dict['timestamp__lte'] = until
+
+        if uid is not None:
+            filter_dict['uid'] = uid
+
+        o = hist.History.objects.filter(**filter_dict).order_by('-id')[:limit]
+
         if limit > 0:
-            sql_str = '%s LIMIT %s' % (sql_str, limit)
-            sql_params.append(limit)
-        #print sql_str     
-        #log.debug('sql: %s - (%s)', sql_str, tuple(sql_params))
-        log.debug('Execute: %s' % sql_str)
-        (cur, ret) = self.safeExecute(sql_str)
-        res = cur.fetchall()
-        cur.close()
-        return [HistoryEntry(row) for row in res]
-    
+            o[:limit]
+
+        return o
+                    
     def addHistoryTag(self, hrowid, tagType, text, uid=None):
         """
         :type hrowid: integer
@@ -515,7 +511,7 @@ While initializing the schemas will get upgraded if required.
             
             retval = p.pk
         
-        except DoesNotExist:
+        except pin.Version.DoesNotExist:
             pass
         
         return retval
@@ -544,7 +540,7 @@ While initializing the schemas will get upgraded if required.
             u = User.objects.get(username=username)
             
             retval = u.pk
-        except DoesNotExist:
+        except User.DoesNotExist:
             pass
         
         return retval
