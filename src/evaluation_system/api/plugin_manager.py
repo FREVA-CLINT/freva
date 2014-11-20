@@ -869,9 +869,13 @@ def followHistoryTag(history_id, user, info=''):
     """
     tagType = HistoryTag.tagType.follow
 
-    rows = user.getUserDB().getHistoryTags(history_id,
-                                           tagType=tagType,
-                                           uid=user.getName()) 
+    #rows = user.getUserDB().getHistoryTags(history_id,
+    #                                       tagType=tagType,
+    #                                       uid=user.getName()) 
+
+    rows = HistoryTag.objects.filter(history_id_id=history_id,
+                                     type = tagType,
+                                     uid_id = user.getName())
     
     if len(rows)==0:
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user.getName())

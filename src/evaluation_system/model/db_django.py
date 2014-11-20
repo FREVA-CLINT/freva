@@ -250,7 +250,7 @@ While initializing the schemas will get upgraded if required.
                                 tool = tool.__class__.__name__.lower(),
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
-                                uid = uid,
+                                uid_id = uid,
                                 status = status,
                                 flag = flag)
         
@@ -267,7 +267,7 @@ While initializing the schemas will get upgraded if required.
         """
         
         h = hist.History.objects.get(id=row_id,
-                                     uid=uid,
+                                     uid_id=uid,
                                      status=hist.History.processStatus.not_scheduled)
         
         h.slurm_output = slurmFileName
@@ -293,7 +293,7 @@ While initializing the schemas will get upgraded if required.
         """
 
         h = hist.History.objects.get(pk=row_id,
-                                     uid=uid)
+                                     uid_id=uid)
                 
         if(h.status < status):
             raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
@@ -310,10 +310,7 @@ While initializing the schemas will get upgraded if required.
         After validation the status will be upgraded. 
         """
         
-        select_str="SELECT flag FROM history_history WHERE id=%s AND uid=%s"
-
-        
-        h = hist.History.objects.get(id = row_id, uid = uid)
+        h = hist.History.objects.get(id = row_id, uid_id = uid)
         
         h.flag = flag
         
@@ -357,7 +354,7 @@ While initializing the schemas will get upgraded if required.
             filter_dict['timestamp__lte'] = until
 
         if uid is not None:
-            filter_dict['uid'] = uid
+            filter_dict['uid_id'] = uid
 
         o = hist.History.objects.filter(**filter_dict).order_by('-id')[:limit]
 
@@ -386,7 +383,7 @@ While initializing the schemas will get upgraded if required.
                             text = text)
         
         if not uid is None:
-            h.uid = uid
+            h.uid_id = uid
             
         h.save()
         
@@ -416,7 +413,7 @@ While initializing the schemas will get upgraded if required.
         insert_string = ''
         
         h = hist.HistoryTag.objects.get(id=trowid,
-                                        uid = uid)
+                                        uid_id = uid)
         
         if not tagType is None:
             h.type = tagType
@@ -449,7 +446,7 @@ While initializing the schemas will get upgraded if required.
             metadata = results[file_name]
             
             type_name = metadata.get('type','')
-            type_number = _result_unknown
+            type_number = hist.Result.Filetype.unknown
             
             preview_path = metadata.get('preview_path', '')
             preview_file = ''
@@ -460,9 +457,9 @@ While initializing the schemas will get upgraded if required.
                 preview_file = reg_ex.match(preview_path).group(2)
                         
             if type_name == 'plot':
-                type_number = _result_plot
+                type_number = hist.Result.Filetype.plot
             elif type_name == 'data':
-                type_number = _result_data
+                type_number = hist.Result.Filetype.data
                 
                 
             h = hist.Result(history_id_id=rowid,

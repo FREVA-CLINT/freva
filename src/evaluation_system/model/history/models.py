@@ -154,10 +154,12 @@ class Result(models.Model):
         preview   - a local preview picture (copied or converted) 
         """
         data, plot, preview = range(3)
+        unknown = 9
 
     FILE_TYPE_CHOICES = ((Filetype.data, 'data'),
                          (Filetype.plot, 'plot'),
-                         (Filetype.preview, 'preview'),)       
+                         (Filetype.preview, 'preview'),
+                         (Filetype.unknown, 'unknown'),)
 
     
     #: history id
