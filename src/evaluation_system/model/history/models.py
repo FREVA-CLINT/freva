@@ -92,6 +92,27 @@ class History(models.Model):
         
         super(History, self).__init__(*args, **kwargs)
         
+    def __str__(self, compact=True):
+        conf_str = ''
+        
+        if compact:
+            conf_str = str(self.configuration)
+            if len(conf_str) > 70:
+                conf_str = conf_str[:67] + '...'
+            version = '' 
+        else:
+            items = ['%15s=%s' % (k,v) for k,v in sorted(self.config_dict().items())]
+            if items:
+                #conf_str = '\n' + json.dumps(self.configuration, sort_keys=True, indent=2)
+                conf_str = '\nConfiguration:\n%s' % '\n'.join(items)
+            if self.results:
+                conf_str = '%s\nOutput:\n%s' % (conf_str, '\n'.join(out_files))
+
+            version = ' v%s.%s.%s' % self.version
+        
+        return '%s) %s%s [%s] %s' % (self.pk, self.tool, version, self.timestamp, conf_str)
+
+        
     def slurmId(self):
         id = self.slurm_output[-8:-4]
 
