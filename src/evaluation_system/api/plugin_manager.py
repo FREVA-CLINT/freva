@@ -726,9 +726,9 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     :param history_row: row of the history table
     """
         
-    result = "%s %s %s" % (command_name, command_options, history_row.tool_name)
+    result = "%s %s %s" % (command_name, command_options, history_row.tool)
 
-    configuration = history_row.configuration
+    configuration = history_row.config_dict()
 
     # find lists
     re_list_pattern = "^\[.*\]$"
