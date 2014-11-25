@@ -219,14 +219,15 @@ class HistoryTag(models.Model):
     """
 
     class tagType:
-        [caption,note_public,note_private,note_deleted, follow] = range(5)    
+        [caption,note_public,note_private,note_deleted, follow, unfollow] = range(6)    
     
     
     TYPE_CHOICES = ((tagType.caption, 'Caption'),
                     (tagType.note_public, 'Public note'),
                     (tagType.note_private, 'Private note'),
                     (tagType.note_deleted, 'Deleted note'),
-                    (tagType.follow, 'Follow'))
+                    (tagType.follow, 'Follow'),
+                    (tagType.unfollow, 'Unfollow'))
     
     #: result id
     history_id      = models.ForeignKey(History)
