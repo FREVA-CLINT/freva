@@ -880,7 +880,7 @@ def followHistoryTag(history_id, user_name, info=''):
 
     if len(rows)==0:
         user = User(user_name)    
-        user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name())
+        user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
         
         
 def unfollowHistoryTag(history_id, user_name):
