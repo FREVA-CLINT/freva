@@ -877,7 +877,9 @@ def followHistoryTag(history_id, user_name, info=''):
                                      type = tagType,
                                      uid_id = user_name)
     
+
     if len(rows)==0:
+        user = User(user_name)    
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name())
         
         
@@ -889,10 +891,16 @@ def unfollowHistoryTag(history_id, user_name):
     
     tagType = HistoryTag.tagType.follow
     
-    rows = user.getUserDB().getHistoryTags(history_id,
-                                           tagType=tagType,
-                                           uid=user_name) 
-    
+    # rows = user.getUserDB().getHistoryTags(history_id,
+    #                                        tagType=tagType,
+    #                                       uid=user_name) 
+
+    rows = HistoryTag.objects.filter(history_id_id=history_id,
+                                     type = tagType,
+                                     uid_id = user_name)
+     
+    user = User(user_name)    
+
     for row in rows:
         user.getUserDB().updateHistoryTag(row.id,
                                           HistoryTag.tagType.unfollow,
