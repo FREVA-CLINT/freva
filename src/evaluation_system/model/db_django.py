@@ -356,10 +356,10 @@ While initializing the schemas will get upgraded if required.
         if uid is not None:
             filter_dict['uid_id'] = uid
 
-        o = hist.History.objects.filter(**filter_dict).order_by('-id')[:limit]
+        o = hist.History.objects.filter(**filter_dict).order_by('-id')
 
         if limit > 0:
-            o[:limit]
+             o=o[:limit]
 
         return o
                     
