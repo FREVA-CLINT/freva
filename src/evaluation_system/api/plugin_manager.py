@@ -516,7 +516,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
                                               version_details = version_details)
 
         # follow the notes
-        followHistoryTag(rowid, user, 'Owner')
+        followHistoryTag(rowid, user.getName(), 'Owner')
 
     # after creating the entry add a given caption    
     if not caption is None:
@@ -615,7 +615,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
                                           version_details = version_details)
     
     # follow the notes
-    followHistoryTag(rowid, user, 'Owner')
+    followHistoryTag(rowid, user.getName(), 'Owner')
     
 
     # after creating the entry add a given caption    
@@ -863,7 +863,7 @@ def getVersion(pluginname):
 
     return version_id
 
-def followHistoryTag(history_id, user, info=''):
+def followHistoryTag(history_id, user_name, info=''):
     """
     Adds the history tag follow 
     """
@@ -875,13 +875,13 @@ def followHistoryTag(history_id, user, info=''):
 
     rows = HistoryTag.objects.filter(history_id_id=history_id,
                                      type = tagType,
-                                     uid_id = user.getName())
+                                     uid_id = user_name)
     
     if len(rows)==0:
-        user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user.getName())
+        user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name())
         
         
-def unfollowHistoryTag(history_id, user):
+def unfollowHistoryTag(history_id, user_name):
     """
     Update all follow history tags to unfollow for the specified
     history entry and user 
@@ -891,10 +891,11 @@ def unfollowHistoryTag(history_id, user):
     
     rows = user.getUserDB().getHistoryTags(history_id,
                                            tagType=tagType,
-                                           uid=user.getName()) 
+                                           uid=user_name) 
     
     for row in rows:
         user.getUserDB().updateHistoryTag(row.id,
                                           HistoryTag.tagType.unfollow,
-                                          uid=user.getName())
+                                          uid=user_name)
+        
         
