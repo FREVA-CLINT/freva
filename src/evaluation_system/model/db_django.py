@@ -298,6 +298,7 @@ While initializing the schemas will get upgraded if required.
         if(h.status < status):
             raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
         
+        h.status = status
         
         h.save()
         
