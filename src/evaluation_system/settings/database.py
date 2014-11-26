@@ -14,4 +14,8 @@ SETTINGS['DATABASES'] = {
 
     }
 }
-settings.configure(**SETTINGS)
+
+try:
+    settings.configure(**SETTINGS)
+except:
+    pass
