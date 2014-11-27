@@ -757,7 +757,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     h = getHistory(plugin_name=plugin_name , entry_ids=entry_id, user=user)
 
     # only one row should be selected
-    row = h.id
+    row = h[0]
 
     # scheduled jobs only
     if row.status != History.processStatus.scheduled:
