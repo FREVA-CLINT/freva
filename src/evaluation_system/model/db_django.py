@@ -492,7 +492,7 @@ While initializing the schemas will get upgraded if required.
                                                 type=hist.ResultTag.flagType.caption,
                                                 text=caption))
                         
-        hist.HistoryTag.objects.bulk_create(data_to_store)
+        hist.ResultTag.objects.bulk_create(data_to_store)
         
         
     def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
