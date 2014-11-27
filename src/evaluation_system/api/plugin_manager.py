@@ -757,13 +757,13 @@ def loadScheduledConf(plugin_name, entry_id, user):
     h = getHistory(plugin_name=plugin_name , entry_ids=entry_id, user=user)
 
     # only one row should be selected
-    row = h[0]
+    row = h.id
 
     # scheduled jobs only
     if row.status != History.processStatus.scheduled:
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
-    return row.configuration
+    return row.config_dict()
 
 def getConfigName(pluginname):
     '''
