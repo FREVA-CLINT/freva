@@ -763,7 +763,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     if row.status != History.processStatus.scheduled:
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
             
-    return row.configuration
+    return row.config_dict()
 
 def getConfigName(pluginname):
     '''
