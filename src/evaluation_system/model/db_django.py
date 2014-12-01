@@ -248,7 +248,7 @@ While initializing the schemas will get upgraded if required.
         
         newentry = hist.History(timestamp =  datetime.now(),
                                 tool = tool.__class__.__name__.lower(),
-                                version = version,
+                                version = repr(tool.__version__),
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
                                 uid_id = uid,
