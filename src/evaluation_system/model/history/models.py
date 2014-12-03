@@ -246,10 +246,10 @@ class Configuration(models.Model):
     Holds the configuration
     """
     #: history id
-    history_id = models.ForeignKey(History)
+    history_id = models.ForeignKey(History, related_name='history_id')
     
     #: parameter number
-    parameter_id = models.ForeignKey(Parameter)
+    parameter_id = models.ForeignKey(Parameter, related_name='parameter_id')
     
     #: md5 checksum of value (not used, yet)
     md5 = models.CharField(max_length=32, default='')
