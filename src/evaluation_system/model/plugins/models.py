@@ -27,6 +27,13 @@ class Parameter(models.Model):
     The entries tool and version seem to be redundant,
     but it could be necessary for not versioned tools. 
     """
+    
+    class Impact(object):
+        affects_values = 0
+        affects_plots = 5
+        no_effects = 9
+
+    
     #: name of the parameter
     parameter_name = models.CharField(max_length=50)
     #: type of the parameter
@@ -42,9 +49,9 @@ class Parameter(models.Model):
     #: default value
     default = models.CharField(max_length=255)
     #: how strong affects this parameter the output?
-    IMPACT_CHOICES = ((ParameterType.Impact.affects_values, 'Parameter affects values'),
-                      (ParameterType.Impact.affects_plots, 'Parameter affects plots'),
-                      (ParameterType.Impact.no_effects, 'No effects on output'),)
+    IMPACT_CHOICES = ((Parameter.Impact.affects_values, 'Parameter affects values'),
+                      (Parameter.Impact.affects_plots, 'Parameter affects plots'),
+                      (Parameter.Impact.no_effects, 'No effects on output'),)
     
     impact = models.IntegerField(max_length = 1,
                                  choices = IMPACT_CHOICES,
