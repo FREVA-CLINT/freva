@@ -28,9 +28,9 @@ class Parameter(models.Model):
     but it could be necessary for not versioned tools. 
     """
     #: name of the parameter
-    parameter_name = model.CharField(max_length=50)
+    parameter_name = models.CharField(max_length=50)
     #: type of the parameter
-    parameter_type = model.CharField(max_length=50)
+    parameter_type = models.CharField(max_length=50)
     #: Name of the tool
     tool = models.CharField(max_length=50)
     #: Version of the tool
@@ -49,22 +49,3 @@ class Parameter(models.Model):
     impact = models.IntegerField(max_length = 1,
                                  choices = IMPACT_CHOICES,
                                  default = ParameterType.Impact.affects_values)
-    
-class Configuration(models.Model):
-    """
-    Holds the configuration
-    """
-    #: history id
-    history_id = model.ForeignKey(History)
-    
-    #: parameter number
-    parameter_id = models.ForeignKey(Parameter)
-    
-    #: md5 checksum of value (not used, yet)
-    md5 = models.CharField(max_length=32, default='')
-    
-    #: value
-    value = models.TextField()
-    
-    #; is the default value used?
-    is_default = models.BooleanField()

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from evaluation_system.model.plugins.models import Version
+from evaluation_system.model.plugins.models import Version, Parameter
+from evaluation_system.api.parameters import ParameterType
 
 import json
 
@@ -240,3 +241,21 @@ class HistoryTag(models.Model):
     
 
 
+class Configuration(models.Model):
+    """
+    Holds the configuration
+    """
+    #: history id
+    history_id = models.ForeignKey(History)
+    
+    #: parameter number
+    parameter_id = models.ForeignKey(Parameter)
+    
+    #: md5 checksum of value (not used, yet)
+    md5 = models.CharField(max_length=32, default='')
+    
+    #: value
+    value = models.TextField()
+    
+    #; is the default value used?
+    is_default = models.BooleanField()
