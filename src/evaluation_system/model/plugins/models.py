@@ -48,10 +48,10 @@ class Parameter(models.Model):
     #: default value
     default = models.CharField(max_length=255)
     #: how strong affects this parameter the output?
-    IMPACT_CHOICES = ((Parameter.Impact.affects_values, 'Parameter affects values'),
-                      (Parameter.Impact.affects_plots, 'Parameter affects plots'),
-                      (Parameter.Impact.no_effects, 'No effects on output'),)
+    IMPACT_CHOICES = ((Impact.affects_values, 'Parameter affects values'),
+                      (Impact.affects_plots, 'Parameter affects plots'),
+                      (Impact.no_effects, 'No effects on output'),)
     
     impact = models.IntegerField(max_length = 1,
                                  choices = IMPACT_CHOICES,
-                                 default = ParameterType.Impact.affects_values)
+                                 default = Impact.affects_values)
