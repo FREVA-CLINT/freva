@@ -8,7 +8,7 @@ This types represent the type of parameter a plugin expects and gives some metad
 from types import TypeType, StringType, IntType, FloatType, LongType, BooleanType
 
 from evaluation_system.misc.py27 import OrderedDict
-from evaluation_system.misc.utils import find_similar_words, PrintableList
+from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
 from symbol import raise_stmt
 import json
 
@@ -168,7 +168,12 @@ defining the same key multiple times or by using the item_separator character
         
         return '\n'.join(help_str)
     
-class ParameterType(object):
+class ParameterType(initOrder):
+    class Impact(object):
+        affects_values = 0
+        affects_plots = 5
+        no_effects = 9
+    
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
     base_type = None
@@ -176,7 +181,9 @@ class ParameterType(object):
     def __init__(self, name=None, default=None, 
                  mandatory=False, max_items=1, item_separator=',', regex=None,
                  help='No help available.', 
-                 print_format='%s'):
+                 print_format='%s',
+                 affects_plots = True,
+                 affects_values = True):
         """Creates a Parameter with the following information.
         
 :param name: name of the parameter
@@ -202,6 +209,10 @@ class ParameterType(object):
         self.help = help
         
         self.print_format = print_format 
+        
+        # How important is this setting for configuration?
+        self.affect_plots = affects_plots
+        self.affects_values = affects_values
         
         #this assures we get a valid default!
         if default is None:

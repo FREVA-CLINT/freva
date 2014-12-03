@@ -349,3 +349,21 @@ class PrintableList(list):
         :returns: String with comma separated list entries
         '''
         return self.seperator.join(map(str,self))
+
+
+class initOrder(object):
+    '''
+    Objects derived by this class get a natural order in the way they are
+    initialized. This works especially for several class variables.
+    '''
+    __counter = 0
+
+    def __init__(self):
+        self.__number = initOrder.__counter
+        initOrder.__counter += 1
+        
+    def initCompare(self, other):
+        return self.__number - other.__number
+        
+    def __cmp__(self, other):
+        return self.initCompare(other)
