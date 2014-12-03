@@ -231,7 +231,8 @@ While initializing the schemas will get upgraded if required.
         return True
         
     def storeHistory(self, tool, config_dict, uid, status,
-                     slurm_output = None, result = None, flag = None, version_details = None):
+                     slurm_output = None, result = None, flag = None,
+                     version_details = None):
         """Store a an analysis run into the DB.
 
 :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
@@ -248,11 +249,14 @@ While initializing the schemas will get upgraded if required.
         
         newentry = hist.History(timestamp =  datetime.now(),
                                 tool = tool.__class__.__name__.lower(),
+                                version = repr(tool.__version__),
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
                                 uid_id = uid,
                                 status = status,
-                                flag = flag)
+                                flag = flag,
+                                version_details_id = version_details,
+                               )
         
         newentry.save()
                 
@@ -527,7 +531,7 @@ While initializing the schemas will get upgraded if required.
         p.save()
 
         result_id = p.pk
-        
+
         return result_id
     
     

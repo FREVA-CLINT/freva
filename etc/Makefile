@@ -96,7 +96,7 @@ miklip:
 	@echo 'prepare setup for $@'
 	$(eval BASE_DIR=/miklip/integration/evaluation_system)
 	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.miklip.conf)
-	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_django.py)
 	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
 	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
 	$(eval ALL_FILES=$(EVALUATE_ALL_FILES))
@@ -106,7 +106,7 @@ wwwdev:
 	@echo 'prepare setup for $@'
 	$(eval BASE_DIR=/usr/local/evaluation_system)
 	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.wwwdev.conf)
-	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_django.py)
 	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
 	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
 	$(eval START_FILE=$(BASE_DIR)/sbin/start.wwwdev.sh)
@@ -117,7 +117,7 @@ fu:
 	@echo 'prepare setup for $@'
 	$(eval BASE_DIR=/usr/local/evaluation_system)
 	$(eval CONFIG_FILE=$(BASE_DIR)/etc/evaluation_system.fu.conf)
-	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_mysql.py)
+	$(eval DB_FILE=$(BASE_DIR)/src/evaluation_system/model/db_django.py)
 	$(eval SOLRFILE_FILE=$(BASE_DIR)/src/evaluation_system/model/file_miklip.py)
 	$(eval REPOS_FILE=$(BASE_DIR)/src/evaluation_system/model/repository_git.py)
 	$(eval START_FILE=$(BASE_DIR)/sbin/start.fu.sh)
