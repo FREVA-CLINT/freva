@@ -1,6 +1,5 @@
 from django.db import models
 
-from evaluation_system.api.parameters import ParameterType
 
 class Version(models.Model):
     """
