@@ -16,6 +16,9 @@ import re
 import logging
 from evaluation_system.misc import py27, config
 from evaluation_system.model import repository_git
+from evaluation_system.api.parameters import ParameterType , ParameterDictionary
+from evaluation_system.model.history.models import Configuration
+
 log = logging.getLogger(__name__)
 
 import evaluation_system.settings.database
@@ -247,9 +250,12 @@ While initializing the schemas will get upgraded if required.
         if flag is None: flag = 0
         if version_details is None: version_details = 1
         
+        tool = tool.__class__.__name__.lower()
+        version = repr(tool.__version__)
+        
         newentry = hist.History(timestamp =  datetime.now(),
-                                tool = tool.__class__.__name__.lower(),
-                                version = repr(tool.__version__),
+                                tool = tool,
+                                version = version,
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
                                 uid_id = uid,
@@ -258,7 +264,21 @@ While initializing the schemas will get upgraded if required.
                                 version_details_id = version_details,
                                )
         
+        if not isinstance(config_dict, ParameterDictionary):
+            raise Exception('A dictionary of type ParameterDictionary is expected')
+        
+        config_dict.synchronize(tool, version, version_details)
+        
         newentry.save()
+
+        for p in config_dict._params.values():
+            param = Configuration(history_id_id = newentry.id,
+                                  parameter_id_id = p.id,
+                                  value = p.value,
+                                  is_default = p.is_default)
+            
+            param.save()
+        
                 
         return newentry.id
 
@@ -340,7 +360,7 @@ While initializing the schemas will get upgraded if required.
         #ast.literal_eval(node_or_string)
         sql_params = []
 
-	filter_dict = {}
+	   filter_dict = {}
 
         o = None
 
@@ -580,3 +600,4 @@ While initializing the schemas will get upgraded if required.
         
         u.save()
         
+

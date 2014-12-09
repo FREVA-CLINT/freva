@@ -67,6 +67,7 @@ Accessing the dictionary directly will retrieve the default value of the paramet
             config_dict = {}
         for key in set(self) - set(config_dict):
             if add_missing_defaults or self._params[key].default is not None:
+                self._params[key].is_default = True
                 config_dict[key] = self._params[key].default
                 
         return config_dict
@@ -176,8 +177,7 @@ defining the same key multiple times or by using the item_separator character
         
         for entry in self._params.values():
             entry.synchronize(tool, version, detailed_version_id)
-        
-        
+                
         
     
 class ParameterType(initOrder):    
@@ -226,6 +226,7 @@ class ParameterType(initOrder):
             self.default = self.parse(default)
             
         self.id = None
+        self.is_default = False
     
     
     def synchronzie(self, tool, version, detailed_version_id):
