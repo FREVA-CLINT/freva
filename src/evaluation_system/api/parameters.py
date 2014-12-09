@@ -169,6 +169,17 @@ defining the same key multiple times or by using the item_separator character
         
         return '\n'.join(help_str)
     
+    def synchronize(self, tool, version, detailed_version_id):
+        '''
+        synchronizes the whole dictionary with the database.
+        '''
+        
+        for entry in self._params.values():
+            entry.synchronize(tool, version, detailed_version_id)
+        
+        
+        
+    
 class ParameterType(initOrder):    
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
@@ -214,9 +225,28 @@ class ParameterType(initOrder):
         else:
             self.default = self.parse(default)
             
-        # read further information from the database
-         
+        self.id = None
     
+    
+    def synchronzie(self, tool, version, detailed_version_id):
+        '''
+        Read the id from database
+        '''
+        
+        if self.id is None:
+            o = Parameter.objects.get_or_create(tool=tool,
+                                                version=version,
+                                                detailed_version_id=detailed_version_id,
+                                                mandatory=self.mandatory,
+                                                default=self.default,
+                                                impact=self.impact)
+                
+            self.id = o.id
+        
+        return self.id
+
+            
+            
         
     def _verified(self, orig_values):
         

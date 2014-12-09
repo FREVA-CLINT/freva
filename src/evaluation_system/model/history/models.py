@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from evaluation_system.model.plugins.models import Version, Parameter
-from evaluation_system.api.parameters import ParameterType
+
 
 import json
+
+
+
 
 class History(models.Model):
     """
@@ -125,11 +128,22 @@ class History(models.Model):
         return id
         
 
-    def config_dict(self):
+    def config_dict(self, load_default_values):
         """
         Converts the configuration to a dictionary
         """
-        return json.loads(self.configuration)
+        
+        d = {}
+        
+        config = Configuration.objects.filter(hisory_id_id = self.id).order_by(id)
+        
+        for c in config:
+            if load_default_values and c.is_default:
+                d[c.parameter_id.name] = json.loads(c.parameter_id.default)
+            else:    
+                d[c.parameter_id.name] = json.loads(c.value)
+            
+        return d
 
     def status_name(self):
         """
@@ -239,8 +253,6 @@ class HistoryTag(models.Model):
     #: the user, who tagged the history entry
     uid             = models.ForeignKey(User, to_field='username', db_column='uid', null=True, default=None)
     
-
-
 class Configuration(models.Model):
     """
     Holds the configuration
@@ -259,3 +271,4 @@ class Configuration(models.Model):
     
     #; is the default value used?
     is_default = models.BooleanField()
+
