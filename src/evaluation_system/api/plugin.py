@@ -343,10 +343,6 @@ string ``"None"`` without any quotes.
             return self.__parameters__.get_parameter(param_name).parse(str_value) 
   
   
-    def synchronizeParameter(self):
-        for p in self.__parameters__.iteritems():
-            
-        
         
     def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):
         """Defines the configuration required for running this plug-in. 
