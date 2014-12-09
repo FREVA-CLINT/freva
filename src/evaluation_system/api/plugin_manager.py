@@ -141,26 +141,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPlugins()
 
-def getPluginGitVersion(pluginname):
-    import evaluation_system.model.repository as repository
 
-    from inspect import getfile, currentframe
-
-    plugin = getPlugins().get(pluginname, None)
-    
-    srcfile = ''
-
-    if not plugin is None:
-        srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
-    elif pluginname == 'self':
-        srcfile = getfile(currentframe())
-    else:
-        mesg = 'Plugin <%s> not found' % pluginname
-        raise PluginManagerException(mesg)
-
-    return repository.getVersion(srcfile)
-    
-    
 
 def getPlugins():
     """Return a dictionary of plug-ins holding the plug-in classes and meta-data about them.
@@ -834,34 +815,7 @@ def getErrorWarning(tool_name):
 
     return (error_message, warning_message)
 
-def getVersion(pluginname): 
-    """
-    returns the internal version of a tool (index in datatable)
-    if the version is not indexed it will be created
-    """
-    tool_name =  pluginname.lower() 
-    p = getPluginInstance(pluginname)
-    version = repr(p.__version__)
-    (repos_tool, version_tool) = getPluginGitVersion(pluginname)
-    (repos_api, version_api) = getPluginGitVersion('self')
-         
-    version_id = User().getUserDB().getVersionId(tool_name,
-                                                 version,
-                                                 repos_api,
-                                                 version_api,
-                                                 repos_tool,
-                                                 version_tool)
-    
-    if version_id is None:
-        version_id = User().getUserDB().newVersion(tool_name,
-                                                   version,
-                                                   repos_api,
-                                                   version_api,
-                                                   repos_tool,
-                                                   version_tool)
-    
 
-    return version_id
 
 def followHistoryTag(history_id, user_name, info=''):
     """
@@ -907,3 +861,30 @@ def unfollowHistoryTag(history_id, user_name):
                                           uid=user_name)
         
         
+
+def getPluginVersion(pluginname):
+    import evaluation_system.model.repository as repository
+
+    from inspect import getfile, currentframe
+    
+    version = __version_cache.get(pluginname, None)
+    
+    if version is None:
+
+        plugin = getPlugins().get(pluginname, None)
+        
+        srcfile = ''
+    
+        if not plugin is None:
+            srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
+        elif pluginname == 'self':
+            srcfile = getfile(currentframe())
+        else:
+            mesg = 'Plugin <%s> not found' % pluginname
+            raise PluginManagerException(mesg)
+        
+        version = repository.getVersion(srcfile) 
+        
+        __version_cache
+
+    return version

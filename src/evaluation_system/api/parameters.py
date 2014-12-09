@@ -213,6 +213,9 @@ class ParameterType(initOrder):
             self.default = None
         else:
             self.default = self.parse(default)
+            
+        # read further information from the database
+         
     
         
     def _verified(self, orig_values):
