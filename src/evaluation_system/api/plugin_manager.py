@@ -887,6 +887,36 @@ def getPluginVersion(pluginname):
         
         version = repository.getVersion(srcfile) 
         
-        __version_cache
+        __version_cache[pluginname] = version
 
     return version
+
+def getVersion(pluginname): 
+    """
+    returns the internal version of a tool (index in datatable)
+    if the version is not indexed it will be created
+    """
+    tool_name =  pluginname.lower() 
+    p = getPluginInstance(pluginname)
+    version = repr(p.__version__)
+    (repos_tool, version_tool) = getPluginVersion(pluginname)
+    (repos_api, version_api) = getPluginVersion('self')
+         
+    version_id = User().getUserDB().getVersionId(tool_name,
+                                                 version,
+                                                 repos_api,
+                                                 version_api,
+                                                 repos_tool,
+                                                 version_tool)
+    
+    if version_id is None:
+        version_id = User().getUserDB().newVersion(tool_name,
+                                                   version,
+                                                   repos_api,
+                                                   version_api,
+                                                   repos_tool,
+                                                   version_tool)
+    
+
+    return version_id
+
