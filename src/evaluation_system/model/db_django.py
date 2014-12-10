@@ -274,7 +274,7 @@ While initializing the schemas will get upgraded if required.
         for p in tool.__parameters__._params.values():
             param = Configuration(history_id_id = newentry.id,
                                   parameter_id_id = p.id,
-                                  value = config.dict[p.name],
+                                  value = json.dumps(config.dict[p.name]),
                                   is_default = p.is_default)
             
             param.save()
