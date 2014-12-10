@@ -32,10 +32,12 @@ log = logging.getLogger(__name__)
 
 import evaluation_system.api.plugin as plugin
 import evaluation_system.model.db as db
+from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
 from subprocess import Popen, STDOUT, PIPE
 from multiprocessing import Pool
+
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""

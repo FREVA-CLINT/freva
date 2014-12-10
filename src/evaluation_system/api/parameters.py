@@ -229,10 +229,11 @@ class ParameterType(initOrder):
         self.is_default = False
     
     
-    def synchronzie(self, tool, version, detailed_version_id):
+    def synchronize(self, tool, version, detailed_version_id):
         '''
         Read the id from database
         '''
+        # print tool,version,detailed_version_id,self.mandatory,self.default,self.impact
         
         if self.id is None:
             o = Parameter.objects.get_or_create(tool=tool,
@@ -240,7 +241,7 @@ class ParameterType(initOrder):
                                                 detailed_version_id=detailed_version_id,
                                                 mandatory=self.mandatory,
                                                 default=self.default,
-                                                impact=self.impact)
+                                                impact=self.impact,)
                 
             self.id = o.id
         

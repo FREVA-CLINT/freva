@@ -250,11 +250,11 @@ While initializing the schemas will get upgraded if required.
         if flag is None: flag = 0
         if version_details is None: version_details = 1
         
-        tool = tool.__class__.__name__.lower()
+        toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
         
         newentry = hist.History(timestamp =  datetime.now(),
-                                tool = tool,
+                                tool = toolname,
                                 version = version,
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
@@ -264,17 +264,17 @@ While initializing the schemas will get upgraded if required.
                                 version_details_id = version_details,
                                )
         
-        if not isinstance(config_dict, ParameterDictionary):
-            raise Exception('A dictionary of type ParameterDictionary is expected')
+        #if not isinstance(config_dict, ParameterDictionary):
+        #    raise Exception('A dictionary of type ParameterDictionary is expected')
         
-        config_dict.synchronize(tool, version, version_details)
+        tool.__parameters__.synchronize(toolname, version, version_details)
         
         newentry.save()
 
-        for p in config_dict._params.values():
+        for p in tool.__parameters__._params.values():
             param = Configuration(history_id_id = newentry.id,
                                   parameter_id_id = p.id,
-                                  value = p.value,
+                                  value = config.dict[p.name],
                                   is_default = p.is_default)
             
             param.save()
