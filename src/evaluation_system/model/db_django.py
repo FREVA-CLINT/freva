@@ -7,6 +7,7 @@ import history.models as hist
 import plugins.models as pin
 
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from datetime import datetime
 import json
@@ -232,7 +233,8 @@ While initializing the schemas will get upgraded if required.
 #        except:
 #            return False
         return True
-        
+
+    @transaction.commit_on_success
     def storeHistory(self, tool, config_dict, uid, status,
                      slurm_output = None, result = None, flag = None,
                      version_details = None):
