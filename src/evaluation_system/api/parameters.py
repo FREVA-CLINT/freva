@@ -475,6 +475,13 @@ class Range(String):
             return PrintableList(sorted([x for x in result if x not in del_list]))
         except AttributeError:
             raise ValueError("'%s' is no recognized as a range value" % value)      
+    
+
+class Unknown(String):
+    """An unknown parameter for conversions"""
+    def __init__(self, impact=Parameter.Impact.affects_values, mandatory=True, **kwargs):
+        ParameterType.__init__(self, impact=impact, mandatory=mandatory, **kwargs)
+
         
 class SolrField(String):
     '''
