@@ -373,7 +373,9 @@ class File(String):
 
 class Directory(String):
     "A parameter representing a directory in the system. [not used]"
-    pass
+    def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
+        ParameterType.__init__(self, impact=impact, **kwargs)
+
 
 class Date(String):
     "A date parameter. [not used]"
