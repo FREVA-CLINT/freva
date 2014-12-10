@@ -272,9 +272,10 @@ While initializing the schemas will get upgraded if required.
         newentry.save()
 
         for p in tool.__parameters__._params.values():
+            name = p.name
             param = Configuration(history_id_id = newentry.id,
                                   parameter_id_id = p.id,
-                                  value = json.dumps(config.dict[p.name]),
+                                  value = json.dumps(config_dict[name]),
                                   is_default = p.is_default)
             
             param.save()

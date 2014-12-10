@@ -60,6 +60,10 @@ plugin_name=>{
     version=>(0,0,0)
     description=>"string"}"""
 
+
+""" A dictionary which acts as a cache for the git information to
+    reduce hard disk access"""
+__version_cache = {}
  
 def munge( seq ):
     """Generator to remove duplicates from a list without changing it's order.
