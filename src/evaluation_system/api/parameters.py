@@ -221,7 +221,7 @@ class ParameterType(initOrder):
         
         #this assures we get a valid default!
         if default is None:
-            self.default = None
+            self.default = ''
         else:
             self.default = self.parse(default)
             
@@ -234,16 +234,20 @@ class ParameterType(initOrder):
         Read the id from database
         '''
         # print tool,version,detailed_version_id,self.mandatory,self.default,self.impact
-        
+
         if self.id is None:
+            type = self.__class__.__name__
+
             o = Parameter.objects.get_or_create(tool=tool,
                                                 version=version,
                                                 detailed_version_id=detailed_version_id,
                                                 mandatory=self.mandatory,
                                                 default=self.default,
-                                                impact=self.impact,)
+                                                impact=self.impact,
+                                                parameter_name=self.name,
+                                                parameter_type=type)
                 
-            self.id = o.id
+            self.id = o[0].id
         
         return self.id
 
