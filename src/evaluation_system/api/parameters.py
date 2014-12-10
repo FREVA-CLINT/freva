@@ -240,7 +240,6 @@ class ParameterType(initOrder):
 
             o = Parameter.objects.get_or_create(tool=tool,
                                                 version=version,
-                                                detailed_version_id=detailed_version_id,
                                                 mandatory=self.mandatory,
                                                 default=self.default,
                                                 impact=self.impact,

@@ -41,8 +41,6 @@ class Parameter(models.Model):
     tool = models.CharField(max_length=50)
     #: Version of the tool
     version = models.CharField(max_length=20)
-    #: the (repository) version
-    detailed_version = models.ForeignKey(Version, default=1)
     #: mandatory
     mandatory = models.BooleanField()
     #: default value
