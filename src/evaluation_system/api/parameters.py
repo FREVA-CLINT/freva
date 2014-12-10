@@ -170,13 +170,13 @@ defining the same key multiple times or by using the item_separator character
         
         return '\n'.join(help_str)
     
-    def synchronize(self, tool, version, detailed_version_id):
+    def synchronize(self, tool, version):
         '''
         synchronizes the whole dictionary with the database.
         '''
         
         for entry in self._params.values():
-            entry.synchronize(tool, version, detailed_version_id)
+            entry.synchronize(tool, version)
                 
         
     
@@ -229,7 +229,7 @@ class ParameterType(initOrder):
         self.is_default = False
     
     
-    def synchronize(self, tool, version, detailed_version_id):
+    def synchronize(self, tool, version):
         '''
         Read the id from database
         '''
