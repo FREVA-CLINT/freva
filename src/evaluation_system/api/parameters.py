@@ -369,7 +369,7 @@ class Long(Integer):
 
 class Float(ParameterType):
     "A float parameter."
-    base_type = FloatType()
+    base_type = FloatType
     def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
