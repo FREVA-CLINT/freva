@@ -221,6 +221,9 @@ class ParameterType(initOrder):
         
         # How important is this setting for configuration?
         self.impact = impact
+
+        # set the version of the field
+        self.version = version
         
         #this assures we get a valid default!
         if default is None:
