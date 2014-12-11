@@ -269,7 +269,7 @@ While initializing the schemas will get upgraded if required.
         #if not isinstance(config_dict, ParameterDictionary):
         #    raise Exception('A dictionary of type ParameterDictionary is expected')
         
-        tool.__parameters__.synchronize(toolname, version)
+        tool.__parameters__.synchronize(toolname)
         
         newentry.save()
 

@@ -112,7 +112,7 @@ def convert():
             for t in config.items():
                 param_dict[t[0]]=t[1]
                 
-            param_dict.synchronize(tool, version)
+            param_dict.synchronize(tool)
             
           
             for p in param_dict._params.values():

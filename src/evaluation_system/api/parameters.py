@@ -170,13 +170,13 @@ defining the same key multiple times or by using the item_separator character
         
         return '\n'.join(help_str)
     
-    def synchronize(self, tool, version):
+    def synchronize(self, tool):
         '''
         synchronizes the whole dictionary with the database.
         '''
         
         for entry in self._params.values():
-            entry.synchronize(tool, version)
+            entry.synchronize(tool)
                 
         
     
@@ -187,6 +187,7 @@ class ParameterType(initOrder):
     
     def __init__(self, name=None, default=None, 
                  mandatory=False, max_items=1, item_separator=',', regex=None,
+                 version = 1,
                  help='No help available.', 
                  print_format='%s',
                  impact = Parameter.Impact.affects_values):
@@ -202,6 +203,8 @@ class ParameterType(initOrder):
 :param regex: A regular expression defining valid "string" values before parsing them to their defining classes (e.g. an Integer might define a regex of "[0-9]+" to prevent getting negative numbers). This will be used also on Javascript so don't use fancy expressions or make sure they are understood by both python and Javascript.
 :param help: The help string describing what this parameter is good for.
 :param print_format: A python string format that will be used when displaying the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
+:param impact: The impact of the parameter to the output, possible values are Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.Impact.no_effects
+:param version: An internal version being 1 at default. If the parameter changes significantly, but appears similar to the previous version (default valut, name etc) than this has to be set.
  """
         self.name = name
         
@@ -229,7 +232,7 @@ class ParameterType(initOrder):
         self.is_default = False
     
     
-    def synchronize(self, tool, version):
+    def synchronize(self, tool):
         '''
         Read the id from database
         '''
@@ -239,7 +242,7 @@ class ParameterType(initOrder):
             type = self.__class__.__name__
 
             o = Parameter.objects.get_or_create(tool=tool,
-                                                version=version,
+                                                version=self.version,
                                                 mandatory=self.mandatory,
                                                 default=self.default,
                                                 impact=self.impact,
@@ -363,7 +366,7 @@ class Long(Integer):
 
 class Float(ParameterType):
     "A float parameter."
-    base_type = FloatType
+    base_type = FloatType()
     def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
