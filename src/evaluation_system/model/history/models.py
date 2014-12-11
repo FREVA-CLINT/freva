@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from evaluation_system.model.plugins.models import Version
+from evaluation_system.model.plugins.models import Version, Parameter
+
 
 import json
+
+
+
 
 class History(models.Model):
     """
@@ -105,10 +109,10 @@ class History(models.Model):
             if items:
                 #conf_str = '\n' + json.dumps(self.configuration, sort_keys=True, indent=2)
                 conf_str = '\nConfiguration:\n%s' % '\n'.join(items)
-            if self.results:
-                conf_str = '%s\nOutput:\n%s' % (conf_str, '\n'.join(out_files))
+            # if self.results:
+            #     conf_str = '%s\nOutput:\n%s' % (conf_str, '\n'.join(out_files))
 
-            version = ' v%s.%s.%s' % self.version
+            version = "%s %s" % (self.version , self.version_details.internal_version_tool)
         
         return '%s) %s%s [%s] %s' % (self.pk, self.tool, version, self.timestamp, conf_str)
 
@@ -124,11 +128,25 @@ class History(models.Model):
         return id
         
 
-    def config_dict(self):
+    def config_dict(self, load_default_values=False):
         """
         Converts the configuration to a dictionary
         """
-        return json.loads(self.configuration)
+        
+        d = {}
+        
+        config = Configuration.objects.filter(history_id_id = self.id).order_by('pk')
+
+        for c in config:
+            name = c.parameter_id.parameter_name
+
+            if load_default_values and c.is_default:
+                d[name] = json.loads(c.parameter_id.default)
+            else:    
+                d[name] = json.loads(c.value)
+            
+
+        return d
 
     def status_name(self):
         """
@@ -238,5 +256,22 @@ class HistoryTag(models.Model):
     #: the user, who tagged the history entry
     uid             = models.ForeignKey(User, to_field='username', db_column='uid', null=True, default=None)
     
-
+class Configuration(models.Model):
+    """
+    Holds the configuration
+    """
+    #: history id
+    history_id = models.ForeignKey(History, related_name='history_id')
+    
+    #: parameter number
+    parameter_id = models.ForeignKey(Parameter, related_name='parameter_id')
+    
+    #: md5 checksum of value (not used, yet)
+    md5 = models.CharField(max_length=32, default='')
+    
+    #: value
+    value = models.TextField()
+    
+    #; is the default value used?
+    is_default = models.BooleanField()
 

@@ -7,6 +7,7 @@ import history.models as hist
 import plugins.models as pin
 
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from datetime import datetime
 import json
@@ -16,6 +17,9 @@ import re
 import logging
 from evaluation_system.misc import py27, config
 from evaluation_system.model import repository_git
+from evaluation_system.api.parameters import ParameterType , ParameterDictionary
+from evaluation_system.model.history.models import Configuration
+
 log = logging.getLogger(__name__)
 
 import evaluation_system.settings.database
@@ -229,7 +233,8 @@ While initializing the schemas will get upgraded if required.
 #        except:
 #            return False
         return True
-        
+
+    @transaction.commit_on_success
     def storeHistory(self, tool, config_dict, uid, status,
                      slurm_output = None, result = None, flag = None,
                      version_details = None):
@@ -247,9 +252,12 @@ While initializing the schemas will get upgraded if required.
         if flag is None: flag = 0
         if version_details is None: version_details = 1
         
+        toolname = tool.__class__.__name__.lower()
+        version = repr(tool.__version__)
+        
         newentry = hist.History(timestamp =  datetime.now(),
-                                tool = tool.__class__.__name__.lower(),
-                                version = repr(tool.__version__),
+                                tool = toolname,
+                                version = version,
                                 configuration = json.dumps(config_dict),
                                 slurm_output = slurm_output,
                                 uid_id = uid,
@@ -258,7 +266,22 @@ While initializing the schemas will get upgraded if required.
                                 version_details_id = version_details,
                                )
         
+        #if not isinstance(config_dict, ParameterDictionary):
+        #    raise Exception('A dictionary of type ParameterDictionary is expected')
+        
+        tool.__parameters__.synchronize(toolname)
+        
         newentry.save()
+
+        for p in tool.__parameters__._params.values():
+            name = p.name
+            param = Configuration(history_id_id = newentry.id,
+                                  parameter_id_id = p.id,
+                                  value = json.dumps(config_dict[name]),
+                                  is_default = p.is_default)
+            
+            param.save()
+        
                 
         return newentry.id
 
@@ -340,7 +363,7 @@ While initializing the schemas will get upgraded if required.
         #ast.literal_eval(node_or_string)
         sql_params = []
 
-	filter_dict = {}
+        filter_dict = {}
 
         o = None
 
@@ -580,3 +603,4 @@ While initializing the schemas will get upgraded if required.
         
         u.save()
         
+

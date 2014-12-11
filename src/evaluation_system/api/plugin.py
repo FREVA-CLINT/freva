@@ -342,7 +342,7 @@ string ``"None"`` without any quotes.
         else:
             return self.__parameters__.get_parameter(param_name).parse(str_value) 
   
-        
+  
         
     def setupConfiguration(self, config_dict = None, check_cfg = True, recursion=True, substitute=True):
         """Defines the configuration required for running this plug-in. 
@@ -624,3 +624,23 @@ It means, **never** start a plug-in comming from unknown sources.
                 break        
             result.insert(0, path_item)
         return result
+    
+    
+    
+    def getVersion():
+        import evaluation_system.model.repository as repository
+    
+        from inspect import getfile
+        
+        version = __version_cache.get(pluginname, None)
+        
+        if version is None:
+    
+            plugin = getPlugins().get(pluginname, None)
+            
+            srcfile = getfile(self.__class__.__name__)
+        
+            version = repository.getVersion(srcfile) 
+            
+        return version
+

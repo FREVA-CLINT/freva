@@ -8,7 +8,8 @@ This types represent the type of parameter a plugin expects and gives some metad
 from types import TypeType, StringType, IntType, FloatType, LongType, BooleanType
 
 from evaluation_system.misc.py27 import OrderedDict
-from evaluation_system.misc.utils import find_similar_words, PrintableList
+from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
+from evaluation_system.model.plugins.models import Parameter
 from symbol import raise_stmt
 import json
 
@@ -66,6 +67,7 @@ Accessing the dictionary directly will retrieve the default value of the paramet
             config_dict = {}
         for key in set(self) - set(config_dict):
             if add_missing_defaults or self._params[key].default is not None:
+                self._params[key].is_default = True
                 config_dict[key] = self._params[key].default
                 
         return config_dict
@@ -168,15 +170,27 @@ defining the same key multiple times or by using the item_separator character
         
         return '\n'.join(help_str)
     
-class ParameterType(object):
+    def synchronize(self, tool):
+        '''
+        synchronizes the whole dictionary with the database.
+        '''
+        
+        for entry in self._params.values():
+            entry.synchronize(tool)
+                
+        
+    
+class ParameterType(initOrder):    
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
     base_type = None
     
     def __init__(self, name=None, default=None, 
                  mandatory=False, max_items=1, item_separator=',', regex=None,
+                 version = 1,
                  help='No help available.', 
-                 print_format='%s'):
+                 print_format='%s',
+                 impact = Parameter.Impact.affects_values):
         """Creates a Parameter with the following information.
         
 :param name: name of the parameter
@@ -189,6 +203,8 @@ class ParameterType(object):
 :param regex: A regular expression defining valid "string" values before parsing them to their defining classes (e.g. an Integer might define a regex of "[0-9]+" to prevent getting negative numbers). This will be used also on Javascript so don't use fancy expressions or make sure they are understood by both python and Javascript.
 :param help: The help string describing what this parameter is good for.
 :param print_format: A python string format that will be used when displaying the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
+:param impact: The impact of the parameter to the output, possible values are Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.Impact.no_effects
+:param version: An internal version being 1 at default. If the parameter changes significantly, but appears similar to the previous version (default valut, name etc) than this has to be set.
  """
         self.name = name
         
@@ -203,12 +219,45 @@ class ParameterType(object):
         
         self.print_format = print_format 
         
+        # How important is this setting for configuration?
+        self.impact = impact
+
+        # set the version of the field
+        self.version = version
+        
         #this assures we get a valid default!
         if default is None:
-            self.default = None
+            self.default = ''
         else:
             self.default = self.parse(default)
+            
+        self.id = None
+        self.is_default = False
     
+    
+    def synchronize(self, tool):
+        '''
+        Read the id from database
+        '''
+        # print tool,version,detailed_version_id,self.mandatory,self.default,self.impact
+
+        if self.id is None:
+            type = self.__class__.__name__
+
+            o = Parameter.objects.get_or_create(tool=tool,
+                                                version=self.version,
+                                                mandatory=self.mandatory,
+                                                default=self.default,
+                                                impact=self.impact,
+                                                parameter_name=self.name,
+                                                parameter_type=type)
+                
+            self.id = o[0].id
+        
+        return self.id
+
+            
+            
         
     def _verified(self, orig_values):
         
@@ -320,7 +369,7 @@ class Long(Integer):
 
 class Float(ParameterType):
     "A float parameter."
-    base_type = FloatType
+    base_type = FloatType()
     def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
@@ -330,7 +379,9 @@ class File(String):
 
 class Directory(String):
     "A parameter representing a directory in the system. [not used]"
-    pass
+    def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
+        ParameterType.__init__(self, impact=impact, **kwargs)
+
 
 class Date(String):
     "A date parameter. [not used]"
@@ -430,6 +481,13 @@ class Range(String):
             return PrintableList(sorted([x for x in result if x not in del_list]))
         except AttributeError:
             raise ValueError("'%s' is no recognized as a range value" % value)      
+    
+
+class Unknown(String):
+    """An unknown parameter for conversions"""
+    def __init__(self, impact=Parameter.Impact.affects_values, mandatory=True, **kwargs):
+        ParameterType.__init__(self, impact=impact, mandatory=mandatory, **kwargs)
+
         
 class SolrField(String):
     '''

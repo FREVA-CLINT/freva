@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+# encoding: utf-8
+'''
+#tets
+convert_config -- converts the former configuration dictionaries to database entries
+
+@copyright:  2014 FU Berlin. All rights reserved.
+        
+@contact:    oliver.kunst@met.fu-berlin.de
+
+@license:    BSD
+
+Copyright (c) 2014, FU Berlin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this 
+    list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+
+import sys
+import getopt
+import logging
+import json
+from evaluation_system.api.parameters import ParameterDictionary
+
+log = logging.getLogger(__name__)
+if not log.handlers:
+    class SpecialFormatter(logging.Formatter):
+        FORMATS = {logging.DEBUG :"DBG: %(module)s: %(lineno)d: %(message)s",
+                   logging.ERROR : "ERROR: %(message)s",
+                   logging.INFO : "%(message)s",
+                   'DEFAULT' : "%(levelname)s: %(message)s"}
+    
+        def format(self, record):
+            self._fmt = self.FORMATS.get(record.levelno, self.FORMATS['DEFAULT'])
+            return logging.Formatter.format(self, record)
+        
+    hdlr = logging.StreamHandler(sys.stderr)
+    hdlr.setFormatter(SpecialFormatter())
+    logging.root.addHandler(hdlr)
+    logging.root.setLevel(logging.INFO)
+    
+
+import evaluation_system.api.plugin_manager as pm
+from evaluation_system.api.parameters import Unknown
+from evaluation_system.model.db import HistoryEntry
+from evaluation_system.misc.utils import find_similar_words
+from evaluation_system.model import user
+from evaluation_system.model.history.models import History, Configuration
+
+__version__ = 0.1
+__date__ = '2014-12-10'
+
+
+
+def convert():
+    all_object = History.objects.all()
+    
+    for o in all_object:
+        # convert if no history entry exists
+        if len(Configuration.objects.filter(history_id_id=o.id)) == 0:
+            logging.info("convert history_id <%i>" % o.id)
+            version = o.version
+            tool = o.tool
+            
+            # try to get a plugin instance
+            plugin = None
+            
+            try:
+                plugin = pm.getPluginInstance(tool)
+                
+            
+            except:
+                pass
+            
+            config = json.loads(o.configuration)
+            
+            
+            parameters = []
+            
+            # collect all keys for param dictionary
+            for key in config.keys():
+                param = Unknown(name=key)
+                
+                if plugin:
+                    plugin.__parameters__.get(key, Unknown(name=key))
+                else:
+                    logging.info('Parameter %s of %s not found' % (key, tool))
+                    
+                parameters.append(param)
+
+            # create dictionary and assign values
+            param_dict = ParameterDictionary(*parameters)
+            
+            for t in config.items():
+                param_dict[t[0]]=t[1]
+                
+            param_dict.synchronize(tool)
+            
+          
+            for p in param_dict._params.values():
+                name = p.name
+                param = Configuration(history_id_id = o.id,
+                                      parameter_id_id = p.id,
+                                      value = json.dumps(config[name]),
+                                      is_default = p.is_default)
+                
+                param.save()  
+            
+convert()
