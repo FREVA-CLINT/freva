@@ -73,7 +73,7 @@ __date__ = '2014-12-10'
 def convert():
     all_object = History.objects.all()
     
-    for o in all_object[1:2]:
+    for o in all_object:
         # convert if no history entry exists
         if len(Configuration.objects.filter(history_id_id=o.id)) == 0:
             logging.info("convert history_id <%i>" % o.id)
