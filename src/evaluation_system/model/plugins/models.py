@@ -44,7 +44,7 @@ class Parameter(models.Model):
     #: mandatory
     mandatory = models.BooleanField()
     #: default value
-    default = models.CharField(max_length=255, default='')
+    default = models.CharField(max_length=255, null=True, blank=True)
     #: how strong affects this parameter the output?
     IMPACT_CHOICES = ((Impact.affects_values, 'Parameter affects values'),
                       (Impact.affects_plots, 'Parameter affects plots'),

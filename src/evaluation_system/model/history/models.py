@@ -270,7 +270,7 @@ class Configuration(models.Model):
     md5 = models.CharField(max_length=32, default='')
     
     #: value
-    value = models.TextField()
+    value = models.TextField(null=True, blank=True)
     
     #; is the default value used?
     is_default = models.BooleanField()

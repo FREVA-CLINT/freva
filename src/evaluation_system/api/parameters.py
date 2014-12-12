@@ -227,7 +227,7 @@ class ParameterType(initOrder):
         
         #this assures we get a valid default!
         if default is None:
-            self.default = ''
+            self.default = None
         else:
             self.default = self.parse(default)
             
