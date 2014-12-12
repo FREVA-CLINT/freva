@@ -100,7 +100,7 @@ def convert():
                 param = Unknown(name=key)
                 
                 if plugin:
-                    plugin.__parameters__._params.get(key, Unknown(name=key))
+                    param = plugin.__parameters__._params.get(key, Unknown(name=key))
                 else:
                     logging.info('Parameter %s of %s not found' % (key, tool))
                     
