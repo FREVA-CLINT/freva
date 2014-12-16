@@ -156,7 +156,7 @@ class History(models.Model):
     
     
     @staticmethod
-    def find_similar_entries(self, config, max_impact=Parameter.Impact.affects_plots):
+    def find_similar_entries(config, max_impact=Parameter.Impact.affects_plots):
         """
         Find entries which are similar to a given configuration
         :param config: The configuration as array.
