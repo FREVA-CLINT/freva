@@ -153,6 +153,24 @@ class History(models.Model):
         Returns status as string
         """    
         return self.status_dict[self.status]
+    
+    
+    def find_similar_entries(self, config, max_impact=Parameter.Impact.affects_plots):
+        """
+        Find entries which are similar to a given configuration
+        :param config: The configuration as array.
+        :type config: array of history_configuration objects
+        :param max_impact: The maximal impact level recognized
+        :type max_impact: integer
+        """
+        
+        o = History.objects.all()
+        
+        for c in config:
+            o = o.find(Configuration__parameter_id=c.parameter_id, value=c.value)
+            
+        return o
+        
 
         
         
