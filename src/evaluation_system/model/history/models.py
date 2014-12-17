@@ -156,13 +156,15 @@ class History(models.Model):
     
     
     @staticmethod
-    def find_similar_entries(config, max_impact=Parameter.Impact.affects_plots):
+    def find_similar_entries(config, max_impact=Parameter.Impact.affects_plots, max_entries = 0):
         """
         Find entries which are similar to a given configuration
         :param config: The configuration as array.
         :type config: array of history_configuration objects
         :param max_impact: The maximal impact level recognized
         :type max_impact: integer
+        :param max_entries: The maximal number of results to be returned
+        :type max_entries: integer
         """
 
         from django.db.models import Count, Q
@@ -195,7 +197,10 @@ class History(models.Model):
         o = o.values('history_id_id').annotate(hcount=Count('history_id'))
 
         # at the moment we return only 10 datasets
-        o = o.filter(hcount=length).order_by('-id')[0:9]
+        if max_entries:
+            o = o.filter(hcount=length).order_by('-id')[0:max_entries-1]
+        else:
+            o = o.filter(hcount=length).order_by('-id')
 
         # there should be an easier method to get a list the ids of the found
         # datasets
