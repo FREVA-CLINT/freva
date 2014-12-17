@@ -164,18 +164,50 @@ class History(models.Model):
         :param max_impact: The maximal impact level recognized
         :type max_impact: integer
         """
-        
-        o = History.objects.all()
-        
-        for c in config:
-            o = o.find(Configuration__parameter_id=c.parameter_id, value=c.value)
-            
-        return o
-        
 
+        from django.db.models import Count, Q
         
+        o = Configuration.objects.all()
+
+        length = 0
+
+        parameter = None
         
-            
+        # We use django Q to create the query.
+        # this routine builds the parameter to query.
+        for c in config:
+            if c.parameter_id.impact <= max_impact:
+                # both parameter and value have to match
+                andparam = Q(parameter_id_id=c.parameter_id) & Q(value=c.value)
+
+                # concate all parameter pairs with an or condition
+                if parameter is None:
+                    parameter = andparam
+                else:
+                    parameter = parameter | andparam
+
+                length += 1
+
+        o = o.filter(parameter)
+
+        # using a less than equal relation would allow to access matches
+        # which are equal to n percent.
+        o = o.values('history_id_id').annotate(hcount=Count('history_id'))
+
+        # at the moment we return only 10 datasets
+        o = o.filter(hcount=length).order_by('-id')[0:9]
+
+        # there should be an easier method to get a list the ids of the found
+        # datasets
+        idlist = []
+
+        for row in o:
+            idlist.append(row['history_id_id'])
+
+        h = History.objects.filter(pk__in=idlist)
+
+        return h.order_by('-pk')
+        
 
 class Result(models.Model):
     """
