@@ -271,17 +271,20 @@ While initializing the schemas will get upgraded if required.
         
         tool.__parameters__.synchronize(toolname)
         
-        newentry.save()
-
-        for p in tool.__parameters__._params.values():
-            name = p.name
-            param = Configuration(history_id_id = newentry.id,
-                                  parameter_id_id = p.id,
-                                  value = json.dumps(config_dict[name]),
-                                  is_default = p.is_default)
+        try:
+            newentry.save()
+    
+            for p in tool.__parameters__._params.values():
+                name = p.name
+                param = Configuration(history_id_id = newentry.id,
+                                      parameter_id_id = p.id,
+                                      value = json.dumps(config_dict[name]),
+                                      is_default = p.is_default)
             
-            param.save()
-        
+                param.save()
+        except Exception, e:
+            print "Excpetion:", e
+            raise e
                 
         return newentry.id
 
