@@ -205,7 +205,7 @@ defining the same key multiple times or by using the item_separator character
             
             else:
                 conf_object = Configuration()
-                conf_object.parameter_id = o[0].pk
+                conf_object.parameter_id_id = o[0].pk
                 conf_object.value = entry[1]
                 conf.append(conf_object)
                 
