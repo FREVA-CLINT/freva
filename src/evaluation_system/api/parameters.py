@@ -197,7 +197,7 @@ defining the same key multiple times or by using the item_separator character
         conf =[]
 
         for entry in conf_dict.items():
-            o = Parameter.objects.find(tool=toolname, parameter_name=entry[0]).order_by('-id')
+            o = Parameter.objects.filter(tool=toolname, parameter_name=entry[0]).order_by('-id')
             
             if len(o) == 0:
                 string = 'Parameter <%s> not found' % entry[0]
