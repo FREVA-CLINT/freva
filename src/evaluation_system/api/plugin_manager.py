@@ -25,8 +25,10 @@ import re
 import datetime
 import shutil
 import logging
+import json
 import subprocess as sub
-from evaluation_system.model.history.models import History, HistoryTag
+from evaluation_system.model.history.models import History, HistoryTag, Configuration
+from evaluation_system.model.plugins.models import Parameter
 #from PIL import Image
 log = logging.getLogger(__name__)
 
@@ -924,3 +926,36 @@ def getVersion(pluginname):
 
     return version_id
 
+def dict2conf(toolname, conf_dict):
+    """
+    :param conf_dict: dictionary with configuration to look up
+    :type conf_dict: dict
+    
+    This routine returns a list of configuration model objects.
+    A useful routine to get similar results. 
+    """
+
+    conf =[]
+
+    paramstring = []
+
+    tool = getPluginInstance(toolname)
+
+    for key, value in conf_dict.items():
+        o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by('-id')
+
+        if len(o) == 0:
+            string = 'Parameter <%s> not found' % key
+            raise ParameterNotFoundError(string)
+
+        else:
+            paramstring = ['%s=%s' % (key, str(value))]
+            realvalue = tool.__parameters__.parseArguments(paramstring, check_errors=False)[key]
+            conf_object = Configuration()
+            conf_object.parameter_id_id = o[0].id
+            conf_object.value = json.dumps(realvalue)
+            conf.append(conf_object)
+
+    return conf
+
+  

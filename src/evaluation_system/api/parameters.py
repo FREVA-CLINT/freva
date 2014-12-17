@@ -184,33 +184,7 @@ defining the same key multiple times or by using the item_separator character
             entry.synchronize(tool)
                 
         
-    @staticmethod         
-    def dict2conf(toolname, conf_dict):
-        """
-        :param conf_dict: dictionary with configuration to look up
-        :type conf_dict: dict
-        
-        This routine returns a list of configuration model objects.
-        A useful routine to get similar results. 
-        """
-
-        conf =[]
-
-        for entry in conf_dict.items():
-            o = Parameter.objects.filter(tool=toolname, parameter_name=entry[0]).order_by('-id')
-            
-            if len(o) == 0:
-                string = 'Parameter <%s> not found' % entry[0]
-                raise ParameterNotFoundError(string)
-            
-            else:
-                conf_object = Configuration()
-                conf_object.parameter_id_id = o[0].pk
-                conf_object.value = entry[1]
-                conf.append(conf_object)
-                
-        return conf
-    
+   
 class ParameterType(initOrder):    
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
