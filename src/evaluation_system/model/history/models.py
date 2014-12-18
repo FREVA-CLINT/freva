@@ -156,11 +156,13 @@ class History(models.Model):
     
     
     @staticmethod
-    def find_similar_entries(config, max_impact=Parameter.Impact.affects_plots, max_entries = 0):
+    def find_similar_entries(config, uid=None, max_impact=Parameter.Impact.affects_plots, max_entries = -1):
         """
-        Find entries which are similar to a given configuration
+        Find entries which are similar to a given configuration.
         :param config: The configuration as array.
         :type config: array of history_configuration objects
+        :param uid: the users id to find private results
+        :type uid: str
         :param max_impact: The maximal impact level recognized
         :type max_impact: integer
         :param max_entries: The maximal number of results to be returned
@@ -191,27 +193,41 @@ class History(models.Model):
                 length += 1
 
         o = o.filter(parameter)
+        o = o.values('history_id_id').annotate(hcount=Count('history_id'))
 
         # using a less than equal relation would allow to access matches
         # which are equal to n percent.
-        o = o.values('history_id_id').annotate(hcount=Count('history_id'))
-
-        # at the moment we return only 10 datasets
-        if max_entries:
-            o = o.filter(hcount=length).order_by('-id')[0:max_entries-1]
-        else:
-            o = o.filter(hcount=length).order_by('-id')
-
+        o = o.filter(hcount=length).order_by('-id')
+        
         # there should be an easier method to get a list the ids of the found
         # datasets
-        idlist = []
+        history_list = []
+
+        valid_status = [History.processStatus.finished,
+                        History.processStatus.finished_no_output]
+        
+        
+        public_flags = [History.Flag.free,
+                        History.Flag.public]
+        
+        private_flags = [History.Flag.private,
+                         History.Flag.deleted,
+                         History.Flag.shared]
 
         for row in o:
-            idlist.append(row['history_id_id'])
+            h = History.objects.filter(pk=row.history_id_id)
+            
+            if (h.status in valid_status and
+                ( h.flag in public_flags or
+                 (h.uid_id == uid and h.flag in private_flags))):
+                #append entry to list and stop if the desired list length is reached
+                history_list.append(h)
+                
+                if len(history_list) == max_entries:
+                    break
+            
 
-        h = History.objects.filter(pk__in=idlist)
-
-        return h.order_by('-pk')
+        return history_list
         
 
 class Result(models.Model):
