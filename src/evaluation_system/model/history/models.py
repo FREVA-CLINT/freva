@@ -215,7 +215,7 @@ class History(models.Model):
                          History.Flag.shared]
 
         for row in o:
-            h = History.objects.filter(pk=row.history_id_id)
+            h = History.objects.filter(pk=row['history_id_id'])[0]
             
             if (h.status in valid_status and
                 ( h.flag in public_flags or
