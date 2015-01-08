@@ -62,11 +62,12 @@ proc safe_load { mod_name } {
 if { $curMode eq "load" } {
     if { $shell == "bash" || $shell == "sh" } {
         safe_load python
-	if { [file exists /tmp/mypython2/bin/python] } {
+	if { [file exists /evaluation_system_tmp/mypython/bin/python] } {
         	module unload python
-        	puts "alias python='/tmp/mypython2/bin/python';"
-        	prepend-path PATH "/tmp/mypython2/bin/"
+        	puts "alias python='/evaluation_system_tmp/mypython/bin/python';"
+        	prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
 		prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
+		prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
 	}
         safe_load cdo/1.5.4
 #       safe_load cdo
@@ -82,8 +83,9 @@ if { $curMode eq "load" } {
     module unload cdo
     module unload python
     puts "unalias python;"
-    prepend-path PATH "/tmp/mypython2/bin/"
+    prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
     prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
+    prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
     puts stderr "Evaluation System successfully unloaded."
 }
 
