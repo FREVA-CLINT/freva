@@ -1,0 +1,232 @@
+#!/usr/bin/env python
+
+'''
+crawl_my_data - Sets path to crawl a useres data
+
+@copyright:  2015 FU Berlin. All rights reserved.
+        
+@contact:    sebastian.illing@met.fu-berlin.de
+
+@license:    BSD
+
+Copyright (c) 2012, FU Berlin
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+    Redistributions of source code must retain the above copyright notice, this 
+    list of conditions and the following disclaimer.
+    Redistributions in binary form must reproduce the above copyright notice, 
+    this list of conditions and the following disclaimer in the documentation 
+    and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY 
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+
+import sys
+import getopt
+import os
+import time
+
+import logging
+log = logging.getLogger(__name__)
+if not log.handlers:
+    class SpecialFormatter(logging.Formatter):
+        FORMATS = {logging.DEBUG :"DBG: %(module)s: %(lineno)d: %(message)s",
+                   logging.ERROR : "ERROR: %(message)s",
+                   logging.INFO : "%(message)s",
+                   'DEFAULT' : "%(levelname)s: %(message)s"}
+    
+        def format(self, record):
+            self._fmt = self.FORMATS.get(record.levelno, self.FORMATS['DEFAULT'])
+            return logging.Formatter.format(self, record)
+        
+    hdlr = logging.StreamHandler(sys.stderr)
+    hdlr.setFormatter(SpecialFormatter())
+    logging.root.addHandler(hdlr)
+    logging.root.setLevel(logging.INFO)
+
+from evaluation_system.misc.utils import find_similar_words
+import evaluation_system.model.file as mf
+from evaluation_system.model.solr_core import SolrCore
+from evaluation_system.model.user import User
+__all__ = []
+__version__ = 0.1
+__date__ = '2013-03-14'
+
+
+class CommandError(Exception):
+    '''Generic exception to raise and log different fatal errors.'''
+    def __init__(self, msg):
+        super(CommandError).__init__(type(self))
+        
+        self.msg = " %s\nUse --help for getting help" % msg
+    def __str__(self):
+        return self.msg
+    def __unicode__(self):
+        return self.msg
+
+def call(cmd_str):
+    from subprocess import Popen, PIPE
+    return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
+
+def getEnvironment():
+    """Parses required variablems from the environment and return a dictionary of them"""
+    result = {}
+    console_size = call('stty size')[0]
+    if console_size:
+        rows, columns = console_size.strip().split()
+        rows, columns = int(rows), int(columns)
+    else:
+        rows, columns = 25, 80
+    
+    result['rows'] = rows
+    result['columns'] = columns
+    return result
+
+def auto_doc(message=None):
+    import re, os
+    script_file = sys.argv[0]
+    script_name = os.path.basename(script_file)
+    #check if in unit tests (runfiles.py is starting the unit test)
+    if script_name == 'runfiles.py':
+        print "No auto doc for unit test."
+        return
+    
+    re_start = re.compile('.*\*!!!\*$')
+    re_end = re.compile('^[ \t]*$')
+    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
+    parsing=False
+    
+    args_w_param = ['-%s' % _short_args[i-1] for i in range(len(_short_args)) if _short_args[i] == ':'] + ['--'+ar[:-1] for ar in _args if ar[-1] == '=']
+    results = []
+    for line in open(script_file, 'r'):
+        if parsing:
+            items = re_entries.match(line)
+            if items:
+                flag, flag_opt, mesg = items.groups()
+                #if multiple flags, all should accept parameters!
+                has_param = flag in args_w_param
+                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
+                if has_param:
+                    flag = '%s <value>' % flag
+                results.append((flag, mesg))
+            if re_end.match(line): break
+        elif re_start.match(line): parsing = True
+
+    #Help must be written as just one line comment, here we wrap it properly
+    import textwrap
+    env = getEnvironment()
+    if results:
+        max_length = max([len(i[0]) for i in results])
+    else: max_length = 0
+    wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
+    results = [wrapper.fill(('  %-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
+    
+    if message: message = ': ' + message
+    else: message = ''
+    if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
+    else: print '%s %s' % (script_name, message)
+
+
+_short_args = 'hd'
+_args = ['path=', 
+         'debug', 'help',
+        'batch-size=', 'solr-url=']
+
+def main(argv=None): # IGNORE:C0111
+    '''Command line options.'''
+    
+    #TODO: This should be in evaluation_system.conf
+    root_path = '/miklip/integration/data4miklip/projectdata/'
+    save_path = '/miklip/integration/evaluation_system/database/'
+    
+    if argv is None:
+        argv = sys.argv[1:]
+
+
+    DEBUG = False
+    try:
+        # Setup argument parser
+        args, _ = getopt.getopt(argv, _short_args, _args)
+        
+        #defaults
+        batch_size=10000
+        crawl_dir=None
+        abort_on_errors=False
+        output = None
+        
+        host = None
+        port = None
+        
+        #parse arguments *!!!*
+        for flag, arg in args:
+            if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
+                auto_doc()
+                return 0
+            elif flag == '--path':                 #crawl the given directory
+                crawl_dir=arg
+            elif flag == '-d' or flag == '--debug': #turn on debugging info
+                abort_on_errors=True
+                DEBUG = True
+                logging.getLogger().setLevel(logging.DEBUG)
+         
+        #flush stderr in case we have something pending
+        sys.stderr.flush()
+        
+        user_root_path = os.path.join(root_path,User().getName()) 
+        if crawl_dir:
+            if(not user_root_path in crawl_dir):
+                raise Exception('Please specify the absolute path to crawl')
+        else:
+            crawl_dir = user_root_path
+        
+        #make file name
+        fn = time.time()
+        fn = str(fn).split('.')[0]
+        file = open(fn+"_"+User().getName()+".txt",'w')
+        file.write(crawl_dir)
+        file.close()
+
+        
+        
+    except KeyboardInterrupt:
+        ### handle keyboard interrupt ###
+        return 0
+    except getopt.GetoptError as e:
+        #Did you mean functionality
+        similar_words = None
+        if len(e.opt) > 1:
+            trimmed_args = []
+            for arg in _args:
+                if arg[-1] == '=': trimmed_args.append(arg[:-1])
+                else: trimmed_args.append(arg)
+            similar_words = find_similar_words(e.opt, trimmed_args)
+        mesg = e.msg
+        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+        print mesg
+
+        return 2
+    except Exception as e:
+        if isinstance(e, IOError) and e.errno == 32:
+            #this is just a broken pipe, which mean the stdout was closed 
+            #(e.g when using head after 10 lines are read)
+            #just stop normally
+            return 0
+        if DEBUG or __name__ != "__main__":
+            raise
+        else: print "ERROR: ",sys.exc_info()[1]
+        return 2
+
+if __name__ == "__main__":
+    sys.exit(main())
