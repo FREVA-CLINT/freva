@@ -43,3 +43,9 @@
 [submodule "tools/blocking"]
 	path = tools/blocking
 	url = /miklip/integration/repositories/blocking.git
+[submodule "tools/stormtrack"]
+	path = tools/stormtrack
+	url = /miklip/integration/repositories/stormtrack.git
+[submodule "tools/integ_vecap"]
+	path = tools/integ_vecap
+	url = /miklip/integration/repositories/integ_vecap.git
