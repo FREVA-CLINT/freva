@@ -17,6 +17,7 @@ from ConfigParser import SafeConfigParser
 from exceptions import ValueError
 import logging
 log = logging.getLogger(__name__)
+from pyPdf import PdfFileReader
 
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
@@ -236,10 +237,21 @@ Use it for the return call of runTool.
                     metadata['type'] = 'plot'
                     metadata['todo'] = 'copy'
                     
-                if ext in '.tif .svg .pdf .ps .eps'.split():
+                if ext in '.tif .svg .ps .eps'.split():
                     metadata['type'] = 'plot'
                     metadata['todo'] = 'convert'
-
+                
+                if ext == '.pdf':
+                    #If pdfs have more than one page we don't convert them, 
+                    #instead we offer a download link
+                    pdf = PdfFileReader(open(file_path,'rb'))
+                    num_pages = pdf.getNumPages()
+                    metadata['type'] = 'pdf'
+                    if num_pages > 1:
+                        metadata['todo'] = 'copy'
+                    else:
+                        metadata['todo'] = 'convert'
+                        
                 if ext in '.tex'.split():
                     metadata['type'] = 'plot'
                     
