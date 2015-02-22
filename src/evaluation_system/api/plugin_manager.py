@@ -305,11 +305,14 @@ def __preview_copy(source_path, dest_path):
     :type dest_path: str
     :param dest_path: the destination
     """
-    ' previously used'
-    shutil.copyfile(source_path, dest_path)
+    #' previously used'
+    #shutil.copyfile(source_path, dest_path)
     # a not very pythonic work-around
-    command = ['convert', '-resize', '800x>', source_path, dest_path]
-    sub.call(command)
+    if source_path.split('.')[-1] == 'pdf': #don't resize pdf files
+        shutil.copyfile(source_path, dest_path)
+    else:
+        command = ['convert', '-resize', '800x>', source_path, dest_path]
+        sub.call(command)
  
 def __preview_convert(source_path, dest_path):
     """
