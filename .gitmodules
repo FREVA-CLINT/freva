@@ -49,3 +49,9 @@
 [submodule "tools/integ_vecap"]
 	path = tools/integ_vecap
 	url = /miklip/integration/repositories/integ_vecap.git
+[submodule "tools/eady"]
+	path = tools/eady
+	url = /miklip/integration/repositories/eady.git
+[submodule "tools/troughident"]
+	path = tools/troughident
+	url = /miklip/integration/repositories/troughident.git
