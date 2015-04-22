@@ -11,11 +11,14 @@ class UserCrawl(models.Model):
     '''
     Simple model to track user solr-crawls
     '''
-    STATUS = ('waiting','crawling','ingesting','success','failed')
+    class Meta:
+        db_table = 'solr_usercrawl'
+
+    STATUS = [('waiting','waiting'),('crawling','crawling'),('ingesting','ingesting'),('success','success'),('failed','failed')]
     
     created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS)
     user = models.ForeignKey(User)
     path_to_crawl = models.CharField(max_length=1000)
-    tar_file = models.CharField(max_length=255)
-    ingest_msg = models.TextField()
+    tar_file = models.CharField(max_length=255,blank=True)
+    ingest_msg = models.TextField(blank=True)
