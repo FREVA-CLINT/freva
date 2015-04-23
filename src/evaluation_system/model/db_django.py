@@ -531,15 +531,15 @@ While initializing the schemas will get upgraded if required.
         retval = None
         
         try:
-            p = pin.Version.objects.get(tool=toolname,
+            p = pin.Version.objects.filter(tool=toolname,
                                         version=version,
                                         internal_version_tool=internal_version_tool[:40],
                                         internal_version_api=internal_version_api[:40],
-                                        repository=repository)
+                                        repository=repository)[0]
             
             retval = p.pk
         
-        except pin.Version.DoesNotExist:
+        except pin.Version.DoesNotExist,IndexError:
             pass
         
         return retval
