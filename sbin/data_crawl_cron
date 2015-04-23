@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import os
+from evaluation_system.commands import BaseCommand
+from evaluation_system.model.solr_models.models import UserCrawl
+
+class CrawlPrjectdataCronjob(BaseCommand):
+    _short_args = 'hd'
+    _args = ['debug', 'help']
+    __short_description__ = '''\nRun this file as Cronjob to crawl projectdata.'''
+
+    def _run(self):
+      
+        path = os.path.dirname(os.path.abspath(__file__))
+        script_path = path + '/crawl_miklip'
+        for  crawl_item in UserCrawl.objects.filter(status='waiting'):
+            crawl_item.status = 'crawling'
+            crawl_item.save()
+            print os.system('/bin/bash '+script_path + ' ' + crawl_item.path_to_crawl)
+	      
+          
+if __name__ == "__main__":
+    inst = CrawlPrjectdataCronjob().run()
+    #inst.run()
+
+

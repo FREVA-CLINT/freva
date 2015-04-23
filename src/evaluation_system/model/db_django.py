@@ -606,4 +606,11 @@ While initializing the schemas will get upgraded if required.
         
         u.save()
         
-
+    def create_user_crawl(self, crawl_dir, username):
+        '''
+        
+        '''
+        from solr_models.models import UserCrawl
+        crawl = UserCrawl(status='waiting',user_id=self.getUserId(username),path_to_crawl=crawl_dir)
+        crawl.save()
+        return crawl.id
