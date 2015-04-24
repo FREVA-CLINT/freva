@@ -205,14 +205,26 @@ def main(argv=None): # IGNORE:C0111
                 raise Exception("You need to dump a file")
             SolrCore.dump_fs_to_file(crawl_dir, output, batch_size=batch_size, abort_on_errors=abort_on_errors)
         elif ingest_file:
-            #Ingest the files!
-            if host:
-                SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors,
+	    from evaluation_system.misc.utils import capture_stdout
+	    from evaluation_system.model.solr_models.models import UserCrawl
+	    fn = ingest_file.split('/')[-1]
+	    UserCrawl.objects.filter(tar_file=fn).update(status='ingesting')
+	    with capture_stdout() as capture:
+	        #Ingest the files!
+                if host:
+                    SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors,
                                            core_all_files=core_files, core_latest=core_latest)
-            else:
-                SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors)
-        
-        
+                else:
+                    SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors)
+            print capture.result
+	    try:
+	        crawl = UserCrawl.objects.get(tar_file=fn)
+		crawl.ingest_msg = crawl.ingest_msg + '\n' + capture.result + '\n\nNow you can find your data using "solr_search"'
+	        crawl.status = 'success'
+	        crawl.save()
+	        #UserCrawl.objects.filter(tar_file=fn).update(ingest_msg=capture.result,status='success')
+	    except:
+	        pass
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
         return 0

@@ -11,6 +11,20 @@ from re import split
 from copy import deepcopy
 
 
+import sys, StringIO, contextlib
+class Data(object):
+    pass
+
+@contextlib.contextmanager
+def capture_stdout():
+    old = sys.stdout
+    capturer = StringIO.StringIO()
+    sys.stdout = capturer
+    data = Data()
+    yield data
+    sys.stdout = old
+    data.result = capturer.getvalue()
+
 def supermakedirs(path, mode):
     """
     This snippet of code was taken from stackoverflow.com
