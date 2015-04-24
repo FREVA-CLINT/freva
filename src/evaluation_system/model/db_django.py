@@ -539,7 +539,7 @@ While initializing the schemas will get upgraded if required.
             
             retval = p.pk
         
-        except pin.Version.DoesNotExist,IndexError:
+        except (IndexError,pin.Version.DoesNotExist) as e:
             pass
         
         return retval

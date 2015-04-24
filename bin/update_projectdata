@@ -38,6 +38,7 @@ import sys, os, time
 from evaluation_system.commands import BaseCommand
 from evaluation_system.model.user import User
 import logging
+from evaluation_system.model.solr_models.models import UserCrawl
 
 class UpdateProjectdata(BaseCommand):
  
@@ -46,33 +47,42 @@ class UpdateProjectdata(BaseCommand):
     __short_description__ = '''\nUse this command to update your projectdata.'''
     
     def _run(self):
-        
         #TODO: This should be in evaluation_system.conf
         root_path = '/miklip/integration/data4miklip/projectdata/'
-        
         # Setup argument parser
         args = self.args
         crawl_dir=None
-                
+        
+	t1 = time.time()        
         #parse arguments *!!!*
         for flag, arg in args:
             if flag == '--path':                 #crawl the given directory
                 crawl_dir=arg
-         
         #flush stderr in case we have something pending
         sys.stderr.flush()
-        
         user_root_path = os.path.join(root_path,User().getName()) 
         if crawl_dir:
             if(not root_path in crawl_dir):
                 raise Exception('You are only allowed to crawl data in this root path %s' % root_path)
         else:
             crawl_dir = user_root_path
-        
         user=User()
         db = user.getUserDB()
         crawl_id = db.create_user_crawl(crawl_dir,user.getName())
-        print crawl_id
+	print 'Please wait while the system is crawling your data'
+	printed_msg = []
+	while True:
+	    time.sleep(5)
+	    crawl = UserCrawl.objects.get(id=crawl_id)
+	    for line in crawl.ingest_msg.split('\n'):
+	        if line not in printed_msg:
+	            print line
+		    printed_msg.append(line)
+	    if crawl.status == 'success' or crawl.status == 'failed':
+                break
+	if crawl.status == 'success':
+            print 'Finished.\nCrawling took ' + str(time.time() - t1) + ' seconds'
+
 
 if __name__ == "__main__":
     inst = UpdateProjectdata()
