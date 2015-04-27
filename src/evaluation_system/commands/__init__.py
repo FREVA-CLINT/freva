@@ -1,1 +1,1 @@
-from .basecommand import BaseCommand
+from .basecommand import BaseCommand, CommandError

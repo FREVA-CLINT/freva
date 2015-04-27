@@ -11,7 +11,17 @@ from evaluation_system.misc.utils import find_similar_words
 
 import logging
 
-
+class CommandError(Exception):
+    '''Generic exception to raise and log different fatal errors.'''
+    def __init__(self, msg):
+        super(CommandError).__init__(type(self))
+        
+        self.msg = " %s\nUse --help for getting help" % msg
+    def __str__(self):
+        return self.msg
+    def __unicode__(self):
+        return self.msg
+    
 class BaseCommand(object):
     __metaclass__ = abc.ABCMeta
     
