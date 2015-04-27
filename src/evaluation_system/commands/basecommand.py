@@ -60,24 +60,24 @@ class BaseCommand(object):
                 abort_on_errors=True
                 self.DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
-                
+        print 'now running'        
         try:
             return self._run()
-    
         except KeyboardInterrupt:
             ### handle keyboard interrupt ###
             return 0
         except Exception as e:
+            print 'jpjp'
             if isinstance(e, IOError) and e.errno == 32:
                 #this is just a broken pipe, which mean the stdout was closed 
                 #(e.g when using head after 10 lines are read)
                 #just stop normally
                 exit(0)
+            self.handle_exceptions(e)
             if self.DEBUG:# or __name__ != "__main__":
                 raise
             else: print "ERROR: ",sys.exc_info()[1]
             exit(2)
-    
     def parseArguments(self,argv=None,*args,**kwargs):
         if argv is None:
             argv = sys.argv[1:]
@@ -102,6 +102,10 @@ class BaseCommand(object):
         from subprocess import Popen, PIPE
         return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
     
+    def handle_exceptions(self,e):
+        '''Override this method for custom exception handling'''
+        pass
+
     def getEnvironment(self):
         """Parses required variablems from the environment and return a dictionary of them"""
         result = {}
