@@ -27,7 +27,7 @@ EOF
 fi
 
 dump_file=/tmp/$(date +solr_crawl_%F_%H%M%S.csv.gz)
-
+echo $dump_file
 if [[ ! -d "$source_dir" ]]; then
     echo "Directory '$source_dir' doesn't exists. Aborting."
     exit 1

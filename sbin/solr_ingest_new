@@ -80,8 +80,6 @@ class SolrIngest(BaseCommand):
                     raise Exception("Cannot understand the solr-url %s" % arg)
                 host= mo.group(1)
                 port = int(mo.group(2))
-            elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
-                batch_size=int(arg)
             elif flag == '--output':                #Instead of ingesting into Solr write to this file
                 output = arg
             elif flag == '-d' or flag == '--debug': #turn on debugging info
