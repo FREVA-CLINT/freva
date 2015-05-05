@@ -60,14 +60,12 @@ class BaseCommand(object):
                 abort_on_errors=True
                 self.DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
-        print 'now running'        
         try:
             return self._run()
         except KeyboardInterrupt:
             ### handle keyboard interrupt ###
             return 0
         except Exception as e:
-            print 'jpjp'
             if isinstance(e, IOError) and e.errno == 32:
                 #this is just a broken pipe, which mean the stdout was closed 
                 #(e.g when using head after 10 lines are read)
