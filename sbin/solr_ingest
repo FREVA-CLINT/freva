@@ -3,13 +3,13 @@
 '''
 solr_admin -- manage Solr cores
 
-@copyright:  2013 FU Berlin. All rights reserved.
+@copyright:  2015 FU Berlin. All rights reserved.
         
-@contact:    christopher.kadow@met.fu-berlin.de
+@contact:    sebastian.illing@met.fu-berlin.de
 
 @license:    BSD
 
-Copyright (c) 2012, FU Berlin
+Copyright (c) 2015, FU Berlin
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -33,127 +33,29 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import sys
-import getopt
-
-import logging
-log = logging.getLogger(__name__)
-if not log.handlers:
-    class SpecialFormatter(logging.Formatter):
-        FORMATS = {logging.DEBUG :"DBG: %(module)s: %(lineno)d: %(message)s",
-                   logging.ERROR : "ERROR: %(message)s",
-                   logging.INFO : "%(message)s",
-                   'DEFAULT' : "%(levelname)s: %(message)s"}
-    
-        def format(self, record):
-            self._fmt = self.FORMATS.get(record.levelno, self.FORMATS['DEFAULT'])
-            return logging.Formatter.format(self, record)
-        
-    hdlr = logging.StreamHandler(sys.stderr)
-    hdlr.setFormatter(SpecialFormatter())
-    logging.root.addHandler(hdlr)
-    logging.root.setLevel(logging.INFO)
-
-from evaluation_system.misc.utils import find_similar_words
+from evaluation_system.commands import BaseCommand, CommandError
 import evaluation_system.model.file as mf
 from evaluation_system.model.solr_core import SolrCore
+import logging,sys
+from evaluation_system.model.solr_models.models import UserCrawl
 
-__all__ = []
-__version__ = 0.1
-__date__ = '2013-03-14'
+class SolrIngest(BaseCommand):
+    _short_args = 'hd'
+    _args = ['debug', 'help', 'crawl=', 'ingest=', 'output=', 'batch-size=', 'solr-url=']
+    __short_description__ = '''\nCommand to ingest files to solr or dump crawl to file'''    
 
+    def handle_exceptions(self,e):
+        if self.ingest_file:
+            try:
+                crawl = UserCrawl.objects.get(tar_file=self.ingest_file.split('/')[-1])
+                crawl.status = 'failed'
+                crawl.ingest_msg = crawl.ingest_msg + '\n \n' + str(e) + '\nIngesting failed. Please check your directory structure.'
+                crawl.save()
+            except:
+                pass
+            
 
-class CommandError(Exception):
-    '''Generic exception to raise and log different fatal errors.'''
-    def __init__(self, msg):
-        super(CommandError).__init__(type(self))
-        
-        self.msg = " %s\nUse --help for getting help" % msg
-    def __str__(self):
-        return self.msg
-    def __unicode__(self):
-        return self.msg
-
-def call(cmd_str):
-    from subprocess import Popen, PIPE
-    return Popen(cmd_str.split(), stdout=PIPE, stderr=PIPE).communicate()
-
-def getEnvironment():
-    """Parses required variablems from the environment and return a dictionary of them"""
-    result = {}
-    console_size = call('stty size')[0]
-    if console_size:
-        rows, columns = console_size.strip().split()
-        rows, columns = int(rows), int(columns)
-    else:
-        rows, columns = 25, 80
-    
-    result['rows'] = rows
-    result['columns'] = columns
-    return result
-
-def auto_doc(message=None):
-    import re, os
-    script_file = sys.argv[0]
-    script_name = os.path.basename(script_file)
-    #check if in unit tests (runfiles.py is starting the unit test)
-    if script_name == 'runfiles.py':
-        print "No auto doc for unit test."
-        return
-    
-    re_start = re.compile('.*\*!!!\*$')
-    re_end = re.compile('^[ \t]*$')
-    re_entries= re.compile("^[^']*'([^']*)'[^']*(?:'([^']*)')?[^#]*#(.*)$")
-    parsing=False
-    
-    args_w_param = ['-%s' % _short_args[i-1] for i in range(len(_short_args)) if _short_args[i] == ':'] + ['--'+ar[:-1] for ar in _args if ar[-1] == '=']
-    results = []
-    for line in open(script_file, 'r'):
-        if parsing:
-            items = re_entries.match(line)
-            if items:
-                flag, flag_opt, mesg = items.groups()
-                #if multiple flags, all should accept parameters!
-                has_param = flag in args_w_param
-                if flag_opt: flag = '%s, %s' % (flag, flag_opt)
-                if has_param:
-                    flag = '%s <value>' % flag
-                results.append((flag, mesg))
-            if re_end.match(line): break
-        elif re_start.match(line): parsing = True
-
-    #Help must be written as just one line comment, here we wrap it properly
-    import textwrap
-    env = getEnvironment()
-    if results:
-        max_length = max([len(i[0]) for i in results])
-    else: max_length = 0
-    wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
-    results = [wrapper.fill(('  %-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
-    
-    if message: message = ': ' + message
-    else: message = ''
-    if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
-    else: print '%s %s' % (script_name, message)
-
-
-_short_args = 'hd'
-_args = ['crawl=', 'ingest=', 'output=',
-         'debug', 'help',
-        'batch-size=', 'solr-url=']
-
-def main(argv=None): # IGNORE:C0111
-    '''Command line options.'''
-    
-    if argv is None:
-        argv = sys.argv[1:]
-
-
-    DEBUG = False
-    try:
-        # Setup argument parser
-        args, _ = getopt.getopt(argv, _short_args, _args)
-        
+    def _run(self):
         #defaults
         batch_size=10000
         crawl_dir=None
@@ -164,11 +66,8 @@ def main(argv=None): # IGNORE:C0111
         port = None
         
         #parse arguments *!!!*
-        for flag, arg in args:
-            if flag=='-h' or flag=='--help':        #This help (if a search type is selected, show help for that type)
-                auto_doc()
-                return 0
-            elif flag == '--crawl':                 #crawl the given directory
+        for flag, arg in self.args:
+            if flag == '--crawl':                 #crawl the given directory
                 crawl_dir=arg
             elif flag == '--ingest':                #ingest the given file (as created by crawl)
                 ingest_file=arg
@@ -181,8 +80,6 @@ def main(argv=None): # IGNORE:C0111
                     raise Exception("Cannot understand the solr-url %s" % arg)
                 host= mo.group(1)
                 port = int(mo.group(2))
-            elif flag == '--batch-size':            #Number of entries to send at the same time to Solr.
-                batch_size=int(arg)
             elif flag == '--output':                #Instead of ingesting into Solr write to this file
                 output = arg
             elif flag == '-d' or flag == '--debug': #turn on debugging info
@@ -191,7 +88,7 @@ def main(argv=None): # IGNORE:C0111
                 logging.getLogger().setLevel(logging.DEBUG)
         
         if crawl_dir is None and ingest_file is None:
-            raise CommandError('You must either crawl to generate a dumop file or ingest it')
+            raise CommandError('You must either crawl to generate a dump file or ingest it')
          
         #flush stderr in case we have something pending
         sys.stderr.flush()
@@ -205,12 +102,14 @@ def main(argv=None): # IGNORE:C0111
                 raise Exception("You need to dump a file")
             SolrCore.dump_fs_to_file(crawl_dir, output, batch_size=batch_size, abort_on_errors=abort_on_errors)
         elif ingest_file:
-	    from evaluation_system.misc.utils import capture_stdout
-	    from evaluation_system.model.solr_models.models import UserCrawl
-	    fn = ingest_file.split('/')[-1]
-	    UserCrawl.objects.filter(tar_file=fn).update(status='ingesting')
-	    with capture_stdout() as capture:
-	        #Ingest the files!
+            self.ingest_file = ingest_file
+            from evaluation_system.misc.utils import capture_stdout
+            from evaluation_system.model.solr_models.models import UserCrawl
+            fn = ingest_file.split('/')[-1]
+            UserCrawl.objects.filter(tar_file=fn).update(status='ingesting')
+       
+            with capture_stdout() as capture:
+		#Ingest the files!
                 if host:
                     SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors,
                                            core_all_files=core_files, core_latest=core_latest)
@@ -218,40 +117,12 @@ def main(argv=None): # IGNORE:C0111
                     SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size, abort_on_errors=abort_on_errors)
             print capture.result
 	    try:
-	        crawl = UserCrawl.objects.get(tar_file=fn)
-		crawl.ingest_msg = crawl.ingest_msg + '\n' + capture.result + '\n\nNow you can find your data using "solr_search"'
-	        crawl.status = 'success'
-	        crawl.save()
-	        #UserCrawl.objects.filter(tar_file=fn).update(ingest_msg=capture.result,status='success')
-	    except:
-	        pass
-    except KeyboardInterrupt:
-        ### handle keyboard interrupt ###
-        return 0
-    except getopt.GetoptError as e:
-        #Did you mean functionality
-        similar_words = None
-        if len(e.opt) > 1:
-            trimmed_args = []
-            for arg in _args:
-                if arg[-1] == '=': trimmed_args.append(arg[:-1])
-                else: trimmed_args.append(arg)
-            similar_words = find_similar_words(e.opt, trimmed_args)
-        mesg = e.msg
-        if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-        print mesg
-
-        return 2
-    except Exception as e:
-        if isinstance(e, IOError) and e.errno == 32:
-            #this is just a broken pipe, which mean the stdout was closed 
-            #(e.g when using head after 10 lines are read)
-            #just stop normally
-            return 0
-        if DEBUG or __name__ != "__main__":
-            raise
-        else: print "ERROR: ",sys.exc_info()[1]
-        return 2
+                crawl = UserCrawl.objects.get(tar_file=fn)
+                crawl.ingest_msg = crawl.ingest_msg + '\n' + capture.result + '\n\nNow you can find your data using "solr_search"'
+                crawl.status = 'success'
+                crawl.save()
+            except:
+                pass       
 
 if __name__ == "__main__":
-    sys.exit(main())
+    SolrIngest().run()
