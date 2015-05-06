@@ -39,6 +39,7 @@ from evaluation_system.commands import BaseCommand
 from evaluation_system.model.user import User
 import logging
 from evaluation_system.model.solr_models.models import UserCrawl
+from evaluation_system.misc import config
 
 class UpdateProjectdata(BaseCommand):
  
@@ -47,8 +48,7 @@ class UpdateProjectdata(BaseCommand):
     __short_description__ = '''\nUse this command to update your projectdata.'''
     
     def _run(self):
-        #TODO: This should be in evaluation_system.conf
-        root_path = '/miklip/integration/data4miklip/projectdata/'
+        root_path =  config.get('project_data')
         # Setup argument parser
         args = self.args
         crawl_dir=None
