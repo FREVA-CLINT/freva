@@ -2,9 +2,9 @@ import re
 
 class Esgf2SolrConfig(object):
     def cmip5(self,dataset):
-        
+        filename        = dataset['title']
         cmip5_structure = dict(
-        filename        = dataset['title'],
+        filename        = filename,
         project         = dataset['project'][0],
         product         = dataset['product'][0],
         institute       = dataset['institute'][0],
@@ -38,8 +38,14 @@ class Esgf2SolrConfig(object):
         return specs_structure
     
     def project_select(self,dataset):
-        options = {'cmip5' : self.cmip5,
+        options = {'CMIP5' : self.cmip5,
                    'specs' : self.specs,
                    }
         return options[dataset['project'][0]](dataset)
+    
+class Solr2EsgfConfig(object):
+    def cmip5(self):
+        return
+    def specs(self):
+        return
     
