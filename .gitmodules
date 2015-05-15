@@ -55,3 +55,6 @@
 [submodule "tools/troughident"]
 	path = tools/troughident
 	url = /miklip/integration/repositories/troughident.git
+[submodule "tools/vadycirc"]
+	path = tools/vadycirc
+	url = /miklip/integration/repositories/vadycirc.git

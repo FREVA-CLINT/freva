@@ -205,12 +205,10 @@ def main(argv=None): # IGNORE:C0111
             elif flag == '--use-defaults':      #skips user configuration and use system defaults.
                 use_user_defaults=False
             elif flag == '--caption':           # sets a caption for the results
-                precaption = arg
-                
+                precaption = arg                
             elif flag == '--batchmode':         # creates a SLURM job
                 mode = arg.lower()
-                batchmode = mode in ['true', '1', 'yes', 'on', 'web',]
-                
+                batchmode = mode in ['true', '1', 'yes', 'on', 'web',]        
                 if not batchmode and mode not in ['false', '0', 'no', 'off',]:
                     raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
             elif flag == '--mail':              # users email address
@@ -248,7 +246,6 @@ def main(argv=None): # IGNORE:C0111
                 dry_run=True
             elif flag == '--scheduled-id':      #Runs a scheduled job from database
                 scheduled_id = int(arg)
-                
             elif flag == '-d' or flag == '--debug': #turn on debugging info and show stack trace on exceptions.
                 DEBUG = True
                 logging.getLogger().setLevel(logging.DEBUG)
