@@ -40,7 +40,7 @@ class Esgf2Solr(object):
                        cmor_path = Esgf2SolrConfig().project_select(dataset)
                        filename = cmor_path['filename']
                        esgfpath = '/'.join((
-                                           cmor_path['project'],
+                                           self.prefix+cmor_path['project'],
                                            cmor_path['product'],
                                            cmor_path['institute'],
                                            cmor_path['model'],
