@@ -20,7 +20,7 @@ class Esgf2SolrConfig(object):
     def specs(self,dataset):
         filename        = dataset['title']
         year            = str(int(re.compile(r'_S(?P<year>\d{4})\d{2}\d{2}_'+\
-                                  dataset['ensemble'][0]).search(filename).group('year'))-1)
+                                  dataset['ensemble'][0]).search(filename).group('year'))+0)
         
         specs_structure = dict(
         filename       = re.sub(dataset['experiment'][0]+'_S\d{8}_'+dataset['ensemble'][0],\
