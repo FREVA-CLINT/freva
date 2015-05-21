@@ -44,8 +44,60 @@ class Esgf2SolrConfig(object):
         return options[dataset['project'][0]](dataset)
     
 class Solr2EsgfConfig(object):
-    def cmip5(self):
-        return
-    def specs(self):
-        return
+    def cmip5(self,esgfpath,filename):      
+        
+         
+        project,product,institute,model,experiment,\
+        time_frequency,realm,variable,ensemble=esgfpath[1:].split('/')
+         
+        cmip5_structure = dict(
+            project        = project,
+            product        = product,
+            institute      = institute,
+            model          = model,
+            experiment     = experiment,
+            time_frequency = time_frequency,
+            realm          = realm,
+            variable       = variable,
+            ensemble       = ensemble,
+            filename       = filename,
+                               )
+        return cmip5_structure
+     
+    def specs(self,esgfpath,filename):
+          
+        project,product,institute,model,experiment,\
+        time_frequency,realm,variable,ensemble=esgfpath[1:].split('/')
+         
+        filename,extension = os.path.os.path.splitext(filename)
+         
+        start_end_time = re.sub(r'^.*?'+ensemble,'',filename)[1:]
+        specs_experiment = re.sub(r'\d{4}$','',experiment) 
+        if start_end_time <> '':
+            starttime,endtime = start_end_time.split('-')
+            if len(starttime) == 6: starttime = starttime+'01'
+        elif start_end_time == '' and time_frequency=='fx':
+            starttime = str(int(re.sub(specs_experiment,'',experiment))+1)+'0101'
+        filename = re.sub(experiment,'%s_S%s' %(specs_experiment,starttime),filename)+extension
+        experiment = specs_experiment
+        specs_structure = dict(
+            project        = project,
+            product        = product,
+            institute      = institute,
+            model          = model,
+            experiment     = experiment,
+            time_frequency = time_frequency,
+            realm          = realm,
+            variable       = variable,
+            ensemble       = ensemble,
+            filename       = filename,
+                               )
+        return specs_structure
+     
+    def project_select(self,esgfpath,filename):
+         
+        options = {'CMIP5' : self.cmip5,
+                   'specs' : self.specs,
+                   }
+        return options[esgfpath[1:].split('/')[0]](esgfpath,filename)
     
