@@ -1,1 +1,1 @@
-from .esgf2solr_crawl import Esgf2Solr
+from .esgf2solr_crawl import Esgf2Solr,Solr2EsgfConfig
