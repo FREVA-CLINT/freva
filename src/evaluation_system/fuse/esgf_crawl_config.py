@@ -1,4 +1,5 @@
 import re
+import os
 
 class Esgf2SolrConfig(object):
     def cmip5(self,dataset):
