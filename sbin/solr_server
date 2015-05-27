@@ -41,27 +41,18 @@ case "$1" in
     start)
 	if [[ ! -f "$PID_FILE" ]]; then
 	    echo Starting $TOOL_NAME
-	    #change max number of open files and start solr
-	    # CHECK IF ulimit -n is important
-  	    #su -p -s /bin/bash $TOOL_USER -c "ulimit -n 10000 && cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
 	    sudo -u $TOOL_USER /bin/bash -c "cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
 	    echo "Started. pid: $(cat $PID_FILE)"
-	    #redhat specific
-	    #touch /var/lock/subsys/$(basename $0)
 	else
-	    echo "$TOOL_NAME already runnin gwith pid $(cat $PID_FILE)"
+	    echo "$TOOL_NAME already running with pid $(cat $PID_FILE)"
 	fi
 	;;
     stop)
 	if [[ -f "$PID_FILE" ]]; then
 	    PID="$(cat "$PID_FILE")"
 	    echo Stopping $TOOL_CMD: $PID
-	    #kill $PID
-	    #rm $PID_FILE
-            sudo -u $TOOL_USER /bin/bash -c "kill $PID"
+	    sudo -u $TOOL_USER /bin/bash -c "kill $PID"
 	    sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
-	    #redhat specific
-	    #rm -f /var/lock/subsys/$(basename $0)
 	else
 	    echo not started
 	fi
@@ -69,8 +60,27 @@ case "$1" in
     status)
 	[[ -f "$PID_FILE" ]] && echo Running. pid:$(cat $PID_FILE) || echo Stopped
 	;;
+    check4break)
+	if [[ -f "$PID_FILE" ]] && [[ -z  "$(ps -A | grep $(cat $PID_FILE))" ]]; then
+	    echo "SOLR IS DOWN"
+	    echo "BUT NOT BY THIS SCRIPT"
+	    echo "-> RESTART"
+            #STOP
+	    PID="$(cat "$PID_FILE")"
+            echo delete $PID_FILE
+            sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
+	    #WAIT FOR SOME SECONDS
+	    sleep 5
+	    #START
+	    echo Starting $TOOL_NAME
+            sudo -u $TOOL_USER /bin/bash -c "cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
+            echo "Restarted. pid: $(cat $PID_FILE)"
+	else
+	    echo "$TOOL_NAME is running with pid $(cat $PID_FILE)"
+ 	fi
+        ;;
     *)
-	echo "Usage: $0 {start|stop|status}"
+	echo "Usage: $0 {start|stop|status|check4break}"
 	exit 1
 	;;
 esac
