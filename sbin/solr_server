@@ -1,23 +1,40 @@
 #!/bin/bash
 #
-#
-# Starts the Solr daemon
+#################
+# Starts the Solr daemon via FREVA structure
 #
 # chkconfig: 345 90 10
 # description: Starts the Solr daemon which will listen on port 8983
+# 
 
-FREVA_ROOT=/pf/b/b324031/INTEGRATION/evaluation_system/
+# SET FREVA ROOT DIR via STRUCTURE
+# This script (www_solr) is belonging to the sbin
+#################
+SCRIPT_PATH=$(readlink -f $(dirname $0))
+FREVA_ROOT=$SCRIPT_PATH/../
 
+# SET TOOL NAME OF YOUR SOLR SERVER
 TOOL_NAME=mysolr
+# SET THE USER WHICH RUNS THE SERVER (default: apache)
 TOOL_USER=apache
+# SET THE MEMORY OF THE SOLR SERVER (XXXXM for MB or XG for GB)
+TOOL_MEM=4096M
+
 BASE_DIR=$FREVA_ROOT/database/solr/server/$TOOL_NAME/
 TOOL_HOME=$BASE_DIR/solr
-
 
 PID_FILE=$BASE_DIR/var/$TOOL_NAME.pid
 LOG_FILE=$BASE_DIR/log/$TOOL_NAME.log
 
-TOOL_CMD="java -server -Xmx3072M -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
+TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
+
+
+#CHECK IF RIGHT PATHES ARE SET
+if [[ ! -f "$TOOL_HOME/solr.xml" ]]; then
+    echo "WARNING: Can't find solr.xml in:"
+    echo "$TOOL_HOME/"
+    echo "Solr Server probably don't work"   
+fi
 
 
 case "$1" in
@@ -39,7 +56,9 @@ case "$1" in
 	if [[ -f "$PID_FILE" ]]; then
 	    PID="$(cat "$PID_FILE")"
 	    echo Stopping $TOOL_CMD: $PID
-	    sudo -u $TOOL_USER /bin/bash -c "kill $PID"
+	    #kill $PID
+	    #rm $PID_FILE
+            sudo -u $TOOL_USER /bin/bash -c "kill $PID"
 	    sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
 	    #redhat specific
 	    #rm -f /var/lock/subsys/$(basename $0)
