@@ -61,18 +61,20 @@ case "$1" in
 	[[ -f "$PID_FILE" ]] && echo Running. pid:$(cat $PID_FILE) || echo Stopped
 	;;
     check4break)
-	if [[ -f "$PID_FILE" ]] && [[ -z  "$(ps -A | grep $(cat $PID_FILE))" ]]; then
+	if [[ ! -f "$PID_FILE" ]]; then
+	    echo "SOLR is stopped, has no PID"
+	    echo "START SOLR with start option"
+	elif [[ -f "$PID_FILE" ]] && [[ -z  "$(ps -A | grep $(cat $PID_FILE))" ]]; then
 	    echo "SOLR IS DOWN"
 	    echo "BUT NOT BY THIS SCRIPT"
 	    echo "-> RESTART"
             #STOP
 	    PID="$(cat "$PID_FILE")"
-            echo delete $PID_FILE
-            sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
+	    sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
 	    #WAIT FOR SOME SECONDS
 	    sleep 5
 	    #START
-	    echo Starting $TOOL_NAME
+	    echo Restarting $TOOL_NAME
             sudo -u $TOOL_USER /bin/bash -c "cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
             echo "Restarted. pid: $(cat $PID_FILE)"
 	else
