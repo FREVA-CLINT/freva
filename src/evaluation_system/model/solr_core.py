@@ -315,7 +315,7 @@ nice to generate it in a different manner (e.g. using the gpfs policy API).
         log.debug('starting sequential ingest')
 
         if dump_file.endswith('.gz'):
-            print "Using gzip"
+            #print "Using gzip"
             import gzip
             #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
             #Let's leave this python 2.6 compatible...
@@ -369,7 +369,7 @@ about the latest version of all files (remember that in CMIP5 not all files are 
 """
         
         if dump_file.endswith('.gz'):
-            print "Using gzip"
+            #print "Using gzip"
             import gzip
             #the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
             #Let's leave this python 2.6 compatible...

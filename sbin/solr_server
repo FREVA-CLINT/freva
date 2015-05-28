@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+#################
+# Starts the Solr daemon via FREVA structure
+#
+# chkconfig: 345 90 10
+# description: Starts the Solr daemon which will listen on port 8983
+# 
+
+# SET FREVA ROOT DIR via STRUCTURE
+# This script (www_solr) is belonging to the sbin
+#################
+SCRIPT_PATH=$(readlink -f $(dirname $0))
+FREVA_ROOT=$SCRIPT_PATH/../
+
+# SET TOOL NAME OF YOUR SOLR SERVER
+TOOL_NAME=mysolr
+# SET THE USER WHICH RUNS THE SERVER (default: apache)
+TOOL_USER=apache
+# SET THE MEMORY OF THE SOLR SERVER (XXXXM for MB or XG for GB)
+TOOL_MEM=4096M
+
+BASE_DIR=$FREVA_ROOT/database/solr/server/$TOOL_NAME/
+TOOL_HOME=$BASE_DIR/solr
+
+PID_FILE=$BASE_DIR/var/$TOOL_NAME.pid
+LOG_FILE=$BASE_DIR/log/$TOOL_NAME.log
+
+TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
+
+
+#CHECK IF RIGHT PATHES ARE SET
+if [[ ! -f "$TOOL_HOME/solr.xml" ]]; then
+    echo "WARNING: Can't find solr.xml in:"
+    echo "$TOOL_HOME/"
+    echo "Solr Server probably don't work"   
+fi
+
+
+case "$1" in
+    start)
+	if [[ ! -f "$PID_FILE" ]]; then
+	    echo Starting $TOOL_NAME
+	    sudo -u $TOOL_USER /bin/bash -c "cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
+	    echo "Started. pid: $(cat $PID_FILE)"
+	else
+	    echo "$TOOL_NAME already running with pid $(cat $PID_FILE)"
+	fi
+	;;
+    stop)
+	if [[ -f "$PID_FILE" ]]; then
+	    PID="$(cat "$PID_FILE")"
+	    echo Stopping $TOOL_CMD: $PID
+	    sudo -u $TOOL_USER /bin/bash -c "kill $PID"
+	    sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
+	else
+	    echo not started
+	fi
+	;;
+    status)
+	[[ -f "$PID_FILE" ]] && echo Running. pid:$(cat $PID_FILE) || echo Stopped
+	;;
+    check4break)
+	if [[ ! -f "$PID_FILE" ]]; then
+	    echo "SOLR is stopped, has no PID"
+	    echo "START SOLR with start option"
+	elif [[ -f "$PID_FILE" ]] && [[ -z  "$(ps -A | grep $(cat $PID_FILE))" ]]; then
+	    echo "SOLR IS DOWN"
+	    echo "BUT NOT BY THIS SCRIPT"
+	    echo "-> RESTART"
+            #STOP
+	    PID="$(cat "$PID_FILE")"
+	    sudo -u $TOOL_USER /bin/bash -c "rm $PID_FILE"
+	    #WAIT FOR SOME SECONDS
+	    sleep 5
+	    #START
+	    echo Restarting $TOOL_NAME
+            sudo -u $TOOL_USER /bin/bash -c "cd $BASE_DIR; nohup $TOOL_CMD >$LOG_FILE 2>&1 & echo \$!>$PID_FILE"
+            echo "Restarted. pid: $(cat $PID_FILE)"
+	else
+	    echo "$TOOL_NAME is running with pid $(cat $PID_FILE)"
+ 	fi
+        ;;
+    *)
+	echo "Usage: $0 {start|stop|status|check4break}"
+	exit 1
+	;;
+esac
+
+exit 0
+
+
