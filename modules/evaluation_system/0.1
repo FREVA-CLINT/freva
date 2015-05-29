@@ -89,6 +89,7 @@ if { $curMode eq "load" } {
 } elseif { $curMode eq "remove" } {
     module unload cdo
     module unload python
+    set-alias python /evaluation_system_tmp/mypython/bin/python
     prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
     prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
     prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
@@ -99,3 +100,5 @@ if { $curMode eq "load" } {
 append-path PATH "$toolPath/bin"
 #add the python packages to the pythonpath so it can be used anywhere
 append-path PYTHONPATH "$toolPath/src"
+#set python egg to stream output
+setenv PYTHON_EGG_CACHE "/tmp"
