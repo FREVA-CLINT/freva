@@ -86,9 +86,9 @@ case "$1" in
 	    echo "$TOOL_NAME is running with pid $(cat $PID_FILE)"
  	fi
         ;;
-    crawl2ingest)
+    path2ingest)
 	DATA_DIR=$2
-        file=$(date +solr_crawl_%F_%H%M%S.csv.gz) # file to be filled with informations
+	file=$(date +solr_crawl_%F_%H%M%S.csv.gz) # file to be filled with informations
 	log_file=$BACKUP_DIR/$file.log
 	exec > >(tee $log_file)
 	exec 2>&1
@@ -97,7 +97,7 @@ case "$1" in
 	SOLR_INGEST=$FREVA_ROOT/sbin/solr_ingest
 	# CRAWL PART
 	INCOMING_FILE=$INCOMING_DIR/$file
-        [[ ! -d "$DATA_DIR" ]] && echo "Directory '$DATA_DIR' doesn't exists. Aborting."; exit 1
+        [[ ! -d "$DATA_DIR" ]] && echo "Directory '$DATA_DIR' doesn't exists. Aborting." && exit 1
 	$SOLR_INGEST --crawl $DATA_DIR --output $INCOMING_FILE || exit 1
 	#INGEST PART
 	PROCESSING_FILE=$PROCESSING_DIR/$file
@@ -112,7 +112,7 @@ case "$1" in
 	;;    
 
     *)
-	echo "Usage: $0 {start|stop|status|check4break|crawl2ingest}"
+	echo "Usage: $0 {start|stop|status|check4break|path2ingest <value>}"
 	exit 1
 	;;
 esac
