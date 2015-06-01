@@ -66,6 +66,8 @@ if { $curMode eq "load" } {
         	module unload python
         	set-alias python /evaluation_system_tmp/mypython/bin/python
         	prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
+		prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/lib"
+		prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/myfuse/lib64"
 		prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
 		prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
 	}
@@ -79,7 +81,9 @@ if { $curMode eq "load" } {
                 module unload python
                 set-alias python /evaluation_system_tmp/mypython/bin/python
                 prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
-                prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
+                prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/lib"
+                prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/myfuse/lib64"
+		prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
                 prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
         }
 	safe_load cdo/1.5.4
@@ -87,15 +91,20 @@ if { $curMode eq "load" } {
 	puts stderr "And load it again -> module load evaluation_system"
 	puts stderr "Your shell now: $shell"    }
 } elseif { $curMode eq "remove" } {
-    module unload cdo
-    module unload python
-    prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
-    prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
-    prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
-    puts stderr "Evaluation System successfully unloaded."
+	module unload cdo
+	module unload python
+	set-alias python /evaluation_system_tmp/mypython/bin/python
+	prepend-path PATH "/evaluation_system_tmp/mypython/bin/"
+	prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/lib"
+	prepend-path LD_LIBRARY_PATH "/evaluation_system_tmp/mypython/myfuse/lib64"
+	prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/python/python-2.7-gccsys/lib"
+	prepend-path LD_LIBRARY_PATH "/sw/centos58-x64/netcdf-4.1.3-gccsys/lib"
+	puts stderr "Evaluation System successfully unloaded."
 }
 
 #set the default path to the bin directory
 append-path PATH "$toolPath/bin"
 #add the python packages to the pythonpath so it can be used anywhere
 append-path PYTHONPATH "$toolPath/src"
+#set python egg to stream output
+setenv PYTHON_EGG_CACHE "/tmp"

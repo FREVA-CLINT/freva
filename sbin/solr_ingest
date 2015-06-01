@@ -38,6 +38,7 @@ import evaluation_system.model.file as mf
 from evaluation_system.model.solr_core import SolrCore
 import logging,sys
 from evaluation_system.model.solr_models.models import UserCrawl
+from evaluation_system.model.user import User
 
 class SolrIngest(BaseCommand):
     _short_args = 'hd'
@@ -45,7 +46,7 @@ class SolrIngest(BaseCommand):
     __short_description__ = '''\nCommand to ingest files to solr or dump crawl to file'''    
 
     def handle_exceptions(self,e):
-        if self.ingest_file:
+        if hasattr(self,'ingest_file'):
             try:
                 crawl = UserCrawl.objects.get(tar_file=self.ingest_file.split('/')[-1])
                 crawl.status = 'failed'
@@ -101,10 +102,14 @@ class SolrIngest(BaseCommand):
             if not output:
                 raise Exception("You need to dump a file")
             SolrCore.dump_fs_to_file(crawl_dir, output, batch_size=batch_size, abort_on_errors=abort_on_errors)
+            #creata database entry
+	    user=User()
+            db = user.getUserDB()
+	    UserCrawl.objects.create(status='crawling',path_to_crawl=crawl_dir, user_id=db.getUserId(user.getName()), tar_file=output.split('/')[-1])
         elif ingest_file:
             self.ingest_file = ingest_file
             from evaluation_system.misc.utils import capture_stdout
-            from evaluation_system.model.solr_models.models import UserCrawl
+            #from evaluation_system.model.solr_models.models import UserCrawl
             fn = ingest_file.split('/')[-1]
             UserCrawl.objects.filter(tar_file=fn).update(status='ingesting')
        
