@@ -133,8 +133,7 @@ class EsgfFuse(Operations):
                         #os.rename(self.esgftmp+esgfpath+'/'+filename+'.tmp',self.esgftmp+esgfpath+'/'+filename)
                         cdo.shifttime('-365days',input='-selvar,'+cmor_path['variable']+' '+\
                                                self.esgftmp+esgfpath+'/'+filename+'.tmp' , \
-                                      output = self.esgftmp+esgfpath+'/'+filename+'.tmp2')
-                        os.rename(self.esgftmp+esgfpath+'/'+filename+'.tmp2',self.esgftmp+esgfpath+'/'+filename)
+                                      output = self.esgftmp+esgfpath+'/'+filename)
                     else:    
                         os.rename(self.esgftmp+esgfpath+'/'+filename+'.tmp',self.esgftmp+esgfpath+'/'+filename)
                     os.remove(self.esgftmp+path+'.lock')
@@ -180,7 +179,7 @@ class EsgfFuse(Operations):
             
         while True:
             sleep(5)
-            if os.path.isfile(self.esgftmp+path): break
+            if os.path.isfile(self.esgftmp+path) and not os.path.isfile(self.esgftmp+path+'.lock'): break
         return fh
         
         
