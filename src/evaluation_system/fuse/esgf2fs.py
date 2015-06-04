@@ -4,13 +4,16 @@ import errno
 import threading
 import logging
 import grp
+import socket
 
 from stat import S_IFDIR, S_IFREG, S_IREAD, S_IWRITE, S_IRGRP, S_IWGRP
 from sys import argv, exit
 from time import time, sleep,mktime
 from subprocess import call
 from datetime import datetime
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
+from errno import *
+from os import strerror
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
@@ -22,6 +25,7 @@ from cdo import Cdo
 
 logging.getLogger().setLevel(logging.INFO)
 
+        
 class EsgfFuse(Operations):
     def __init__(self):
         
@@ -29,13 +33,13 @@ class EsgfFuse(Operations):
         #self.logcache= '/pf/b/b324029/cache'
         self.esgftmp = '%s/%s/' % (self.logcache,'ESGF_CACHE')
         self.logpath = '%s/%s/' % (self.logcache,'ESGF_LOG')
+        self.esgf_server = config.get('esgf_server').split(',')
+        self.hostname = socket.gethostname()
         
-        self.wgetlog = 'wget_raw.log'
-        self.downlog = 'download_error.log'
         self.certs   = config.get('private_key')
         self.wget    = config.get('wget_path')
           
-        self.threadLimiter = threading.BoundedSemaphore(1)
+        self.threadLimiter = threading.BoundedSemaphore(int(config.get('parallel_downloads')))
         self.rwlock=threading.Lock()
         
         self.gid = grp.getgrnam("bmx828").gr_gid
@@ -54,8 +58,7 @@ class EsgfFuse(Operations):
 #         except IOError as e:
 #             pass
             
-    #def get_url(self,path,p2p=P2P(node='pcmdi9.llnl.gov')):
-    def get_url(self,path,size=False,p2p=P2P(node='esgf-data.dkrz.de')):
+    def get_url(self,path,size=False):
         
         esgfpath,filename  = os.path.split(path)
         
@@ -69,14 +72,11 @@ class EsgfFuse(Operations):
             project,product,institute,model,experiment,\
             time_frequency,realm,variable,ensemble=esgfpath[1:].split('/')
         except ValueError:
-            print 'PATH: '+path
-            print 'PATH structure is not supported'
-            return
+            raise FuseOSError(ENOENT)
          
         cmor_path = Solr2EsgfConfig().project_select(esgfpath, filename)
         fields = ['url','size','timestamp']
-        print path
-        print cmor_path 
+        print path 
         facets = {'project'        : cmor_path['project'],
                   'type'           : 'File',
                   'product'        : cmor_path['product'],
@@ -89,20 +89,25 @@ class EsgfFuse(Operations):
                   'title'          : cmor_path['filename']
                   }
         timestamp = 0
+        url = None
         
-        for ncfile in p2p.get_datasets(fields=','.join(fields),**facets):
-            url = [url for url in ncfile['url'] if 'application/netcdf' in url][0]
-            if mktime((datetime.strptime(ncfile['timestamp'],'%Y-%m-%dT%H:%M:%SZ')).timetuple()) >= timestamp:
-                timestamp = mktime((datetime.strptime(ncfile['timestamp'],'%Y-%m-%dT%H:%M:%SZ')).timetuple())
-                size = int(ncfile['size'])
+        for server in self.esgf_server:
+            p2p=P2P(node=server)
+            for ncfile in p2p.get_datasets(fields=','.join(fields),**facets):
+                url = [url for url in ncfile['url'] if 'application/netcdf' in url][0]
+                if url == None: continue
+                if mktime((datetime.strptime(ncfile['timestamp'],'%Y-%m-%dT%H:%M:%SZ')).timetuple()) >= timestamp:
+                    timestamp = mktime((datetime.strptime(ncfile['timestamp'],'%Y-%m-%dT%H:%M:%SZ')).timetuple())
+                    size = int(ncfile['size'])
+            if url is not None: break
+        if url is None: raise FuseOSError(ENETUNREACH)
+        #raise FuseOSError(ENETUNREACH)
         url = url.split('|')[0]
-        
         try:
             return url,size
         except UnboundLocalError:
             print 'PATH: '+path
-            print 'No url for this PATH'
-             
+            print 'No url for this PATH'         
          
     def download(self,esgfpath,path,filename,cdo=Cdo()):
                     httppath,_ =self.get_url(path)
@@ -111,29 +116,31 @@ class EsgfFuse(Operations):
             
                     file(self.esgftmp+path+'.lock','w').close()
                     cmor_path = Solr2EsgfConfig().project_select(esgfpath, filename)
+                    wgetlog = '%s_wget_%s.log' %(socket.gethostname(),datetime.now().strftime('%Y%m%d'))
                     self.rwlock.release()
+                    
                     
                     command = self.wget+" --no-check-certificate -O "+self.esgftmp+esgfpath+'/'+filename+'.tmp'\
                                         " --secure-protocol=TLSv1 --certificate "+self.certs+" --private-key "+\
                                         self.certs+' '+httppath
+                    if os.path.isfile(self.esgftmp+esgfpath+'/'+filename+'.tmp'): return
                     self.threadLimiter.acquire()
-                    process = Popen(command, shell=True)
-#                     stderr   = file(self.logpath+self.wgetlog,'a+')
-#                     download = file(self.logpath+self.downlog,'a+') 
-#                     for line in process.stderr:
-#                         stderr.write(line) 
+                    process = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+                    all = process.communicate()[0]
+                    self.rwlock.acquire()
+                    with file(self.logpath+wgetlog,'a+') as f: f.write(all+'\n')
+                    self.rwlock.release()
 #                         if 'OpenSSL: error:' in line:
 #                             download.write('Certificate Error:\n')
 #                             download.write('URL: '+httppath+'\n')
-#                     stderr.close()
-#                     download.close()
-                    print process.wait()
+#                   print process.wait()
                     
                     if cmor_path['project']=='specs':
                         #os.rename(self.esgftmp+esgfpath+'/'+filename+'.tmp',self.esgftmp+esgfpath+'/'+filename)
                         cdo.shifttime('-365days',input='-selvar,'+cmor_path['variable']+' '+\
                                                self.esgftmp+esgfpath+'/'+filename+'.tmp' , \
-                                      output = self.esgftmp+esgfpath+'/'+filename)
+                                      output = self.esgftmp+esgfpath+'/'+filename, options=' -O ')
+                        os.remove(self.esgftmp+esgfpath+'/'+filename+'.tmp')
                     else:    
                         os.rename(self.esgftmp+esgfpath+'/'+filename+'.tmp',self.esgftmp+esgfpath+'/'+filename)
                     os.remove(self.esgftmp+path+'.lock')
@@ -150,8 +157,7 @@ class EsgfFuse(Operations):
                 st = dict(st_mode=(S_IFREG | 0444), st_size=self.get_url(path,True)[1])
                 self.threadLimiter.release()
             except TypeError:
-                print 'PATH: '+path
-                print 'No size for this PATH'
+                raise FuseOSError(ENETUNREACH,'Bla')
         st['st_ctime'] = st['st_mtime'] = st['st_atime'] = time()
         return st
          
@@ -179,7 +185,8 @@ class EsgfFuse(Operations):
             
         while True:
             sleep(5)
-            if os.path.isfile(self.esgftmp+path) and not os.path.isfile(self.esgftmp+path+'.lock'): break
+            if not os.path.isfile(self.esgftmp+path+'.lock'):
+                if os.path.isfile(self.esgftmp+path): break                    
         return fh
         
         
@@ -206,18 +213,12 @@ class EsgfFuse(Operations):
                
     
     def read(self, path, length, offset,fh):
-        try:
-            with open(self.esgftmp+path+'.lock') as testfile:pass
-            self.open(path,fh)
-        except IOError:
-            try:
-                with open(self.esgftmp+path) as f:
-                    f.seek(offset, 0)
-                    buf = f.read(length)
-                    f.close()
-                    return buf
-            except IOError:
-                self.open(path, fh)
+        with open(self.esgftmp+path) as f:
+            f.seek(offset, 0)
+            buf = f.read(length)
+            f.close()
+            return buf
+
     
     readdir = None
     access = None
