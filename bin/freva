@@ -37,9 +37,11 @@ import os, sys
 from evaluation_system.commands import FrevaBaseCommand
 from evaluation_system.misc import config
 import logging
+import textwrap
 
 class Freva(FrevaBaseCommand):
 
+    _command_order = ['plugin', 'history', 'databrowser']
     _args = []
     __short_description__ = '''\nThis is the main tool for the evaluation system.
 Usage: freva --COMMAND [OPTIONS]
@@ -48,6 +50,7 @@ To get help for the individual commands use
 '''
 
     _commands = None
+    _admin_commands = None
     
     def run(self,argv=None,*args,**kwargs):
         '''
@@ -90,12 +93,23 @@ To get help for the individual commands use
     
         Returns an empty list if no commands are defined.
         """
-        command_dir = os.path.join(management_dir, 'commands')
+        command_dir = os.path.join(management_dir)
         try:
             return [f[:-3] for f in os.listdir(command_dir)
                     if not f.startswith('_') and f.endswith('.py') and not 'basecommand' in f]
         except OSError:
             return []
+    
+    @property
+    def admin_commands(self):
+        '''
+        Property which holds all available commands for administration
+        '''
+        if not self.is_admin: return []
+        if self._admin_commands == None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))     
+            self._admin_commands = self.find_commands(os.path.join(base_dir,'..','src','evaluation_system/commands/admin/'))
+        return self._admin_commands
     
     @property
     def commands(self):
@@ -104,7 +118,7 @@ To get help for the individual commands use
         '''
         if self._commands == None:
             base_dir = os.path.dirname(os.path.abspath(__file__))     
-            self._commands = self.find_commands(os.path.join(base_dir,'..','src','evaluation_system'))
+            self._commands = self.find_commands(os.path.join(base_dir,'..','src','evaluation_system/commands'))
         return self._commands
     
     def _run(self):
@@ -112,40 +126,62 @@ To get help for the individual commands use
         Loop all arguments and find command to execute
         ''' 
         for flag in self.args:
-            if flag.replace('--','') in self.commands:
+            if flag.replace('--','') in (self.commands+self.admin_commands):
                 f = flag.replace('--','')
-                module = __import__('evaluation_system.commands.%s' % f, fromlist=['Command'])
-                class_ = getattr(module, 'Command')
+                class_ = self._load_command(f)
                 argv = sys.argv[:]
                 argv.remove(flag)
                 return class_().run(argv[1:])
-        if self.show_help:
-            self.auto_doc()
-              
-    def auto_doc(self, message=None):
+        #if self.show_help:
+        self.auto_doc()
+    
+    def list_commands(self, commands):
         '''
-        Override FrevaBaseCommands auto_doc.
-        We just want to show all available commands
+        Returns a textwrapper containing all commands including help text
         '''
-        import textwrap
         env = self.getEnvironment()
         results = list()
-        for cm in self.commands:
+        for cm in self._reorder_commands(commands):
             results.append((cm,self._load_command(cm).__short_description__))
         if results:
             max_length = max([len(i[0]) for i in results])
         else: 
             max_length = 0
         wrapper = textwrap.TextWrapper(width=env['columns'], initial_indent='', subsequent_indent=' '*(max_length+5))
-        results = [wrapper.fill(('  --%-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]
-        print '%s \nAvailable commands:\n%s' % ('Freva', '\n'.join(results))
+        return [wrapper.fill(('  --%-'+str(max_length)+'s: %s') % (flag, mesg)) for flag, mesg in results]        
+              
+    def auto_doc(self, message=None):
+        '''
+        Override FrevaBaseCommands auto_doc.
+        We just want to show all available commands
+        '''
+        print '%s \nAvailable commands:\n%s' % ('Freva', '\n'.join(self.list_commands(self.commands)))
+        
+        if self.is_admin:
+            print '\n\nAdministration commands:\n%s' % '\n'.join(self.list_commands(self.admin_commands))
+        env = self.getEnvironment()
         print '\n'.join([textwrap.fill(r, width = env['columns'], replace_whitespace=False) for r in (self.__short_description__).splitlines()])
+
+    def _reorder_commands(self,command_list):
+        '''
+        If there is a specified command_order. This method rearranges the command list 
+        '''
+        if hasattr(self, '_command_order'):
+            cm_order = reversed(self._command_order)
+            for cm in cm_order:
+                if cm in command_list:
+                    command_list.remove(cm)
+                    command_list = [cm] + command_list
+        return command_list
 
     def _load_command(self, command):
         '''
         Import command from python module
         '''
-        module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
+        try:
+            module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
+        except:
+            module = __import__('evaluation_system.commands.admin.%s' % command, fromlist=['Command'])
         return getattr(module, 'Command')
     
     def parse_arguments(self,argv=None,*args,**kwargs):

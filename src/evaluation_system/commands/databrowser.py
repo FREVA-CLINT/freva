@@ -22,7 +22,7 @@ class Command(FrevaBaseCommand):
              {'name':'--batch-size','help':'Number of files to retrieve', 'type':'int', 'metavar':'N'},
              {'name':'--count-facet-values','help':'Show the number of files for each values in each facet','action':'store_true'},
              {'name':'--attributes','help':'retrieve all possible attributes for the current search instead of the files','action':'store_true'},
-             {'name':'--all-facets','help':'retrieve all facets (attributes & values) instead of the files (same as --facet "*", or --facet all, or --facet any)','action':'store_true'},
+             {'name':'--all-facets','help':'retrieve all facets (attributes & values) instead of the files','action':'store_true'},
              {'name':'--facet','help':'retrieve these facets (attributes & values) instead of the files'},
              ] 
     

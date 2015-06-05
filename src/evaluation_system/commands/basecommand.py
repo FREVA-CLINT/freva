@@ -8,7 +8,8 @@ import abc
 import sys,os
 import getopt
 from evaluation_system.misc.utils import find_similar_words
-
+from evaluation_system.misc import config
+from evaluation_system.model import user
 from optparse import OptionParser, BadOptionError
 
 import logging
@@ -40,6 +41,7 @@ class FrevaBaseCommand(object):
     __metaclass__ = abc.ABCMeta
     
     DEBUG =False
+    __is_admin = None
 
     def __init__(self,*args,**kwargs):
         self.set_logger()
@@ -58,6 +60,14 @@ class FrevaBaseCommand(object):
     @abc.abstractmethod
     def _run(self,*args,**kwargs):
         raise NotImplementedError("This method must be implemented")
+    
+    @property
+    def is_admin(self):
+        if self.__is_admin == None:
+            admins = config.get('admins','')
+            #if user.User().getName() in admins.split(','):
+            self.__is_admin = user.User().getName() in admins.split(',')
+        return self.__is_admin
     
     def run(self,argv=None,*args,**kwargs):
         if argv is not None:
@@ -338,6 +348,9 @@ class BaseCommand(object):
         else: message = ''
         if results: print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
         else: print '%s %s' % (script_name, message)
+        
+        if not hasattr(self, '__description__'):
+            self.__description__ = self.__short_description__
         
         print '\n'.join([textwrap.fill(r, width = env['columns'], replace_whitespace=False) for r in (self.__description__).splitlines()])
         exit(0)

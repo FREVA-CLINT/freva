@@ -29,7 +29,7 @@ class Command(FrevaBaseCommand):
              {'name':'--query','help':'<list> Display results from <list> queried fields'},
              ] 
 
-    __short_description__ = '''Browse and download ESGF data'''
+    __short_description__ = '''Browse ESGF data and create wget script'''
     __description__ = """
 The query is of the form key=value. the key might be repeated and/or negated with the 
 '_not_' suffix (e.g. model_not_=MPI-ESM-LR experiment=decadal2000 experiment=decadal2001)
