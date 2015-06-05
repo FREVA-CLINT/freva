@@ -205,4 +205,6 @@ def main(argv=None): # IGNORE:C0111
         return 2
 
 if __name__ == "__main__":
+    print '''WARNING: "esgf" is deprecated and will be dropped in a future version.
+          Use "freva --esgf" instead (For more information see freva --help)'''
     sys.exit(main())
