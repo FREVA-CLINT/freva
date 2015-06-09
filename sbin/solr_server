@@ -34,12 +34,12 @@ LOG_FILE=$BASE_DIR/log/$TOOL_NAME.log
 # THE SOLR SERVER RAWSTART COMMAND
 TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
 ################
-#CHECK IF RIGHT PATHES ARE SET
-if [[ ! -f "$TOOL_HOME/solr.xml" ]]; then
-    echo "WARNING: Can't find solr.xml in:"
-    echo "$TOOL_HOME/"
-    echo "Solr Server probably don't work"   
-fi
+#CHECK IF RIGHT PATHES ARE SET (JUST POSSIBLE IN SAME FILE SYSTEM)
+#if [[ ! -f "$TOOL_HOME/solr.xml" ]]; then
+#    echo "WARNING: Can't find solr.xml in:"
+#    echo "$TOOL_HOME/"
+#    echo "Solr Server probably don't work"   
+#fi
 ################
 # SOLR_SERVER OPTIONS
 case "$1" in
