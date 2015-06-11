@@ -1,4 +1,4 @@
-_solr_query() {
+_freva_query() {
     local -a arr=( "$@" )
     local query i
     for (( i = 0 ; i < ${#arr[@]} ; i++ )) do
@@ -9,8 +9,16 @@ _solr_query() {
     
     echo "$query"
 }
-_solr_search_show() {
+
+_freva_containsElement() {
+local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && echo "True" ; done
+}
+
+
+_freva_show() {
     local cur opts query extra
+    argarray=("--help" "--plugin" "--history" "--databrowser" "--crawl_my_data" "--esgf")
     if [[ "${COMP_WORDS[1]}" == "--databrowser" ]]; then
     # in bash4 this line converts the entries to lower case, s.t. a completion
     # becomes case insensitive
@@ -24,13 +32,13 @@ _solr_search_show() {
 	[[ -z "$cur" ]] && extra=--relevant-only
 
 	if [[ "$cur" == "=" ]]; then
-	    query="$(_solr_query "${COMP_WORDS[@]:1:COMP_CWORD-2}")"
+	    query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-2}")"
 	    opts="$(freva --databrowser --facet $prev $query | sed -e 's/[^:]*: //' -e 's/,/ /g')"
         #don't consider this for selection of possible auto-complete word
 	    cur=
         
 	elif [[ "$prev" == "=" ]]; then
-	    query="$(_solr_query "${COMP_WORDS[@]:1:COMP_CWORD-3}")"
+	    query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-3}")"
 	    facet="${COMP_WORDS[COMP_CWORD-2]}"
 	    opts="$(freva --databrowser --facet $facet $query $facet=${cur}* | sed -e 's/[^:]*: //' -e 's/,/ /g')"
         
@@ -44,6 +52,12 @@ _solr_search_show() {
 	fi
 	
 	COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
+    elif [[ "$(_freva_containsElement ${COMP_WORDS[1]} ${argarray[@]})" != True ]]; then
+	cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
+        query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	opts=$(echo ${argarray[@]})
+	COMPREPLY=( $(compgen -W "${opts}" -- "$cur"  ) )
     fi
 #    cat >>/tmp/autocom.log <<EOF
 #query: '$query'
@@ -54,4 +68,4 @@ _solr_search_show() {
 #value: '$value'
 #EOF
 }
-complete -o nospace -o default -F _solr_search_show "freva"
+complete -o nospace -o default -F _freva_show "freva"

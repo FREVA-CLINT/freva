@@ -1,4 +1,4 @@
-_solr_query() {
+_freva_query() {
     local query 
     for elem in "$@"; do
         [[ "${elem:0:1}" == "-" ]] || grep -qv =<<<"$elem" && continue
@@ -7,15 +7,22 @@ _solr_query() {
     echo "$query"
 }
 
-_solr_search_show() {
+_freva_containsElement() {
+local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && echo "True" ; done
+}
+
+_freva_show() {
     local cur opts query extra
+    argarray=("--help" "--plugin" "--history" "--databrowser" "--crawl_my_data" "--esgf")
     # check for databrowser as first argument behind freva command to autocomplete or not
-    if [[ "${COMP_WORDS[1]}" == "--databrowser" ]]; then
-    # convert upper case letters to lower ones
+    if [[ "${COMP_WORDS[1]}" == "--databrowser" ]]; then    
+	NOSPACE="-o nospace"
+   # convert upper case letters to lower ones
 	cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
 # this is the former version, pls uncomment if case problems occur
 #    cur="${COMP_WORDS[COMP_CWORD]}"
-	query="$(_solr_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+	query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
 	case "$cur" in
 	    -*)
 		opts="--all-facets --attributes --batch-size --count-facet-values -d --debug --facet -h --help --multiversion"
@@ -42,6 +49,19 @@ _solr_search_show() {
 		fi
 		COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
 	esac	
+    elif [[ "$(_freva_containsElement ${COMP_WORDS[1]} ${argarray[@]})" != True ]]; then
+	cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"                        
+        query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+        case "$cur" in
+	    *)
+		prev="${COMP_WORDS[COMP_CWORD-1]}"
+		opts=$(echo ${argarray[@]})
+                COMPREPLY=( $(compgen -W "${opts}" -- "$cur"  ) )
+		;;
+	esac
+    elif [[ "${COMP_WORDS[2]}" == "--help" ]]; then
+	freva ${COMP_WORDS[1]} ${COMP_WORDS[2]}
     fi
 } 2>/dev/null
-complete -o nospace -o default -F _solr_search_show "freva" 
+
+complete -o nospace -o default -F _freva_show freva 
