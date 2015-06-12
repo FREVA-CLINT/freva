@@ -487,6 +487,9 @@ class Range(String):
         except AttributeError:
             raise ValueError("'%s' is no recognized as a range value" % value)      
     
+    def str(self, value):
+        return str(value)
+    
 
 class Unknown(String):
     """An unknown parameter for conversions"""
