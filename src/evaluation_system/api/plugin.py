@@ -543,8 +543,8 @@ if no configuration is provided the default one will be used.
         logging.debug('config dict:' + str(config_dict))
         logging.debug('scheduled_id:' + str(scheduled_id))
 
-        #cmd_param = 'analyze '
-        cmd_param = 'freva --plugin '
+        cmd_param = 'analyze '
+        #cmd_param = 'freva --plugin '
         # write explicitly if batchmode is requested
         cmd_param += ' --batchmode=%s' % str(batchmode)
         
