@@ -140,19 +140,23 @@ class slurm_file(object):
         
         # set the default options
         self.add_dash_option("D", outdir)
-        self.add_dash_option("p", "serial")
         if email:
             self.add_ddash_option("mail-user", email)
-        self.add_ddash_option("ntasks-per-node", 24)
-        self.add_ddash_option("mem", "80000mb")
-        self.add_ddash_option("share", None)
-        self.add_ddash_option("ntasks", 1)
-        self.add_ddash_option("time", "1440:00")
-        self.add_ddash_option("cpus-per-task", 1)
-        self.add_module("evaluation_system")
         self.set_cmdstring(cmdstring)
+            
+        options = config.get_section('scheduler_options')
+        for opt,val in options.iteritems():
+            self.add_ddash_option(opt, val)
+#        self.add_dash_option("p", "serial")
+#        self.add_ddash_option("ntasks-per-node", 24)
+#        self.add_ddash_option("mem", "80000mb")
+#        self.add_ddash_option("share", None)
+#        self.add_ddash_option("ntasks", 1)
+#        self.add_ddash_option("time", "1440:00")
+#        self.add_ddash_option("cpus-per-task", 1)
+
+        self.add_module("evaluation_system")
         
-      
     def write_to_file(self, fp):
         """
         Write the configuration to the SLURM scheduler to a given file handler
