@@ -146,7 +146,10 @@ class slurm_file(object):
             
         options = config.get_section('scheduler_options')
         for opt,val in options.iteritems():
-            self.add_ddash_option(opt, val)
+            if val == 'None':
+                self.add_ddash_option(opt,None)
+	    else:
+                self.add_ddash_option(opt, val)
 #        self.add_dash_option("p", "serial")
 #        self.add_ddash_option("ntasks-per-node", 24)
 #        self.add_ddash_option("mem", "80000mb")
