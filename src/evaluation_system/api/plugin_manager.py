@@ -627,7 +627,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
 
     # write the SLURM file
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
-
+    
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
                          scheduled_id=rowid,
@@ -637,7 +637,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
     # create the batch command
     command = ['/bin/bash',
                '-c',
-               '%s %s --uid=%s %s\n' % (config.SCHEDULER_COMMAND,
+               '%s %s --uid=%s %s\n' % (config.get('scheduler_command'),#SCHEDULER_COMMAND,
                                         config.SCHEDULER_OPTIONS,
                                         user.getName(),
                                         full_path)

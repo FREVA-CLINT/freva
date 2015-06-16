@@ -60,7 +60,7 @@ This variable is  read by the User object,
 use always user.getUserSchedulerInputDir()!
 """  
 
-SCHEDULER_COMMAND='/client/bin/sbatch'
+#SCHEDULER_COMMAND='/client/bin/sbatch'
 ''' The command for the scheduler '''
 
 SCHEDULER_OPTIONS='--begin=now+'+str(SCHEDULER_WAITING_TIME)

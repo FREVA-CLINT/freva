@@ -77,7 +77,9 @@ For Example:
             (repos, version) = pm.getPluginVersion(tool_name)
             print 'Repository and version of %s:\n%s\n%s' % (tool_name, repos, version)
             return 0    
-                
+        
+        email = None
+ 
         #get the plugin
         if tool_name:
             caption = None
