@@ -5,7 +5,7 @@ This module manages the central configuration of the system.
 '''
 import os
 import logging
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, NoSectionError
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
@@ -217,3 +217,18 @@ not exists an exception is thrown.
 def keys():
     """Returns all the keys from the current configuration."""
     return _config.keys()
+
+def get_section(section_name):
+    conf = SafeConfigParser()
+    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION)
+    conf.read(config_file)
+    
+    try:
+        return dict(conf.items(section_name))
+    except NoSectionError:
+        raise NoSectionError,'There is no "%s" section in config file' % section_name
+    
+    
+    
+    
+    
