@@ -696,7 +696,7 @@ This is a wrapper for the function defined in db.py, like getHistory. """
     return user.getUserDB().getResults(history_id, filetype)
 
 
-def getCommandString(entry_id, user=None, command_name='analyze', command_options='--tool'):
+def getCommandString(entry_id, user=None, command_name='freva', command_options='--plugin'):
     """
     Return the parameter string of a history entry.
     :type entry_id: integer
