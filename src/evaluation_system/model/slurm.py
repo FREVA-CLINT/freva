@@ -145,8 +145,17 @@ class slurm_file(object):
         self.set_cmdstring(cmdstring)
             
         options = config.get_section('scheduler_options')
-        for opt,val in options.iteritems():
-            self.add_ddash_option(opt, val)
+        self.source_file = options.pop('source')
+	module_file = options.pop('module_command')
+        self.add_module(module_file)
+
+	for opt,val in options.iteritems():
+            if opt.startswith('option_'):
+                opt=opt.replace('option_','')
+	        if val == 'None':
+                    self.add_ddash_option(opt,None)
+	        else:
+                    self.add_ddash_option(opt, val)
 #        self.add_dash_option("p", "serial")
 #        self.add_ddash_option("ntasks-per-node", 24)
 #        self.add_ddash_option("mem", "80000mb")
@@ -155,8 +164,9 @@ class slurm_file(object):
 #        self.add_ddash_option("time", "1440:00")
 #        self.add_ddash_option("cpus-per-task", 1)
 
-        self.add_module("evaluation_system")
-        
+        #self.add_module("evaluation_system")
+	#self.add_module("/home/integra/evaluation_system/modules/freva/0.1")        
+
     def write_to_file(self, fp):
         """
         Write the configuration to the SLURM scheduler to a given file handler
@@ -168,8 +178,10 @@ class slurm_file(object):
         fp.write(self.SHELL_CMD + "\n")
         
         # Workaround for Slurm in www-miklip
-        fp.write("source /client/etc/profile.miklip\n")
-        
+        #fp.write("source /client/etc/profile.miklip\n")
+       
+        # Workaround for Slurm on fu
+        fp.write("source %s\n" % self.source_file) 
         # write options
         opts = self._options.items()
 
