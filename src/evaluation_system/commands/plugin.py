@@ -80,7 +80,7 @@ For Example:
         
         email = None
  
-        mode = options.batchmode.lower()
+        mode = options.batchmode.lower() if options.batchmode else 'false'
         batchmode = mode in ['true', '1', 'yes', 'on', 'web',]        
         if not batchmode and mode not in ['false', '0', 'no', 'off',]:
             raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')  
