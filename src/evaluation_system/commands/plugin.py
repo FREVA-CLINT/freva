@@ -32,9 +32,9 @@ For Example:
              {'name':'--show-config','help':'shows the resulting configuration (implies dry-run).','action':'store_true'},
              {'name':'--scheduled-id','help':'Runs a scheduled job from database','type':'int', 'metavar':'ID'},
              {'name':'--dry-run','help':'dry-run, perform no computation. This is used for viewing and handling the configuration.','action':'store_true'},
-             {'name':'--batchmode','help':'creates a SLURM job','action':'store_true'},
+             {'name':'--batchmode','help':'creates a SLURM job','metavar':'BOOL'},
              ]
-    
+
     def list_tools(self):
         import textwrap
         env = self.getEnvironment()
@@ -80,6 +80,11 @@ For Example:
         
         email = None
  
+        mode = options.batchmode.lower()
+        batchmode = mode in ['true', '1', 'yes', 'on', 'web',]        
+        if not batchmode and mode not in ['false', '0', 'no', 'off',]:
+            raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')  
+        
         #get the plugin
         if tool_name:
             caption = None
@@ -117,7 +122,7 @@ For Example:
                 
                 logging.debug('Running %s with configuration: %s', tool_name, tool_dict)
                 if not options.dry_run and (not error or DEBUG):
-                    if options.batchmode:
+                    if batchmode:
                         [id, file] = pm.scheduleTool(tool_name,
                                                      config_dict=tool_dict,
                                                      user=user.User(email=email),
