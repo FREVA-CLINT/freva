@@ -2,6 +2,7 @@ from django.conf import settings
 from evaluation_system.misc import config
 
 import json,time
+import django
 
 SETTINGS = dict()
 
@@ -18,5 +19,6 @@ try:
         }
     }
     settings.configure(**SETTINGS)
+    django.setup()
 except:
     pass
