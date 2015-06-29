@@ -13,7 +13,7 @@ class UserCrawl(models.Model):
     '''
     class Meta:
         db_table = 'solr_usercrawl'
-
+        app_label = 'solr'
     STATUS = [('waiting','waiting'),('crawling','crawling'),('ingesting','ingesting'),('success','success'),('failed','failed')]
     
     created = models.DateTimeField(auto_now_add=True)
