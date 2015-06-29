@@ -234,7 +234,8 @@ While initializing the schemas will get upgraded if required.
 #            return False
         return True
 
-    @transaction.commit_on_success
+    # @transaction.commit_on_success # is deprecated --> use transaction.atomic
+    @transaction.atomic
     def storeHistory(self, tool, config_dict, uid, status,
                      slurm_output = None, result = None, flag = None,
                      version_details = None):

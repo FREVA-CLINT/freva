@@ -30,8 +30,7 @@ class Command(FrevaBaseCommand):
              ]   
     
     def _run(self):
-        #root_path =  config.get('project_data')
-        root_path = '/miklip/integration/data4miklip/projectdata/'
+        root_path =  config.get('project_data')
         # Setup argument parser
         args = self.args
         crawl_dir=args.path

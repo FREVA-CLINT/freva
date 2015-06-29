@@ -104,7 +104,7 @@ class DRSFile(object):
         },
         #project data
         PROJECTDATA : {
-         "root_dir":"/miklip/integration/data4miklip/projectdata",
+         "root_dir":"/home/integra/data4freva/projectdata",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),

@@ -544,8 +544,9 @@ if no configuration is provided the default one will be used.
         logging.debug('scheduled_id:' + str(scheduled_id))
 
         cmd_param = 'analyze '
-        #cmd_param = 'freva --plugin '
-        # write explicitly if batchmode is requested
+        cmd_param = 'freva --plugin '
+        cmd_param += self.__class__.__name__
+	# write explicitly if batchmode is requested
         cmd_param += ' --batchmode=%s' % str(batchmode)
         
         # add a given e-mail
@@ -553,7 +554,7 @@ if no configuration is provided the default one will be used.
             cmd_param += ' --mail=%s' % email
 
         # the parameter string
-        cmd_param += ' --tool ' + self.__class__.__name__
+        #cmd_param += ' --tool ' + self.__class__.__name__
        
             
         # add a caption if given
