@@ -83,7 +83,8 @@ class History(models.Model):
     status          = models.IntegerField(max_length=1, choices=STATUS_CHOICES)
     #: Flag (deleted, private, shared, public)
     flag            = models.IntegerField(max_length=1, choices=FLAG_CHOICES, default=Flag.public)
-
+    # User defined caption for the analysis
+    caption = models.CharField(max_length=255, blank=True, null=True)
     
     def __init__(self, *args, **kwargs):
         """
