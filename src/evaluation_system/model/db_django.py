@@ -236,9 +236,10 @@ While initializing the schemas will get upgraded if required.
 
     # @transaction.commit_on_success # is deprecated --> use transaction.atomic
     @transaction.atomic
+    @transaction.atomic
     def storeHistory(self, tool, config_dict, uid, status,
                      slurm_output = None, result = None, flag = None,
-                     version_details = None):
+                     version_details = None, caption=None):
         """Store a an analysis run into the DB.
 
 :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
@@ -266,6 +267,9 @@ While initializing the schemas will get upgraded if required.
                                 flag = flag,
                                 version_details_id = version_details,
                                )
+        #set caption
+        if caption:
+            newentry.caption = caption
         
         #if not isinstance(config_dict, ParameterDictionary):
         #    raise Exception('A dictionary of type ParameterDictionary is expected')

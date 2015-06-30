@@ -505,16 +505,12 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
                                               complete_conf,
                                               user.getName(),
                                               History.processStatus.running,
-                                              version_details = version_details)
+                                              version_details=version_details,
+                                              caption=caption)
 
         # follow the notes
         followHistoryTag(rowid, user.getName(), 'Owner')
 
-    # after creating the entry add a given caption    
-    if not caption is None:
-        user.getUserDB().addHistoryTag(rowid, HistoryTag.tagType.caption, caption)
-        
-        
     try:
         #In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf)
@@ -604,18 +600,11 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
                                           complete_conf,
                                           user.getName(),
                                           History.processStatus.not_scheduled,
-                                          version_details = version_details)
+                                          version_details = version_details,
+                                          caption=caption)
     
     # follow the notes
     followHistoryTag(rowid, user.getName(), 'Owner')
-    
-
-    # after creating the entry add a given caption    
-    if not caption is None:
-        user.getUserDB().addHistoryTag(rowid,
-                                       HistoryTag.tagType.caption,
-                                       caption)
-       
 
     # set the SLURM output directory
     if not slurmoutdir:
