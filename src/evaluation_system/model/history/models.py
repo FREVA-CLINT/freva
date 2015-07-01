@@ -21,7 +21,7 @@ class History(models.Model):
                        ('history_cancel_job', 'Can cancel a job'),
                        ('browse_full_data', 'Can search all data'),
                       )
-
+        app_label = 'history'
         
 
     class processStatus:
@@ -269,7 +269,7 @@ class Result(models.Model):
         permissions = (
                        ('results_view_others', 'Can view results from other users'),
                       )
-
+        app_label = 'history'
 
     def fileExtension(self):
         """
@@ -293,7 +293,9 @@ class ResultTag(models.Model):
     class flagType:
         [caption,] = range(1)    
     
-    
+    class Meta:
+        app_label = 'history'   
+
     TYPE_CHOICES = ((flagType.caption, 'Caption'),)
     
     #: result id
@@ -312,6 +314,8 @@ class HistoryTag(models.Model):
     class tagType:
         [caption,note_public,note_private,note_deleted, follow, unfollow] = range(6)    
     
+    class Meta:
+        app_label = 'history'
     
     TYPE_CHOICES = ((tagType.caption, 'Caption'),
                     (tagType.note_public, 'Public note'),
@@ -348,3 +352,5 @@ class Configuration(models.Model):
     #; is the default value used?
     is_default = models.BooleanField()
 
+    class Meta:
+        app_label = 'history'
