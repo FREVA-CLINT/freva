@@ -101,6 +101,9 @@ A plug-in/user might then use them to define a value in the following way::
     output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
 
 """
+
+    tool_developer = None
+
     def __init__(self, *args, **kwargs):
         """Plugin main constructor. It is designed to catch all calls. It accepts a ``user``
 argument containing an :class:`evaluation_system.model.user.User` representing the user for 

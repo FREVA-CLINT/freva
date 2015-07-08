@@ -18,6 +18,9 @@ class Version(models.Model):
     #: the repository to checkout thing
     repository = models.TextField()
 
+    class Meta:
+        app_label = 'plugins'
+
 
 class Parameter(models.Model):
     """
@@ -32,7 +35,9 @@ class Parameter(models.Model):
         affects_plots = 5
         no_effects = 9
 
-    
+    class Meta:
+        app_label = 'plugins'
+ 
     #: name of the parameter
     parameter_name = models.CharField(max_length=50)
     #: type of the parameter
