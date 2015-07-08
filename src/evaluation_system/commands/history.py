@@ -61,7 +61,7 @@ DATE FORMAT
         tool_name=args.plugin
         entry_ids=map(int,args.entry_ids.split(',')) if args.entry_ids else None
         store_file=False
-        return_command = False
+        return_command = args.return_command
         #parse arguments *!!!*
         for args in self.last_args:
             tmp = args.split('=')
