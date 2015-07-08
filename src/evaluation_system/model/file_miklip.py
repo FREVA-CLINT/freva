@@ -18,23 +18,25 @@ CMIP5 = 'cmip5'
 BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
 MIKLIP = 'miklip'
-"""DRS structure for MiKlip Data"""
+"""CMOR structure for MiKlip Data"""
 PROTOTYPE = 'prototype'
-"""DRS structure for Prototype Data (will be MiKlip in future) """
+"""CMOR structure for Prototype Data (will be MiKlip in future) """
 OBSERVATIONS = 'observations'
-"""DRS structure for observational data."""
+"""obs4mips structure for observational data."""
 REANALYSIS = 'reanalysis'
-"""DRS structure for reanalysis data."""
+"""CMOR structure for reanalysis data."""
 PROJECTDATA = 'projectdata'
-"""DRS structure for project data."""
+"""CMOR structure for project data."""
 CORDEX = 'cordex'
-"""DRS structure for cordex data."""
-#CORDEXwoVers = 'cordexwovers'
-#"""DRS structure for cordex data."""
+"""CORDEX structure for cordex data."""
+localCORDEX = 'cordexwovers'
+"""DRS structure for own local cordex data."""
 MODULEC = 'modulec'
-"""DRS structure for modulec data."""
+"""CMOR structure for modulec data."""
 MODULECDS2 = 'modulecds2'
 """DRS structure for modulec data."""
+ESGF = 'esgf'
+"""DRS (fix incl change2drs) structure for ESGF Data"""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -123,15 +125,15 @@ class DRSFile(object):
          "data_type": CORDEX,
          "defaults" : {"project":"cordex"}
         },
-        #CORDEXwoVers : {
-        #"root_dir":"/miklip/integration/data4miklip/model/regional",
-        #"parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/file_name".split('/'),
-        #"parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
-        #"parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
-        #"parts_time":"start_time-end_time",
-        #"data_type": CORDEXwoVers,
-        #"defaults" : {"project":"cordex"}
-        #        },
+        localCORDEX : {
+        "root_dir":"/miklip/integration/data4miklip/extradata",
+        "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
+        "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
+        "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
+        "parts_time":"start_time-end_time",
+        "data_type": localCORDEX,
+        "defaults" : {"project":"cordex"}
+        },
         #MODULEC data
          MODULEC : {
          "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
@@ -151,7 +153,16 @@ class DRSFile(object):
          "data_type": MODULECDS2,
          "defaults" : {"project":"baseline1"}
         },
-        
+        ESGF : {
+        "root_dir":"/miklip/integration/data4miklip/esgfdata",
+        "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+        "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+        "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensmble/version".split('/'),
+        "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+        "parts_time":"start_time-end_time",
+        "data_type": ESGF,
+        "defaults" : {}
+                },
      }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
