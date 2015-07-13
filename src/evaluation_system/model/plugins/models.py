@@ -58,3 +58,6 @@ class Parameter(models.Model):
     impact = models.IntegerField(max_length = 1,
                                  choices = IMPACT_CHOICES,
                                  default = Impact.affects_values)
+
+    def __str__(self):
+        return self.parameter_name
