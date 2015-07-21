@@ -1,0 +1,104 @@
+#%Module1.0#####################################################################          
+##
+## FREVA - Freie University Evaluation System (evaluation_system) modulefile
+##
+# TEMPLATE
+###############################################################################
+# BEGIN of config part ********
+# SET THE PATH TO PYTHON ROOTDIR
+set PATH2PYTHON CHANGE-ME
+# SET THE PATH TO NETCDF ROOTDIR
+set PATH2NETCDF CHANGE-ME
+# SET THE PATH TO CDO ROOTDIR
+set PATH2CDO CHANGE-ME
+### END of config part
+################
+
+### BEGIN of general part ********
+#define some variables
+set shell [module-info shell]
+set modName [module-info name]
+set toolName evaluation_system
+set curMode [module-info mode]
+#clean symbolic links (if any)
+catch { set ModulesCurrentModulefile [file readlink $ModulesCurrentModulefile] }
+set PATH2FREVA [file normalize "$ModulesCurrentModulefile/../../.."]
+
+
+
+### LET the script read the main config ********
+set file [open "$PATH2FREVA/etc/evaluation_system.fu.conf" r]
+while {![eof $file]} {
+      set part [split [gets $file] "="]
+      set props([string trimright [lindex $part 0]]) [string trimleft [lindex $part 1]]
+      }
+close $file
+# SET THE PROJECT OR INSTITUTE NAME
+set PROJECT $props(project_name)
+# SET A URL WITH INFOS LIKE A WIKI
+set PROJECTINFO $props(project_website)
+
+
+
+
+module-whatis   "evaluation_system v0.1"
+proc ModulesHelp { } {
+    puts stderr "evaluation_system 0.1"
+}
+### END of general part
+
+#help function to show user help when loading module	      
+proc show_info {}  {					      
+    puts stderr {					      
+Freva 							      
+Available commands:					      
+  --plugin       : Applies some analysis to the given data.   
+  --history      : provides access to the configuration histo 
+  --databrowser  : Find data in the system		      
+  --crawl_my_data: Use this command to update your projectdat 
+  --esgf         : Browse ESGF data and create wget script    
+							      
+Usage: freva --COMMAND [OPTIONS]			      
+To get help for the individual commands use		      
+  freva --COMMAND --help				      
+	}						      
+}
+
+#only one version at a time!!
+conflict evaluation_system
+
+#pre-requisites
+if { $curMode eq "load" } {
+    	if { $shell == "bash" || $shell == "sh" } {
+	        puts ". $PATH2FREVA/etc/autocomplete.bash;"
+		puts stderr "$PROJECT Evaluation System by Freva successfully loaded."
+        	puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser by hitting tab as usual."
+        	puts stderr "For more help/information check: $PROJECTINFO"
+		show_info
+    	} else {
+		puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
+		puts stderr "And load it again -> module load evaluation_system"
+		puts stderr "Your shell now: $shell"
+	}    
+} elseif { $curMode eq "remove" } {
+	puts stderr "$PROJECT Evaluation System successfully unloaded."
+}
+
+# SET BINARY PATHES
+prepend-path PATH "$PATH2FREVA/bin"
+prepend-path PATH "$PATH2CDO/bin"
+prepend-path PATH "$PATH2PYTHON/bin"
+# SET LIBRARY PATHES
+prepend-path LD_LIBRARY_PATH "$PATH2PYTHON/lib"
+prepend-path LD_LIBRARY_PATH "$PATH2PYTHON/myfuse/lib64"
+prepend-path LD_LIBRARY_PATH "$PATH2NETCDF/lib"
+# SET THE PYTHON PACKAGES the pythonpath so it can be used anywhere
+append-path PYTHONPATH "$PATH2FREVA/src"
+#set python egg to stream output
+setenv PYTHON_EGG_CACHE "/tmp"
+
+# SET PYTHON ALIAS BECAUSE OF LOADING BUG
+set-alias python $PATH2PYTHON/bin/python
+
+# SET BECAUSE OF HDF5 ERROR on CALC 4 STORMTRACK 
+setenv HDF5_DISABLE_VERSION_CHECK "1"
