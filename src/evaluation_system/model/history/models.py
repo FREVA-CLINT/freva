@@ -198,7 +198,7 @@ class History(models.Model):
 
         # using a less than equal relation would allow to access matches
         # which are equal to n percent.
-        o = o.filter(hcount=length).order_by('-id')
+        o = o.filter(hcount=length).order_by('-history_id_id')
         
         # there should be an easier method to get a list the ids of the found
         # datasets
