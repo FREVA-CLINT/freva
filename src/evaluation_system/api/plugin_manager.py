@@ -512,6 +512,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
         followHistoryTag(rowid, user.getName(), 'Owner')
 
     try:
+        # we want that the rowid is visible to the tool
+        p.rowid = rowid
         #In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf)
 
