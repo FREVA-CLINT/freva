@@ -12,18 +12,20 @@
 #################
 SCRIPT_PATH=$(readlink -f $(dirname $0))
 FREVA_ROOT=$SCRIPT_PATH/../
-SOLR_ROOT=$FREVA_ROOT/database/solr/
-# STRUCTURE FOR SOLR
-SERVER_DIR=$SOLR_ROOT/server/
-INCOMING_DIR=$SOLR_ROOT/incoming/
-PROCESSING_DIR=$SOLR_ROOT/processing/
-BACKUP_DIR=$SOLR_ROOT/backup/
+IFS="=" read -r RAW_VAR SOLR_ROOT <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.root)"
+# STRUCTURE FOR SOLR , READ FROM CONFIG
+IFS="=" read -r RAW_VAR SERVER_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.server)"
+IFS="=" read -r RAW_VAR INCOMING_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.incoming)"
+IFS="=" read -r RAW_VAR PROCESSING_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.processing)"
+IFS="=" read -r RAW_VAR BACKUP_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.backup)"
+
 # SET TOOL NAME OF YOUR SOLR SERVER
-TOOL_NAME=mysolr
+IFS="=" read -r RAW_VAR TOOL_NAME <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.name)"
 # SET THE USER WHICH RUNS THE SERVER (default: apache)
-TOOL_USER=apache
+IFS="=" read -r RAW_VAR TOOL_USER <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.user)"
 # SET THE MEMORY OF THE SOLR SERVER (XXXXM for MB or XG for GB)
-TOOL_MEM=4096M
+IFS="=" read -r RAW_VAR TOOL_MEM <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.memory)"
+
 # END OF CONFIG
 ################
 BASE_DIR=$SERVER_DIR/$TOOL_NAME/
