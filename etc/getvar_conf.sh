@@ -1,7 +1,8 @@
 #!/bin/bash
+SCRIPT_PATH=$(dirname $0)
 VARIABLE=$1
 SEPERATOR="="
-CONF=evaluation_system.conf
+CONF=$SCRIPT_PATH/evaluation_system.conf
 
 if [[ -z $VARIABLE ]]; then
     echo "USAGE ./getvar_conf.sh <VARIABLE>"
