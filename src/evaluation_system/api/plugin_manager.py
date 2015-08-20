@@ -26,17 +26,18 @@ import datetime
 import shutil
 import logging
 import json
+import imp
 import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
 #from PIL import Image
 log = logging.getLogger(__name__)
-
+import inspect
 import evaluation_system.api.plugin as plugin
 import evaluation_system.model.db as db
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
-from evaluation_system.misc import config, utils
+from evaluation_system.misc import config, utils, py27
 from subprocess import Popen, STDOUT, PIPE
 from multiprocessing import Pool
 
@@ -50,7 +51,7 @@ PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
     
 #all plugins modules will be dynamically loaded here.
-__plugin_modules__ = {}
+__plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
 """Dictionary of modules holding the plug-ins."""
 __plugins__ = {}
 """Dictionary of plug-ins class_name=>class"""
@@ -79,11 +80,19 @@ It's used to keep sys.path tidy.
             seen.add( item )
             yield item
             
-def reloadPlugins():
+def reloadPlugins(user_name=None):
     """Reload all plug-ins. Plug-ins are then loaded first from the :class:`PLUGIN_ENV` environmental
 variable and then from the configuration file. This means that the environmental variable has precedence
 and can therefore overwrite existing plug-ins (useful for debugging and testing)."""
-    #extra_modules = [(path, module) ... ]
+    # reset all current plugins
+    for item in __plugins_meta.keys():
+        __plugins_meta.pop(item)
+    for item in __plugin_modules__.keys():
+        __plugin_modules__.pop(item)
+    for item in __plugins__.keys():
+        __plugins__.pop(item)
+    
+    extra_plugins = list()
     if PLUGIN_ENV in os.environ:
         #now get all modules loaded from the environment
         for path, module_name in map( lambda item: tuple([e.strip() for e in item.split(',')]), 
@@ -95,13 +104,28 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 sys.path.append(path)
                 #TODO this is not working like in the previous loop. Though we might just want to remove it,
                 #as there seem to be no use for this info...
-                try:
-                    __plugin_modules__[module_name] = __import__(module_name)
-                except ImportError as e:
-                    #we handle this as a warning 
-                    log.warning("Cannot import module '%s' from %s. (msg: '%s')", module_name, path, e)
+                __plugin_modules__[module_name] = os.path.join(path,module_name)#module_name #__import__(module_name)
+                extra_plugins.append(module_name)
             else:
                 log.warn("Cannot load %s, directory missing: %s", module_name, path)
+
+    # the same for user specific env variable
+    if user_name:
+        if PLUGIN_ENV+'_'+user_name in os.environ:
+            #now get all modules loaded from the environment
+            for path, module_name in map( lambda item: tuple([e.strip() for e in item.split(',')]), 
+                                     os.environ[PLUGIN_ENV+'_'+user_name].split(':')):                
+                #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+                path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+                if os.path.isdir(path):
+                    #we have a plugin_imp with defined api
+                    sys.path.append(path)
+                    #TODO this is not working like in the previous loop. Though we might just want to remove it,
+                    #as there seem to be no use for this info...
+                    __plugin_modules__[module_name] = os.path.join(path,module_name)#__import__(module_name)
+                    extra_plugins.append(module_name)
+                else:
+                    log.warn("Cannot load %s, directory missing: %s", module_name, path)
 
     #get the tools directory from the current one
     #get all modules from the tool directory
@@ -111,45 +135,76 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
         if os.path.isdir(py_dir):
             if py_mod in __plugin_modules__:
-                from inspect import getfile
-                file_path = getfile(__plugin_modules__[py_mod])
-                file_path = os.path.split(file_path)[0]
-                log.warn("Module '%s' is test being overwritten by: %s", py_mod, file_path)
+                file_path = os.path.join(__plugin_modules__[py_mod], py_mod+'.py')
+                log.error("Module '%s' is test being overwritten by: %s", py_mod, file_path)
             else:
                 log.debug("Loading '%s'", plugin_name)
                 sys.path.append(py_dir)
-                try:
-                    __plugin_modules__[plugin_name] = __import__(py_mod)
-                except Exception, e:
-                    #this is an error in this case as is in the central system
-                    log.error("Cannot import module '%s' from %s. Reason:\n%s", py_mod, py_dir, str(e))
-
+                __plugin_modules__[plugin_name] = os.path.join(py_dir,py_mod) #__import__(py_mod) #
         else:
             log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
-    #no clean that path from duplicates...
-    sys.path = [p for p in munge(sys.path)]
-    
-    #load all plugin classes found (they are loaded when loading the modules)
-    for plug_class in plugin.PluginAbstract.__subclasses__():
-        if plug_class.__name__ not in __plugins__:
-            __plugins__[plug_class.__name__] = plug_class
+    # new way of loading plugins
+    import re
+    reg = re.compile(r'__short_description__\s*=(.*)')
+    r = re.compile(r'\'(.*)\'')
+    r_2 = re.compile(r'\"(.*)\"')
+    reg_class_name = re.compile(r'class\s*(.*)')
+    for plugin_name, plugin_mod in __plugin_modules__.iteritems():
+        f = open(plugin_mod+'.py', 'r')
+        description = None
+        class_name = None
+        for line in f:
+            description = re.search(reg, line)
+            if description is not None:
+                description_str = re.search(r, description.groups()[0])
+                if description_str is None:
+                    description_str = re.search(r_2, description.groups()[0])
+                if description_str is not None:
+                    description_str = description_str.groups()[0]
+            class_name = re.search(reg_class_name, line)
+            if class_name is not None:
+                # TODO: Maybe this is not robust enough.
+                # What if class inherits from other Base Class?
+                if 'PluginAbstract' in class_name.groups()[0]:
+                    class_name_str = re.sub(r'\(.*','',class_name.groups()[0])
+                    #class_name_str = class_name_str.replace('','(PluginAbstract):')
+        if class_name_str.lower() not in __plugins_meta.keys():
+            __plugins_meta[class_name_str.lower()] = dict(name=class_name_str,
+                                               plugin_class=class_name_str,
+                                               plugin_module=plugin_mod,
+                                               description=description_str,
+                                               user_exported=plugin_name in extra_plugins
+                                               )
+            __plugins__[class_name_str] = class_name_str
         else:
-            from inspect import getfile
-            log.warn("Default plugin %s is being overwritten by: %s", plug_class.__name__, getfile(__plugins__[plug_class.__name__]))
+            log.warn("Default plugin %s is being overwritten by: %s", class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
+    sys.path = [p for p in munge(sys.path)]  
+#     #no clean that path from duplicates...
+#     sys.path = [p for p in munge(sys.path)]
+#       
+#     #load all plugin classes found (they are loaded when loading the modules)
+#     for plug_class in plugin.PluginAbstract.__subclasses__():
+#         if plug_class.__name__ not in __plugins__:
+#             __plugins__[plug_class.__name__] = plug_class
+#         else:
+#             from inspect import getfile
+#             log.warn("Default plugin %s is being overwritten by: %s", plug_class.__name__, getfile(__plugins__[plug_class.__name__]))
+#   
+#     #now fill up the metadata
+#     for plugin_name, plugin_class in __plugins__.items():
+#         __plugins_meta[plugin_name.lower()] = dict(name=plugin_name,
+#                            plugin_class=plugin_class,
+#                            version=plugin_class.__version__,
+#                            description=plugin_class.__short_description__,
+#                            user_exported=True if plugin_name.lower() in extra_plugins else False)
 
-    #now fill up the metadata
-    for plugin_name, plugin_class in __plugins__.items():
-        __plugins_meta[plugin_name.lower()] = dict(name=plugin_name,
-                           plugin_class=plugin_class,
-                           version=plugin_class.__version__,
-                           description=plugin_class.__short_description__)
+
 #This only runs once after start. To load new plugins on the fly we have 2 possibilities
 #1) Watch the tool directory
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPlugins()
-
-
+    
 
 def getPlugins():
     """Return a dictionary of plug-ins holding the plug-in classes and meta-data about them.
@@ -191,6 +246,7 @@ description
     
     return getPlugins()[plugin_name]
 
+
 def getPluginInstance(plugin_name, user = None):
     """Return an instance of the requested plug-in or raise an exception if not found.
 At the current time we are just creating new instances, but this might change in the future, so it's
@@ -203,7 +259,10 @@ At the current time we are just creating new instances, but this might change in
 :return: an instance of the plug-in. Might not be unique."""
     #in case we want to cache the creation of the plugin classes.
     if user is None: user = User()
-    return getPluginDict(plugin_name)['plugin_class'](user=user)
+    plugin_dict = getPluginDict(plugin_name)
+    plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
+    return getattr(plugin_module, plugin_dict['plugin_class'])(user=user)
+
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None, check_errors=True):
     """Manages the parsing of arguments which are passed as a list of strings. These are in turn
@@ -878,7 +937,9 @@ def getPluginVersion(pluginname):
         srcfile = ''
     
         if not plugin is None:
-            srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
+            #srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
+            srcfile = plugin['plugin_module']
+#             print srcfile
         elif pluginname == 'self':
             srcfile = getfile(currentframe())
         else:
@@ -886,7 +947,7 @@ def getPluginVersion(pluginname):
             raise PluginManagerException(mesg)
         
         version = repository.getVersion(srcfile) 
-        
+        #print version
         __version_cache[pluginname] = version
 
     return version
