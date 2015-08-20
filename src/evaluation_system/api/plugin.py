@@ -11,6 +11,7 @@ import subprocess as sub
 import os
 import sys
 import stat
+import shutil
 from time import time
 from datetime import datetime
 from ConfigParser import SafeConfigParser
@@ -21,6 +22,8 @@ from pyPdf import PdfFileReader
 
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
+from evaluation_system.misc import config
+from evaluation_system.model.solr_core import SolrCore
 
 __version__ = (1,0,0)
 
@@ -155,7 +158,7 @@ when listing all plug-ins."""
 A :class:`evaluation_system.plugin.parameters.ParametersDictionary` containing the definition of all known configurable 
 parameters for the implementing class."""
         raise NotImplementedError("This attribute must be implemented")
-
+        
     @abc.abstractmethod
     def runTool(self, config_dict = None):
         """``@abc.abstractmethod``
@@ -179,6 +182,46 @@ a list (or anything iterable) to :class:`prepareOutput` .
         #datetime.fromtimestamp(start)
         return result
     
+    def linkmydata(self,outputdir=None):
+        """Link the CMOR Data Structure of any output created by a tool
+           crawl the directory and ingest the directory with solr::
+            :param outputdir: cmor outputdir that where created by the tool.
+            :return: nothing
+        """
+        user = self._user
+        workpath  = os.path.join(user.getUserBaseDir(),'CMOR4LINK')
+        
+        rootpath  = config.get('project_data')
+        solr_in   = config.get('solr.incoming')
+        solr_bk   = config.get('solr.backup')
+        solr_ps   = config.get('solr.processing')
+        
+        # Maybe os.walk for multiple projects or products
+        if len(os.listdir(outputdir)) == 1:
+            project = os.listdir(outputdir)[0]
+        if len(os.listdir(os.path.join(outputdir,project))) == 1:
+            product = os.listdir(os.path.join(outputdir,project))[0]
+        new_product = '%s-%s-%s-%s' % (self.__class__.__name__.lower(),self.rowid,project,product)
+        
+        # Link section
+        if os.path.islink(os.path.join(rootpath,user.getName())):
+            workpath = os.path.join(os.path.dirname(os.path.join(rootpath,user.getName())), os.readlink(os.path.join(rootpath,user.getName())))
+        else:
+           if not os.path.isdir(workpath): os.makedirs(workpath)
+           os.symlink(workpath, os.path.join(rootpath,user.getName()))
+        os.symlink(os.path.join(outputdir,project,product), os.path.join(workpath,new_product))
+        
+        # Prepare for solr
+        crawl_dir=os.path.join(rootpath,user.getName(),new_product)
+        now = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+        output = os.path.join(solr_in,'solr_crawl_%s.csv.gz' %(now))
+        
+        # Solr part with move orgy
+        SolrCore.dump_fs_to_file(crawl_dir, output)
+        shutil.move(os.path.join(solr_in,output),os.path.join(solr_ps,output))
+        hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps,output))
+        shutil.move(os.path.join(solr_ps,output),os.path.join(solr_bk,output))
+        
     def prepareOutput(self, output_files):
         """Prepare output for files supposedly created. This method checks the files exist
 and returns a dictionary with information about them::
