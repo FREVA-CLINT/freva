@@ -58,3 +58,6 @@
 [submodule "tools/vadycirc"]
 	path = tools/vadycirc
 	url = /miklip/integration/repositories/vadycirc.git
+[submodule "tools/ldai"]
+	path = tools/ldai
+	url = /miklip/integration/repositories/ldai.git
