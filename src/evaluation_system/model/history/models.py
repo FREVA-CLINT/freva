@@ -193,12 +193,15 @@ class History(models.Model):
 
                 length += 1
 
-        o = o.filter(parameter)
-        o = o.values('history_id_id').annotate(hcount=Count('history_id'))
-
-        # using a less than equal relation would allow to access matches
-        # which are equal to n percent.
-        o = o.filter(hcount=length).order_by('-history_id_id')
+        if parameter is not None:
+            o = o.filter(parameter)
+            o = o.values('history_id_id').annotate(hcount=Count('history_id'))
+    
+            # using a less than equal relation would allow to access matches
+            # which are equal to n percent.
+            o = o.filter(hcount=length).order_by('-history_id_id')
+        else:
+            o = []
         
         # there should be an easier method to get a list the ids of the found
         # datasets
