@@ -51,11 +51,14 @@ PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
     
 #all plugins modules will be dynamically loaded here.
-__plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+#__plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+__plugin_modules_user__ = {}
 """Dictionary of modules holding the plug-ins."""
-__plugins__ = {}
+#__plugins__ = {}
+__plugins_user__ = {}
 """Dictionary of plug-ins class_name=>class"""
-__plugins_meta = {}
+#__plugins_meta = {}
+__plugins_meta_user = {}
 """Dictionary of plug-ins with more information 
 plugin_name=>{
     name=>plugin_name,
@@ -84,13 +87,21 @@ def reloadPlugins(user_name=None):
     """Reload all plug-ins. Plug-ins are then loaded first from the :class:`PLUGIN_ENV` environmental
 variable and then from the configuration file. This means that the environmental variable has precedence
 and can therefore overwrite existing plug-ins (useful for debugging and testing)."""
+    if not user_name:
+        user_name = User().getName()
     # reset all current plugins
-    for item in __plugins_meta.keys():
-        __plugins_meta.pop(item)
-    for item in __plugin_modules__.keys():
-        __plugin_modules__.pop(item)
-    for item in __plugins__.keys():
-        __plugins__.pop(item)
+#     for item in __plugins_meta.keys():
+#         __plugins_meta.pop(item)
+#     for item in __plugin_modules__.keys():
+#         __plugin_modules__.pop(item)
+#     for item in __plugins__.keys():
+#         __plugins__.pop(item)
+    __plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+    __plugins__ = {}
+    __plugins_meta = {}
+    __plugin_modules_user__[user_name] = py27.OrderedDict()
+    __plugins_user__[user_name] = py27.OrderedDict()
+    __plugins_meta_user[user_name] = py27.OrderedDict()
     
     extra_plugins = list()
     if PLUGIN_ENV in os.environ:
@@ -180,6 +191,10 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         else:
             log.warn("Default plugin %s is being overwritten by: %s", class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
     sys.path = [p for p in munge(sys.path)]  
+    
+    __plugin_modules_user__[user_name] = __plugin_modules__
+    __plugins_user__[user_name] = __plugins__
+    __plugins_meta_user[user_name] = __plugins_meta
 #     #no clean that path from duplicates...
 #     sys.path = [p for p in munge(sys.path)]
 #       
@@ -204,9 +219,12 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #1) Watch the tool directory
 #2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPlugins()
-    
 
-def getPlugins():
+def get_plugins_user():
+    return __plugins_meta_user
+
+
+def getPlugins(user_name=User().getName()):
     """Return a dictionary of plug-ins holding the plug-in classes and meta-data about them.
 It's a dictionary with the ``plugin_name`` in lower case of what :class:`getPluginDict` returns.
 
@@ -218,9 +236,10 @@ The dictionary is therefore defined as::
                                 description=plugin_class.__short_description__)
 
 This can be used if the plug-in name is unknown."""
-    return __plugins_meta
+    return __plugins_meta_user[user_name]
 
-def getPluginDict(plugin_name):
+
+def getPluginDict(plugin_name, user_name=User().getName()):
     """Return the requested plug-in dictionary entry or raise an exception if not found.
 
 name
@@ -237,29 +256,30 @@ description
 :return: a dictionary with information on the plug-in 
 """
     plugin_name = plugin_name.lower()
-    if plugin_name not in getPlugins():
+    if plugin_name not in getPlugins(user_name).keys():
         mesg = "No plugin named: %s" % plugin_name
-        similar_words = utils.find_similar_words(plugin_name, getPlugins())
+        similar_words = utils.find_similar_words(plugin_name, getPlugins(user_name))
         if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
         mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
         raise PluginManagerException(mesg)
     
-    return getPlugins()[plugin_name]
+    return getPlugins(user_name)[plugin_name]
 
 
-def getPluginInstance(plugin_name, user = None):
+def getPluginInstance(plugin_name, user = None, user_name=User().getName()):
     """Return an instance of the requested plug-in or raise an exception if not found.
 At the current time we are just creating new instances, but this might change in the future, so it's
 *not* guaranteed that the instances are *unique*, i.e. they might be re-used and/or shared.
 
 :type plugin_name: str
 :param plugin_name: Name of the plugin to search for.
-:type user: :class:`evaluation_system.model.user.User`
+:type user: :class:`evaluation_system.model.user.User`s_meta
+
 :param user: User for which this plug-in instance is to be acquired. If not given the user running this program will be used.
 :return: an instance of the plug-in. Might not be unique."""
     #in case we want to cache the creation of the plugin classes.
     if user is None: user = User()
-    plugin_dict = getPluginDict(plugin_name)
+    plugin_dict = getPluginDict(plugin_name, user_name)
     plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
     return getattr(plugin_module, plugin_dict['plugin_class'])(user=user)
 
@@ -819,7 +839,7 @@ def getConfigName(pluginname):
         
         modulename = getmodule(plugin)
 
-        for name, module in __plugin_modules__.items():
+        for name, module in __plugin_modules__[User().getName()].items():
             if modulename == getmodule(module):
                 return name
 
@@ -981,7 +1001,7 @@ def getVersion(pluginname):
 
     return version_id
 
-def dict2conf(toolname, conf_dict):
+def dict2conf(toolname, conf_dict, user_name=User().getName()):
     """
     :param conf_dict: dictionary with configuration to look up
     :type conf_dict: dict
@@ -994,7 +1014,7 @@ def dict2conf(toolname, conf_dict):
 
     paramstring = []
 
-    tool = getPluginInstance(toolname)
+    tool = getPluginInstance(toolname, user_name=user_name)
 
     for key, value in conf_dict.items():
         o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by('-id')
