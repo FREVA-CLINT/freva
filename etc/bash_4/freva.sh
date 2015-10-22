@@ -29,6 +29,7 @@ _freva_show() {
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
     #if we have no value we will concentrate on relevant ones, if applicable
     #(if not, we have to consider all of them)
+	query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
 	[[ -z "$cur" ]] && extra=--relevant-only
 
 	if [[ "$cur" == "=" ]]; then
