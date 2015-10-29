@@ -15,14 +15,18 @@ from evaluation_system.misc.utils import find_similar_words
 
 CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
+CORDEX = 'cordex'
+"""DRS structure for CORDEX Data"""
 BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
 OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
-USERDATA = 'projectdata'
-"""DRS structure for project data."""
+USERDATA = 'userdata'
+"""DRS structure for user data - CMOR."""
+PROJECTDATA = 'projectdata'
+"""DRS structure for project data- DRS."""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -31,7 +35,7 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         #Cmip5 data
         CMIP5 : {
-         "root_dir":"/daten/freva/arch/data4freva/model/global/",
+         "root_dir":"/daten/freva/arch/data4freva/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
@@ -39,6 +43,17 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": CMIP5,
          "defaults" : {"project":"cmip5" }
+        },
+        #cordex data                                                                                                                                               
+        CORDEX : {
+         "root_dir":"/daten/freva/arch/data4freva/model/regional",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": CORDEX,
+         "defaults" : {"project":"cordex" }
         },
         #observations      
          OBSERVATIONS : {
@@ -61,6 +76,16 @@ class DRSFile(object):
          "defaults" : {"project":"reanalysis", "product":"reanalysis"}
         },
         #project data
+        PROJECTDATA : {
+         "root_dir":"/daten/freva/arch/data4freva/projectdata",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": PROJECTDATA,
+         "defaults" : {}
+         },
         USERDATA : {
          "root_dir":"/daten/freva/arch/data4freva/userdata",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),

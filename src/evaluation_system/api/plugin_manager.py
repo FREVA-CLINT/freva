@@ -699,7 +699,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
 
     # write the SLURM file
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
-    
+    # print full_path
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
                          scheduled_id=rowid,

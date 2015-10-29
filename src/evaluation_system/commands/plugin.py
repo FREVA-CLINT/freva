@@ -11,6 +11,9 @@ import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
 import logging
 import sys
+from django.contrib.auth.models import User, Group
+from evaluation_system.misc import config
+
 
 class Command(FrevaBaseCommand):
     __short_description__ = '''Applies some analysis to the given data.'''
@@ -122,6 +125,12 @@ For Example:
                 
                 logging.debug('Running %s with configuration: %s', tool_name, tool_dict)
                 if not options.dry_run and (not error or DEBUG):
+                    
+                    # we check if the user is external and activate batchmode
+                    django_user = User.objects.get(username=user.User().getName())
+                    if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
+                        batchmode = True
+                    
                     if batchmode:
                         [id, file] = pm.scheduleTool(tool_name,
                                                      config_dict=tool_dict,
