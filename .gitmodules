@@ -61,3 +61,6 @@
 [submodule "tools/ldai"]
 	path = tools/ldai
 	url = /miklip/integration/repositories/ldai.git
+[submodule "tools/pott"]
+	path = tools/pott
+	url = /miklip/integration/repositories/pott.git
