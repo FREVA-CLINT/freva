@@ -37,30 +37,30 @@ class DRSFile(object):
         CMIP5 : {
          "root_dir":"/daten/freva/arch/data4freva/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CMIP5,
          "defaults" : {"project":"cmip5" }
-        },
-        #cordex data                                                                                                                                               
+         },
+        #cordex data                                     
         CORDEX : {
          "root_dir":"/daten/freva/arch/data4freva/model/regional",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'), # the empty version field is necessary
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
          "defaults" : {"project":"cordex" }
-        },
+         },
         #observations      
          OBSERVATIONS : {
          "root_dir":"/daten/freva/arch/data4freva",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-experiment-level-version-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
