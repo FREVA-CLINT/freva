@@ -130,7 +130,7 @@ the current user, i.e. the user that started this program, is created."""
             USER_CACHE_DIR     = partial(user.getUserCacheDir, tool=plugin_name, create=False),
             USER_PLOTS_DIR     = partial(user.getUserPlotsDir, tool=plugin_name, create=False),
             USER_OUTPUT_DIR    = partial(user.getUserOutputDir, tool=plugin_name, create=False),
-            USER_UID           = lambda: user.getName,
+            USER_UID           = user.getName,
             SYSTEM_DATE        = lambda: datetime.now().strftime('%Y%m%d'),
             SYSTEM_DATETIME    = lambda: datetime.now().strftime('%Y%m%d_%H%M%S'),
             SYSTEM_TIMESTAMP   = lambda: str(long(time() * 1000)),
@@ -172,9 +172,14 @@ a list (or anything iterable) to :class:`prepareOutput` .
 :return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
-    def _runTool(self, config_dict = None):
+    def _runTool(self, config_dict = None, unique_output=True):
         #start = time()
-        
+        if unique_output:
+            from evaluation_system.api.parameters import Directory
+            for key, param in self.__parameters__.iteritems():
+                tmp_param = self.__parameters__.get_parameter(key)
+                if isinstance(tmp_param, Directory):
+                    config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
         result = self.runTool(config_dict=config_dict)
         #end = time()
         
@@ -540,8 +545,8 @@ if no configuration is provided the default one will be used.
         return filename
         
 
-    def writeSlurmFile(self, fp, config_dict=None, user=None,
-                       scheduled_id=None, slurmoutdir=None):
+    def writeSlurmFile(self, fp, config_dict=None, user=None, scheduled_id=None,
+                       slurmoutdir=None, unique_output=True):
         """
         Writes a file which can be executed by the SLURM scheduler
         if no configuration is provided the default one will be used.
@@ -561,11 +566,13 @@ if no configuration is provided the default one will be used.
         
         if scheduled_id:
             sf.set_default_options(user,
-                                   self.composeCommand(scheduled_id=scheduled_id),
+                                   self.composeCommand(scheduled_id=scheduled_id,
+                                                       unique_output=unique_output),
                                    outdir=slurmoutdir)
         else:
             sf.set_default_options(user,
-                                   self.composeCommand(config_dict=config_dict),
+                                   self.composeCommand(config_dict=config_dict,
+                                                       unique_output=unique_output),
                                    outdir=slurmoutdir)
         
         sf.write_to_file(fp)
@@ -585,7 +592,9 @@ if no configuration is provided the default one will be used.
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
         
-    def composeCommand(self, config_dict=None, scheduled_id=None, batchmode=False, email=None, caption=None):
+    def composeCommand(self, config_dict=None, scheduled_id=None,
+                       batchmode=False, email=None, caption=None,
+                       unique_output=True):
         logging.debug('config dict:' + str(config_dict))
         logging.debug('scheduled_id:' + str(scheduled_id))
 
@@ -609,6 +618,9 @@ if no configuration is provided the default one will be used.
             quote_caption =  caption.replace("\\", "\\\\")
             quote_caption =  quote_caption.replace("'", "'\\''")
             cmd_param += " --caption '%s'" % quote_caption
+
+        # append the unique_output param
+        cmd_param += " --unique_output %s" % unique_output
 
          # a scheduled id overrides the dictionary behavior
         if scheduled_id:

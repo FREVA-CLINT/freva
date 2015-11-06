@@ -36,6 +36,8 @@ For Example:
              {'name':'--scheduled-id','help':'Runs a scheduled job from database','type':'int', 'metavar':'ID'},
              {'name':'--dry-run','help':'dry-run, perform no computation. This is used for viewing and handling the configuration.','action':'store_true'},
              {'name':'--batchmode','help':'creates a SLURM job','metavar':'BOOL'},
+             {'name':'--unique_output', 'help': 'If true append the freva run id to every output folder', 
+              'metavar':'BOOL', 'default': 'true'}
              ]
 
     def list_tools(self):
@@ -82,7 +84,10 @@ For Example:
             return 0    
         
         email = None
- 
+        
+        unique_output = options.unique_output.lower() if options.unique_output else 'true'
+        unique_output = not unique_output in ['false', '0', 'no']    
+        
         mode = options.batchmode.lower() if options.batchmode else 'false'
         batchmode = mode in ['true', '1', 'yes', 'on', 'web',]        
         if not batchmode and mode not in ['false', '0', 'no', 'off',]:
@@ -108,7 +113,8 @@ For Example:
                 scheduled_id = options.scheduled_id
                 logging.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
                 if not options.dry_run: 
-                    pm.runTool(tool_name, scheduled_id=scheduled_id)
+                    pm.runTool(tool_name, scheduled_id=scheduled_id,
+                               unique_output=unique_output)
                                      
             else:
                 #now run the tool                
@@ -135,14 +141,16 @@ For Example:
                         [id, file] = pm.scheduleTool(tool_name,
                                                      config_dict=tool_dict,
                                                      user=user.User(email=email),
-                                                     caption=caption)
+                                                     caption=caption,
+                                                     unique_output=unique_output)
 
                         print 'Scheduled job with history id', id
                         print 'You can view the job\'s status with the command squeue'
                         print 'Your job\'s progress will be shown with the command'
                         print 'tail -f ', file
                     else:
-                        pm.runTool(tool_name, config_dict=tool_dict, caption=caption)
+                        pm.runTool(tool_name, config_dict=tool_dict,
+                                   caption=caption, unique_output=unique_output)
                         
                         # repeat the warning at the end of the run
                         # for readability don't show the warning in debug mode 

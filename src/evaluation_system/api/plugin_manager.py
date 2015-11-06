@@ -532,7 +532,8 @@ def generateCaption(caption, toolname):
     return retval 
  
 
-def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption=None):
+def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
+            caption=None, unique_output=True):
     """Runs a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
@@ -596,7 +597,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
         # we want that the rowid is visible to the tool
         p.rowid = rowid
         #In any case we have now a complete setup in complete_conf
-        result = p._runTool(config_dict=complete_conf)
+        result = p._runTool(config_dict=complete_conf,
+                            unique_output=unique_output)
 
         # save results when existing
         if result is None:
@@ -633,7 +635,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None, caption
     
     return result
 
-def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, caption=None):
+def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
+                 caption=None, unique_output=True):
     """Schedules  a tool and stores this "run" in the :class:`evaluation_system.model.db.UserDB`.
     
 :type plugin_name: str
@@ -704,7 +707,8 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None, cap
         p.writeSlurmFile(fp,
                          scheduled_id=rowid,
                          user=user,
-                         slurmoutdir=slurmoutdir)
+                         slurmoutdir=slurmoutdir,
+                         unique_output=unique_output)
             
     # create the batch command
     command = ['/bin/bash',
