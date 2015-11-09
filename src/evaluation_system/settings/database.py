@@ -7,6 +7,10 @@ import django
 SETTINGS = dict()
 
 try:
+    # Application definition
+    SETTINGS['INSTALLED_APPS'] = (
+        'django.contrib.auth',  # We need this to access user groups
+    )
     SETTINGS['DATABASES'] = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
