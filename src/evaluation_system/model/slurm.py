@@ -4,6 +4,7 @@
 This module creates SLURM scheduler files
 '''
 from evaluation_system.misc import py27, config
+from django.contrib.auth.models import User, Group
 
 
 class slurm_file(object):
@@ -138,34 +139,33 @@ class slurm_file(object):
 
         email = user.getEmail()
         
+        # we check if the user is external and activate batchmode
+        django_user = User.objects.get(username=user.getName())
+        if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
+            options = config.get_section('scheduler_options_extern')
+        else:
+            options = config.get_section('scheduler_options')
+        
+        
         # set the default options
         self.add_dash_option("D", outdir)
         if email:
             self.add_ddash_option("mail-user", email)
         self.set_cmdstring(cmdstring)
             
-        options = config.get_section('scheduler_options')
+        
         self.source_file = options.pop('source')
-	module_file = options.pop('module_command')
+        module_file = options.pop('module_command')
         self.add_module(module_file)
 
-	for opt,val in options.iteritems():
+        for opt,val in options.iteritems():
             if opt.startswith('option_'):
                 opt=opt.replace('option_','')
 	        if val == 'None':
                     self.add_ddash_option(opt,None)
 	        else:
                     self.add_ddash_option(opt, val)
-#        self.add_dash_option("p", "serial")
-#        self.add_ddash_option("ntasks-per-node", 24)
-#        self.add_ddash_option("mem", "80000mb")
-#        self.add_ddash_option("share", None)
-#        self.add_ddash_option("ntasks", 1)
-#        self.add_ddash_option("time", "1440:00")
-#        self.add_ddash_option("cpus-per-task", 1)
-
-        #self.add_module("evaluation_system")
-	#self.add_module("/home/integra/evaluation_system/modules/freva/0.1")        
+    
 
     def write_to_file(self, fp):
         """

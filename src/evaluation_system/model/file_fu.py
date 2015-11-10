@@ -15,26 +15,18 @@ from evaluation_system.misc.utils import find_similar_words
 
 CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
+CORDEX = 'cordex'
+"""DRS structure for CORDEX Data"""
 BASELINE0 = 'baseline0'
 """DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
-MIKLIP = 'miklip'
-"""DRS structure for MiKlip Data"""
-PROTOTYPE = 'prototype'
-"""DRS structure for Prototype Data (will be MiKlip in future) """
 OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
+USERDATA = 'userdata'
+"""DRS structure for user data - CMOR."""
 PROJECTDATA = 'projectdata'
-"""DRS structure for project data."""
-CORDEX = 'cordex'
-"""DRS structure for cordex data."""
-#CORDEXwoVers = 'cordexwovers'
-#"""DRS structure for cordex data."""
-MODULEC = 'modulec'
-"""DRS structure for modulec data."""
-MODULECDS2 = 'modulecds2'
-"""DRS structure for modulec data."""
+"""DRS structure for project data- DRS."""
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -43,116 +35,68 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         #Cmip5 data
         CMIP5 : {
-         "root_dir":"/miklip/integration/data4miklip/model/global",
+         "root_dir":"/daten/freva/arch/data4freva/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CMIP5,
          "defaults" : {"project":"cmip5" }
-        },
-        #baseline 0 data      
-        BASELINE0 : {
-         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
+         },
+        #cordex data                                     
+        CORDEX : {
+         "root_dir":"/daten/freva/arch/data4freva/model/regional",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'), # the empty version field is necessary
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "data_type": BASELINE0,
-         "defaults" : {"project":"baseline0", "institute":"MPI-M", "model":"MPI-ESM-LR"}
-        },
-        #miklip data
-        MIKLIP : {
-         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": MIKLIP,
-         "defaults" : {"project":"baseline1","institute":"MPI-M", "model":"MPI-ESM-?R"}
+         "data_type": CORDEX,
+         "defaults" : {"project":"cordex" }
          },
-        #prototype data
-        PROTOTYPE : {
-         "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": PROTOTYPE,
-         "defaults" : {"project":"prototype","institute":"MPI-M", "model":"MPI-ESM-?R"}
-         },
+        #observations      
          OBSERVATIONS : {
-         "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/realm/variable/time_frequency/data_structure/institute/experiment/version/file_name".split('/'),
-         "parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment".split('/'),
-         "parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment/version".split('/'),
+         "root_dir":"/daten/freva/arch/data4freva",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-experiment-level-version-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": OBSERVATIONS,
-         "defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
+         "defaults" : {"project":"observations"}
          },
          REANALYSIS : {
-         "root_dir":"/daten/reana/arch",
+         "root_dir":"/daten/freva/arch/data4freva",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/variable".split('/'),
          "parts_file_name":"variable-cmor_table-project-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": REANALYSIS,
-         "defaults" : {"project":"reana4ifm", "product":"reanalysis"}
+         "defaults" : {"project":"reanalysis", "product":"reanalysis"}
         },
         #project data
         PROJECTDATA : {
-         "root_dir":"/home/integra/data4freva/projectdata",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "root_dir":"/daten/freva/arch/data4freva/projectdata",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": PROJECTDATA,
          "defaults" : {}
          },
+        USERDATA : {
+         "root_dir":"/daten/freva/arch/data4freva/userdata",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": USERDATA,
+         "defaults" : {}
+         },
         ##REGIONAL data
-        #CORDEX data
-         CORDEX : {
-         "root_dir":"/miklip/integration/data4miklip/model/regional",
-         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
-         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": CORDEX,
-         "defaults" : {"project":"cordex"}
-        },
-        #CORDEXwoVers : {
-        #"root_dir":"/miklip/integration/data4miklip/model/regional",
-        #"parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/file_name".split('/'),
-        #"parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
-        #"parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
-        #"parts_time":"start_time-end_time",
-        #"data_type": CORDEXwoVers,
-        #"defaults" : {"project":"cordex"}
-        #        },
-        #MODULEC data
-         MODULEC : {
-         "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
-         "parts_dir":"project/product/domain/experiment/driving_model/ensemble/modulec_project/institute/model/rcm_ensemble/time_frequency/variable/file_name".split('/'),
-         "parts_dataset":"project.product.domain.experiment.driving_model.ensemble.modulec_project.institute.model.rcm_ensemble.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-project-driving_model-experiment-ensemble-modulec_project-model-rcm_ensemble-time_frequency-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": MODULEC,
-         "defaults" : {"project":"baseline0"}
-        },
-        MODULECDS2 : {
-         "root_dir":"/miklip/integration/data4miklip/model/regional/miklip",
-         "parts_dir":"project/product/domain/institute/driving_model/experiment/ensemble/model/rcm_version/time_frequency/variable/version/file_name".split('/'),
-         "parts_dataset":"project.product.domain.institute.driving_model.experiment.ensemble.model.rcm_version.time_frequency.variable".split('.'),
-         "parts_file_name":"variable-domain-driving_model-experiment-ensemble-model-rcm_version-time_frequency-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": MODULECDS2,
-         "defaults" : {"project":"baseline1"}
-        },
-        
-     }   
+             }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
 root_dir
