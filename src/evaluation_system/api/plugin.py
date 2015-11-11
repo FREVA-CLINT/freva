@@ -201,12 +201,20 @@ a list (or anything iterable) to :class:`prepareOutput` .
         solr_bk   = config.get('solr.backup')
         solr_ps   = config.get('solr.processing')
         
+        # look for tool in tool
+        toolintool = re.compile(r'^(?P<tool>[\w-]+)(-\d+-(?P<project>\w+)-(?P<product>\w+)$)')
+        tool = ''
         # Maybe os.walk for multiple projects or products
         if len(os.listdir(outputdir)) == 1:
             project = os.listdir(outputdir)[0]
+            # link?
         if len(os.listdir(os.path.join(outputdir,project))) == 1:
             product = os.listdir(os.path.join(outputdir,project))[0]
-        new_product = '%s-%s-%s-%s' % (self.__class__.__name__.lower(),self.rowid,project,product)
+        if re.match(re.compile(toolintool,product)):
+            product = re.match(toolintool,product).group('product')
+            project = re.match(toolintool,product).group('project')
+            tool    = '-%s' % re.match(toolintool,product).group('tool')
+        new_product = '%s%s-%s-%s-%s' % (self.__class__.__name__.lower(),tool,self.rowid,project,product)
         
         # Link section
         if os.path.islink(os.path.join(rootpath,user.getName())):
