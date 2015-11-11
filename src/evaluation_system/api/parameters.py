@@ -378,19 +378,27 @@ class Float(ParameterType):
     def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
+
 class File(String):
     "A parameter representing a file in the system."
     pass
+
 
 class Directory(String):
     "A parameter representing a directory in the system. [not used]"
     def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
         ParameterType.__init__(self, impact=impact, **kwargs)
 
+  
+class InputDirectory(String):
+    "A parameter representing a input directory directory in the system."
+    pass
+
 
 class Date(String):
     "A date parameter. [not used]"
     pass
+
 
 class Bool(ParameterType):
     """A boolean paramter. Boolean parameters might be parsed from the strings as defined in :class:`Bool.parse`"""
