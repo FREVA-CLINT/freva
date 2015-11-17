@@ -316,7 +316,9 @@ Use it for the return call of runTool.
                     
                 elif ext in '.nc .bin .ascii'.split():
                     metadata['type'] = 'data'
-                                     
+                if ext in ['.zip']:
+                    metadata['type'] = 'pdf'
+                    metadata['todo'] = 'copy'                     
                            
     
     def getHelp(self, width=80):
