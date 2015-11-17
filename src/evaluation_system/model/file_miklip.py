@@ -22,7 +22,7 @@ MIKLIP = 'miklip'
 PROTOTYPE = 'prototype'
 """CMOR structure for Prototype Data (will be MiKlip in future) """
 OBSERVATIONS = 'observations'
-"""obs4mips structure for observational data."""
+"""re-standardized obs4mips structure for observational data."""
 REANALYSIS = 'reanalysis'
 """CMOR structure for reanalysis data."""
 PROJECTDATA = 'projectdata'
@@ -47,8 +47,8 @@ class DRSFile(object):
         CMIP5 : {
          "root_dir":"/miklip/integration/data4miklip/model/global",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": CMIP5,
@@ -58,8 +58,8 @@ class DRSFile(object):
         BASELINE0 : {
          "root_dir":"/miklip/integration/data4miklip/model/global/miklip",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
          "data_type": BASELINE0,
@@ -85,15 +85,26 @@ class DRSFile(object):
          "data_type": PROTOTYPE,
          "defaults" : {"project":"prototype","institute":"MPI-M", "model":"MPI-ESM-?R"}
          },
-         OBSERVATIONS : {
-         "root_dir":"/miklip/integration/data4miklip",
-         "parts_dir":"project/realm/variable/time_frequency/data_structure/institute/experiment/version/file_name".split('/'),
-         "parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment".split('/'),
-         "parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment/version".split('/'),
-         "parts_file_name":"variable-experiment-level-version-time".split('-'),
-         "parts_time":"start_time-end_time",
-         "data_type": OBSERVATIONS,
-         "defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
+         # OBS4MIP Standard depreciated for MiKlip
+         #OBSERVATIONS : {
+         #"root_dir":"/miklip/integration/data4miklip",
+         #"parts_dir":"project/realm/variable/time_frequency/data_structure/institute/experiment/version/file_name".split('/'),
+         #"parts_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment".split('/'),
+         #"parts_versioned_dataset":"project/realm/variable/time_frequency/data_structure/institute/experiment/version".split('/'),
+         #"parts_file_name":"variable-experiment-level-version-time".split('-'),
+         #"parts_time":"start_time-end_time",
+         #"data_type": OBSERVATIONS,
+         #"defaults" : {"project":"observations", "product":"observations", "data_structure":"grid"}
+         #},
+        OBSERVATIONS : {
+        "root_dir":"/miklip/integration/data4miklip",
+        "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+        "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+        "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
+        "parts_file_name":"variable-experiment-level-version-time".split('-'),
+        "parts_time":"start_time-end_time",
+        "data_type": OBSERVATIONS,
+        "defaults" : {"project":"observations"}
          },
          REANALYSIS : {
          "root_dir":"/miklip/integration/data4miklip",
