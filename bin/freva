@@ -181,6 +181,7 @@ To get help for the individual commands use
         try:
             module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
         except:
+            #raise
             module = __import__('evaluation_system.commands.admin.%s' % command, fromlist=['Command'])
         return getattr(module, 'Command')
     

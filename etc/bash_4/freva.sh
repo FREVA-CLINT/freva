@@ -29,7 +29,8 @@ _freva_show() {
 	prev="${COMP_WORDS[COMP_CWORD-1]}"
     #if we have no value we will concentrate on relevant ones, if applicable
     #(if not, we have to consider all of them)
-	[[ -z "$cur" ]] && extra=--relevant-only
+	query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+	if [[ -z "$cur" ]]; then  extra=--relevant-only ; fi
 
 	if [[ "$cur" == "=" ]]; then
 	    query="$(_freva_query "${COMP_WORDS[@]:1:COMP_CWORD-2}")"
@@ -48,7 +49,7 @@ _freva_show() {
 	elif [[ "$prev" == "--facet" ]]; then
 	    opts="$(freva --databrowser $extra --attributes $query | sed  -e 's/,//g')"
 	else
-	    opts="$(freva --databrowser $extra --attributes $query | sed  -e 's/,/=/g')="
+	    opts="$(freva --databrowser ${extra} --attributes $query | sed  -e 's/,/=/g')="
 	fi
 	
 	COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
@@ -68,4 +69,4 @@ _freva_show() {
 #value: '$value'
 #EOF
 }
-complete -o nospace -o default -F _freva_show "freva"
+complete -o nospace -o default -F _freva_show freva

@@ -389,7 +389,7 @@ def __preview_copy(source_path, dest_path):
     #' previously used'
     #shutil.copyfile(source_path, dest_path)
     # a not very pythonic work-around
-    if source_path.split('.')[-1] == 'pdf': #don't resize pdf files
+    if source_path.split('.')[-1] in ['pdf', 'zip']: #don't resize pdf files
         shutil.copyfile(source_path, dest_path)
     else:
         command = ['convert', '-resize', '800x>', source_path, dest_path]
