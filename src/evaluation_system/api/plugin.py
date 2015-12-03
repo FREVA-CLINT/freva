@@ -12,6 +12,7 @@ import os
 import sys
 import stat
 import shutil
+import re
 from time import time
 from datetime import datetime
 from ConfigParser import SafeConfigParser
@@ -210,7 +211,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
             # link?
         if len(os.listdir(os.path.join(outputdir,project))) == 1:
             product = os.listdir(os.path.join(outputdir,project))[0]
-        if re.match(re.compile(toolintool,product)):
+        if re.match(toolintool,product):
             product = re.match(toolintool,product).group('product')
             project = re.match(toolintool,product).group('project')
             tool    = '-%s' % re.match(toolintool,product).group('tool')
