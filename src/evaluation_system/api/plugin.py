@@ -210,12 +210,12 @@ a list (or anything iterable) to :class:`prepareOutput` .
             # link?
         if len(os.listdir(os.path.join(outputdir,project))) == 1:
             product = os.listdir(os.path.join(outputdir,project))[0]
-        new_product = '%s%%%s%%%s%%%s' % (self.__class__.__name__.lower(),self.rowid,project,product)
+        new_product = '%s\^%s\^%s\^%s' % (self.__class__.__name__.lower(),self.rowid,project,product)
         if re.match(toolintool,product):
             nproduct = re.match(toolintool,product).group('product')
             nproject = re.match(toolintool,product).group('project')
-            ntool    = '%%%s' % re.match(toolintool,product).group('tool')
-            new_product = '%s%s%s%%%s%%%s' % (self.__class__.__name__.lower(),ntool,self.rowid,nproject,nproduct)
+            ntool    = '\^%s' % re.match(toolintool,product).group('tool')
+            new_product = '%s%s%s\^%s\^%s' % (self.__class__.__name__.lower(),ntool,self.rowid,nproject,nproduct)
 
         # Link section
         if os.path.islink(os.path.join(rootpath,user.getName())):
