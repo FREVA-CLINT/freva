@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from evaluation_system.model.plugins.models import Version, Parameter
-
+import re
 
 import json
 
@@ -119,8 +119,11 @@ class History(models.Model):
 
         
     def slurmId(self):
-        id = self.slurm_output[-8:-4]
-
+        #id = self.slurm_output[-8:-4]
+        
+        id = re.sub('.*\-', '', self.slurm_output)
+        id = re.sub('\..*', '', id)
+        
         # always return a number, even when the string is too short
         # (the default value for the string is '0')
         if not id:
