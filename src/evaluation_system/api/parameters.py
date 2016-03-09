@@ -391,7 +391,11 @@ class Directory(String):
 
   
 class InputDirectory(String):
-    "A parameter representing a input directory directory in the system."
+    "A parameter representing a input directory in the system."
+    pass
+
+class CacheDirectory(Directory):
+    "A parameter representing a cache directory in the system."
     pass
 
 
