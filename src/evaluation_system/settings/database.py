@@ -10,6 +10,7 @@ try:
     # Application definition
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.auth',  # We need this to access user groups
+        'django.contrib.flatpages'
     )
     SETTINGS['DATABASES'] = {
         'default': {
