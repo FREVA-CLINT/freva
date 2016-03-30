@@ -123,7 +123,6 @@ class SolrCore(object):
             query = self.core_url + endpoint
         else:
             query = self.solr_url + endpoint
-        
         if self.echo:
             log.debug(query)
         
@@ -446,6 +445,7 @@ about the latest version of all files (remember that in CMIP5 not all files are 
                         if abort_on_errors: raise
 
             #flush 
+            # TODO: Shouldn't this be "batch_latest"?
             if len(batch) > 0:
                 print "Sending last %s entries" % (len(batch))
                 core_all_files.post(batch)

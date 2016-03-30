@@ -174,19 +174,18 @@ a list (or anything iterable) to :class:`prepareOutput` .
         raise NotImplementedError("This method must be implemented")
     
     def _runTool(self, config_dict = None, unique_output=True):
-        #start = time()
-        if unique_output:
-            from evaluation_system.api.parameters import Directory
-            for key, param in self.__parameters__.iteritems():
-                tmp_param = self.__parameters__.get_parameter(key)
-                if isinstance(tmp_param, Directory):
-                    config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
+        config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
-        #end = time()
-        
-        #length_seconds = end - start
-        #datetime.fromtimestamp(start)
         return result
+    
+    def append_unique_id(self, config_dict, unique_output):
+        from evaluation_system.api.parameters import Directory, CacheDirectory
+        for key, param in self.__parameters__.iteritems():
+            tmp_param = self.__parameters__.get_parameter(key)
+            if isinstance(tmp_param, Directory):
+                if isinstance(tmp_param, CacheDirectory) or unique_output:
+                    config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
+        return config_dict        
     
     def linkmydata(self,outputdir=None):
         """Link the CMOR Data Structure of any output created by a tool
