@@ -63,7 +63,8 @@ DBDIR=$MISC/db4freva
 #Make directories
 mkdir -m 777 -p $DBDIR/preview
 mkdir -m 751 -p $DBDIR/solr
-
+mkdir -m 777 -p $DBDIR/slurm
+mkdir -m 751 -p $DBDIR/metadata
 ##############
 
 if [ "$makeOwnPython" = "True" ]; then
@@ -118,7 +119,7 @@ base_dir_location=$USERRESULTDIR
 #: work directory for the SLURM scheduler
 #: when empty, the configuration will be read from User-object 
 scheduler_input_dir=/tmp/slurm
-scheduler_output_dir=$FREVA/database/slurm
+scheduler_output_dir=$DBDIR/slurm
 scheduler_command=$SLURMCOMMAND
 
 #: path to copy the preview to
