@@ -3,12 +3,13 @@
 
 ###############
 #MAIN OPTIONS AREA
-NameYourEvaluationSystem=ral-ces
-Path2Eva=/home/freva
-makeOwnPython=True
-makeConfig=True
-makeStartscript=True
-makeSOLRSERVER=True
+NameYourEvaluationSystem= #project-ces WILL BE DIRECTORY in $Path2Eva
+Path2Eva= #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+# SWITCHES
+makeOwnPython=False
+makeConfig=False
+makeStartscript=False
+makeSOLRSERVER=False
 makeMYSQLtables=False
 ##########
 #PYTHON AREA
@@ -17,27 +18,27 @@ makeMYSQLtables=False
 MUSTHAVEPIPLIST="MySQL-python==1.2.5 Django>=1.8,<1.9 pyPdf==1.13"
 # SECOND LIST NOT NEEDED 4 BASIC INSTALLATION
 NICE2HAVEPIPLIST="numpy==1.9.2 netCDF4==1.1.1 nco==0.0.2 cdo==1.2.3 virtualenv==13.1.2"
-export HDF5_DIR=/usr/local/hdf5
-export NETCDF4_DIR=/usr/local/netcdf-4.3.0/gcc-4.7.2
-export CDO_DIR=/usr/local/cdo
+export HDF5_DIR= #/usr/local/hdf5
+export NETCDF4_DIR= #/usr/local/netcdf-4.3.0/gcc-4.7.2
+export CDO_DIR= #/usr/local/cdo
 ##########
 
 ###########
 # MAIN CONFIG-FILE AREA
 ###########
-ADMINS=freva
-PROJECTWEBSITE=kiowa.rap.ucar.edu
-USERRESULTDIR=/home/ #WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
+ADMINS= #freva
+PROJECTWEBSITE= #just for info printing
+USERRESULTDIR= #/home/ #WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
 #SCHEDULER - SLURM                           
-SLURMCOMMAND=None
+SLURMCOMMAND= #None/sbatch
 #MYSQL
-MYSQLHOST=localhost
-MYSQLUSER=freva
-MYSQLPASSWD=!nt3gr@ti0n
-MYSQLDB=freva
+MYSQLHOST= #localhost
+MYSQLUSER= #freva
+MYSQLPASSWD=
+MYSQLDB= #freva
 #SOLR
-SOLRHOST=localhost
-SOLRUSER=freva
+SOLRHOST= #localhost
+SOLRUSER= #freva
 #############
 
 
