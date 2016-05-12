@@ -9,6 +9,9 @@ from time import sleep
 from evaluation_system.model import slurm, user
 from evaluation_system.misc import config, utils
 
+import evaluation_system.settings.database
+
+
 class Test(unittest.TestCase):
         
     def testStartSlurm(self):

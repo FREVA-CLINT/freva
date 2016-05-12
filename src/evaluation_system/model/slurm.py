@@ -1,10 +1,10 @@
 '''
-..moduleauthor: Oliver Kunst <oliver.kunst@met.fu-berlin.de>
+..moduleauthor: Oliver Kunst / Sebastian Illing
 
 This module creates SLURM scheduler files
 '''
 from evaluation_system.misc import py27, config
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 
 class slurm_file(object):
@@ -141,7 +141,9 @@ class slurm_file(object):
         
         # we check if the user is external and activate batchmode
         django_user = User.objects.get(username=user.getName())
-        if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
+        if django_user.groups.filter(name=config.get('external_group',
+                                                     'noexternalgroupset')
+                                     ).exists():
             options = config.get_section('scheduler_options_extern')
         else:
             options = config.get_section('scheduler_options')
