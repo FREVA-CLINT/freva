@@ -263,13 +263,13 @@ class Test(unittest.TestCase):
         
     def test_parameter_options(self):
         # Arguments of SelectField
-        self.failUnlessRaises(SelectField)
+        self.assertRaises(KeyError, SelectField)
         opts = {'key': 'val'}
         p = SelectField(options=opts)
         self.assertEqual(opts, p.options)
         
         # Arguments of SolrField
-        self.failUnlessRaises(SolrField)
+        self.assertRaises(KeyError, SolrField)
         p = SolrField(facet='variable')
         # defaults:
         options = {'group': 1, 'multiple': False, 'predefined_facets': None,
