@@ -1,7 +1,7 @@
 '''
-Created on 12.12.2012
+Created on 13.05.2016
 
-@author: estani
+@author: Sebastian Illing
 '''
 import tempfile
 import shutil
@@ -9,7 +9,8 @@ import os
 
 from evaluation_system.api import parameters
 from evaluation_system.api.plugin import PluginAbstract
-from evaluation_system.api.parameters import ParameterDictionary, Integer, Float, String
+from evaluation_system.api.parameters import (ParameterDictionary, Integer, 
+    Float, String, Directory)
 
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
@@ -22,7 +23,8 @@ class DummyPlugin(PluginAbstract):
                                    Integer(name='number', help='This is just a number, not really important'),
                                    Integer(name='the_number',mandatory=True,help='This is *THE* number. Please provide it'), 
                                    String(name='something',default='test'), 
-                                   Float(name='other',default=1.4))
+                                   Float(name='other',default=1.4),
+                                   Directory(name='input'))
     _runs = []
     _template = "${number} - $something - $other"
     def runTool(self, config_dict=None):
@@ -84,5 +86,9 @@ class ResultTagTest(PluginAbstract):
     __version__ = '(0,0,2)'
 
     def runTool(self, config_dict = None):
-        output = {config_dict['input'] : {'caption' : 'Manually added result'}}
+        folder = config_dict.get('folder', None)
+        if folder:
+            output = folder
+        else:
+            output = {config_dict['input'] : {'caption' : 'Manually added result'}}
         return self.prepareOutput(output)
