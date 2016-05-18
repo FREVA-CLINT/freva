@@ -1,5 +1,5 @@
 '''
-.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
+.. moduleauthor:: Sebastian Illing / estani
 
 This module manages the abstraction of a user providing thus all information about him/her that
 might be required anywhere else.
@@ -10,7 +10,7 @@ import sys
 from ConfigParser import SafeConfigParser as Config
 from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
-#----------------------------- from evaluation_system.api.plugin import metadict
+
 
 class User(object):
     '''

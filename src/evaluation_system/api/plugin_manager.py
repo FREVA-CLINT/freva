@@ -50,8 +50,9 @@ class PluginManagerException(Exception):
 PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
     
-#all plugins modules will be dynamically loaded here.
-#__plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+# all plugins modules will be dynamically loaded here.
+# __plugin_modules__ = py27.OrderedDict() # we use a ordered dict. 
+# This allows to override plugins
 __plugin_modules_user__ = {}
 """Dictionary of modules holding the plug-ins."""
 #__plugins__ = {}
@@ -359,8 +360,7 @@ any other method.
 :returns: The path to the configuration file that was written."""
     plugin_name = plugin_name.lower()
     if user is None: user = User()
-    
-    p = getPluginInstance(plugin_name, user)
+    p = getPluginInstance(plugin_name, user, user.getName())
     complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, substitute=False)
     
     if config_file is None:
@@ -702,7 +702,6 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 
     # write the SLURM file
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
-    # print full_path
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
                          scheduled_id=rowid,
@@ -965,7 +964,6 @@ def getPluginVersion(pluginname):
         if not plugin is None:
             #srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
             srcfile = plugin['plugin_module']
-#             print srcfile
         elif pluginname == 'self':
             srcfile = getfile(currentframe())
         else:
@@ -973,7 +971,6 @@ def getPluginVersion(pluginname):
             raise PluginManagerException(mesg)
         
         version = repository.getVersion(srcfile) 
-        #print version
         __version_cache[pluginname] = version
 
     return version

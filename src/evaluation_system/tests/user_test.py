@@ -1,7 +1,7 @@
 '''
-Created on 04.10.2012
+Created on 17.5.2016
 
-@author: estani
+@author: Sebastian Illing
 '''
 import unittest
 import subprocess
@@ -10,20 +10,22 @@ import tempfile
 import shutil
 
 from evaluation_system.model.user import User
-from evaluation_system.tests.mocks import DummyUser
+from evaluation_system.tests.mocks.dummy import DummyUser
 from evaluation_system.misc import config
-                    
+
+                
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuratio of a user"""
     DUMMY_USER = {'pw_name':'someone'}
 
     def setUp(self):
+        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
         self.user = DummyUser(random_home=True, **Test.DUMMY_USER)
 
     def tearDown(self):
         self.user.cleanRandomHome()
     
-    def testDummyUser(self):
+    def testd_ummy_user(self):
         """Be sure the dummy user is created as expected"""
         dummy_name='non-existing name'
         
@@ -59,7 +61,7 @@ class Test(unittest.TestCase):
         
         d_user.cleanRandomHome()
 
-    def testGetters(self):
+    def test_getters(self):
         """Test the object creation and some basic return functions"""
         self.assertEqual(Test.DUMMY_USER['pw_name'], self.user.getName())
         self.assertTrue(self.user.getUserHome().startswith(tempfile.gettempdir()))
@@ -74,6 +76,8 @@ class Test(unittest.TestCase):
         tool1_outDir = os.path.join(baseDir, User.OUTPUT_DIR, 'tool1')
         tool1_plotDir = os.path.join(baseDir, User.PLOTS_DIR, 'tool1')
         
+        self.assertEqual(self.user.getUserScratch(),
+                         '/tmp/scratch/%s' % self.user.getName())
         #check we get the configuration directory of the given tool
         self.assertEqual(tool1_cnfDir, self.user.getUserConfigDir('tool1'))
         self.assertEqual(tool1_chDir, self.user.getUserCacheDir('tool1'))
@@ -85,8 +89,11 @@ class Test(unittest.TestCase):
         self.assertEqual(os.path.dirname(tool1_outDir), self.user.getUserOutputDir())
         self.assertEqual(os.path.dirname(tool1_plotDir), self.user.getUserPlotsDir())
         
-    def testDirectoryCreation(self):
-        """This tests assures we always knows what is being created in the framework directory"""
+    def test_directory_creation(self):
+        """
+        This tests assures we always know what is being created 
+        in the framework directory
+        """
         #assure we have a temp directory as HOME for testing
         testUserDir = tempfile.mkdtemp('_es_userdir')
         testUser = DummyUser(pw_dir=testUserDir)
@@ -105,17 +112,12 @@ class Test(unittest.TestCase):
         
         created_dirs = [testUser.getUserConfigDir(), testUser.getUserCacheDir(), 
                         testUser.getUserOutputDir(), testUser.getUserPlotsDir()]
+        print created_dirs
         for directory in created_dirs:
             self.assertTrue(os.path.isdir(directory))
-            os.rmdir(directory)
-
-        #clean everything up
-        os.rmdir(testUser.getUserBaseDir())
-        self.assertFalse(os.path.isdir(baseDir))
-        os.rmdir(testUserDir)
-        self.assertFalse(os.path.isdir(testUserDir))
+ 
         
-    def testDirectoryCreation2(self):
+    def test_directory_creation2(self):
         testUser = self.user
         #assure we have a home directory setup
         self.assertTrue(os.path.isdir(testUser.getUserHome()))
@@ -127,7 +129,7 @@ class Test(unittest.TestCase):
         self.assertEquals(dir1, dir2)
         self.assertTrue(os.path.isdir(dir1))
     
-    def testCentralDirectoryCreation(self):
+    def test_central_directory_Creation(self):
         tmp_dir = tempfile.mkdtemp(__name__)
         config._config[config.BASE_DIR_LOCATION] = tmp_dir
         config._config[config.DIRECTORY_STRUCTURE_TYPE] = config.DIRECTORY_STRUCTURE.CENTRAL
@@ -149,7 +151,7 @@ class Test(unittest.TestCase):
             shutil.rmtree(tmp_dir)
 
         
-    def testConfigFile(self):
+    def test_config_file(self):
         tool = 'test_tool'
         self.assertEquals(self.user.getUserConfigDir(tool) + '/%s.conf' % tool, self.user.getUserToolConfig(tool))
     
