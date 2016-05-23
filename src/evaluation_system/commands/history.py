@@ -13,7 +13,7 @@ from evaluation_system.commands import FrevaBaseCommand, CommandError
 import logging as log
 from evaluation_system.model.esgf import P2P
 import evaluation_system.api.plugin_manager as pm
-from evaluation_system.model.db import HistoryEntry
+from evaluation_system.model.db import timestamp_from_string, timestamp_to_string
 
 class Command(FrevaBaseCommand):
  
@@ -56,8 +56,8 @@ DATE FORMAT
     def _run(self):
         args = self.args
         limit = args.limit
-        since = HistoryEntry.timestampFromString(args.since) if args.since  else None
-        until = HistoryEntry.timestampFromString(args.until) if args.until  else None
+        since = timestamp_from_string(args.since) if args.since  else None
+        until = timestamp_from_string(args.until) if args.until  else None
         tool_name=args.plugin
         entry_ids=map(int,args.entry_ids.split(',')) if args.entry_ids else None
         store_file=False

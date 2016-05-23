@@ -16,7 +16,6 @@ os.environ['EVALUATION_SYSTEM_CONFIG_FILE']= os.path.dirname(__file__) + '/test.
 
 from evaluation_system.tests.capture_std_streams import stdout
 import evaluation_system.api.plugin_manager as pm
-from evaluation_system.model.db import HistoryEntry
 from evaluation_system.tests.mocks.dummy import DummyPlugin
 from evaluation_system.api.parameters import ParameterDictionary, Integer, String,\
     ValidationError
