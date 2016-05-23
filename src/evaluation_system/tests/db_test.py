@@ -136,6 +136,7 @@ class Test(unittest.TestCase):
         Version.objects.all().delete()
 
     def test_create_user(self):
+        User.objects.filter(username='new_user').delete()
         self.user.getUserDB().createUser('new_user', 'test@test.de', 'Test', 'User')
         self.assertTrue(User.objects.filter(username='new_user').exists())
         User.objects.filter(username='new_user').delete()

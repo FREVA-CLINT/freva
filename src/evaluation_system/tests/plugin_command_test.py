@@ -9,6 +9,7 @@ from evaluation_system.commands.plugin import Command
 from evaluation_system.tests.capture_std_streams import stdout
 from evaluation_system.misc import config
 from evaluation_system.api import plugin_manager as pm
+from evaluation_system.model.history.models import History
 import sys
 
 
@@ -86,3 +87,61 @@ input      (default: <undefined>)
            No help available.
 ''')
 
+    def test_run_plugin(self):
+
+        # test missing parameter
+        stdout.startCapturing()
+        stdout.reset()
+        with self.assertRaises(SystemExit):
+            self.cmd.run(['dummyplugin'])
+        stdout.stopCapturing()
+        help_str = stdout.getvalue()
+        self.assertIn('Error found when parsing parameters. Missing mandatory parameters: the_number', help_str)
+
+        # test run tool
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['dummyplugin', 'the_number=32', '--caption="Some caption"'])
+        stdout.stopCapturing()
+        output_str = stdout.getvalue()
+        self.assertIn('Dummy tool was run with: {\'input\': None, \'other\': 1.4, \'number\': None, \'the_number\': 32, \'something\': \'test\'}', output_str)
+
+        # test get version
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['dummyplugin', '--repos-version'])
+        stdout.stopCapturing()
+        output_str = stdout.getvalue()
+
+        # test batch mode
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['dummyplugin', '--batchmode=True', 'the_number=32'])
+        stdout.stopCapturing()
+        output_str = stdout.getvalue()
+
+        # test save config
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['dummyplugin', 'the_number=32', '--save'])
+        stdout.stopCapturing()
+        output_str = stdout.getvalue()
+        fn = '/home/illing/evaluation_system/config/dummyplugin/dummyplugin.conf'
+        self.assertTrue(os.path.isfile(fn))
+        os.remove(fn)
+
+        # test show config
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['dummyplugin', 'the_number=42', '--show-config'])
+        stdout.stopCapturing()
+        output_str = stdout.getvalue()
+        self.assertEqual(output_str, '''    number: -
+the_number: 42
+ something: test
+     other: 1.4
+     input: -
+''')
+
+        # remove all history entries
+        History.objects.all().delete()
