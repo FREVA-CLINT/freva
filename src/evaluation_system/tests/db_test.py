@@ -123,6 +123,7 @@ class Test(unittest.TestCase):
                 self.assertEqual(res_tag.text, val['caption'])
 
     def test_version(self):
+        Version.objects.all().delete()
         # create version entry
         version_id = self.user.getUserDB().newVersion('dummyplugin', '1.0', 'git', 'git_number',
                                                       'tool_git', 'tool_git_number')
