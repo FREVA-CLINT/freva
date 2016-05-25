@@ -159,8 +159,3 @@ class Test(unittest.TestCase):
     def runCmd(cmd):
         if isinstance(cmd, basestring): cmd = cmd.split()        
         return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
-    
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testCreation']
-    unittest.main()

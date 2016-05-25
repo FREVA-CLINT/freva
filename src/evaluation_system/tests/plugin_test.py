@@ -262,24 +262,6 @@ dj1yfk"""))
 b: - (default: value:$a [value:72])
 c: - (default: $USER_OUTPUT_DIR ["""))
 
-    def _verify_config_parser(self, config_parser, section, dict_opt):
-        # clean up by dumping to string and reloading
-        from StringIO import StringIO
-        res_str = StringIO()
-        config_parser.write(res_str)
-        from ConfigParser import SafeConfigParser
-        conf = SafeConfigParser()
-        res_str.seek(0)
-        conf.readfp(res_str)
-        
-        # first compare options in section
-        self.assertEqual(set(conf.options(section)), set(dict_opt))
-        # now all values
-        for key in conf.options(section):
-            self.assertEqual(
-                conf.get(section, key).strip("'"), '%s' % (dict_opt[key])
-            )
-            
     def test_help(self):
         dummy = self.dummy
         dummy.__version__ = (1, 2, 3)
@@ -457,8 +439,3 @@ example (default: test)
 
     def test_call(self):
         self.dummy.call('echo $0')   # should print out '/bin/bash
-
-
-if __name__ == "__main__":
-    # import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()

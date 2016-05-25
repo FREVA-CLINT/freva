@@ -156,8 +156,3 @@ some=val
         #config.get_section('safasfas')
         self.assertRaises(config.NoSectionError,
                           config.get_section, 'novalid_section')
-
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testPlugin']
-    unittest.main()
-    

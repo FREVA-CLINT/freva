@@ -281,7 +281,3 @@ class Test(unittest.TestCase):
         p = SolrField(**options)
         for key, val in options.iteritems():
             self.assertEqual(getattr(p, key), val)
-            
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testInferType']
-    unittest.main()

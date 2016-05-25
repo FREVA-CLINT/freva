@@ -42,7 +42,7 @@ class Test(unittest.TestCase):
             abs_path = os.path.abspath(os.path.join(tmpdir, f))
             try:
                 os.makedirs(os.path.dirname(abs_path))
-            except:
+            except:  # pragma nocover
                 pass
             with open(abs_path, 'w') as f_out:
                 f_out.write(' ')
@@ -103,7 +103,7 @@ class Test(unittest.TestCase):
             abs_path = os.path.abspath(os.path.join(tmpdir, f))
             try:
                 os.makedirs(os.path.dirname(abs_path))
-            except:
+            except:  # pragma nocover
                 pass
             with open(abs_path, 'w') as f_out:
                 f_out.write(' ')

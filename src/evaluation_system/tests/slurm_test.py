@@ -34,18 +34,12 @@ class Test(unittest.TestCase):
         # we need a user to access the std slurm input and output directory         
         slurm_in_dir = os.path.join(test_user.getUserSchedulerInputDir(),
                                     test_user.getName())
-        
-        if not os.path.exists(slurm_in_dir):
-            utils.supermakedirs(slurm_in_dir, 0755)
             
         # create the slurm file object
         infile = os.path.join(slurm_in_dir, 'slurm_test_input_file')
 
         # set the SLURM output directory
         slurm_out_dir = test_user.getUserSchedulerOutputDir()
-
-        if not os.path.exists(slurm_out_dir):
-            utils.supermakedirs(slurm_out_dir, 0755)
 
         with open(infile, 'w') as fp:
             sf = slurm.slurm_file()
@@ -91,7 +85,3 @@ class Test(unittest.TestCase):
         #  we check squeue maybe the job is pending
         p = Popen(command, stdout=PIPE, stderr=STDOUT)
         (stdout, stderr) = p.communicate()
-        
-        if not len(stdout.split('\n')) > 1:
-            slurm_out_file = os.path.join(slurm_out_dir, 'slurm-%i.out' % slurm_id)
-            self.assertTrue(os.path.isfile(slurm_out_file))

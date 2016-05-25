@@ -132,7 +132,3 @@ class Test(unittest.TestCase):
             return x*y
         res = mp_wrap_fn([test_f, 3, 2])
         self.assertEqual(res, 6)
-        
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testStruct']
-    unittest.main()
