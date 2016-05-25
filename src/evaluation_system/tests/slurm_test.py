@@ -9,8 +9,6 @@ from time import sleep
 from evaluation_system.model import slurm, user
 from evaluation_system.misc import config, utils
 
-import evaluation_system.settings.database
-
 
 class Test(unittest.TestCase):
         
@@ -31,44 +29,42 @@ class Test(unittest.TestCase):
         self.assertFalse(squeue_exe is None, "can not find 'squeue'")
         
         # create a user object
-        testuser = user.User()
+        test_user = user.User()
         
         # we need a user to access the std slurm input and output directory         
-        slurmindir = os.path.join(testuser.getUserSchedulerInputDir(),
-                                  testuser.getName())
+        slurm_in_dir = os.path.join(test_user.getUserSchedulerInputDir(),
+                                    test_user.getName())
         
-        if not os.path.exists(slurmindir):
-            utils.supermakedirs(slurmindir, 0755)
+        if not os.path.exists(slurm_in_dir):
+            utils.supermakedirs(slurm_in_dir, 0755)
             
         # create the slurm file object
-        infile = os.path.join(slurmindir, 'slurm_test_input_file')
+        infile = os.path.join(slurm_in_dir, 'slurm_test_input_file')
 
         # set the SLURM output directory
-        slurmoutdir = testuser.getUserSchedulerOutputDir()
+        slurm_out_dir = test_user.getUserSchedulerOutputDir()
 
-        if not os.path.exists(slurmoutdir):
-            utils.supermakedirs(slurmoutdir, 0755)
+        if not os.path.exists(slurm_out_dir):
+            utils.supermakedirs(slurm_out_dir, 0755)
 
         with open(infile, 'w') as fp:
             sf = slurm.slurm_file()
         
-            sf.set_default_options(testuser,
+            sf.set_default_options(test_user,
                                    'cat $0',
-                                   outdir=slurmoutdir)
+                                   outdir=slurm_out_dir)
         
             sf.write_to_file(fp)
             fp.flush()
 
-        
         # create the batch command
         # config.SCHEDULER_COMMAND,
         command = ['/bin/bash',
                    '-c',
                    '%s %s --uid=%s %s\n' % (sbatch_exe,
                                             config.SCHEDULER_OPTIONS, 
-                                            testuser.getName(),
-                                            infile)
-          ]
+                                            test_user.getName(),
+                                            infile)]
 
         # submit the job 
         p = Popen(command, stdout=PIPE, stderr=STDOUT)
@@ -83,22 +79,19 @@ class Test(unittest.TestCase):
         # read the id from stdout
         self.assertTrue(out_first_line.split(' ')[0] == 'Submitted', 'Received: ' + str(out_first_line))
         slurm_id = int(out_first_line.split(' ')[-1])
-                 
-        
+
         # now, we check whether the job has been submitted or finished
         sleep(1)
 
         # create the batch command
         command = ['/bin/bash',
                    '-c',
-                   'squeue -j %i\n' % slurm_id
-          ]
+                   'squeue -j %i\n' % slurm_id]
 
-        #  we check sqeue maybe the job is pending
+        #  we check squeue maybe the job is pending
         p = Popen(command, stdout=PIPE, stderr=STDOUT)
         (stdout, stderr) = p.communicate()
         
         if not len(stdout.split('\n')) > 1:
-            slurmoutfile = os.path.join(slurmoutdir, 'slurm-%i.out' % slurm_id)
-            self.assertTrue(os.path.isfile(slurmoutfile))
-        
+            slurm_out_file = os.path.join(slurm_out_dir, 'slurm-%i.out' % slurm_id)
+            self.assertTrue(os.path.isfile(slurm_out_file))

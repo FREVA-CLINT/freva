@@ -1,19 +1,19 @@
-'''
+"""
 ..moduleauthor: Oliver Kunst / Sebastian Illing
 
 This module creates SLURM scheduler files
-'''
+"""
 from evaluation_system.misc import py27, config
 from django.contrib.auth.models import User
 
 
 class slurm_file(object):
-    SHELL_CMD  = "#!/bin/bash"
-    SLURM_CMD  = "#SBATCH "
-    MLOAD_CMD  = "module load "
+    SHELL_CMD = "#!/bin/bash"
+    SLURM_CMD = "#SBATCH "
+    MLOAD_CMD = "module load "
     EXPORT_CMT = "EXPORT"
     
-    class entry_format:
+    class EntryFormat:
         """
         This class describes the format of an option for SLURM.
         """
@@ -32,7 +32,7 @@ class slurm_file(object):
         
         def separator(self):
             """
-            returns the separator between optione and value.
+            returns the separator between options and value.
             (e.g. " " or "=")
             """
             return self._sep
@@ -46,12 +46,11 @@ class slurm_file(object):
             """
             string = str(self._ind) + str(opt) + str(self._sep)
             
-            if not val is None:
-                string = string + str(val)
+            if val is not None:
+                string += str(val)
                 
             return string
-            
-        
+
     def __init__(self):
         """
         set the member variables
@@ -80,30 +79,25 @@ class slurm_file(object):
         """
         Adds an option beginning with a dash
         :param opt: option to be set
-        :param value: the value (will be converted to string)
+        :param val: the value (will be converted to string)
         """
-        e = None
-        
         if val is None:
-            e = self.entry_format('-', '')
+            e = self.EntryFormat('-', '')
         else:
-            e = self.entry_format('-', ' ')
+            e = self.EntryFormat('-', ' ')
             
         self._options[opt] = (val, e)
         
-    def  add_ddash_option(self, opt, val):
+    def add_ddash_option(self, opt, val):
         """
         Adds an option beginning with a double dash
         :param opt: option to be set
-        :param value: the value (will be converted to string)
+        :param val: the value (will be converted to string)
         """
-        
-        e = None
-        
         if val is None:
-            e = self.entry_format('--', '')
+            e = self.EntryFormat('--', '')
         else:
-            e = self.entry_format('--', '=')
+            e = self.EntryFormat('--', '=')
             
         self._options[opt] = (val, e)
 
@@ -126,20 +120,18 @@ class slurm_file(object):
     def set_default_options(self, user, cmdstring, outdir=None):
         """
         Sets the default options for a given user and a
-        given commandstring.
+        given command string.
         :param user: an user object
         :type user: evaluation_system.model.user.User 
         :param cmdstring: the command
         :type cmdstring: string
         """
-        
         # read output directory from configuration
         if not outdir:
             outdir = user.getUserSchedulerOutputDir()
-
         email = user.getEmail()
         
-        # we check if the user is external and activate batchmode
+        # we check if the user is external and activate batch mode
         django_user = User.objects.get(username=user.getName())
         if django_user.groups.filter(name=config.get('external_group',
                                                      'noexternalgroupset')
@@ -147,27 +139,24 @@ class slurm_file(object):
             options = config.get_section('scheduler_options_extern')
         else:
             options = config.get_section('scheduler_options')
-        
-        
+
         # set the default options
         self.add_dash_option("D", outdir)
         if email:
             self.add_ddash_option("mail-user", email)
         self.set_cmdstring(cmdstring)
-            
-        
+
         self.source_file = options.pop('source')
         module_file = options.pop('module_command')
         self.add_module(module_file)
 
-        for opt,val in options.iteritems():
+        for opt, val in options.iteritems():
             if opt.startswith('option_'):
-                opt=opt.replace('option_','')
-	        if val == 'None':
+                opt = opt.replace('option_','')
+                if val == 'None':
                     self.add_ddash_option(opt,None)
-	        else:
+                else:
                     self.add_ddash_option(opt, val)
-    
 
     def write_to_file(self, fp):
         """
@@ -180,7 +169,7 @@ class slurm_file(object):
         fp.write(self.SHELL_CMD + "\n")
         
         # Workaround for Slurm in www-miklip
-        #fp.write("source /client/etc/profile.miklip\n")
+        # fp.write("source /client/etc/profile.miklip\n")
        
         # Workaround for Slurm on fu
         fp.write("source %s\n" % self.source_file) 
@@ -189,9 +178,9 @@ class slurm_file(object):
 
         for opt in opts:
             # use the stored format
-            optf   = opt[1][1]
+            optf = opt[1][1]
             option = opt[0]
-            value  = opt[1][0]
+            value = opt[1][0]
             
             string = self.SLURM_CMD + optf.format(option, value) + "\n"
             fp.write(string)
@@ -208,5 +197,3 @@ class slurm_file(object):
         
         # write the execution command
         fp.write(self._cmdstring + "\n")
-        
-        
