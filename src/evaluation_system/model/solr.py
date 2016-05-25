@@ -1,10 +1,10 @@
-'''
+"""
 Created on 11.03.2013
 
-@author: estani
+@author: Sebastian Illing / estani
 
 This package encapsulate access to a solr instance
-'''
+"""
 
 import urllib
 
@@ -25,25 +25,25 @@ and read from the configuration file.
 """
         self.solr = SolrCore(core, host=host, port=port, get_status=get_status)
         
-    def __str__(self):
+    def __str__(self):  # pragma nocover
         return '<SolrFindFiles %s>' % self.solr
     
     def _to_solr_query(self, partial_dict):
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
-        #these are special Solr keys that we might get and we assume are not meant for the search
+        # these are special Solr keys that we might get and we assume are not meant for the search
         special_keys = "q fl fq facet.limit".split()
         
         for key, value in partial_dict.items():
             if key in special_keys:
-                params.append((key,value)) 
+                params.append((key, value))
             else:
                 if key.endswith('_not_'):
-                    #handle negation
+                    # handle negation
                     key = '-' + key[:-5]
                 if isinstance(value, list):
-                    #implies an or
-                    constraint = ' OR '.join(['%s:%s' % (key,v) for v in value])
+                    # implies an or
+                    constraint = ' OR '.join(['%s:%s' % (key, v) for v in value])
                 else:
                     constraint = '%s:%s' % (key, value)
                 params.append(('fq', constraint,))
@@ -55,14 +55,14 @@ parameter _retrieve_metadata will affect the first value returned by the iterato
 
 :param batch_size: the amount of files to be buffered from Solr.
 :param latest_version: if the search should *try* to find the latest version from all contained here. Please note
- that we don't use this anymore. Instad we have 2 cores and this is defined directly in :class:`SolrFindFiles.search`. It was
- changed because it was slow and required too much memory.
-:param _retrieve_metadata: if set to true, the first item on the iterator is a metadata one. This is used so it can be known
- beforehand how many values are going to be returned, even before getting them all. To avoid this we might implement a result set
- object. But that would break the find_files compatibility. 
+ that we don't use this anymore. Instead we have 2 cores and this is defined directly in :class:`SolrFindFiles.search`.
+ It was changed because it was slow and required too much memory.
+:param _retrieve_metadata: if set to true, the first item on the iterator is a metadata one. This is used so it can be
+known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
+implement a result set object. But that would break the find_files compatibility.
 """
         offset = partial_dict.pop('start', 0)
-        #value retrieved from sys.maxint and == 2**31-1
+        # value retrieved from sys.maxint and == 2**31-1
         max_rows = partial_dict.pop('rows', 2147483647)
             
         if 'text' in partial_dict:
@@ -71,11 +71,12 @@ parameter _retrieve_metadata will affect the first value returned by the iterato
             partial_dict.update({'q': '*:*'})
 
         if 'fl' not in partial_dict:
-            partial_dict.update({'fl':'file'})
+            partial_dict.update({'fl': 'file'})
             
         query = self._to_solr_query(partial_dict)
-        
-        if latest_version:
+        # DEPRECATED:
+        # This is not used anymore, because we have 2 different cores now
+        if latest_version:  # pragma nocover
             query += '&group=true&group.field=file_no_version&group.sort=version+desc&group.ngroups=true&group.format=simple'
             
         while True:
@@ -87,7 +88,8 @@ parameter _retrieve_metadata will affect the first value returned by the iterato
                 del meta['docs']
                 yield meta
                 _retrieve_metadata = False
-            if latest_version:
+            # Not used anymore (see above)
+            if latest_version:  # pragma nocover
                 offset = answer['grouped']['file_no_version']['doclist']['start']
                 total = answer['grouped']['file_no_version']['ngroups']
                 iter_answer = answer['grouped']['file_no_version']['doclist']['docs']
@@ -101,13 +103,12 @@ parameter _retrieve_metadata will affect the first value returned by the iterato
         
             max_rows -= total
             if total - offset <= batch_size or max_rows <= 0:
-                break   #we are done
+                break   # we are done
             else:
                 offset += batch_size
-                    
-        
+
     @staticmethod
-    def search (latest_version=True, **partial_dict):
+    def search(latest_version=True, **partial_dict):
         """It mimics the same :class:`evaluation_system.model.file.DRSFile.search` behavior.
 The implementation contacts the required Solr cores instead of contacting the file system.
 
@@ -116,20 +117,17 @@ The implementation contacts the required Solr cores instead of contacting the fi
  defined in :class:`SolrFindFiles._search`
 :returns: An iterator over the results.
 """
-        #use defaults, if other required use _search in the SolrFindFiles instance
+        # use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')
         else:
             s = SolrFindFiles(core='files')
-        
-        #we don't use the single core latest version anymore. We store latest version in new core
-        #from now on.
         return s._search(latest_version=False, **partial_dict)
 
     def _facets(self, latest_version=False, facets=None, **partial_dict):
         if facets and not isinstance(facets, list):
             if ',' in facets:
-                #we assume multiple values here
+                # we assume multiple values here
                 facets = [f.strip() for f in facets.split(',')]
             else:
                 facets = [facets]
@@ -142,7 +140,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
         query = self._to_solr_query(partial_dict)
         
         if facets is None:
-            #get all minus what we don't want
+            # get all minus what we don't want
             facets = set(self.solr.get_solr_fields())\
                 - set(['', '_version_', 'file_no_version', 'level', 'timestamp', 
                        'time', 'creation_time', 'source', 'version', 'file',
@@ -151,7 +149,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
         if facets:
             query += '&facet=true&facet.sort=index&facet.mincount=1&facet.field=' + '&facet.field='.join(facets)
             
-        if latest_version:
+        if latest_version:  # pragma nocover (see above)
             query += '&group=true&group.field=file_no_version&group.facet=true'
             
         answer = self.solr.get_json('select?facet=true&rows=0&%s' % query)
@@ -159,12 +157,9 @@ The implementation contacts the required Solr cores instead of contacting the fi
             
     @staticmethod
     def facets(latest_version=True, facets=None, **partial_dict):
-        #use defaults, if other required use _search in the SolrFindFiles instance
+        # use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')
         else:
             s = SolrFindFiles(core='files')
-        
-        #we don't use the single core latest version anymore. We store latest version in new core
-        #from now on.
         return s._facets(facets=facets, latest_version=False, **partial_dict)

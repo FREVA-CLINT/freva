@@ -12,6 +12,7 @@ from evaluation_system.model.solr_core import SolrCore, META_DATA
 from evaluation_system.model.solr import SolrFindFiles
 from evaluation_system.model.file import DRSFile, CMIP5
 from evaluation_system.misc import config
+from evaluation_system.misc.utils import supermakedirs
 
 
 class Test(unittest.TestCase):
@@ -33,6 +34,7 @@ class Test(unittest.TestCase):
 
     def test_dump_to_file(self):
         tmpdir = tempfile.mkdtemp("_solr_core")
+
         files = ['cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc',
                  'cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc',
                  'cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110719/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
@@ -83,7 +85,8 @@ class Test(unittest.TestCase):
             pass
         
     def test_ingest(self):
-        tmpdir = tempfile.mkdtemp("_solr_core")
+        supermakedirs('/tmp/some_temp_solr_core', 0777)
+        tmpdir='/tmp/some_temp_solr_core'
         orig_dir = DRSFile.DRS_STRUCTURE[CMIP5]['root_dir']
         DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = tmpdir
 
@@ -107,7 +110,6 @@ class Test(unittest.TestCase):
 
         dump_file = tmpdir + '/dump1.csv'
         SolrCore.dump_fs_to_file(tmpdir + '/cmip5', dump_file, check=True, abort_on_errors=True)
-        print dump_file
         # test instances, check they are as expected
         SolrCore.load_fs_from_file(dump_file, abort_on_errors=True,
                                    core_all_files=self.all_files, core_latest=self.latest)
@@ -137,6 +139,7 @@ class Test(unittest.TestCase):
 
         # test get_solr_fields (facets)
         facets = self.all_files.get_solr_fields().keys()
+        print self.all_files.get_solr_fields()
         facets_to_be = ['model', 'product', 'realm', 'version', 'data_type', 'institute', 'file_name', 'creation_time',
                         'cmor_table', 'time_frequency', 'experiment', 'timestamp', 'file', 'time', 'variable',
                         '_version_', 'file_no_version', 'project', 'ensemble']
