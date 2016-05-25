@@ -20,5 +20,5 @@ try:
     }
     settings.configure(**SETTINGS)
     django.setup()
-except:
+except:  # pragma nocover
     pass

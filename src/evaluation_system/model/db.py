@@ -11,13 +11,9 @@ from django.db import transaction
 
 from datetime import datetime
 import json
-import ast
-import os
 import re
 import logging
 from evaluation_system.misc import py27, config
-from evaluation_system.model import repository_git
-from evaluation_system.api.parameters import ParameterType , ParameterDictionary
 from evaluation_system.model.history.models import Configuration
 
 log = logging.getLogger(__name__)
