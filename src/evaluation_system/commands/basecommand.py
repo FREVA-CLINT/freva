@@ -28,7 +28,7 @@ class CommandError(Exception):
     def __str__(self):
         return self.msg
 
-    def __unicode__(self):
+    def __unicode__(self):  # pragma nocover
         return self.msg
  
 
@@ -55,18 +55,18 @@ class FrevaBaseCommand(object):
         self.set_logger()
     
     @abc.abstractproperty
-    def _args(self):
+    def _args(self):  # pragma nocover
         """
         List of allowed arguments. Ie. ['help','path',...]
         """
         raise NotImplementedError("This attribute must be implemented")   
     
     @abc.abstractproperty
-    def __short_description__(self):
+    def __short_description__(self):  # pragma nocover
         raise NotImplementedError("This attribute must be implemented")
     
     @abc.abstractmethod
-    def _run(self, *args, **kwargs):
+    def _run(self, *args, **kwargs):  # pragma nocover
         raise NotImplementedError("This method must be implemented")
     
     @property
@@ -184,7 +184,10 @@ class FrevaBaseCommand(object):
         exit(0)
             
 
-class BaseCommand(object):
+class BaseCommand(object):  # pragma nocover
+    """
+    DEPRECATED: User FrevaBaseCommand instead
+    """
     __metaclass__ = abc.ABCMeta
     
     DEBUG = False
