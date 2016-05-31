@@ -213,20 +213,20 @@ EOF
     ln -s ${CONFIGDIR}/evaluation_system.conf ${FREVA}/etc/evaluation_system.conf
 
     cat -> ${CONFIGDIR}/file.py <<EOF
-'''
-.. moduleauthor:: christopher kadow <christopher.kadow@met.fu-berlin.de>
+"""
+.. moduleauthor:: christopher kadow / Sebastian Illing
 .. first version written by estanislao gonzalez
 
 The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
-'''
+"""
 import json
 import glob
 import os
 import logging
+from evaluation_system.misc.utils import find_similar_words
 log = logging.getLogger(__name__)
 
-from evaluation_system.misc.utils import find_similar_words
 
 CMIP5 = 'cmip5'
 """DRS structure for CMIP5 Data"""
@@ -240,51 +240,52 @@ CRAWLMYDATA = 'crawl_my_data'
 """CMOR structure for user data."""
 
 class DRSFile(object):
-    """Represents a file that follows the DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf> standard."""
-    #Lazy initialized in find_structure_from_path
+    """Represents a file that follows the
+    DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf> standard."""
+    # Lazy initialized in find_structure_from_path
     DRS_STRUCTURE_PATH_TYPE = None
     DRS_STRUCTURE = {
-        #cmip5 data
-        CMIP5 : {
-         "root_dir":"$DATA/model/global",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
+        # cmip5 data
+        CMIP5: {
+         "root_dir": "$DATA/model/global",
+         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
+         "parts_file_name": "variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time": "start_time-end_time",
          "data_type": CMIP5,
-         "defaults" : {"project":"cmip5" }
+         "defaults": {"project": "cmip5" }
          },
-        #observations      
-         OBSERVATIONS : {
-         "root_dir":"$DATA",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
-         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
-         "parts_file_name":"variable-experiment-level-version-time".split('-'),
-         "parts_time":"start_time-end_time",
+        # observations
+         OBSERVATIONS: {
+         "root_dir": "$DATA",
+         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
+         "parts_file_name": "variable-experiment-level-version-time".split('-'),
+         "parts_time": "start_time-end_time",
          "data_type": OBSERVATIONS,
-         "defaults" : {"project":"observations"}
+         "defaults": {"project": "observations"}
          },
          REANALYSIS : {
-         "root_dir":"$DATA",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "root_dir": "$DATA",
+         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/variable".split('/'),
-         "parts_file_name":"variable-cmor_table-project-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
+         "parts_file_name": "variable-cmor_table-project-experiment-ensemble-time".split('-'),
+         "parts_time": "start_time-end_time",
          "data_type": REANALYSIS,
-         "defaults" : {"project":"reanalysis", "product":"reanalysis"}
+         "defaults": {"project": "reanalysis", "product": "reanalysis"}
         },
          CRAWLMYDATA : {
-         "root_dir":"$DATA/crawl_my_data",
-         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time":"start_time-end_time",
+         "root_dir": "$DATA/crawl_my_data",
+         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
+         "parts_dataset": "project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
+         "parts_file_name": "variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time": "start_time-end_time",
          "data_type": CRAWLMYDATA,
-         "defaults" : {}
+         "defaults": {}
          },
-         #ADDMORE
+         # ADDMORE
  
              }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
