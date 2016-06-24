@@ -1,5 +1,5 @@
-'''
-.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
+"""
+.. moduleauthor:: Sebastian Illing / estani
 
 This module manages the loading and access to all plug-ins. It is designed as a central registration thorugh
 which plug-ins can be accessed.
@@ -9,14 +9,13 @@ or by using the environmental variable ``EVALUATION_SYSTEM_PLUGINS``.
 This variable must to point to the modules implementing :class:`evaluation_system.api.plugin.PluginAbstract`. 
 
 The value stored there is a colon (':') separated list of ``path,package`` comma (',') separated pairs. The path
-denotes where the source is to be found, and the package the module name in which the PluginAbstract interface is being implemented. For example::
+denotes where the source is to be found, and the package the module name in which the PluginAbstract interface is being
+implemented. For example::
 
     EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:/other/different/path,some.plugin:/tmp/test,some.other.plugin
+"""
 
-'''
-
-
-#*** Initialize the plugin
+# Initialize the plugin
 import os
 import sys
 import random
@@ -30,16 +29,13 @@ import imp
 import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
-#from PIL import Image
-log = logging.getLogger(__name__)
-import inspect
-import evaluation_system.api.plugin as plugin
-import evaluation_system.model.db as db
+
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils, py27
 from subprocess import Popen, STDOUT, PIPE
 from multiprocessing import Pool
+log = logging.getLogger(__name__)
 
 
 class PluginManagerException(Exception):
@@ -50,14 +46,15 @@ class PluginManagerException(Exception):
 PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
     
-#all plugins modules will be dynamically loaded here.
-#__plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+# all plugins modules will be dynamically loaded here.
+# __plugin_modules__ = py27.OrderedDict() # we use a ordered dict. 
+# This allows to override plugins
 __plugin_modules_user__ = {}
 """Dictionary of modules holding the plug-ins."""
-#__plugins__ = {}
+# __plugins__ = {}
 __plugins_user__ = {}
 """Dictionary of plug-ins class_name=>class"""
-#__plugins_meta = {}
+# __plugins_meta = {}
 __plugins_meta_user = {}
 """Dictionary of plug-ins with more information 
 plugin_name=>{
@@ -70,8 +67,9 @@ plugin_name=>{
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
 __version_cache = {}
- 
-def munge( seq ):
+
+
+def munge(seq):
     """Generator to remove duplicates from a list without changing it's order.
 It's used to keep sys.path tidy.
 
@@ -80,9 +78,10 @@ It's used to keep sys.path tidy.
     seen = set()
     for item in seq:
         if item not in seen:
-            seen.add( item )
+            seen.add(item)
             yield item
-            
+
+
 def reloadPlugins(user_name=None):
     """Reload all plug-ins. Plug-ins are then loaded first from the :class:`PLUGIN_ENV` environmental
 variable and then from the configuration file. This means that the environmental variable has precedence
@@ -96,7 +95,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #         __plugin_modules__.pop(item)
 #     for item in __plugins__.keys():
 #         __plugins__.pop(item)
-    __plugin_modules__ = py27.OrderedDict() # we use a ordered dict. This allows to override plugins
+    __plugin_modules__ = py27.OrderedDict()  # we use a ordered dict. This allows to override plugins
     __plugins__ = {}
     __plugins_meta = {}
     __plugin_modules_user__[user_name] = py27.OrderedDict()
@@ -105,17 +104,17 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
     
     extra_plugins = list()
     if PLUGIN_ENV in os.environ:
-        #now get all modules loaded from the environment
-        for path, module_name in map( lambda item: tuple([e.strip() for e in item.split(',')]), 
-                                 os.environ[PLUGIN_ENV].split(':')):                
-            #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+        # now get all modules loaded from the environment
+        for path, module_name in map(lambda item: tuple([e.strip() for e in item.split(',')]),
+                                     os.environ[PLUGIN_ENV].split(':')):
+            # extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
             path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
             if os.path.isdir(path):
-                #we have a plugin_imp with defined api
+                # we have a plugin_imp with defined api
                 sys.path.append(path)
-                #TODO this is not working like in the previous loop. Though we might just want to remove it,
-                #as there seem to be no use for this info...
-                __plugin_modules__[module_name] = os.path.join(path,module_name)#module_name #__import__(module_name)
+                # TODO this is not working like in the previous loop. Though we might just want to remove it,
+                # as there seem to be no use for this info...
+                __plugin_modules__[module_name] = os.path.join(path, module_name)
                 extra_plugins.append(module_name)
             else:
                 log.warn("Cannot load %s, directory missing: %s", module_name, path)
@@ -123,23 +122,23 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
     # the same for user specific env variable
     if user_name:
         if PLUGIN_ENV+'_'+user_name in os.environ:
-            #now get all modules loaded from the environment
-            for path, module_name in map( lambda item: tuple([e.strip() for e in item.split(',')]), 
-                                     os.environ[PLUGIN_ENV+'_'+user_name].split(':')):                
-                #extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+            # now get all modules loaded from the environment
+            for path, module_name in map(lambda item: tuple([e.strip() for e in item.split(',')]),
+                                         os.environ[PLUGIN_ENV+'_'+user_name].split(':')):
+                # extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
                 path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
                 if os.path.isdir(path):
-                    #we have a plugin_imp with defined api
+                    # we have a plugin_imp with defined api
                     sys.path.append(path)
-                    #TODO this is not working like in the previous loop. Though we might just want to remove it,
-                    #as there seem to be no use for this info...
-                    __plugin_modules__[module_name] = os.path.join(path,module_name)#__import__(module_name)
+                    # TODO this is not working like in the previous loop. Though we might just want to remove it,
+                    # as there seem to be no use for this info...
+                    __plugin_modules__[module_name] = os.path.join(path, module_name)
                     extra_plugins.append(module_name)
                 else:
                     log.warn("Cannot load %s, directory missing: %s", module_name, path)
 
-    #get the tools directory from the current one
-    #get all modules from the tool directory
+    # get the tools directory from the current one
+    # get all modules from the tool directory
     plugins = list(config.get(config.PLUGINS))
     for plugin_name in plugins:
         py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
@@ -151,7 +150,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
             else:
                 log.debug("Loading '%s'", plugin_name)
                 sys.path.append(py_dir)
-                __plugin_modules__[plugin_name] = os.path.join(py_dir,py_mod) #__import__(py_mod) #
+                __plugin_modules__[plugin_name] = os.path.join(py_dir, py_mod)
         else:
             log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
@@ -178,47 +177,29 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 # TODO: Maybe this is not robust enough.
                 # What if class inherits from other Base Class?
                 if 'PluginAbstract' in class_name.groups()[0]:
-                    class_name_str = re.sub(r'\(.*','',class_name.groups()[0])
-                    #class_name_str = class_name_str.replace('','(PluginAbstract):')
+                    class_name_str = re.sub(r'\(.*', '', class_name.groups()[0])
         if class_name_str.lower() not in __plugins_meta.keys():
             __plugins_meta[class_name_str.lower()] = dict(name=class_name_str,
-                                               plugin_class=class_name_str,
-                                               plugin_module=plugin_mod,
-                                               description=description_str,
-                                               user_exported=plugin_name in extra_plugins
-                                               )
+                                                          plugin_class=class_name_str,
+                                                          plugin_module=plugin_mod,
+                                                          description=description_str,
+                                                          user_exported=plugin_name in extra_plugins)
             __plugins__[class_name_str] = class_name_str
         else:
-            log.warn("Default plugin %s is being overwritten by: %s", class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
+            log.warn("Default plugin %s is being overwritten by: %s",
+                     class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
     sys.path = [p for p in munge(sys.path)]  
     
     __plugin_modules_user__[user_name] = __plugin_modules__
     __plugins_user__[user_name] = __plugins__
     __plugins_meta_user[user_name] = __plugins_meta
-#     #no clean that path from duplicates...
-#     sys.path = [p for p in munge(sys.path)]
-#       
-#     #load all plugin classes found (they are loaded when loading the modules)
-#     for plug_class in plugin.PluginAbstract.__subclasses__():
-#         if plug_class.__name__ not in __plugins__:
-#             __plugins__[plug_class.__name__] = plug_class
-#         else:
-#             from inspect import getfile
-#             log.warn("Default plugin %s is being overwritten by: %s", plug_class.__name__, getfile(__plugins__[plug_class.__name__]))
-#   
-#     #now fill up the metadata
-#     for plugin_name, plugin_class in __plugins__.items():
-#         __plugins_meta[plugin_name.lower()] = dict(name=plugin_name,
-#                            plugin_class=plugin_class,
-#                            version=plugin_class.__version__,
-#                            description=plugin_class.__short_description__,
-#                            user_exported=True if plugin_name.lower() in extra_plugins else False)
 
 
-#This only runs once after start. To load new plugins on the fly we have 2 possibilities
-#1) Watch the tool directory
-#2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
+# This only runs once after start. To load new plugins on the fly we have 2 possibilities
+# 1) Watch the tool directory
+# 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reloadPlugins()
+
 
 def get_plugins_user():
     return __plugins_meta_user
@@ -243,7 +224,8 @@ def getPluginDict(plugin_name, user_name=User().getName()):
     """Return the requested plug-in dictionary entry or raise an exception if not found.
 
 name
-    The class name implementing the plugin (and therefore inheriting from :class:`evaluation_system.api.plugin.PluginAbstract`)
+    The class name implementing the plugin (and therefore inheriting from
+    :class:`evaluation_system.api.plugin.PluginAbstract`)
 plugin_class
     The class itself.
 version
@@ -261,14 +243,15 @@ description
         if plugin_name not in getPlugins(user_name).keys():
             mesg = "No plugin named: %s" % plugin_name
             similar_words = utils.find_similar_words(plugin_name, getPlugins(user_name))
-            if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+            if similar_words:
+                mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
             mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
             raise PluginManagerException(mesg + ' %s' % user_name)
     
     return getPlugins(user_name)[plugin_name]
 
 
-def getPluginInstance(plugin_name, user = None, user_name=User().getName()):
+def getPluginInstance(plugin_name, user=None, user_name=User().getName()):
     """Return an instance of the requested plug-in or raise an exception if not found.
 At the current time we are just creating new instances, but this might change in the future, so it's
 *not* guaranteed that the instances are *unique*, i.e. they might be re-used and/or shared.
@@ -277,10 +260,12 @@ At the current time we are just creating new instances, but this might change in
 :param plugin_name: Name of the plugin to search for.
 :type user: :class:`evaluation_system.model.user.User`s_meta
 
-:param user: User for which this plug-in instance is to be acquired. If not given the user running this program will be used.
+:param user: User for which this plug-in instance is to be acquired. If not given the user running this program
+will be used.
 :return: an instance of the plug-in. Might not be unique."""
-    #in case we want to cache the creation of the plugin classes.
-    if user is None: user = User()
+    # in case we want to cache the creation of the plugin classes.
+    if user is None:
+        user = User()
     plugin_dict = getPluginDict(plugin_name, user_name)
     plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
     return getattr(plugin_module, plugin_dict['plugin_class'])(user=user)
@@ -296,49 +281,52 @@ to be known at this stage.
 :type arguments: list of strings
 :param arguments: it will be parsed by the plug-in (see :class:`evaluation_system.api.plugin.parseArguments`)
 :type use_user_defaults: bool
-:param use_user_defaults: If ``True`` and a user configuration is found, this will be used as a default for all non set arguments.
-                          So the value will be determined according to the first found instance of: argument, user default, tool default
+:param use_user_defaults: If ``True`` and a user configuration is found, this will be used as a default for all non
+set arguments. So the value will be determined according to the first found instance of: argument,
+user default, tool default
 :type user: :class:`evaluation_system.model.user.User`
 :param user: The user for whom this arguments are parsed.
 :type config_file: str
-:param config_file: path to a file from where the setup will read a configuration. If None, the default user dependent one will be used. 
-                    This will be completely skipped if ``use_user_defaults`` is ``False``.
+:param config_file: path to a file from where the setup will read a configuration. If None, the default
+ user dependent one will be used. This will be completely skipped if ``use_user_defaults`` is ``False``.
 :return: A dictionary with the parsed configuration."""
     plugin_name = plugin_name.lower()
-    if user is None: user = User()
+    if user is None:
+        user = User()
     
     p = getPluginInstance(plugin_name, user)
     complete_conf = p.__parameters__.parseArguments(arguments, use_defaults=True, check_errors=False)
     
-    #if we are using user defaults then load them first
+    # if we are using user defaults then load them first
     if use_user_defaults:
         user_config_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(user_config_file):
             with open(user_config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
-    #now if we still have a config file update what the configuration with it
+    # now if we still have a config file update what the configuration with it
     
     if isinstance(config_file, basestring):
         if config_file == '-':
-            #reading from stdin
+            # reading from stdin
             complete_conf.update(p.readConfiguration(sys.stdin))
             
         elif config_file is not None:
             with open(config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
     elif config_file is not None:
-        #if it's not a string and is something, we asume is something that can be read from
+        # if it's not a string and is something, we assume is something that can be read from
         complete_conf.update(p.readConfiguration(config_file))
 
-    #update with user defaults if desired
+    # update with user defaults if desired
     complete_conf.update(p.__parameters__.parseArguments(arguments, check_errors=False))
-    #we haven't check for errors because we might have a half implemented configuration
-    #some required field might have already been setup (user/system defaults, files, etc)
-    #but better if we check them
+    # we haven't check for errors because we might have a half implemented configuration
+    # some required field might have already been setup (user/system defaults, files, etc)
+    # but better if we check them
     if check_errors:
         p.__parameters__.validate_errors(complete_conf, raise_exception=True)
     
     return complete_conf
+
 
 def writeSetup(plugin_name, config_dict=None, user=None, config_file=None):
     """Writes the plug-in setup to disk. This is the configuration for the plug-in itself and not that
@@ -354,17 +342,17 @@ any other method.
 :type user: :class:`evaluation_system.model.user.User`
 :param user: The user for whom this arguments are parsed.
 :type config_file: str
-:param config_file: path to a file  where the setup will be stored. If None, the default user dependent one will be used. 
-                    This will be completely skipped if ``use_user_defaults`` is ``False``.
+:param config_file: path to a file  where the setup will be stored. If None, the default user dependent one will be
+used. This will be completely skipped if ``use_user_defaults`` is ``False``.
 :returns: The path to the configuration file that was written."""
     plugin_name = plugin_name.lower()
-    if user is None: user = User()
-    
-    p = getPluginInstance(plugin_name, user)
+    if user is None:
+        user = User()
+    p = getPluginInstance(plugin_name, user, user.getName())
     complete_conf = p.setupConfiguration(config_dict=config_dict, check_cfg=False, substitute=False)
     
     if config_file is None:
-        #make sure the required directory structure and data is in place
+        # make sure the required directory structure and data is in place
         user.prepareDir()
          
         config_file = user.getUserToolConfig(plugin_name, create=True)
@@ -378,7 +366,7 @@ any other method.
     return config_file
 
         
-def __preview_copy(source_path, dest_path):
+def _preview_copy(source_path, dest_path):
     """
     Copy images for preview
     :type source_path: str
@@ -386,16 +374,17 @@ def __preview_copy(source_path, dest_path):
     :type dest_path: str
     :param dest_path: the destination
     """
-    #' previously used'
-    #shutil.copyfile(source_path, dest_path)
+    # previously used
+    # shutil.copyfile(source_path, dest_path)
     # a not very pythonic work-around
-    if source_path.split('.')[-1] in ['pdf', 'zip']: #don't resize pdf files
+    if source_path.split('.')[-1] in ['pdf', 'zip']:  # don't resize pdf files
         shutil.copyfile(source_path, dest_path)
     else:
         command = ['convert', '-resize', '800x>', source_path, dest_path]
         sub.call(command)
- 
-def __preview_convert(source_path, dest_path):
+
+
+def _preview_convert(source_path, dest_path):
     """
     Converts images
     :type source_path: str
@@ -412,7 +401,8 @@ def __preview_convert(source_path, dest_path):
     # im = Image.open(source_path)
     # im.save(dest_path)
 
-def __preview_generate_name(plugin_name, file_name, metadata):
+
+def _preview_generate_name(plugin_name, file_name, metadata):
     """
     Creates a filename  according to the plugin_name, timestamp and
     an eight character random string
@@ -432,11 +422,11 @@ def __preview_generate_name(plugin_name, file_name, metadata):
     if ctime:
         time_string = datetime.datetime.fromtimestamp(ctime).strftime('%Y%m%d_%H%M%S') 
         ctime = '%s_' % time_string
-        
-        
+
     return plugin_name + '_' + ctime + random_suffix
 
-def __preview_unique_file(plugin_name, file_name, ext, metadata):
+
+def _preview_unique_file(plugin_name, file_name, ext, metadata):
     """
     This routine creates a unique filename for the preview
     :type plugin_name: str
@@ -450,8 +440,8 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
     """
     path = config.get(config.PREVIEW_PATH)
     subdir = datetime.datetime.now().strftime('%Y%m%d')
-    name = __preview_generate_name(plugin_name, file_name, metadata) 
-    name = name + ext
+    name = _preview_generate_name(plugin_name, file_name, metadata)
+    name += ext
     full_path = os.path.join(path, subdir)
     full_name = os.path.join(full_path, name)
     
@@ -459,9 +449,10 @@ def __preview_unique_file(plugin_name, file_name, ext, metadata):
         utils.supermakedirs(full_path, 0777)
         
     if os.path.isfile(full_name):
-        return __preview_unique_file(plugin_name, file_name, ext, metadata)
+        return _preview_unique_file(plugin_name, file_name, ext, metadata)
     
     return full_name
+
 
 def _preview_create(plugin_name, result):
     """
@@ -474,31 +465,32 @@ def _preview_create(plugin_name, result):
     """
     
     todo_list = []
-    
+    result_list = []
     for file_name in result:
         metadata = result[file_name]
-        todo=metadata.get('todo', '')
-        
-        
+        todo = metadata.get('todo', '')
+
         if todo == 'copy':
             ext = os.path.splitext(file_name)[-1]
-            target_name = __preview_unique_file(plugin_name, file_name, ext, metadata)
-            todo_list.append((__preview_copy, file_name, target_name))
+            target_name = _preview_unique_file(plugin_name, file_name, ext, metadata)
+            todo_list.append((_preview_copy, file_name, target_name))
             metadata['preview_path'] = target_name
-            
+            result_list.append(target_name)
         elif todo == 'convert':
-            target_name = __preview_unique_file(plugin_name, file_name, '.png', metadata)
-            todo_list.append((__preview_convert, file_name, target_name))
+            target_name = _preview_unique_file(plugin_name, file_name, '.png', metadata)
+            todo_list.append((_preview_convert, file_name, target_name))
             metadata['preview_path'] = target_name
-            
-        result[file_name]=metadata
+            result_list.append(target_name)
+        result[file_name] = metadata
         
     preview_path = config.get(config.PREVIEW_PATH)
 
     if preview_path.strip() and todo_list:
-        p =  Pool(config.NUMBER_OF_PROCESSES)
+        p = Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
-            
+    return result_list
+
+
 def generateCaption(caption, toolname):
     """
     Generates a standardized caption including the toolname.
@@ -526,7 +518,7 @@ def generateCaption(caption, toolname):
         else: 
             retval = caption
     else:
-        # this assures that the toolname appears in the user prefered case
+        # this assures that the toolname appears in the user preferred case
         retval = caption
             
     return retval 
@@ -550,7 +542,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
 """
     
     plugin_name = plugin_name.lower()
-    if user is None: user = User()
+    if user is None:
+        user = User()
     
     p = getPluginInstance(plugin_name, user)
     complete_conf = None
@@ -567,11 +560,9 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
         else:
             log.debug('No config file was found in %s', conf_file)
     if complete_conf is None:
-        #at this stage we want to resolve or tokens and perform some kind of sanity check before going further 
+        # at this stage we want to resolve or tokens and perform some kind of sanity check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-        
-    
-     
+
     log.debug('Running %s with %s', plugin_name, complete_conf)
     
     rowid = 0
@@ -596,15 +587,15 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
     try:
         # we want that the rowid is visible to the tool
         p.rowid = rowid
-        #In any case we have now a complete setup in complete_conf
+        # In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf,
                             unique_output=unique_output)
 
         # save results when existing
         if result is None:
             user.getUserDB().upgradeStatus(rowid,
-                                            user.getName(),
-                                            History.processStatus.finished_no_output)
+                                           user.getName(),
+                                           History.processStatus.finished_no_output)
             
         else:
             # create the preview
@@ -624,8 +615,6 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
                                            History.processStatus.finished)
-            
-    
     except:
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
@@ -634,6 +623,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
         raise 
     
     return result
+
 
 def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
                  caption=None, unique_output=True):
@@ -655,7 +645,8 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 """
     
     plugin_name = plugin_name.lower()
-    if user is None: user = User()
+    if user is None:
+        user = User()
     
     p = getPluginInstance(plugin_name, user)
     complete_conf = None
@@ -670,11 +661,9 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
         else:
             log.debug('No config file was found in %s', conf_file)
     if complete_conf is None:
-        #at this stage we want to resolve or tokens and perform some kind of sanity check before going further 
+        # at this stage we want to resolve or tokens and perform some kind of sanity check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-        
-    
-     
+
     log.debug('Schedule %s with %s', plugin_name, complete_conf)
     
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
@@ -686,7 +675,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
                                           complete_conf,
                                           user.getName(),
                                           History.processStatus.not_scheduled,
-                                          version_details = version_details,
+                                          version_details=version_details,
                                           caption=caption)
     
     # follow the notes
@@ -702,7 +691,6 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 
     # write the SLURM file
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
-    # print full_path
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
                          scheduled_id=rowid,
@@ -713,11 +701,10 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
     # create the batch command
     command = ['/bin/bash',
                '-c',
-               '%s %s --uid=%s %s\n' % (config.get('scheduler_command'),#SCHEDULER_COMMAND,
+               '%s %s --uid=%s %s\n' % (config.get('scheduler_command'),  # SCHEDULER_COMMAND,
                                         config.SCHEDULER_OPTIONS,
                                         user.getName(),
-                                        full_path)
-              ]
+                                        full_path)]
 
     # run this 
     logging.debug("Command: " + str(command))
@@ -750,26 +737,29 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
     # set the slurm output file 
     user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
 
-           
-           
-    return (rowid, slurm_out)
+    return rowid, slurm_out
 
 
-def getHistory(plugin_name=None, limit=-1, since = None, until = None, entry_ids=None, user=None):
+def getHistory(plugin_name=None, limit=-1, since=None, until=None, entry_ids=None, user=None):
     """Returns the history from the given user.
 This is just a wrapper for the defined db interface accessed via the user object.
 See :class:`evaluation_system.model.db.UserDB.getHistory` for more information on this interface."""
-    if plugin_name is not None: plugin_name = plugin_name.lower()
-    if user is None: user = User()
+    if plugin_name is not None:
+        plugin_name = plugin_name.lower()
+    if user is None:
+        user = User()
     
-    return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until, entry_ids=entry_ids, uid = user.getName())
+    return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until,
+                                       entry_ids=entry_ids, uid = user.getName())
 
-def getResults(history_id, filetype=None, user=None):
-    """ Returns the results for a given history id
-This is a wrapper for the function defined in db.py, like getHistory. """
-    if user is None: user = User()
-    
-    return user.getUserDB().getResults(history_id, filetype)
+
+# def getResults(history_id, filetype=None, user=None):
+#     """ Returns the results for a given history id
+# This is a wrapper for the function defined in db.py, like getHistory. """
+#     if user is None:
+#         user = User()
+#
+#     return user.getUserDB().getResults(history_id, filetype)
 
 
 def getCommandString(entry_id, user=None, command_name='freva', command_options='--plugin'):
@@ -780,7 +770,8 @@ def getCommandString(entry_id, user=None, command_name='freva', command_options=
     :type user: User
     :param user: A user to access the database
     """
-    if user is None: user = User()
+    if user is None:
+        user = User()
     
     h = user.getUserDB().getHistory(entry_ids=int(entry_id))
     
@@ -805,7 +796,7 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     for k in configuration.keys():
         value = configuration[k]
 
-        if not value is None:
+        if value is not None:
             # convert non-None values to string
             value = str(value)
 
@@ -822,8 +813,7 @@ def loadScheduledConf(plugin_name, entry_id, user):
     """
     This routine loads the configuration from a scheduled plug-in
     """
-    h = getHistory(plugin_name=plugin_name , entry_ids=entry_id, user=user)
-
+    h = getHistory(plugin_name=plugin_name, entry_ids=entry_id, user=user)
     # only one row should be selected
     row = h[0]
 
@@ -833,11 +823,12 @@ def loadScheduledConf(plugin_name, entry_id, user):
             
     return row.config_dict()
 
+
 def getConfigName(pluginname):
-    '''
+    """
     Returns the name of a tool as written in the configuration file.
     This is especially useful when accessing the configuration.
-    '''
+    """
     from inspect import getmodule
     
     try:
@@ -900,8 +891,7 @@ def getErrorWarning(tool_name):
     error_message = error_message.strip()
     warning_message = warning_message.strip()
 
-    return (error_message, warning_message)
-
+    return error_message, warning_message
 
 
 def followHistoryTag(history_id, user_name, info=''):
@@ -909,17 +899,10 @@ def followHistoryTag(history_id, user_name, info=''):
     Adds the history tag follow 
     """
     tagType = HistoryTag.tagType.follow
-
-    #rows = user.getUserDB().getHistoryTags(history_id,
-    #                                       tagType=tagType,
-    #                                       uid=user.getName()) 
-
     rows = HistoryTag.objects.filter(history_id_id=history_id,
-                                     type = tagType,
-                                     uid_id = user_name)
-    
-
-    if len(rows)==0:
+                                     type=tagType,
+                                     uid_id=user_name)
+    if len(rows) == 0:
         user = User(user_name)    
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
         
@@ -929,25 +912,17 @@ def unfollowHistoryTag(history_id, user_name):
     Update all follow history tags to unfollow for the specified
     history entry and user 
     """
-    
     tagType = HistoryTag.tagType.follow
-    
-    # rows = user.getUserDB().getHistoryTags(history_id,
-    #                                        tagType=tagType,
-    #                                       uid=user_name) 
-
     rows = HistoryTag.objects.filter(history_id_id=history_id,
                                      type = tagType,
                                      uid_id = user_name)
      
-    user = User(user_name)    
-
+    user = User(user_name)
     for row in rows:
         user.getUserDB().updateHistoryTag(row.id,
                                           HistoryTag.tagType.unfollow,
                                           uid=user_name)
-        
-        
+
 
 def getPluginVersion(pluginname):
     import evaluation_system.model.repository as repository
@@ -962,10 +937,8 @@ def getPluginVersion(pluginname):
         
         srcfile = ''
     
-        if not plugin is None:
-            #srcfile = getfile(__plugins__[plugin['plugin_class'].__name__])
+        if plugin is not None:
             srcfile = plugin['plugin_module']
-#             print srcfile
         elif pluginname == 'self':
             srcfile = getfile(currentframe())
         else:
@@ -973,17 +946,17 @@ def getPluginVersion(pluginname):
             raise PluginManagerException(mesg)
         
         version = repository.getVersion(srcfile) 
-        #print version
         __version_cache[pluginname] = version
 
     return version
+
 
 def getVersion(pluginname): 
     """
     returns the internal version of a tool (index in datatable)
     if the version is not indexed it will be created
     """
-    tool_name =  pluginname.lower() 
+    tool_name = pluginname.lower()
     p = getPluginInstance(pluginname)
     version = repr(p.__version__)
     (repos_tool, version_tool) = getPluginVersion(pluginname)
@@ -1003,9 +976,9 @@ def getVersion(pluginname):
                                                    version_api,
                                                    repos_tool,
                                                    version_tool)
-    
 
     return version_id
+
 
 def dict2conf(toolname, conf_dict, user_name=User().getName()):
     """
@@ -1016,7 +989,7 @@ def dict2conf(toolname, conf_dict, user_name=User().getName()):
     A useful routine to get similar results. 
     """
 
-    conf =[]
+    conf = []
 
     paramstring = []
 
@@ -1038,5 +1011,3 @@ def dict2conf(toolname, conf_dict, user_name=User().getName()):
             conf.append(conf_object)
 
     return conf
-
-  

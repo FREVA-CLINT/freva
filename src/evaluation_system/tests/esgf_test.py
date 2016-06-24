@@ -1,63 +1,64 @@
-'''
-Created on 19.02.2013
+"""
+Created on 30.05.2016
 
-@author: estani
-'''
+@author: Sebastian Illing
+"""
 import unittest
 import os
 
-def loadlib(module_filepath):
-    """Loads a module from a file not ending in .py"""
-    import imp
-    
-    py_source_open_mode = "U"
-    py_source_description = (".py", py_source_open_mode, imp.PY_SOURCE)
-    
-    module_name = os.path.basename(module_filepath)
-    with open(module_filepath, py_source_open_mode) as module_file:
-        return imp.load_module(
-                module_name, module_file, module_filepath, py_source_description)
+from evaluation_system.commands.esgf import Command
+from evaluation_system.tests.capture_std_streams import stdout
 
-#load the module from a non .py file
-esgf = loadlib(os.path.abspath(os.path.join(os.path.dirname(__file__),'../../../bin/esgf')))
-
-from evaluation_system.tests.capture_std_streams import stdout, stderr
 
 class Test(unittest.TestCase):
+    def setUp(self):
+        self.search_dict = {'variable': 'tas',
+                            'project': 'CMIP5',
+                            'product': 'output1',
+                            'time_frequency': 'mon',
+                            'experiment': 'decadal2000',
+                            'model': 'MPI-ESM-LR',
+                            'ensemble': 'r1i1p1',
+                            }
+        self.cmd = Command()
+
+    def tearDown(self):
+        pass
+
+    def run_command_with_capture(self, args_list=[]):
+
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(args_list)
+        stdout.stopCapturing()
+        return stdout.getvalue()
+
+    def test_show_facet(self):
+        res = self.run_command_with_capture(['--show-facet=project,product'])
+        self.assertIn('[product]', res)
+        self.assertIn('[project]', res)
+
+    def test_find_files(self):
 
 
-    def testExistence(self):
-        stdout.startCapturing()
-        stdout.reset()
-        esgf.main(['--help'])
-        tmp = stdout.getvalue()
-        self.assertTrue(len(tmp)>100)
-        stdout.stopCapturing()
-        
-    def testEmptySearch(self):
-        stdout.startCapturing()
-        stdout.reset()
-        esgf.main(['model=NonExistingModel', 'distrib=false'])
-        tmp = stdout.getvalue()
-        self.assertTrue(len(tmp)==0)
-        stdout.stopCapturing()
-        
-    def testSearch(self):
-        stdout.startCapturing()
-        stdout.reset()
-        esgf.main(['model=MPI-ESM-LR', 'distrib=false', 'experiment=amip4K', 'realm=landIce'])
-        tmp = stdout.getvalue()
-        self.assertEquals(len(tmp.splitlines()), 3)
-        stdout.stopCapturing()
-        
-    def testMultivalueSearch(self):
-        stdout.startCapturing()
-        stdout.reset()
-        esgf.main(['model=MPI-ESM-LR', 'distrib=false', 'experiment=amip4K', 'realm=landIce','variable=snc','variable=snm','variable=snw'])
-        tmp = stdout.getvalue()
-        self.assertEquals(len(tmp.splitlines()), 3)
-        stdout.stopCapturing()
+        result_to_be = ['http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
+                        'http://aims3.llnl.gov/thredds/fileServer/cmip5_css02_data/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
+                        'http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc']
+        res = self.run_command_with_capture(['%s=%s' % (key, val) for key, val in self.search_dict.iteritems()])
+        for f in result_to_be:
+            self.assertIn(f, res)
 
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testAccess']
-    unittest.main()
+        res = self.run_command_with_capture(
+            ['--datasets'] + ['%s=%s' % (key, val) for key, val in self.search_dict.iteritems()]
+        )
+        self.assertIn('cmip5.output1.MPI-M.MPI-ESM-LR.decadal2000.mon.atmos.Amon.r1i1p1 - version: 20120529', res)
+
+    def test_download_script(self):
+        fn = '/tmp/download_test_script.sh'
+        res = self.run_command_with_capture(
+            ['%s=%s' % (key, val) for key, val in self.search_dict.iteritems()] + ['--download-script=%s' % fn]
+        )
+        self.assertTrue(os.path.isfile(fn))
+        self.assertEqual(res, """Download script successfully saved to %s
+""" % fn)
+        os.remove(fn)

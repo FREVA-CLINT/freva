@@ -1,22 +1,27 @@
 '''
 Created on 15.03.2013
 
-@author: estani
+@author: Sebastian Illing / estani
 
-This types represent the type of parameter a plugin expects and gives some metadata about them.
+This types represent the type of parameter a plugin expects and gives some 
+metadata about them.
 '''
-from types import TypeType, StringType, IntType, FloatType, LongType, BooleanType
+from types import (TypeType, StringType, IntType, FloatType,
+                   LongType, BooleanType)
 
 from evaluation_system.misc.py27 import OrderedDict
-from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
+from evaluation_system.misc.utils import (find_similar_words, PrintableList,
+                                          initOrder)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.history.models import Configuration
 from symbol import raise_stmt
 import json
 
+
 class ValidationError(Exception):
     "Thrown if some variable contains an improper value."
     pass
+
 
 class ParameterNotFoundError(Exception):
     "Thrown if some parameter is not in the database."
@@ -24,15 +29,19 @@ class ParameterNotFoundError(Exception):
 
 
 class ParameterDictionary(OrderedDict):
-    """A dictionary managing parameters for a plugin. It works just like a normal dictionary with some added functionality
-and the fact that the contains are stored in the same order they where defined. This order helps the plugin implementor
-to define what the user should be seeing. (most important parameters first, etc).
-Accessing the dictionary directly will retrieve the default value of the parameter."""
+    """A dictionary managing parameters for a plugin. It works just like a 
+    normal dictionary with some added functionality and the fact that the 
+    contains are stored in the same order they where defined. This order 
+    helps the plugin implementor to define what the user should be seeing. 
+    (most important parameters first, etc). Accessing the dictionary directly 
+    will retrieve the default value of the parameter."""
 
     def  __init__(self, *list_of_parameters):
-        """Creates a new ParameterDictionary with the given list of parameters objects of a sub type of :class:`ParameterType`
+        """Creates a new ParameterDictionary with the given list of parameters
+        objects of a sub type of :class:`ParameterType`
 
-:param list_of_parameters: parameters defined in order. The order will be kept, so it's important."""
+:param list_of_parameters: parameters defined in order. The order will be kept, 
+so it's important."""
         OrderedDict.__init__(self)
         
         self._params = OrderedDict()
@@ -44,17 +53,21 @@ Accessing the dictionary directly will retrieve the default value of the paramet
             self[param.name] = param.default
 
     def __str__(self):
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(['%s<%s>: %s' % (k, self._params[k], v)for k,v in self.items()]))
+        return '%s(%s)' % (self.__class__.__name__,
+                           ', '.join(['%s<%s>: %s' % (k, self._params[k], v) for k,v in self.items()]))
 
     def get_parameter(self, param_name):
         """Return the parameter object from the given name.
 
 :param param_name: name of the parameter that will be returned.
-:raises: ValidationError if the parameter name doesn't match anything stored here."""
+:raises: ValidationError if the parameter name doesn't match anything
+stored here."""
         if param_name not in self:
             mesg = "Unknown parameter %s" % param_name
             similar_words = find_similar_words(param_name, self.keys())
-            if similar_words: mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
+            if similar_words: 
+                mesg = "%s\n Did you mean this?\n\t%s" % (
+                    mesg, '\n\t'.join(similar_words))
             raise ValidationError(mesg)
         return self._params[param_name]
     
@@ -65,8 +78,10 @@ Accessing the dictionary directly will retrieve the default value of the paramet
     def complete(self, config_dict=None, add_missing_defaults=False):
         """Completes a given dictionary with default values if required.
 
-:param config_dict: the to be completed dictionary. If None, a new dictionary will be created.
-:param add_missing_defaults: If also parameters without any defaults should be completed.   
+:param config_dict: the to be completed dictionary. If None, a new dictionary 
+will be created.
+:param add_missing_defaults: If also parameters without any defaults should 
+be completed.   
 :returns: a dictionary with all missing parameters also configured."""
         if config_dict is None:
             config_dict = {}
@@ -81,8 +96,10 @@ Accessing the dictionary directly will retrieve the default value of the paramet
         """Checks if the given configuration dictionary is valied.
 
 :param config_dict: the dictionary to be checked.
-:param raise_exception: If an exception should be risen. In such a case only a message is elevated (this could be changed)
-:returns: a dictionary with missing items and those having to manay of them or None if no error was found."""
+:param raise_exception: If an exception should be risen. In such a case only a 
+message is elevated (this could be changed)
+:returns: a dictionary with missing items and those having to manay of them or 
+None if no error was found."""
         missing = []
         too_many_items = []
         for key, param in self._params.items():
@@ -105,14 +122,17 @@ Accessing the dictionary directly will retrieve the default value of the paramet
     
         
     def parseArguments(self, opt_arr, use_defaults=False, complete_defaults=False, check_errors=True):
-        """Parses an array of strings and return a dictionary with the parsed configuration.
-The strings are of the type: ``key1=val1`` or ``key2`` multiple values can be defined by either
-defining the same key multiple times or by using the item_separator character
+        """Parses an array of strings and return a dictionary with the parsed 
+        configuration. The strings are of the type: ``key1=val1`` or ``key2`` 
+        multiple values can be defined by either defining the same key 
+        multiple times or by using the item_separator character
 
-:param opt_arr: List of strings containing ("key=value"|"key"|"key=value1,value2" iff item_separator==',')
-:param use_defaults: If the parameters defaults should be used when value is missing
-:param complete_defaults: Return a complete configuration containing None for those not provided 
- parameters that has no defaults.
+:param opt_arr: List of strings containing 
+("key=value"|"key"|"key=value1,value2" iff item_separator==',')
+:param use_defaults: If the parameters defaults should be used when value 
+is missing
+:param complete_defaults: Return a complete configuration containing None 
+for those not provided parameters that has no defaults.
 :param check_errors: if errors in arguments should be checked.
 """
         config = {}
@@ -130,12 +150,14 @@ defining the same key multiple times or by using the item_separator character
             param = self.get_parameter(key)
             if key in config:
                 if not isinstance(config[key], list):
-                    #we got multiple values! Instead of checking just handle accordingly and build a list
-                    #if we didn't have it.
+                    # we got multiple values! Instead of checking just handle 
+                    # accordingly and build a list
+                    # if we didn't have it.
                     config[key] = [config[key]]
                     
                 if param.max_items > 1:
-                    #parsing will return always a list if more than a value is expected, so don't append!
+                    # parsing will return always a list if more than a value 
+                    # is expected, so don't append!
                     config[key] = config[key] + self._params[key].parse(value)
                 else:
                     config[key].append(self._params[key].parse(value))
@@ -157,7 +179,10 @@ defining the same key multiple times or by using the item_separator character
         #compute maximal param length for better viewing
         max_size= max([len(k) for k in self] + [0])
         if max_size > 0:
-            wrapper = textwrap.TextWrapper(width=width, initial_indent=' '*(max_size+1), subsequent_indent=' '*(max_size+1), replace_whitespace=False)
+            wrapper = textwrap.TextWrapper(
+                width=width, initial_indent=' '*(max_size+1),
+                subsequent_indent=' '*(max_size+1), replace_whitespace=False
+            )
             help_str.append('Options:')
         
          
@@ -167,11 +192,11 @@ defining the same key multiple times or by using the item_separator character
                 if param.mandatory:
                     help_str[-1] = help_str[-1] + ' [mandatory]'
 
-                #wrap it properly
+                # wrap it properly
                 help_str.append('\n'.join(wrapper.fill(line) for line in 
                        param.help.splitlines()))
                 
-                #help_str.append('\n') #This separates one parameter from the others
+                #help_str.append('\n') # This separates one parameter from the others
         
         return '\n'.join(help_str)
     
@@ -183,8 +208,7 @@ defining the same key multiple times or by using the item_separator character
         for entry in self._params.values():
             entry.synchronize(tool)
                 
-        
-   
+
 class ParameterType(initOrder):    
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
@@ -200,22 +224,44 @@ class ParameterType(initOrder):
         
 :param name: name of the parameter
 :param default: the default value if none is provided 
- (this value will also be validated and parsed, so it must be a *valid* parameter value!)
+ (this value will also be validated and parsed, so it must be a *valid* 
+ parameter value!)
 :param mandatory: if the parameter is required 
- (note that if there's a default value, the user might not be required to set it, and can always change it, though he/she is not allowed to *unset* it)
-:param max_items: If set to > 1 it will cause the values to be returned in a list (even if the user only provided 1). An error will be risen if more values than those are passed to the plugin
-:param item_separator: The string used to separate multiple values for this parameter. In some cases (at the shell, web interface, etc) the user have always the option to provide multiple values by re-using the same parameter name (e.g. @param1=a param1=b@ produces @{'param1': ['a', 'b']}@). But the configuration file does not allow this at this time. Therefore is better to setup a separator, even though the user might not use it while giving input. It must not be a character, it can be any string (make sure it's not a valid value!!)
-:param regex: A regular expression defining valid "string" values before parsing them to their defining classes (e.g. an Integer might define a regex of "[0-9]+" to prevent getting negative numbers). This will be used also on Javascript so don't use fancy expressions or make sure they are understood by both python and Javascript.
+ (note that if there's a default value, the user might not be required to set 
+ it, and can always change it, though he/she is not allowed to *unset* it)
+:param max_items: If set to > 1 it will cause the values to be returned in a 
+list (even if the user only provided 1). An error will be risen if more values 
+than those are passed to the plugin
+:param item_separator: The string used to separate multiple values for this 
+parameter. In some cases (at the shell, web interface, etc) the user have 
+always the option to provide multiple values by re-using the same parameter 
+name (e.g. @param1=a param1=b@ produces @{'param1': ['a', 'b']}@). But the 
+configuration file does not allow this at this time. Therefore is better 
+to setup a separator, even though the user might not use it while giving 
+input. It must not be a character, it can be any string 
+(make sure it's not a valid value!!)
+:param regex: A regular expression defining valid "string" values before 
+parsing them to their defining classes (e.g. an Integer might define a 
+regex of "[0-9]+" to prevent getting negative numbers). This will be used 
+also on Javascript so don't use fancy expressions or make sure they are 
+understood by both python and Javascript.
 :param help: The help string describing what this parameter is good for.
-:param print_format: A python string format that will be used when displaying the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
-:param impact: The impact of the parameter to the output, possible values are Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.Impact.no_effects
-:param version: An internal version being 1 at default. If the parameter changes significantly, but appears similar to the previous version (default valut, name etc) than this has to be set.
+:param print_format: A python string format that will be used when displaying 
+the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
+:param impact: The impact of the parameter to the output, possible values are 
+Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.
+Impact.no_effects
+:param version: An internal version being 1 at default. If the parameter 
+changes significantly, but appears similar to the previous version 
+(default valut, name etc) than this has to be set.
  """
         self.name = name
         
         self.mandatory = mandatory
         if max_items < 1:
-            raise ValidationError("max_items must be set to a value >= 1. Current='%s'" % max_items)
+            raise ValidationError(
+                "max_items must be set to a value >= 1. Current='%s'" % max_items
+            )
         self.max_items = max_items
         self.item_separator = item_separator
 
@@ -238,14 +284,11 @@ class ParameterType(initOrder):
             
         self.id = None
         self.is_default = False
-    
-    
+      
     def synchronize(self, tool):
         '''
         Read the id from database
         '''
-        # print tool,version,detailed_version_id,self.mandatory,self.default,self.impact
-
         if self.id is None:
             type = self.__class__.__name__
 
@@ -260,10 +303,7 @@ class ParameterType(initOrder):
             self.id = o[0].id
         
         return self.id
-
-            
-            
-        
+  
     def _verified(self, orig_values):
         
         if not isinstance(orig_values, list):
@@ -272,7 +312,10 @@ class ParameterType(initOrder):
             values = orig_values
             
         if len(values) > self.max_items:
-            raise ValidationError("Expected %s items at most, got %s" % (self.max_items, len(values)))
+            raise ValidationError(
+                "Expected %s items at most, got %s" % (self.max_items, 
+                                                       len(values))
+            )
             
         if self.regex is not None and self._pattern is None and isinstance(values[0], basestring):
             import re
@@ -307,27 +350,31 @@ class ParameterType(initOrder):
                 if self.item_separator is not None:
                     return [self.base_type(v) for v in self._verified(value.split(self.item_separator))]
                 elif value[0] == '[':
-                    #assume is a json array:
+                    # assume is a json array:
                     return [self.base_type(v) for v in self._verified(json.loads(value))]
                 else:
-                    #this is a single string, but we expect multiple, so convert appropriately (in list)
+                    # this is a single string, but we expect multiple, 
+                    # so convert appropriately (in list)
                     return [self.base_type(self._verified(value))]
             else:
-                #if here assume is iterable, if not see the scp
+                # if here assume is iterable, if not see the scp
                 try:
                     return [self.base_type(v) for v in self._verified(value)]
                 except TypeError:
-                    #it was not iterable... but we expect more than one, so return always a list
+                    # it was not iterable... but we expect more than one,
+                    # so return always a list
                     return [self.base_type(self._verified(value))]
                     
         
         return self.base_type(self._verified(value))
     
     def format(self, value=None):
-        """Formats the default value or the given one to a string. This could be overwriten to provide more
-control over how values are being displayed. This should probably be refactored to a static method.
+        """Formats the default value or the given one to a string. 
+        This could be overwriten to provide more control over how values are 
+        being displayed. This should probably be refactored to a static method.
 
-:param value: the value to be formated, if is set to None the default value will be used."""
+:param value: the value to be formated, if is set to None the default 
+value will be used."""
         if value is None:
             if self.default is None:
                 return "<undefined>"
@@ -359,71 +406,83 @@ control over how values are being displayed. This should probably be refactored 
 
 
 class String(ParameterType):
-    "A simple string parameter."
+    """A simple string parameter."""
     base_type = StringType
 
+
 class Integer(ParameterType):
-    "An integer parameter."
+    """An integer parameter."""
     base_type = IntType
     def __init__(self, regex='^[+-]?[0-9]+$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
+
 class Long(Integer):
-    "A long parameter, it's the same as an integer but is handled from the beginning as a long. In Python there is no real difference between a long and an integer."
+    """A long parameter, it's the same as an integer but is handled from 
+    the beginning as a long. In Python there is no real difference between a 
+    long and an integer."""
     base_type = LongType
 
+
 class Float(ParameterType):
-    "A float parameter."
+    """A float parameter."""
     base_type = FloatType
-    def __init__(self, regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$', **kwargs):
+    def __init__(self,
+                 regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$',
+                 **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
 
 class File(String):
-    "A parameter representing a file in the system."
+    """A parameter representing a file in the system."""
     pass
 
 
 class Directory(String):
-    "A parameter representing a directory in the system. [not used]"
+    """A parameter representing a directory in the system. [not used]"""
     def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
         ParameterType.__init__(self, impact=impact, **kwargs)
 
   
 class InputDirectory(String):
-    "A parameter representing a input directory in the system."
+    """A parameter representing a input directory in the system."""
     pass
 
 class CacheDirectory(Directory):
-    "A parameter representing a cache directory in the system."
+    """A parameter representing a cache directory in the system."""
     pass
 
 
 class Date(String):
-    "A date parameter. [not used]"
+    "A date parameter. [not used]"""
     pass
 
 
 class Bool(ParameterType):
-    """A boolean paramter. Boolean parameters might be parsed from the strings as defined in :class:`Bool.parse`"""
+    """A boolean paramter. Boolean parameters might be parsed from the 
+    strings as defined in :class:`Bool.parse`"""
     base_type = BooleanType
 
     def parse(self, bool_str):
-        """Parses a string and extract a boolean value out of it. We don't accept any value, the mapping is done
+        """Parses a string and extract a boolean value out of it. We don't 
+        accept any value, the mapping is done
 in the following way (case insensitive)::
 
   true, t, yes, y, on, 1 => TRUE
   false, f, no, n, off, 2 => FALSE
   
 :param bool_str:  the string value containing a boolean value.
-:raises ValidationException: if the given string does not match any of these values."""
+:raises ValidationException: if the given string does not match any of these 
+values."""
         if isinstance(bool_str, basestring) and bool_str: 
-            if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']: return True
-            elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: return False
+            if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']:
+                return True
+            elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: 
+                return False
         elif isinstance(bool_str, bool):
-            #it was no bool after all...
+            # it was no bool after all...
             return bool_str 
-        #if here we couldn't parse it
+        # if here we couldn't parse it
         raise ValueError("'%s' is no recognized as a boolean default" % bool_str)
 
 _type_mapping = {
@@ -436,10 +495,10 @@ _type_mapping = {
         
 
 """These are the mapping of the default Python types to those of this framework.
-This is mapping is used by the infer_type function to infer the type of a given parameter default."""
+This is mapping is used by the infer_type function to infer the type of a 
+given parameter default."""
 
-
-            
+     
 class Range(String):
     """
     A range parameter. I.e passing experiment lists (1970,1975,...,2000).
@@ -469,7 +528,8 @@ class Range(String):
     
     def _parseComma(self,str):
         '''
-        Parses comma separated strings and checks each part for colon separated strings
+        Parses comma separated strings and checks each part for colon 
+        separated strings
         
         :param str: 'comma separated list
         :returns: list with integers
@@ -486,7 +546,8 @@ class Range(String):
         Value can be a comma separated string, colon separated or a combination
         Values after "-" are deleted from the resulting list
         
-        :param value: 'start:step:stop-value' --> 1970:5:2000-1985 or 1970:2000,1980-1990:1995
+        :param value: 'start:step:stop-value' --> 
+        1970:5:2000-1985 or 1970:2000,1980-1990:1995
         :returns: PrintableList object 
         """
         try:
@@ -505,8 +566,10 @@ class Range(String):
 
 class Unknown(String):
     """An unknown parameter for conversions"""
-    def __init__(self, impact=Parameter.Impact.affects_values, mandatory=True, **kwargs):
-        ParameterType.__init__(self, impact=impact, mandatory=mandatory, **kwargs)
+    def __init__(self, impact=Parameter.Impact.affects_values,
+                 mandatory=True, **kwargs):
+        ParameterType.__init__(self, impact=impact,
+                               mandatory=mandatory, **kwargs)
 
         
 class SolrField(String):
@@ -529,11 +592,11 @@ class SolrField(String):
             self.predefined_facets = kwargs.pop('predefined_facets')
         except KeyError:
             self.predefined_facets = None
-	try:
+        try:
             self.editable = kwargs.pop('editable')
         except KeyError:
             self.editable = True 
-	super(SolrField,self).__init__(*args,**kwargs)
+        super(SolrField,self).__init__(*args,**kwargs)
         
 
 class SelectField(String):
@@ -550,17 +613,10 @@ class SelectField(String):
         
         if orig_values not in self.options.values():
             raise ValueError, 'Only the following values are allowed for "%s": %s' % (self.name, ','.join(self.options.values()))
-   	return True
-	 
+        return True
+
     def parse(self, value):
         if self._verified(value):
             for key, val in self.options.iteritems():
                 if value == val:
-                    return key
-        
-                    
-#    def parse(self, value):
-#        
-#        return self.facet
-        
-        
+                    return key        

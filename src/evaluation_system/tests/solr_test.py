@@ -1,5 +1,5 @@
 """
-Created on 31.05.2016
+Created on 24.05.2016
 
 @author: Sebastian Illing
 """
@@ -13,7 +13,6 @@ from evaluation_system.model.solr import SolrFindFiles
 from evaluation_system.misc import config
 from evaluation_system.misc.utils import supermakedirs
 from evaluation_system.model.file import DRSFile, CMIP5
-from evaluation_system.model.file import DRSFile
 
 
 class Test(unittest.TestCase):
@@ -56,9 +55,6 @@ class Test(unittest.TestCase):
             core_all_files=self.all_files, core_latest=self.latest
         )
 
-        self.fn = os.path.join(self.tmpdir, self.files[0])
-        self.drs = DRSFile.from_path(self.fn)
-
     def tearDown(self):
         self.all_files.delete('*')
         self.latest.delete('*')
@@ -69,64 +65,37 @@ class Test(unittest.TestCase):
             pass
 
     def test_solr_search(self):
+        # search some files
+        solr_search = SolrFindFiles()
+        all_files = solr_search.search()
+        self.assertEqual(len(list(all_files)), 3)
+        hist = solr_search.search(experiment='historical')
+        self.assertEqual(list(hist), [os.path.join(self.tmpdir, self.files[0])])
+        all_files = solr_search.search(latest_version=False)
+        self.assertEqual(len(list(all_files)), 5)
+        # test OR query
+        or_result = solr_search.search(variable=['tauu', 'wetso2'])
+        self.assertEqual(set([os.path.join(self.tmpdir, e) for e in self.files[:2]]), set(or_result))
 
-        # test path_only search
-        res = DRSFile.solr_search(path_only=True, variable='tauu')
-        self.assertEqual(list(res), [u'/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc'])
+    def test_facet_search(self):
 
-        # test drs search
-        res = DRSFile.solr_search(variable='ua')
-        for i in res:
-            self.assertTrue(isinstance(i, DRSFile))
+        factes_to_be = {'cmor_table': ['aero', 1, 'amon', 2], 'product': ['output1', 3],
+                        'realm': ['aerosol', 1, 'atmos', 2], 'data_type': ['cmip5', 3],
+                        'institute': ['mohc', 3], 'project': ['cmip5', 3], 'time_frequency': ['mon', 3],
+                        'experiment': ['decadal2008', 1, 'decadal2009', 1, 'historical', 1],
+                        'variable': ['tauu', 1, 'ua', 1, 'wetso2', 1], 'model': ['hadcm3', 3],
+                        'ensemble': ['r2i1p1', 1, 'r7i2p1', 1, 'r9i3p1', 1]}
+        s = SolrFindFiles
+        all_factes = s.facets()
+        self.assertEqual(len(all_factes), 11)
+        self.assertEqual(all_factes, factes_to_be)
 
-        # use drs_structure
-        res = DRSFile.solr_search(drs_structure=CMIP5)
-        for j, i in enumerate(res):
-            self.assertTrue(isinstance(i, DRSFile))
-        self.assertEqual(j+1, 3)
+        var_facets = s.facets(facets=['variable'])
+        self.assertEqual(var_facets, dict(variable=factes_to_be['variable']))
+        experiment_facets = s.facets(facets='experiment', cmor_table='amon')
+        self.assertEqual(experiment_facets, {'experiment': ['decadal2008', 1, 'decadal2009', 1]})
 
-    def test_compare(self):
-        fn2 = os.path.join(self.tmpdir, self.files[1])
-        drs2 = DRSFile.from_path(fn2)
-
-        self.assertTrue(self.drs == self.drs)
-        self.assertFalse(self.drs == drs2)
-        self.assertFalse(drs2 == fn2)
-
-    def test_json_path(self):
-        j = self.drs.to_json()
-        self.assertTrue(isinstance(j, str))
-        path = self.drs.to_path()
-        self.assertEqual(path, self.fn)
-
-    def test_find_structure_in_path(self):
-
-        s = DRSFile.find_structure_in_path('/tmp/some_temp_solr_core/cmip5')
-        self.assertEqual(s, 'cmip5')
-        s = DRSFile.find_structure_in_path('/tmp/some_temp_solr_core/cmip5', allow_multiples=True)
-        self.assertEqual(s, ['cmip5'])
-        self.assertRaises(Exception, DRSFile.find_structure_in_path, '/no/valid/path')
-
-    def test_structure_from_path(self):
-
-        s = DRSFile.find_structure_from_path(self.fn)
-        self.assertEqual(s,  'cmip5')
-        s = DRSFile.find_structure_from_path(self.fn, allow_multiples=True)
-        self.assertEqual(s, ['cmip5'])
-        self.assertRaises(Exception, DRSFile.find_structure_from_path, '/no/valid/file_path')
-
-    def test_from_dict(self):
-        d = self.drs.dict
-        t = DRSFile.from_dict(d, CMIP5)
-        self.assertTrue(isinstance(t, DRSFile))
-        self.assertEqual(self.drs.to_path(), t.to_path())
-
-    def test_from_json(self):
-        j = self.drs.to_json()
-        t = DRSFile.from_json(j, CMIP5)
-        self.assertTrue(isinstance(t, DRSFile))
-        self.assertEqual(self.drs.to_path(), t.to_path())
-
-    def test_to_dataset(self):
-        res = self.drs.to_dataset_path(versioned=True)
-        self.assertIn('/'.join(self.files[0].split('/')[:-1]), res)
+        # test files core
+        res = s.facets(facets='variable,project', latest_version=False)
+        self.assertEqual(res.keys(), ['variable', 'project'])
+        self.assertEqual(res, {'variable': ['tauu', 1, 'ua', 3, 'wetso2', 1], 'project': ['cmip5', 5]})

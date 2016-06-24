@@ -1,17 +1,16 @@
-'''
+"""
 plugin - apply analysis to data
 
 @copyright:  2015 FU Berlin. All rights reserved.
         
 @contact:    sebastian.illing@met.fu-berlin.de
-'''
+"""
 
 from evaluation_system.commands import FrevaBaseCommand
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
 import logging
-import sys
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from evaluation_system.misc import config
 
 
@@ -26,34 +25,39 @@ For Example:
     freva --plugin pca eofs=4 bias=False input=myfile.nc outputdir=/tmp/test"""
 
     _args = [
-             {'name':'--debug','short':'-d','help':'turn on debugging info and show stack trace on exceptions.','action':'store_true'},
-             {'name':'--help','short':'-h', 'help':'show this help message and exit','action':'store_true'},
-             {'name':'--repos-version','help':'show the version number from the repository','action':'store_true'},
-             {'name':'--caption','help':'sets a caption for the results'},
-             {'name':'--save','help':'saves the configuration locally for this user.','action':'store_true'},
-             {'name':'--save-config','help':'saves the configuration at the given file path', 'metavar':'FILE'},
-             {'name':'--show-config','help':'shows the resulting configuration (implies dry-run).','action':'store_true'},
-             {'name':'--scheduled-id','help':'Runs a scheduled job from database','type':'int', 'metavar':'ID'},
-             {'name':'--dry-run','help':'dry-run, perform no computation. This is used for viewing and handling the configuration.','action':'store_true'},
-             {'name':'--batchmode','help':'creates a SLURM job','metavar':'BOOL'},
-             {'name':'--unique_output', 'help': 'If true append the freva run id to every output folder', 
-              'metavar':'BOOL', 'default': 'true'}
+             {'name': '--debug', 'short': '-d', 'help': 'turn on debugging info and show stack trace on exceptions.',
+              'action': 'store_true'},
+             {'name': '--help', 'short': '-h', 'help': 'show this help message and exit', 'action': 'store_true'},
+             {'name': '--repos-version', 'help': 'show the version number from the repository', 'action': 'store_true'},
+             {'name': '--caption', 'help': 'sets a caption for the results'},
+             {'name': '--save', 'help': 'saves the configuration locally for this user.', 'action': 'store_true'},
+             {'name': '--save-config', 'help': 'saves the configuration at the given file path', 'metavar': 'FILE'},
+             {'name': '--show-config', 'help': 'shows the resulting configuration (implies dry-run).',
+              'action': 'store_true'},
+             {'name': '--scheduled-id', 'help': 'Runs a scheduled job from database', 'type': 'int', 'metavar': 'ID'},
+             {'name': '--dry-run',
+              'help': 'dry-run, perform no computation. This is used for viewing and handling the configuration.',
+              'action': 'store_true'},
+             {'name': '--batchmode', 'help': 'creates a SLURM job', 'metavar': 'BOOL'},
+             {'name': '--unique_output', 'help': 'If true append the freva run id to every output folder',
+              'metavar': 'BOOL', 'default': 'true'}
              ]
 
     def list_tools(self):
         import textwrap
         env = self.getEnvironment()
-        #we just have to show the list and stop processing
+        # we just have to show the list and stop processing
         name_width = 0
         for key in pm.getPlugins():
             name_width = max(name_width, len(key))
         offset = name_width + 2
         for key, plugin in sorted(pm.getPlugins().items()):
             lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
-            if not lines: lines = ['No description.']
+            if not lines:
+                lines = ['No description.']
             if len(lines) > 1:
-                #multiline
-                print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset +('\n' + ' '*offset).join(lines[1:]))
+                # multi-line
+                print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset + ('\n' + ' '*offset).join(lines[1:]))
             else:
                 print '%s: %s' % (plugin['name'], lines[0])
         return 0   
@@ -65,14 +69,13 @@ For Example:
             exit(0)
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
-        
-   
+
     def _run(self):
-        #defaults
+        # defaults
         options = self.args
         last_args = self.last_args
         
-        #check if tool is specified
+        # check if tool is specified
         try:
             tool_name = last_args[0]
         except IndexError:
@@ -86,14 +89,14 @@ For Example:
         email = None
         
         unique_output = options.unique_output.lower() if options.unique_output else 'true'
-        unique_output = not unique_output in ['false', '0', 'no']    
+        unique_output = unique_output not in ['false', '0', 'no']
         
         mode = options.batchmode.lower() if options.batchmode else 'false'
-        batchmode = mode in ['true', '1', 'yes', 'on', 'web',]        
-        if not batchmode and mode not in ['false', '0', 'no', 'off',]:
+        batchmode = mode in ['true', '1', 'yes', 'on', 'web']
+        if not batchmode and mode not in ['false', '0', 'no', 'off']:
             raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')  
         
-        #get the plugin
+        # get the plugin
         if tool_name:
             caption = None
             
@@ -101,12 +104,12 @@ For Example:
                 caption = pm.generateCaption(options.caption, tool_name)    
             
             if options.save_config or options.save:
-                tool_dict = pm.parseArguments(tool_name,self.last_args[1:])#, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
+                tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 cfg_file_save = options.save_config 
                 save_in = pm.writeSetup(tool_name, tool_dict, config_file=cfg_file_save)
                 logging.info("Configuration file saved in %s", save_in)
             elif options.show_config:
-                tool_dict = pm.parseArguments(tool_name,self.last_args[1:])#, use_user_defaults=use_user_defaults, config_file=cfg_file_load, check_errors=False)
+                tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 print pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict)
            
             elif options.scheduled_id:
@@ -117,7 +120,7 @@ For Example:
                                unique_output=unique_output)
                                      
             else:
-                #now run the tool                
+                # now run the tool
                 (error, warning) = pm.getErrorWarning(tool_name)
                 
                 if warning:
@@ -126,8 +129,7 @@ For Example:
                 if error:
                     log.error(error)
 
-                tool_dict = pm.parseArguments(tool_name,self.last_args[1:])#, use_user_defaults=use_user_defaults, config_file=cfg_file_load)
-                
+                tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 
                 logging.debug('Running %s with configuration: %s', tool_name, tool_dict)
                 if not options.dry_run and (not error or DEBUG):
@@ -156,7 +158,6 @@ For Example:
                         # for readability don't show the warning in debug mode 
                         if warning and not DEBUG:
                             log.warning(warning)
-  
 
             if self.DEBUG:
                 logging.debug("Arguments: %s", self.last_args)

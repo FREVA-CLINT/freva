@@ -1,37 +1,39 @@
 # encoding: utf-8
 
-'''
+"""
 history - show history entries
 
 @copyright:  2015 FU Berlin. All rights reserved.
-        
-@contact:    sebastian.illing@met.fu-berlin.de
-'''
 
-import sys, os, time
-from evaluation_system.commands import FrevaBaseCommand, CommandError
+@contact:    sebastian.illing@met.fu-berlin.de
+"""
+
+import sys
+from evaluation_system.commands import FrevaBaseCommand
 import logging as log
-from evaluation_system.model.esgf import P2P
 import evaluation_system.api.plugin_manager as pm
-from evaluation_system.model.db import HistoryEntry
+from evaluation_system.model.db import timestamp_from_string
+
 
 class Command(FrevaBaseCommand):
  
     _short_args = 'hd'
-#    _args = ['results','repos-version', 'full_text', 'return_command',
-#             'limit=', 'tool=', 'since', 'until', 'entry_id', 'debug', 'help']
-#    _args = ['help','debug']
-    
     _args = [
-             {'name':'--debug','short':'-d','help':'turn on debugging info and show stack trace on exceptions.','action':'store_true'},
-             {'name':'--help','short':'-h', 'help':'show this help message and exit','action':'store_true'},
-             {'name':'--full_text','help':'If present shows the complete configuration stored', 'action':'store_true', 'default': False},
-             {'name':'--return_command','help':'Show freva commands belonging to the history entries instead of the entries themself.', 'action':'store_true'},
-             {'name':'--limit','help':'n is the number of entries to be displayed','type':'int', 'metavar':'N', 'default':10},
-             {'name':'--plugin','help':'Display only entries from plugin "name"', 'metavar':'NAME'},
-             {'name':'--since','help':'Retrieve entries older than date (see DATE FORMAT) ', 'metavar':'DATE'},
-             {'name':'--until','help':'Retrieve entries newer than date (see DATE FORMAT)', 'metavar':'DATE'},
-             {'name':'--entry_ids','help':'Select entries whose ids are in "ids" (e.g. entry_ids=1,2 or entry_ids=5)', 'metavar':'IDs'},
+             {'name': '--debug', 'short': '-d', 'help': 'turn on debugging info and show stack trace on exceptions.',
+              'action': 'store_true'},
+             {'name': '--help', 'short': '-h', 'help': 'show this help message and exit', 'action': 'store_true'},
+             {'name': '--full_text', 'help': 'If present shows the complete configuration stored',
+              'action': 'store_true', 'default': False},
+             {'name': '--return_command',
+              'help': 'Show freva commands belonging to the history entries instead of the entries themself.',
+              'action': 'store_true'},
+             {'name': '--limit', 'help': 'n is the number of entries to be displayed', 'type': 'int',
+              'metavar': 'N', 'default': 10},
+             {'name': '--plugin', 'help': 'Display only entries from plugin "name"', 'metavar': 'NAME'},
+             {'name': '--since', 'help': 'Retrieve entries older than date (see DATE FORMAT) ', 'metavar': 'DATE'},
+             {'name': '--until', 'help': 'Retrieve entries newer than date (see DATE FORMAT)', 'metavar': 'DATE'},
+             {'name': '--entry_ids', 'help': 'Select entries whose ids are in "ids" (e.g. entry_ids=1,2 or entry_ids=5)',
+              'metavar': 'IDs'},
              ] 
 
     __short_description__ = '''provides access to the configuration history (use --help for more help)'''
@@ -56,13 +58,12 @@ DATE FORMAT
     def _run(self):
         args = self.args
         limit = args.limit
-        since = HistoryEntry.timestampFromString(args.since) if args.since  else None
-        until = HistoryEntry.timestampFromString(args.until) if args.until  else None
-        tool_name=args.plugin
-        entry_ids=map(int,args.entry_ids.split(',')) if args.entry_ids else None
-        store_file=False
+        since = timestamp_from_string(args.since) if args.since else None
+        until = timestamp_from_string(args.until) if args.until else None
+        tool_name = args.plugin
+        entry_ids = map(int, args.entry_ids.split(',')) if args.entry_ids else None
         return_command = args.return_command
-        #parse arguments *!!!*
+        # parse arguments *!!!*
         for args in self.last_args:
             tmp = args.split('=')
             flag = tmp[0]
@@ -70,39 +71,27 @@ DATE FORMAT
                 
         # this suspresses this debug info for generating commands
         if not args.return_command:
-            log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s',tool_name,limit, since, until, entry_ids)
-        rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since, until=until, entry_ids=entry_ids)
+            log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s', tool_name, limit, since, until, entry_ids)
+        rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since,
+                             until=until, entry_ids=entry_ids)
         if rows:
-            if store_file:                
-                if len(rows) > 1:
-                    raise AnalyzeError("Can only store one configuration at a time. We got %s back.\n" % len(rows) +
-                                       "Trim your search and try again (better if you use entry_ids with a single id).")
-                
-                entry = rows[0]
-                tool = pm.getPluginInstance(entry.tool_name)
-                saved_in = pm.writeSetup(entry.tool_name, entry.configuration, config_file=store_file)
-                log.info("Configuration stored in %s",  saved_in)
+            # pass some option for generating the command string
+            if return_command:
+                for row in rows:
+                    command_name = sys.argv[0]
+                    command_options = '--plugin'
+                    if self.DEBUG:
+                        command_options = "-d %s" % command_options
+
+                    command_string = pm.getCommandStringFromRow(row, command_name, command_options)
+
+                    if len(rows) > 1:
+                        print command_string + ';'
+
+                    else:
+                        print command_string
             else:
-                # pass some option for generating the command string
-                if return_command:
-                    for row in rows:
-                        command_name = sys.argv[0]
-                        command_options = '--plugin'
-                        
-#                        if batchmode:
-#                            command_options = "--batchmode true %s" % command_options
-                        if self.DEBUG:
-                            command_options = "-d %s" % command_options
-                            
-                        command_string = pm.getCommandStringFromRow(row, command_name, command_options)
-                        
-                        if len(rows) > 1:
-                            print command_string + ';'
-                            
-                        else:
-                            print command_string
-                else:
-                    print '\n'.join([row.__str__(compact=not args.full_text) for row in rows])
+                print '\n'.join([row.__str__(compact=not args.full_text) for row in rows])
         else:
             log.error("No results. Check query.")
 

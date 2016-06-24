@@ -1,8 +1,9 @@
-'''
-Created on 12.12.2012
+"""
+Created on 23.05.2016
 
-@author: estani
-'''
+@author: Sebastian Illing
+"""
+
 from datetime import datetime, timedelta
 import unittest
 import os
@@ -12,8 +13,13 @@ import logging
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
-from evaluation_system.model.db import HistoryEntry, _status_running
-from evaluation_system.tests.mocks import DummyUser, DummyPlugin
+from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
+from evaluation_system.model.history.models import History, HistoryTag, ResultTag
+from evaluation_system.model.plugins.models import Version
+from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
+from django.contrib.auth.models import User
+from evaluation_system.model.solr_models.models import UserCrawl
+
 
 class Test(unittest.TestCase):
     """Test the User construct used for managing the configuration of a user"""
@@ -21,134 +27,131 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         self.user = DummyUser(random_home=True, **Test.DUMMY_USER)
-        
+        self.tool = DummyPlugin()
+        self.config_dict = {'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder'}
+        self.row_id = self.user.getUserDB().storeHistory(
+            self.tool, self.config_dict, 'user', History.processStatus.not_scheduled, caption='My caption'
+        )
 
     def tearDown(self):
         # remove the test entries from the database
-        db = self.user.getUserDB()
-        db._getConnection().execute("DELETE from history_history where uid='Test';")
-        
+        History.objects.all().delete()
         home = self.user.getUserHome()
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
+            # make sure the home is a temporary one!!!
             print "Cleaning up %s" % home
             shutil.rmtree(home)
 
-    def testCreation(self):
-        user = DummyUser(random_home=True, pw_name='test1')
-        home = user.getUserHome()
-        
-        db = user.getUserDB()
-        # this assertion makes no sense for a global db
-        # self.assertTrue(db._db_file.startswith(home))
-        self.assertTrue(db.isInitialized())
-        self.assertTrue(os.path.isfile(db._db_file))
-        
-        if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            print "Cleaning up %s" % home
-            shutil.rmtree(home)
-        
-    def testInserts(self):
-        db = self.user.getUserDB()
-        entries = db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0]
-        db.storeHistory(DummyPlugin(), dict(a=1), uid='Test', status=_status_running)
-        self.assertEqual(db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0],
-                         entries + 1)
-        
-        res = db._getConnection().execute("SELECT * from history_history where uid='Test';").fetchall()
-        self.assertEqual(len(res), 1)
-        res = res[0]
-        self.assertEqual(res[2:5], ('dummyplugin', '(0, 0, 0)', '{"a": 1}'))
-        
-    def _timedeltaToDays(self, date_time):
-        #=======================================================================
-        # td = time_delta.microseconds / (24.0 * 60 * 60 * 1000000) + \
-        #        time_delta.seconds / (24.0 * 60 * 60) + \
-        #        time_delta.days
-        #=======================================================================
-        return HistoryEntry.timestampToString(date_time)
-    
-    def testGetHistory(self):
-        db = self.user.getUserDB()
-        self.assertEqual(db._getConnection().execute("SELECT count(*) from history_history where uid='Test';").fetchone()[0], 0)
-        test_dicts = [dict(a=1), dict(a=1,b=2), dict(a=None,b=2)]
-        for td in test_dicts:
-            db.storeHistory(DummyPlugin(), td, uid='Test', status=_status_running)
-        
-        res = db._getConnection().execute("SELECT * from history_history where uid='Test';").fetchall()
-        self.assertEqual(len(res), len(test_dicts))
-        all_res = db.getHistory(uid='Test')
-        self.assertEqual(len(all_res), len(test_dicts))
-        
-        #check the content and also the order. should be LIFO ordered
-        test_dicts.reverse()
-        count=0
-        old_time=datetime(3000,1,1)
-        version=(0,0,0)
-        tool_name='DummyPlugin'.lower()
-        for rd in all_res:
-            tstamp = HistoryEntry.timestampFromString(rd.timestamp)
-            self.assertTrue(tstamp < old_time)
-            old_time = tstamp
-            self.assertEqual(rd.tool_name, tool_name)
-            self.assertEqual(rd.version, version)
-            self.assertEqual(rd.configuration, test_dicts[count])
-            count += 1
-            
-        self.assertEqual(len(db.getHistory(limit=1)), 1)
-        self.assertEqual(db.getHistory(tool_name), all_res)
-        #to assure some minimal time distance from last additions
-        import time
-        time.sleep(0.1)
-        now1 = datetime.now()
-        db.storeHistory(DummyPlugin(), dict(special='time1'), uid='Test', status=_status_running)
-        time.sleep(0.1)
-        now2 = datetime.now()
-        db.storeHistory(DummyPlugin(), dict(special='time2'), uid='Test', status=_status_running)
-        
-        #check we get time1 and time2 when going 0.5 before now1
-        res = db.getHistory(since=self._timedeltaToDays(now1-timedelta(seconds=0.05)))
-        self.assertEqual(len(res), 2)
-        self.assertEqual(set([r.configuration['special'] for r in res]), set(['time1','time2']))
-        
-        #check we get time2 when going 0.5 before now2
-        res = db.getHistory(since=self._timedeltaToDays(now2-timedelta(seconds=0.05)))
-        self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].configuration['special'],'time2')
-        
-        #check we get time2 when going between 0.5 before now1 and 0.5 before now2
-        res = db.getHistory(since=self._timedeltaToDays(now1-timedelta(seconds=0.05)),
-                            until=self._timedeltaToDays(now2-timedelta(seconds=0.05)))
-        self.assertEqual(len(res), 1)
-        self.assertEqual(res[0].configuration['special'],'time1')
-        
-    
-    def testHistoryEntry(self):
-        db = self.user.getUserDB()
-        db.storeHistory(DummyPlugin(), dict(a=1), result={'/dummy/tmp/test/file1.png':{'timestamp':1,'type':'plot'},
-                                                          '/dummy/tmp/test/file1.nc':{'timestamp':1,'type':'data'},},
-                        uid='Test',
-                        status=_status_running)
-        all_entries = db.getHistory()
-        print all_entries
-        print all_entries[0].__str__()
-        print all_entries[0].__str__(compact=False)
-        
-        #test date parsing
-        values = [('2012-10-01 10:11:21', (2012, 10,1,10,11,21)),
-                  ('2012-10-01 10:11', (2012, 10,1,10,11,0)),
-                  ('2012-10-01 10', (2012, 10,1,10)),
-                  ('2012-10-01', (2012, 10,1)),
-                  ('2012-10', (2012, 10,1)),
-                  ('2012', (2012, 1,1))]
-        for date_str, date_tup in values:
-            dt = HistoryEntry.timestampFromString(date_str)
-            self.assertEquals(dt, datetime(*date_tup))
-        
-    def testSchemaUpgrade(self):
-        pass
-    
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()
+    def test_store_history(self):
+        row_id = self.user.getUserDB().storeHistory(
+            self.tool, self.config_dict, 'user', 1, caption='My caption'
+        )
+        h = History.objects.get(id=row_id)
+        self.assertTrue(h)
+        self.assertEqual(h.status_name(), 'finished_no_output')
+        self.assertEqual(h.caption, 'My caption')
+        self.assertEqual(h.config_dict(), self.config_dict)
+
+    def test_schedule_entry(self):
+        self.user.getUserDB().scheduleEntry(self.row_id, 'user', '/slurm/output/file.txt')
+        h = History.objects.get(id=self.row_id)
+        self.assertEqual(h.status, History.processStatus.scheduled)
+        self.assertEqual(h.slurm_output, '/slurm/output/file.txt')
+
+    def test_upgrade_status(self):
+
+        self.assertRaises(self.user.getUserDB().ExceptionStatusUpgrade,
+                          self.user.getUserDB().upgradeStatus, self.row_id, 'user', 6)
+
+        self.user.getUserDB().upgradeStatus(self.row_id, 'user', History.processStatus.finished)
+        h = History.objects.get(id=self.row_id)
+        self.assertEqual(h.status, History.processStatus.finished)
+
+    def test_change_flag(self):
+        self.user.getUserDB().changeFlag(self.row_id, 'user', History.Flag.deleted)
+        h = History.objects.get(id=self.row_id)
+        self.assertEqual(h.flag, History.Flag.deleted)
+
+    def test_get_history(self):
+        # create some values
+        users = ['user', 'other', 'user', 'test']
+        for u in users:
+            self.user.getUserDB().storeHistory(self.tool, self.config_dict, u, 1, caption='My %s' % u)
+
+        history = self.user.getUserDB().getHistory()
+        self.assertEqual(history.count(), 5)
+        history = self.user.getUserDB().getHistory(uid='user')
+        self.assertEqual(history.count(), 3)
+        history = self.user.getUserDB().getHistory(uid='user', tool_name='dummyplugin', limit=2)
+        self.assertEqual(history.count(), 2)
+        history = self.user.getUserDB().getHistory(uid='user', entry_ids=self.row_id)
+        self.assertEqual(history.count(), 1)
+
+    def test_add_history_tag(self):
+        self.user.getUserDB().addHistoryTag(self.row_id, HistoryTag.tagType.note_public, 'Some note')
+
+        h = History.objects.get(id=self.row_id)
+        tags = h.historytag_set.all()
+        self.assertEqual(len(tags), 1)
+        self.assertEqual(tags[0].type, HistoryTag.tagType.note_public)
+
+    def test_update_history_tag(self):
+        self.user.getUserDB().addHistoryTag(self.row_id, HistoryTag.tagType.note_public, 'Some note', uid='user')
+
+        h_tag = History.objects.get(id=self.row_id).historytag_set.first()
+        self.user.getUserDB().updateHistoryTag(h_tag.id, HistoryTag.tagType.note_deleted, 'New text', uid='user')
+
+        h_tag = History.objects.get(id=self.row_id).historytag_set.first()
+        self.assertEqual(h_tag.type, HistoryTag.tagType.note_deleted)
+        self.assertEqual(h_tag.text, 'New text')
+
+    def test_store_results(self):
+
+        results = {'/some/result.png': {'type': 'plot', 'caption': 'super plot'},
+                   '/some/other.eps': {'type': 'data'}}
+        self.user.getUserDB().storeResults(self.row_id, results)
+
+        h = History.objects.get(id=self.row_id)
+
+        self.assertEqual(h.result_set.count(), 2)
+        for key, val in results.iteritems():
+            self.assertTrue(h.result_set.filter(history_id_id=self.row_id,
+                                                output_file=key).exists())
+            if val.get('caption', None):
+                res_tag = h.result_set.get(output_file=key).resulttag_set.first()
+                self.assertEqual(res_tag.type, ResultTag.flagType.caption)
+                self.assertEqual(res_tag.text, val['caption'])
+
+    def test_version(self):
+        Version.objects.all().delete()
+        # create version entry
+        version_id = self.user.getUserDB().newVersion('dummyplugin', '1.0', 'git', 'git_number',
+                                                      'tool_git', 'tool_git_number')
+        self.assertTrue(Version.objects.filter(id=version_id).exists())
+
+        # get version entry
+        get_version_id = self.user.getUserDB().getVersionId('dummyplugin', '1.0', 'git', 'git_number',
+                                                            'tool_git', 'tool_git_number')
+
+        self.assertEqual(version_id, get_version_id)
+        Version.objects.all().delete()
+
+    def test_create_user(self):
+        User.objects.filter(username='new_user').delete()
+        self.user.getUserDB().createUser('new_user', 'test@test.de', 'Test', 'User')
+        self.assertTrue(User.objects.filter(username='new_user').exists())
+        User.objects.filter(username='new_user').delete()
+
+    def test_create_user_crawl(self):
+        self.user.getUserDB().create_user_crawl('/some/test/folder', 'user')
+        self.assertTrue(UserCrawl.objects.filter(status='waiting', path_to_crawl='/some/test/folder').exists())
+        UserCrawl.objects.all().delete()
+
+    def test_timestamp_to_string(self):
+        time = datetime.now()
+        self.assertEqual(timestamp_to_string(time), time.strftime('%Y-%m-%d %H:%M:%S.%f'))
+
+    def test_timestamp_from_string(self):
+        time = datetime.now()
+        time_str = timestamp_to_string(time)
+        self.assertEqual(time, timestamp_from_string(time_str))
