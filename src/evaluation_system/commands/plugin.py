@@ -12,6 +12,8 @@ from evaluation_system.model import user
 import logging
 from django.contrib.auth.models import User
 from evaluation_system.misc import config
+from evaluation_system.model.plugins.models import ToolPullRequest
+import time
 
 
 class Command(FrevaBaseCommand):
@@ -40,7 +42,10 @@ For Example:
               'action': 'store_true'},
              {'name': '--batchmode', 'help': 'creates a SLURM job', 'metavar': 'BOOL'},
              {'name': '--unique_output', 'help': 'If true append the freva run id to every output folder',
-              'metavar': 'BOOL', 'default': 'true'}
+              'metavar': 'BOOL', 'default': 'true'},
+             {'name': '--pull-request', 'help': 'issue a new pull request for the tool (developer only!)',
+              'action': 'store_true'},
+             {'name': '--tag', 'help': 'The git tag to pull', 'metavar': 'TAG'}
              ]
 
     def list_tools(self):
@@ -70,6 +75,29 @@ For Example:
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
 
+    def handle_pull_request(self, tool_name):
+        tag = self.args.tag
+        if not tag:
+            print 'Missing required option "--tag"'
+            return
+        # create new entry in
+        freva_user = user.User()
+        db_user = freva_user.getUserDB().getUserId(freva_user.getName())
+        pull_request = ToolPullRequest.objects.create(
+            user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting'
+        )
+
+        print 'Please wait while your pull request is processed'
+        while pull_request.status in ['waiting', 'processing']:
+            time.sleep(5)
+            pull_request = ToolPullRequest.objects.get(id=pull_request.id)
+
+        if pull_request.status == 'failed':
+            # TODO: Better error messages, like tag not valid or other
+            print 'Your request failed'
+        else:
+            print '%s plugin is now updated in the system.\nNew version: %s' % (tool_name, tag)
+
     def _run(self):
         # defaults
         options = self.args
@@ -80,6 +108,11 @@ For Example:
             tool_name = last_args[0]
         except IndexError:
             return self.list_tools()
+
+        # here we handle the tool pull request
+        if options.pull_request:
+            self.handle_pull_request(tool_name)
+            return 0
 
         if options.repos_version:
             (repos, version) = pm.getPluginVersion(tool_name)
