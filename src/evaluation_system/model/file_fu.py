@@ -23,10 +23,15 @@ OBSERVATIONS = 'observations'
 """DRS structure for observational data."""
 REANALYSIS = 'reanalysis'
 """DRS structure for reanalysis data."""
-USERDATA = 'userdata'
+CRAWLDATADRS = 'extradata'
+"""DRS structure for user data - DRS."""
+CRAWLDATA = 'crawl_my_data'
 """DRS structure for user data - CMOR."""
-PROJECTDATA = 'projectdata'
-"""DRS structure for project data- DRS."""
+ESGFCMIP5 = 'esgf-cmip5' 
+"""DRS structure for CMIP5 Data"""
+DKRZCORDEX = 'dkrz-cordex'
+"""DRS structure for REMOTE DKRZ CORDEX Data"""
+
 
 class DRSFile(object):
     """Represents a file that follows the `DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf>`_ standard."""
@@ -44,6 +49,17 @@ class DRSFile(object):
          "data_type": CMIP5,
          "defaults" : {"project":"cmip5" }
          },
+        #ESGF VIA SSHFS
+        ESGFCMIP5 : {
+         "root_dir":"/net/scratch/kadow/CMIP5STRUCTURE4LINK",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": ESGFCMIP5,
+         "defaults" : {"project":"esgf-cmip5" }
+         },
         #cordex data                                     
         CORDEX : {
          "root_dir":"/daten/freva/arch/data4freva/model/regional",
@@ -54,6 +70,20 @@ class DRSFile(object):
          "parts_time":"start_time-end_time",
          "data_type": CORDEX,
          "defaults" : {"project":"cordex" }
+         },
+#cordex data                                                                                                
+        DKRZCORDEX : {
+         "root_dir":"/net/scratch/kadow/DKRZCORDEX",
+         "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/v\
+ariable/file_name".split('/'),
+         "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//vari\
+able".split('/'), # the empty version field is necessary                                                            
+         "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ense\
+mble/version/variable".split('/'),
+         "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
+         "parts_time":"start_time-end_time",
+         "data_type": DKRZCORDEX,
+         "defaults" : {"project":"dkrz-cordex" }
          },
         #observations      
          OBSERVATIONS : {
@@ -76,26 +106,27 @@ class DRSFile(object):
          "defaults" : {"project":"reanalysis", "product":"reanalysis"}
         },
         #project data
-        PROJECTDATA : {
-         "root_dir":"/daten/freva/arch/data4freva/projectdata",
+        CRAWLDATADRS : {
+         "root_dir":"/daten/freva/arch/data4freva/extradata/DRS",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble".split('/'),
          "parts_versioned_dataset":"project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version".split('/'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "data_type": PROJECTDATA,
+         "data_type": CRAWLDATADRS,
          "defaults" : {}
          },
-        USERDATA : {
-         "root_dir":"/daten/freva/arch/data4freva/userdata",
+        CRAWLDATA : {
+         "root_dir":"/daten/freva/arch/data4freva/crawl_my_data",
          "parts_dir":"project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset":"project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name":"variable-cmor_table-model-experiment-ensemble-time".split('-'),
          "parts_time":"start_time-end_time",
-         "data_type": USERDATA,
+         "data_type": CRAWLDATA,
          "defaults" : {}
          },
-        ##REGIONAL data
+
+                ##REGIONAL data
              }   
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
