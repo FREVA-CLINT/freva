@@ -489,11 +489,11 @@ class basePlugin(object):
         # nothing found? cancel!        
         if len(self.inputfiles) == 0:
             Logger.Error("No input files found!\n"
-                         "SolrSearch command:\t"
-                         "solr_search project='%s' product='%s' institute='%s' model='%s' experiment='%s'"
-                         " time_frequency='%s' realm='%s' variable='%s'"
-                         % (project, product, institute, model, experiment, time_frequency,
-                            realm, variable)
+                         "Data-Browser command:\t"
+                         "freva --databrowser project='%s' product='%s' institute='%s' model='%s' experiment='%s'"
+                                    " time_frequency='%s' realm='%s' variable='%s'"
+                                    % (project,product,institute,model,experiment,time_frequency,
+                                       realm, variable)
                          , -1)
 
         # changed the time part if only a single lead year is of interest or remove files that do not belong to the 
