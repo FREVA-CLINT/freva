@@ -94,7 +94,7 @@ For Example:
 
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
-            print 'Your request failed'
+            print 'The pull request failed.\nPlease contact the admins.'
         else:
             print '%s plugin is now updated in the system.\nNew version: %s' % (tool_name, tag)
 

@@ -8,15 +8,10 @@ process_pull_requests -- Process all pull requests for tools
 @contact:    sebastian.illing@met.fu-berlin.de
 """
 
-from evaluation_system.commands import (FrevaBaseCommand, CommandError)
+from evaluation_system.commands import FrevaBaseCommand, CommandError
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
-from evaluation_system.misc import config
-import logging, sys
 import os
-import shutil
-import re
-from django.contrib.flatpages.models import FlatPage
 
 
 class Command(FrevaBaseCommand):
@@ -39,7 +34,6 @@ class Command(FrevaBaseCommand):
                 request.status = 'processing'
                 request.save()
                 tool_name = request.tool.lower()
-                print tool_name
                 # Does tool exist?
                 if tool_name not in tools.keys():
                     raise CommandError, 'Plugin %s does not exist' % request.tool
@@ -47,10 +41,10 @@ class Command(FrevaBaseCommand):
                 # get repo path
                 path = '/'.join(tools[tool_name]['plugin_module'].split('/')[:-1])
                 exit_code = os.system(
-                    'cd %s; git pull; git checkout -b versiona_%s %s' % (path, request.tagged_version,
-                                                                          request.tagged_version)
+                    'cd %s; git pull; git checkout -b version_%s %s' % (path, request.tagged_version,
+                                                                        request.tagged_version)
                 )
-                if exit_code > 0:
+                if exit_code > 1:
                     raise CommandError, 'Something went wrong, please contact the admins'
 
                 request.status = 'success'
@@ -60,6 +54,7 @@ class Command(FrevaBaseCommand):
                 request.status = 'failed'
                 request.save()
                 raise e
+
 
 if __name__ == "__main__":
     Command().run()
