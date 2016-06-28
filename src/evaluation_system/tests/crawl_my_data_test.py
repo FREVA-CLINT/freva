@@ -15,6 +15,9 @@ import sys
 class BaseCommandTest(unittest.TestCase):
     
     def setUp(self):
+        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+        print os.path.dirname(__file__) + '/test.conf'
+        config.reloadConfiguration()
         self.cmd = Command()
 
     def test_auto_doc(self):

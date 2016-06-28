@@ -20,5 +20,7 @@ try:
     }
     settings.configure(**SETTINGS)
     django.setup()
+    print 'TEST SETUP'
 except:  # pragma nocover
+    print 'WARNING!!!'
     pass

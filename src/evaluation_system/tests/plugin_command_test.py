@@ -10,6 +10,7 @@ from evaluation_system.tests.capture_std_streams import stdout
 from evaluation_system.misc import config
 from evaluation_system.api import plugin_manager as pm
 from evaluation_system.model.history.models import History
+from evaluation_system.model.plugins.models import ToolPullRequest
 import sys
 
 
@@ -65,6 +66,9 @@ Options:
                         viewing and handling the configuration.
   --batchmode=BOOL      creates a SLURM job
   --unique_output=BOOL  If true append the freva run id to every output folder
+  --pull-request        issue a new pull request for the tool (developer
+                        only!)
+  --tag=TAG             The git tag to pull
 ''' % (os.path.basename(sys.argv[0]), sys.argv[1]))
 
         stdout.startCapturing()
@@ -142,6 +146,40 @@ the_number: 42
      other: 1.4
      input: -
 ''')
-
         # remove all history entries
         History.objects.all().delete()
+
+    def test_handle_pull_request(self):
+        ToolPullRequest.objects.all().delete()
+        import time
+
+        def sleep_mock(v):
+            t = ToolPullRequest.objects.get(tool='murcss', tagged_version='1.0')
+            t.status = 'failed'
+            t.save()
+        time.sleep = sleep_mock
+
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['murcss', '--pull-request', '--tag=1.0'])
+        stdout.stopCapturing()
+        cmd_out = stdout.getvalue()
+        self.assertEqual(cmd_out, """Please wait while your pull request is processed
+The pull request failed.
+Please contact the admins.
+""")
+
+        def sleep_mock_success(v):
+            t = ToolPullRequest.objects.get(tool='murcss', tagged_version='2.0')
+            t.status = 'success'
+            t.save()
+        time.sleep = sleep_mock_success
+        stdout.startCapturing()
+        stdout.reset()
+        self.cmd.run(['murcss', '--pull-request', '--tag=2.0'])
+        stdout.stopCapturing()
+        cmd_out = stdout.getvalue()
+        self.assertEqual(cmd_out, """Please wait while your pull request is processed
+murcss plugin is now updated in the system.
+New version: 2.0
+""")

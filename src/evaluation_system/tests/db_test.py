@@ -26,7 +26,10 @@ class Test(unittest.TestCase):
     DUMMY_USER = {'pw_name':'someone'}
 
     def setUp(self):
+        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+        User.objects.filter(username='dummy_user').delete()
         self.user = DummyUser(random_home=True, **Test.DUMMY_USER)
+        self.db_user = User.objects.create(username='dummy_user')
         self.tool = DummyPlugin()
         self.config_dict = {'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder'}
         self.row_id = self.user.getUserDB().storeHistory(
@@ -35,12 +38,15 @@ class Test(unittest.TestCase):
 
     def tearDown(self):
         # remove the test entries from the database
+        #User.objects.all().delete()
         History.objects.all().delete()
+        User.objects.filter(username='dummy_user').delete()
         home = self.user.getUserHome()
         if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
             # make sure the home is a temporary one!!!
             print "Cleaning up %s" % home
             shutil.rmtree(home)
+
 
     def test_store_history(self):
         row_id = self.user.getUserDB().storeHistory(
