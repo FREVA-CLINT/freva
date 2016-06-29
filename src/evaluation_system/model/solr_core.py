@@ -359,11 +359,12 @@ be used, using the configuration from the config file).
                                 version = drs_file.get_version()
                                 latest_versions[drs_file.to_dataset(versioned=False)] = version
                                 batch_latest_new[drs_file.to_dataset(versioned=False)] = metadata
-                                batch_latest = batch_latest_new.values()
-                            #if not drs_file.get_version() < version:
-                            #    print latest_versions
-                            #    #print drs_file.get_version(), version, metadata
-                            #    batch_latest.append(metadata)
+                                #batch_latest = batch_latest_new.values()
+                
+                            if not drs_file.get_version() < version:
+                                # print latest_versions
+                                #print drs_file.get_version(), version, metadata
+                                batch_latest.append(metadata)
                         else:
                             # if not version always add to latest
                             batch_latest_new[drs_file.to_dataset(versioned=False)] = metadata
@@ -385,7 +386,8 @@ be used, using the configuration from the config file).
 
             # flush
             if len(batch) > 0:
-                print "Sending last %s entries" % (len(batch))
+                print "Sending last %s entries and %s entries to latest core" % (len(batch), len(batch_latest))
+		#print len(batch_latest)
                 core_all_files.post(batch)
                 batch = []
                 batch_count += 1
