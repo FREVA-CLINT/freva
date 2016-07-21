@@ -368,7 +368,7 @@ be used, using the configuration from the config file).
                         else:
                             # if not version always add to latest
                             batch_latest_new[drs_file.to_dataset(versioned=False)] = metadata
-                            batch_latest = batch_latest_new.values()
+                            batch_latest.append(metadata)
 
                         if len(batch) >= batch_size:
                             print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
