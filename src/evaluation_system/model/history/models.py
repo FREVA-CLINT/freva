@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from evaluation_system.model.plugins.models import Version, Parameter
 import re
-
+import os
 import json
 
 
@@ -150,6 +150,21 @@ class History(models.Model):
         Returns status as string
         """    
         return self.status_dict[self.status]
+
+    def get_slurm_status(self):
+        """
+        Method to get the slurm status.
+        """
+        slurm_id = self.slurmId()
+        # not started with slurm
+        if slurm_id == 0:
+            return False
+        cmd = 'sacct -X -p -j %s' % slurm_id
+        p = os.popen(cmd, 'r')
+        header = p.readline().split('|')
+        entry = p.readline().split('|')
+        index = header.index('state')
+        return entry[index]
 
     @staticmethod
     def find_similar_entries(config, uid=None, max_impact=Parameter.Impact.affects_plots, max_entries=-1):
