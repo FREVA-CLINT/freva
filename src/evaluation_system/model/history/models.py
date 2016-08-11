@@ -159,12 +159,25 @@ class History(models.Model):
         # not started with slurm
         if slurm_id == 0:
             return False
-        cmd = 'sacct -X -p -j %s' % slurm_id
-        p = os.popen(cmd, 'r')
-        header = p.readline().split('|')
-        entry = p.readline().split('|')
-        index = header.index('state')
-        return entry[index]
+        try:
+            cmd = 'sacct -X -p -j %s' % slurm_id
+            p = os.popen(cmd, 'r')
+            header = p.readline().split('|')
+            entry = p.readline().split('|')
+            index = header.index('state')
+            return entry[index]
+        # If "sacct" is not configured, we have to use "squeue"
+        except ValueError:
+            cmd = 'squeue -h'
+            p = os.popen(cmd, 'r')
+            while True:
+                line = p.readline()
+                if not line:
+                    return 'Not running'
+                if slurm_id in line:
+                    if ' PD ' in line:
+                        return 'Scheduled'
+                    return 'Running'
 
     @staticmethod
     def find_similar_entries(config, uid=None, max_impact=Parameter.Impact.affects_plots, max_entries=-1):
