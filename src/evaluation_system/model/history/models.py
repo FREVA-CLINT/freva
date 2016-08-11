@@ -173,7 +173,7 @@ class History(models.Model):
             while True:
                 line = p.readline()
                 if not line:
-                    if self.status == self.STATUS_CHOICES.running:
+                    if self.status == 3:  #self.STATUS_CHOICES.running:
                         return 'Cancelled'
                     return self.status_name()
                 if slurm_id in line:
