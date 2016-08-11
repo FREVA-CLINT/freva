@@ -157,7 +157,7 @@ class History(models.Model):
         """
         slurm_id = self.slurmId()
         # not started with slurm
-        if slurm_id == 0:
+        if slurm_id == '0':
             return False
         try:
             cmd = 'sacct -X -p -j %s' % slurm_id
@@ -173,7 +173,9 @@ class History(models.Model):
             while True:
                 line = p.readline()
                 if not line:
-                    return 'Not running'
+                    if self.status == self.STATUS_CHOICES.running:
+                        return 'Cancelled'
+                    return self.status_name()
                 if slurm_id in line:
                     if ' PD ' in line:
                         return 'Scheduled'
