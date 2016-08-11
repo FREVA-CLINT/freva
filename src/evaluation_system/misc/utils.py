@@ -1,7 +1,8 @@
 '''
-.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
+.. moduleauthor:: Sebastian Illing / estani
 
-This module provides different utilities that does not depend on any other internal package.
+This module provides different utilities that does not depend on any other 
+internal package.
 '''
 import copy
 import os
@@ -28,7 +29,8 @@ def capture_stdout():
 def supermakedirs(path, mode):
     """
     This snippet of code was taken from stackoverflow.com
-    On some systems the parameter for the access rights are ignored when using os.makedirs.
+    On some systems the parameter for the access rights are ignored when 
+    using os.makedirs.
     This routine overcomes this problem.
     """
     # this is a neccessary condition,
@@ -61,7 +63,8 @@ def mp_wrap_fn(args):
     return function_to_call(*args)
 
 class Struct(object):
-    """This class is used for converting dictionaries into classes in order to access them
+    """This class is used for converting dictionaries into classes in order 
+    to access them
 more comfortably using the dot syntax."""
 
     def __init__(self, **entries):
@@ -71,7 +74,8 @@ more comfortably using the dot syntax."""
         return None
     
     def validate(self, value):
-        """Check the value is one of the possibilities from those stored in the object.
+        """Check the value is one of the possibilities from those stored 
+        in the object.
 
 :param str_value: the value to check."""
         return value in self.__dict__.values()
@@ -80,8 +84,10 @@ more comfortably using the dot syntax."""
         """Transfrom this struct into a dictionary."""
         result = {}
         for i in self.__dict__:
-            if isinstance(self.__dict__[i], Struct): result[i] = self.__dict__[i].toDict()
-            else: result[i] = self.__dict__[i]
+            if isinstance(self.__dict__[i], Struct):
+                result[i] = self.__dict__[i].toDict()
+            else: 
+                result[i] = self.__dict__[i]
         return result
 
     def __repr__(self):
@@ -108,9 +114,11 @@ more comfortably using the dot syntax."""
         if not dictionary: return dictionary
 
         #If a list, apply to elements within
-        if type(dictionary) == list: return map(lambda d: Struct.from_dict(d, recurse) ,dictionary)
+        if type(dictionary) == list: 
+            return map(lambda d: Struct.from_dict(d, recurse) ,dictionary)
         #not a dictionary, return unchanged
-        if type(dictionary) != dict: return dictionary
+        if type(dictionary) != dict: 
+            return dictionary
         if recurse:
             for key in dictionary: dictionary[key] = Struct.from_dict(dictionary[key], recurse)
 
@@ -119,17 +127,20 @@ more comfortably using the dot syntax."""
 
 class TemplateDict(object):
     """Help object for resolving dictionaries containing substitutable values.
-This object has a *basis* dictionary and a resolution dictionary. The only difference among them is
-that the *basis* dictionary is defined on creation  and the resolution dictionary is provided when 
-calling the substitution. For everything else they work alike and both may contain parameterless functions
+This object has a *basis* dictionary and a resolution dictionary. The only 
+difference among them is that the *basis* dictionary is defined on creation 
+and the resolution dictionary is provided when calling the substitution. 
+For everything else they work alike and both may contain parameterless functions
 instead of simple values that will get called when resolving them.
 
-This object uses the :py:class:`string.Template` object for performing substitution so the syntax used for
-substitution is as defined there (e.g. ``${var_to_replace}$another_var_to_replace``).
+This object uses the :py:class:`string.Template` object for performing 
+substitution so the syntax used for substitution is as defined there 
+(e.g. ``${var_to_replace}$another_var_to_replace``).
 """
 
     translation_dict = None
-    """Stores the translation dictionary used every time :class:`TemplateDict.substitute` is call."""
+    """Stores the translation dictionary used every time 
+    :class:`TemplateDict.substitute` is call."""
     
     def __init__(self, **translation_dict):
         """Create a dictionary from the named arguments passed along::
@@ -141,7 +152,8 @@ This dictionary is stored at :class:`TemplateDict.translation_dict`."""
 
     
     def __wrapDict(self, var_dict = {}):
-        """Creates a wrapper that acts like a dictionary to the outside but performs some operations
+        """Creates a wrapper that acts like a dictionary to the outside but 
+        performs some operations
 in the background when retrieving the values."""      
         templ_self = self
         
@@ -164,17 +176,20 @@ in the background when retrieving the values."""
             
         
     def substitute(self, substitute_dict, recursive = True):
-        """Substitute the values from substitute dictionary. Values in ``substitute_dict`` take precedence from
-those in :class:`TemplateDict.translation_dict`.
+        """Substitute the values from substitute dictionary. Values in 
+        ``substitute_dict`` take precedence from those in 
+        :class:`TemplateDict.translation_dict`.
 
 :type recursive: bool
-:param recursive: if the substitution should be resolved recursive by including the given 
+:param recursive: if the substitution should be resolved recursive by 
+including the given 
 :type substitute_dict: dict 
 :param substitute_dict: is a dictionary of the form: ``variable -> value``. 
 
 ``value`` in ``substitute_dict`` may be any of:
      * a simple value (int, float, str, object).
-     * a string containing ``$`` characters as start marks for variables which must exists in either ``substitute_dict`` or :class:`TemplateDict.translate_dict`.
+     * a string containing ``$`` characters as start marks for variables 
+     which must exists in either ``substitute_dict`` or :class:`TemplateDict.translate_dict`.
      * a parameterless function returning any of the previous values.
 
 For instance, given this setup::

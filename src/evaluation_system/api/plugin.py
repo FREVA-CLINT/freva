@@ -1,6 +1,6 @@
 '''
 
-.. moduleauthor:: estani <estanislao.gonzalez@met.fu-berlin.de>
+.. moduleauthor:: Sebastian Illing / estani 
 
 
 This module defines the basic objects for implementing a plug-in.
@@ -184,7 +184,9 @@ a list (or anything iterable) to :class:`prepareOutput` .
             tmp_param = self.__parameters__.get_parameter(key)
             if isinstance(tmp_param, Directory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
-                    config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
+                    if key in config_dict.keys() and config_dict[key] is not None:
+                        print config_dict[key], 'dummp config dict'
+                        config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
         return config_dict        
     
     def linkmydata(self,outputdir=None):
@@ -711,7 +713,7 @@ It means, **never** start a plug-in comming from unknown sources.
         return result
     
     
-    
+    # TODO: Is this used somewhere?
     def getVersion():
         import evaluation_system.model.repository as repository
     

@@ -26,6 +26,7 @@ class Command(FrevaBaseCommand):
              {'name': '--help', 'short': '-h',
               'help': 'show this help message and exit', 'action': 'store_true'},
              {'name': '--docpath', 'help': 'path to doc folder with tex file'},
+             {'name': '--tex_file', 'help': 'filename of main tex file'},
              {'name': '--tool', 'help': 'tool name'}
              ] 
 
@@ -38,20 +39,24 @@ class Command(FrevaBaseCommand):
         shutil.copytree(from_path, to_path)    
             
     def _run(self):
+
         doc_path = self.args.docpath
+        tex_file = self.args.tex_file
+        #doc_path = 
         tool = self.args.tool.lower()
         # find .tex file 
-        tex_file = None
-        for fn in os.listdir(doc_path):
-            if fn.endswith('.tex'):
-                tex_file = fn
-                file_root = tex_file.split('.')[0]
-            elif fn.endswith('.bib'):
-                bib_file = fn
+        #tex_file = None
+        #file_root = tex_file.split('.')[0] 
+        #for fn in os.listdir(doc_path):
+        #    if fn.endswith('.tex'):
+        #        tex_file = fn
+        #        file_root = tex_file.split('.')[0]
+        #    elif fn.endswith('.bib'):
+        #        bib_file = fn
         if not tex_file:
             print 'Can\'t find a .tex file in this directory!'
             return
-        
+        file_root = tex_file.split('.')[0]
         #copy folder to /tmp for processing
         new_path = '/tmp/%s/' % tool
         self.copy_and_overwrite(doc_path, new_path)
@@ -73,9 +78,13 @@ class Command(FrevaBaseCommand):
         text = text.replace('</body>', '')
         text = text.replace('<body>', '')
         
+        figure_prefix = 'figures'
         # replace img src
-        text = text.replace('src="figures/',
+        text = text.replace('src="%s/' % figure_prefix,
                             'style="width:80%;" src="/static/preview/doc/'+tool+'/')
+        #text = text.replace('src="%s/' % figure_prefix,
+        #                    'src="/static/preview/doc/'+tool+'/')
+
         # remove too big sigma symbols
         text = text.replace('mathsize="big"', '')
         
@@ -89,8 +98,7 @@ class Command(FrevaBaseCommand):
         
         # Copy images to website preview path
         preview_path = config.get('preview_path')
-        print preview_path
-        self.copy_and_overwrite('figures/', os.path.join(preview_path, 'doc/%s/' % tool))
+        self.copy_and_overwrite('%s/' % figure_prefix, os.path.join(preview_path, 'doc/%s/' % tool))
         # remove tmp files
         shutil.rmtree(new_path)
         
