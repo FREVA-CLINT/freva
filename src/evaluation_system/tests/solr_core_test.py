@@ -126,14 +126,17 @@ class Test(unittest.TestCase):
 
         # add new version
         new_version = tmpdir + '/' + 'cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20120419/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc'
-        with open(dump_file, 'a') as f:
-            f.write(new_version + ',1564083682.09\n')
+        with open(dump_file, 'r') as f: content = f.readlines()
+        content.insert(3, new_version + ',1564083682.09\n')
+        with open(dump_file, "w") as f:
+            contents = "".join(content)
+            f.write(contents)
+            f.close()
 
         SolrCore.load_fs_from_file(dump_file, abort_on_errors=True,
                                    core_all_files=self.all_files, core_latest=self.latest)
 
         self.assertTrue(set(ff_all._search()).symmetric_difference(set(all_entries)).pop() == new_version)
-
         self.assertTrue((set(ff_latest._search()) - set(latest_entries)).pop() == new_version)
         self.assertTrue((set(latest_entries) - set(ff_latest._search())).pop() == tmpdir + '/' + multiversion_latest)
 
@@ -146,9 +149,9 @@ class Test(unittest.TestCase):
         self.assertEqual(facets, facets_to_be)
 
         DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
-        if os.path.isdir(tmpdir):
-            shutil.rmtree(tmpdir)
-            pass
+        #if os.path.isdir(tmpdir):
+        #    shutil.rmtree(tmpdir)
+        #    pass
 
     def test_reload(self):
         res = self.all_files.reload()

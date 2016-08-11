@@ -79,9 +79,9 @@ class Test(unittest.TestCase):
 
     def test_search_files(self):
 
-        all_files_output = '''/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc
-/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc
+        all_files_output = u'''/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc
 /tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc
+/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc
 '''
         res = self.run_command_with_capture()
         self.assertEqual(res, all_files_output)
@@ -90,9 +90,7 @@ class Test(unittest.TestCase):
         self.assertEqual(res, '/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc\n')
 
         res = self.run_command_with_capture(['variable=ua', 'variable=tauu'])
-        self.assertEqual(res,"""/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc
-/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc
-""")
+        self.assertEqual(res, """/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc\n/tmp/some_temp_solr_core/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc\n""")
 
         res = self.run_command_with_capture(['variable=ua', 'variable=tauu', 'variable=wetso2'])
         self.assertEqual(res, all_files_output)
