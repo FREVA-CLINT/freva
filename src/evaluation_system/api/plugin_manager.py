@@ -384,7 +384,7 @@ def _preview_copy(source_path, dest_path):
         sub.call(command)
     os.chmod(dest_path, 509)
  
-def __preview_convert(source_path, dest_path):
+def _preview_convert(source_path, dest_path):
     """
     Converts images
     :type source_path: str
