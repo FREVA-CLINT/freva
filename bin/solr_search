@@ -199,9 +199,9 @@ For Example:
 
 
 if __name__ == "__main__":
-    print '''WARNING: "analyze" is deprecated and will be dropped in a future version.
+    print '''WARNING: "solr_search" is deprecated.
           Use "freva --databrowser" instead (For more information see freva --help)'''
-    SolrSearch().run()
+    #SolrSearch().run()
 
 
 

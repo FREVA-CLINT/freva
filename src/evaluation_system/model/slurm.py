@@ -145,8 +145,8 @@ class slurm_file(object):
         if email:
             self.add_ddash_option("mail-user", email)
         self.set_cmdstring(cmdstring)
-
-        self.source_file = options.pop('source')
+        
+        self.source_file = options.pop('source', False)
         module_file = options.pop('module_command')
         self.add_module(module_file)
 
@@ -172,7 +172,8 @@ class slurm_file(object):
         # fp.write("source /client/etc/profile.miklip\n")
        
         # Workaround for Slurm on fu
-        fp.write("source %s\n" % self.source_file) 
+        if self.source_file:
+            fp.write("source %s\n" % self.source_file) 
         # write options
         opts = self._options.items()
 
@@ -195,5 +196,8 @@ class slurm_file(object):
         for var in variables:
             fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")
         
+        # workaround for slurm file acces
+        fp.write('JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o "StdOut=[^ ]*" | awk -F= \'{print $2}\')\n')
+        fp.write('chmod 664 $SLURM_STDOUT  #(oder welche Rechte ihr vergeben wollt)\n')
         # write the execution command
         fp.write(self._cmdstring + "\n")

@@ -218,19 +218,20 @@ a list (or anything iterable) to :class:`prepareOutput` .
             new_product = '%s.s%s.%s.%s' % (self.__class__.__name__.lower(),ntool,self.rowid,nproject,nproduct)
 
         # Link section
-        if os.path.islink(os.path.join(rootpath,user.getName())):
-            if not os.path.exists(os.path.join(rootpath,user.getName())):
-                os.unlink(os.path.join(rootpath,user.getName()))
-                os.symlink(workpath, os.path.join(rootpath,user.getName()))
+        link_path = os.path.join(rootpath,'user-' + user.getName())
+        if os.path.islink(link_path):
+            if not os.path.exists(link_path):
+                os.unlink(link_path)
+                os.symlink(workpath, os.path.join(link_path))
                 if not os.path.isdir(workpath): os.makedirs(workpath)
-            workpath = os.path.join(os.path.dirname(os.path.join(rootpath,user.getName())), os.readlink(os.path.join(rootpath,user.getName())))
+            workpath = os.path.join(os.path.dirname(link_path), os.readlink(link_path))
         else:
            if not os.path.isdir(workpath): os.makedirs(workpath)
-           os.symlink(workpath, os.path.join(rootpath,user.getName()))
+           os.symlink(workpath, link_path)
         os.symlink(os.path.join(outputdir,project,product), os.path.join(workpath,new_product))
         
         # Prepare for solr
-        crawl_dir=os.path.join(rootpath,user.getName(),new_product)
+        crawl_dir=os.path.join(link_path,new_product)
         now = datetime.now().strftime('%Y-%m-%d_%H%M%S')
         output = os.path.join(solr_in,'solr_crawl_%s.csv.gz' %(now))
         

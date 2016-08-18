@@ -382,8 +382,8 @@ def _preview_copy(source_path, dest_path):
     else:
         command = ['convert', '-resize', '800x>', source_path, dest_path]
         sub.call(command)
-
-
+    os.chmod(dest_path, 509)
+ 
 def _preview_convert(source_path, dest_path):
     """
     Converts images
@@ -396,6 +396,9 @@ def _preview_convert(source_path, dest_path):
     # a not very pythonic work-around
     command = ['convert', '-resize', '800x', source_path, dest_path]
     sub.call(command)
+    # we need this on mistral, becuase otherwise apache can't read the files
+    # TODO: Why was is working on MiKlip?
+    os.chmod(dest_path, 509)
 
     # The following is preferable when supported by the installed PIT version
     # im = Image.open(source_path)

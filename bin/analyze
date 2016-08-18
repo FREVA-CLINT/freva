@@ -540,6 +540,6 @@ filter=cat      Where cat is one of 'data, plots, others'. Only results will be
         return 2
 
 if __name__ == "__main__":
-    print '''WARNING: "analyze" is deprecated and will be dropped in a future version.
+    print '''ERROR: "analyze" is deprecated and will not work any longer.
           Use "freva --plugin" or "freva --history" instead (For more information see freva --help)'''
-    sys.exit(main())
+    #sys.exit(main())
