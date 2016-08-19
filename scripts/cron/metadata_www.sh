@@ -1,25 +1,28 @@
-#!/bin/bash -l
+#!/bin/bash
 
 ############
 # SCRIPT 4 COLLECTING METADATA INFOS
 # 2 SHOW ON WEBPAGE - DATA-BROWSER
-# RUN ON MIKLIP11 WEBPAGE MACHINE
+# RUN ON WEBPAGE MACHINE
+# FREVA NEEDS2BE LOADED
 ###########
 
-####
-# LOAD MODULES
-###
-source /net/opt/system/modules/default/init/bash
-module load /home/integra/evaluation_system/modules/freva/1.0 1>/dev/null 2>/dev/null 
-module load netcdf 1>/dev/null 2>/dev/null
+
+# CHECK4FREVA
+if [[ ! -e $(command -v freva) ]]; then 
+    echo FREVA is not loaded
+    echo please load FREVA
+    echo EXIT now
+    exit
+fi
 
 ####
 # SET SCRIPT
 ####
 
-FREVA_ROOT=/home/integra/evaluation_system/
-
-JSONSCRIPT=${FREVA_ROOT}/database/metadata/metadata.js
+FREVA_ROOT=$PWD/../../
+JSONSCRIPT=${FREVA_ROOT}/../misc4freva/db4freva/metadata/metadata.js
+WEBSITE_FILE=${FREVA_ROOT}/../freva_web/static/js/metadata.js
 
 mv ${JSONSCRIPT} ${JSONSCRIPT}_OLD 1>/dev/null 2>/dev/null 
 
@@ -32,7 +35,7 @@ mv ${JSONSCRIPT} ${JSONSCRIPT}_OLD 1>/dev/null 2>/dev/null
 ###########
 # START WITH variable
 
-IFS=": " read -r name options <<< "$(solr_search --all-facets | grep -i variable)"
+IFS=": " read -r name options <<< "$(freva --databrowser --all-facets | grep -i variable)"
 echo "var" ${name} "= {" >> ${JSONSCRIPT}
 
 IFS="," read -ra optionsArray <<< "${options}"
@@ -129,4 +132,4 @@ echo "};" >> ${JSONSCRIPT}
 ########
 # END
 
-cp $JSONSCRIPT ${FREVA_ROOT}/../freva_web/static/js/metadata.js
+cp $JSONSCRIPT ${WEBSITE_FILE}
