@@ -185,7 +185,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
             if isinstance(tmp_param, Directory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
                     if key in config_dict.keys() and config_dict[key] is not None:
-                        print config_dict[key], 'dummp config dict'
+                        #print config_dict[key], 'dummp config dict'
                         config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
         return config_dict        
     
