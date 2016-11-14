@@ -95,7 +95,7 @@ class UpdateProjectdata(BaseCommand):
 
 
 if __name__ == "__main__":
-    print '''WARNING: "crawl_my_data" is deprecated and will be dropped in a future version.
+    print '''WARNING: "crawl_my_data" is deprecated.
           Use "freva --crawl_my_data" instead (For more information see freva --help)'''
-    inst = UpdateProjectdata()
-    inst.run()
+    #inst = UpdateProjectdata()
+    #inst.run()

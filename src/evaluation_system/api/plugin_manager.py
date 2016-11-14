@@ -164,6 +164,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         f = open(plugin_mod+'.py', 'r')
         description = None
         class_name = None
+        class_name_str = ''
         for line in f:
             description = re.search(reg, line)
             if description is not None:
@@ -178,14 +179,14 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 # What if class inherits from other Base Class?
                 if 'PluginAbstract' in class_name.groups()[0]:
                     class_name_str = re.sub(r'\(.*', '', class_name.groups()[0])
-        if class_name_str.lower() not in __plugins_meta.keys():
+        if class_name_str != ''  and class_name_str.lower() not in __plugins_meta.keys():
             __plugins_meta[class_name_str.lower()] = dict(name=class_name_str,
                                                           plugin_class=class_name_str,
                                                           plugin_module=plugin_mod,
                                                           description=description_str,
                                                           user_exported=plugin_name in extra_plugins)
             __plugins__[class_name_str] = class_name_str
-        else:
+        elif class_name_str != '':
             log.warn("Default plugin %s is being overwritten by: %s",
                      class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
     sys.path = [p for p in munge(sys.path)]  
@@ -382,8 +383,8 @@ def _preview_copy(source_path, dest_path):
     else:
         command = ['convert', '-resize', '800x>', source_path, dest_path]
         sub.call(command)
-
-
+    os.chmod(dest_path, 509)
+ 
 def _preview_convert(source_path, dest_path):
     """
     Converts images
@@ -396,6 +397,9 @@ def _preview_convert(source_path, dest_path):
     # a not very pythonic work-around
     command = ['convert', '-resize', '800x', source_path, dest_path]
     sub.call(command)
+    # we need this on mistral, becuase otherwise apache can't read the files
+    # TODO: Why was is working on MiKlip?
+    os.chmod(dest_path, 509)
 
     # The following is preferable when supported by the installed PIT version
     # im = Image.open(source_path)
