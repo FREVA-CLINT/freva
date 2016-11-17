@@ -7,6 +7,7 @@ NameYourEvaluationSystem= #project-ces WILL BE DIRECTORY in $Path2Eva
 Path2Eva= #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
 # SWITCHES
 makeOwnPython=False
+makeFreva=False
 makeConfig=False
 makeStartscript=False
 makeSOLRSERVER=False
@@ -28,9 +29,9 @@ export CDO_DIR= #/usr/local/cdo
 ###########
 ADMINS= #freva
 PROJECTWEBSITE= #just for info printing
-USERRESULTDIR= #/home/ #WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
+USERRESULTDIR= #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
 #SCHEDULER - SLURM                           
-SLURMCOMMAND= #None/sbatch
+SLURMCOMMAND= #sbatch/None
 #MYSQL
 MYSQLHOST= #localhost
 MYSQLUSER= #freva
@@ -91,12 +92,9 @@ if [ "$makeOwnPython" = "True" ]; then
 fi
 
 
-#if [ "$makeFrevaVIAgit" = "True" ]; then
-#    git clone git@gitlab.met.fu-berlin.de:freva/evaluation_system.git $FREVA
-#    git clone /home/freva/ral-eva-1try/freva $FREVA
-#    mkdir -m 777 -p $DBDIR/preview
-#    mkdir -m 751 -p $DBDIR/solr
-#fi
+if [ "$makeFreva" = "True" ]; then
+    git clone git@gitlab.met.fu-berlin.de:freva/evaluation_system.git $FREVA
+fi
 
 if [ "$makeConfig" = "True" ] ; then
     mkdir -m 751 -p $CONFIGDIR
@@ -366,7 +364,7 @@ proc ModulesHelp { } {
 #help function to show user help when loading module
 proc show_info {}  {
     puts stderr {
-Freva 
+$NameYourEvaluationSystem by Freva 
 Available commands:
   --plugin       : Applies some analysis to the given data.
   --history      : provides access to the configuration history
@@ -441,8 +439,8 @@ if [ "$makeSOLRSERVER" = "True" ] ; then
     cp -r $FREVA/etc/solr/home/latest/conf/* $SOLRSERVER/home/latest/conf/
     $FREVA/sbin/solr_server start
     sleep 5
-    curl "http://${SOLRHOST}:8983/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
-    curl "http://${SOLRHOST}:8983/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
+    curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
+    curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
 fi
 
 
