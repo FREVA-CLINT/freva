@@ -139,7 +139,7 @@ class slurm_file(object):
             options = config.get_section('scheduler_options_extern')
         else:
             options = config.get_section('scheduler_options')
-
+        self.scheduler_options = options
         # set the default options
         self.add_dash_option("D", outdir)
         if email:
@@ -196,8 +196,9 @@ class slurm_file(object):
         for var in variables:
             fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")
         
-        # workaround for slurm file acces
-        fp.write('JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o "StdOut=[^ ]*" | awk -F= \'{print $2}\')\n')
-        fp.write('chmod 664 $SLURM_STDOUT  #(oder welche Rechte ihr vergeben wollt)\n')
+        if self.scheduler_options.get('chmod_output', False):
+            # workaround for slurm file acces
+            fp.write('JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o "StdOut=[^ ]*" | awk -F= \'{print $2}\')\n')
+            fp.write('chmod 664 $SLURM_STDOUT  #(oder welche Rechte ihr vergeben wollt)\n')
         # write the execution command
         fp.write(self._cmdstring + "\n")
