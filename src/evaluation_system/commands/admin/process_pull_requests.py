@@ -48,8 +48,7 @@ class Command(FrevaBaseCommand):
                     # Probably branch exists already
                     # Try to checkout old branch
                     exit_code = os.system(
-                        'cd %s; git checkout version_%s %s' % (path, request.tagged_version,
-                                                               request.tagged_version)
+                        'cd %s; git checkout version_%s ' % (path, request.tagged_version)
                     )
                     if exit_code > 1:
                         raise CommandError, 'Something went wrong, please contact the admins'
