@@ -35,7 +35,8 @@ class Command(FrevaBaseCommand):
     def copy_and_overwrite(self, from_path, to_path):
         if os.path.exists(to_path):
             shutil.rmtree(to_path)
-        shutil.copytree(from_path, to_path)    
+        if os.path.exists(from_path):
+            shutil.copytree(from_path, to_path)    
             
     def _run(self):
 
@@ -84,8 +85,11 @@ class Command(FrevaBaseCommand):
         
         # Copy images to website preview path
         preview_path = config.get('preview_path')
-        shutil.copyfile('%s.css' % tool, os.path.join(preview_path, 'doc/%s/' % tool))
-        self.copy_and_overwrite('%s/' % figure_prefix, os.path.join(preview_path, 'doc/%s/' % tool))
+        dest_dir = os.path.join(preview_path, 'doc/%s/' % tool)
+        self.copy_and_overwrite('%s/' % figure_prefix, dest_dir)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        shutil.copyfile('%s.css' % tool, os.path.join(dest_dir, '%s.css' % tool))
         # remove tmp files
         shutil.rmtree(new_path)
         
