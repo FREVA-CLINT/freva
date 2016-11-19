@@ -145,15 +145,21 @@ We'll try to be thorough and assume the user has little knowledge about programm
 If not, just copy and paste the commands in here, you don't need to understand everything for getting through the tutorial, though it will certainly help you to locate errors and typos you might have.
 
 \textbf{Notes}\\
-The \$ symbol at the beginning of a line is used to mark a command that is given to the bash shell. You don't have to input that character when issuing the same command in your shell.When depicting an interactive shell session it denotes the commands issued to the shell and those lines which does not start with the \$ character denote the output from the shell. We might skip the character when there's no expected output from the shell (or if it's not useful), so that you may Copy'n'Paste the whole block. We sometimes number the lines when dissecting a program for didactic reasons. Sadly, this breaks the ability to simply Copy'n'Paste the code. We'll try only to do that on complete programs that you might directly download from this page.
+The \$ symbol at the beginning of a line is used to mark a command that is given to the bash shell. You don't have to input that character when issuing the same command in your shell.\\
+When depicting an interactive shell session it denotes the commands issued to the shell and those lines which does not start with the \$ character denote the output from the shell.\\
+We might skip the character when there's no expected output from the shell (or if it's not useful), so that you may Copy'n'Paste the whole block.
 
-\textbf{Tutorial}
-Setting up the environment: We'll need a file for testing, grab any suitable for the task. We can use the evaluation system to find one fast.
+We sometimes number the lines when dissecting a program for didactic reasons. Sadly, this breaks the ability to simply Copy'n'Paste the code. We'll try only to do that on complete programs that you might directly download from this page.
+
+Tutorial
+
+Setting up the environment
+
+We'll need a file for testing, grab any suitable for the task. We can use the evaluation system to find one fast:
 \begin{lstlisting}
 module load project-ces
 
 freva --databrowser --baseline 1  variable=tas | head -n1
-
 /miklip/integration/data4miklip/model/baseline1/output/MPI-M/MPI-ESM-LR/asORAoERAa/day/atmos/tas/r1i1p1/tas_day_MPI-ESM-LR_asORAoERAa_r1i1p1_19600101-19691231.nc
 \end{lstlisting}
 Let's store that in a variable for later use:
@@ -191,7 +197,7 @@ $ ncl
  See http://www.ncl.ucar.edu/ for more details.
 ncl 0> 
 \end{lstlisting}
-\textbf{NCL}\\
+NCL \\
 So we'll use NCL to produce a simple plot of a file. Let's use the ncl tutorial here to generate a plot:  \begin{lstlisting}http://www.ncl.ucar.edu/Document/Manuals/Getting_Started/Examples/gsun02n.shtml\end{lstlisting}
 Now here's the complete session to generate a simple plot out of the information in the tutorial (you may Copy'n'Paste it into the ncl shell):
 \begin{lstlisting}
@@ -203,6 +209,7 @@ lon  = cdf_file->lon                      ; longitude
 xwks = gsn_open_wks("x11","gsun02n")      ; Open an X11 workstation
 plot = gsn_contour(xwks,temp,False)       ; Draw a contour plot.
 \end{lstlisting}
+
 (Remember to hit enter on the last line too! If not you'll see just an empty window...)\\
 
 That should have displayed a simple contour plot over some sample data. The ncl shell blocks until you click on the plot (don't ask me why...)\\
@@ -285,7 +292,7 @@ You might have notice the strange looking \" characters. Ncl requires string val
 \\
 If you want more info on NCL functions: http://www.ncl.ucar.edu/Document/Functions/\\
 \\
-\textbf{Wrapping up the script}\\
+Wrapping up the script\\
 \\
 One last check... the environment in which we started the previous ncl command had already been setup (with module load ncl). Next time we want to use it might not be the case, or a different ncl version might be loaded, etc. In summary, the program might stop working because the environment is somehow different.\\
 \\
@@ -311,7 +318,7 @@ $ (module purge && module load ncl && ncl plot.ncl file_path=\"$file\" plot_name
 \end{lstlisting}
 Now we are sure it works as intended.\\
 \\
-\textbf{Making a plug-in}\\
+Making a plug-in\\
 \\
 Up to now we've seen an introduction to making a script that's usable. This has nothing to do with the system, but plain informatics.
 Since making a plug-in is so easy, we had to write something to fill up the tutorial :-)\\
@@ -363,7 +370,7 @@ The difference with the dummy plug-in is that:
     20 checks if the file exists and in such a case it will be returned using a special construct which checks the status of it and store some info for later use.
 \end{lstlisting}
 
-\textbf{Running the plugin}\\
+Running the plugin
 
 We are done, now we have to test it. We will create a directory, store all files there (plot.ncl and nclplot.py) and tell the evaluation system to use the plugin.
 \begin{lstlisting}
@@ -374,15 +381,14 @@ $ ls
 nclplot.py  nclplot.pyc plot.ncl
 $ pwd
 /home/user/plugin
-$ export EVALUATION_SYSTEM_PLUGINS=/tmp/plugin,nclplot
+$ export EVALUATION_SYSTEM_PLUGINS=/tmp/plguin,nclplot
 \end{lstlisting}
-Recalling from [5 Minutes Hands on]] the EVALUATION\_SYSTEM\_PLUGINS show the evaluation system where to find the code. It's a colon separated list of comma separated path, packages pairs. Basically: 
-\begin{lstlisting}
-EVALUATION_SYSTEM_PLUGINS=/some/path,mypackage:/oth/path,some.more.complex.package \end{lstlisting}
-
+Recalling from [5 Minutes Hands on]] the EVALUATION\_SYSTEM\_PLUGINS show the evaluation system where to find the code. It's a colon separated list of comma separated path, packages pairs. Basically: EVALUATION\_SYSTEM\_PLUGINS=/some/path,mypackage:/oth/path,some.more.complex.package \\
+\\
 We are done!
 \\
-\textbf{NCLPlot Usage}\\
+NCLPlot Usage
+\\
 Now let's see what the evaluation system already can do with our simple plugin. \\
 Let's start for displaying some help:
 \begin{lstlisting}
@@ -494,7 +500,8 @@ Well, this is it. I'll be adding more tutorials doing some more advanced stuff b
 Parameters are central to the plugin and they are managed at the evaluation\_system.api.parameters module. Here a brief summary about what they can do and how they can be used.
 \\
 \textbf{ParameterDictionary}\\
-This class manages everything related to the set of parameters the plugin uses. It's an ordered dictionary so the order in which parameters are defined is the order in which they will be presented to the user in the help, configuration files, web forms, etc.\\
+This class manages everything related to the set of parameters the plugin uses. It's an ordered dictionary so the order in which parameters are defined is the order in which they will be presented to the user in the help, configuration files, web forms, etc.
+
 \textbf{ParameterType}\\
 This is the central Class handling parameters. Normally you use another class that inherits functionality from this one, but as most of the functionality is define by this class, we will describe the options used in the constructor and therefore in all other classes inheriting from this one.\\
 \begin{lstlisting}
@@ -503,15 +510,12 @@ name 	None 	Name of the parameter
 default 	None 	The default value if none is provided 
 			(this value will also be validated and parsed, so it must be a 
 			valid parameter value!)
-
 mandatory 	False 	If the parameter is required (note that if there's a default value, 
 			the user might not be required to set it, and can always change it, 
 			though he/she is not allowed to unset it)
-
 max_items 	1 	If set to > 1 it will cause the values to be returned in a list 
 			(even if the user only provided 1). An error will be risen if more 
 			values than those are passed to the plugin
-
 item_separator 	, 	The string used to separate multiple values for this parameter. 
 			In some cases (at the shell, web interface, etc) the user have always 
 			the option to provide multiple values by re-using the same parameter 
@@ -520,15 +524,12 @@ item_separator 	, 	The string used to separate multiple values for this paramete
 			to setup a separator, even though the user might not use it while giving 
 			input. It must not be a character, it can be any string (make sure it's 
 			not a valid value!!)
-
 regex 	.* 		A regular expression defining valid "string" values before parsing them to 
 			their defining classes (e.g. an Integer might define a regex of "[0-9]+" to 
 			prevent getting negative numbers). This will be used also on Javascript 
 			so don't use fancy expressions or make sure they are understood by both 
 			python and Javascript.
-
-help 	No help 	The help string describing what this parameter is good for.
-
+help 	No help available. 	The help string describing what this parameter is good for.
 print_format 	%s 	A python string format that will be used when displaying the value of 
 			this parameter (e.g. %.2f to display always 2 decimals for floats)
 \end{lstlisting}
@@ -609,7 +610,7 @@ These can be used in the plugin like this:
                                     output_plot = '$USER_PLOTS_DIR/${input_file}',
                                     work        = '$USER_CACHE_DIR',
                                     input_file  = (None, dict(mandatory=True, type=str, 
-				    help='The processed file'))
+						    help='The processed file'))
                                    )
 \end{lstlisting}
 \end{document}
