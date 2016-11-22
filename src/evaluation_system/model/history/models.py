@@ -113,7 +113,7 @@ class History(models.Model):
 
             version = "%s %s" % (self.version, self.version_details.internal_version_tool)
         
-        return '%s) %s%s [%s] %s' % (self.pk, self.tool, version, self.timestamp, conf_str)
+        return '%s) %s%s [%s] %s %s' % (self.pk, self.tool, version, self.timestamp, self.status_name(), conf_str)
 
     def slurmId(self):
         id = re.sub('.*\-', '', self.slurm_output)
