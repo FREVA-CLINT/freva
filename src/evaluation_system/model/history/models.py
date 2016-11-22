@@ -164,7 +164,7 @@ class History(models.Model):
             p = os.popen(cmd, 'r')
             header = p.readline().split('|')
             entry = p.readline().split('|')
-            index = header.index('state')
+            index = header.index('State')
             return entry[index]
         # If "sacct" is not configured, we have to use "squeue"
         except ValueError:
