@@ -137,8 +137,8 @@ class slurm_file(object):
                                                      'noexternalgroupset')
                                      ).exists():
             options = config.get_section('scheduler_options_extern')
-        elif django_user.groups.filter(name='student').exists():
-            options = config.get_section('scheduler_options_student')
+        elif django_user.groups.filter(name='frevastud').exists():
+            options = config.get_section('scheduler_options_frevastud')
         else:
             options = config.get_section('scheduler_options')
         self.scheduler_options = options
