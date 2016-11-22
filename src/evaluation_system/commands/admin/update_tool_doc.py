@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-'''
+"""
 update_tool_doc -- update the html code of tools
 
 @copyright:  2015 FU Berlin. All rights reserved.
         
 @contact:    sebastian.illing@met.fu-berlin.de
-'''
+"""
 
 from evaluation_system.commands import (BaseCommand, CommandError,
                                         FrevaBaseCommand)
@@ -31,39 +31,28 @@ class Command(FrevaBaseCommand):
              ] 
 
     __short_description__ = '''Update the html files of tool documentation'''    
-            
-    
+
     def copy_and_overwrite(self, from_path, to_path):
         if os.path.exists(to_path):
             shutil.rmtree(to_path)
-        shutil.copytree(from_path, to_path)    
+        if os.path.exists(from_path):
+            shutil.copytree(from_path, to_path)    
             
     def _run(self):
 
         doc_path = self.args.docpath
         tex_file = self.args.tex_file
-        #doc_path = 
         tool = self.args.tool.lower()
-        # find .tex file 
-        #tex_file = None
-        #file_root = tex_file.split('.')[0] 
-        #for fn in os.listdir(doc_path):
-        #    if fn.endswith('.tex'):
-        #        tex_file = fn
-        #        file_root = tex_file.split('.')[0]
-        #    elif fn.endswith('.bib'):
-        #        bib_file = fn
         if not tex_file:
             print 'Can\'t find a .tex file in this directory!'
             return
         file_root = tex_file.split('.')[0]
-        #copy folder to /tmp for processing
+        # copy folder to /tmp for processing
         new_path = '/tmp/%s/' % tool
         self.copy_and_overwrite(doc_path, new_path)
         
         # change path and run "htlatex" and "bibtex"
         os.chdir(new_path)
-        #cfg_file = '/home/illing/documentation/ht5mjlatex.cfg'
         cfg_file = os.path.dirname(__file__)+'/../../../../etc/ht5mjlatex.cfg' 
         os.system('htlatex %s "%s"' % (new_path+tex_file, cfg_file))
         os.system('bibtex %s' % file_root)
@@ -82,8 +71,6 @@ class Command(FrevaBaseCommand):
         # replace img src
         text = text.replace('src="%s/' % figure_prefix,
                             'style="width:80%;" src="/static/preview/doc/'+tool+'/')
-        #text = text.replace('src="%s/' % figure_prefix,
-        #                    'src="/static/preview/doc/'+tool+'/')
 
         # remove too big sigma symbols
         text = text.replace('mathsize="big"', '')
@@ -98,7 +85,11 @@ class Command(FrevaBaseCommand):
         
         # Copy images to website preview path
         preview_path = config.get('preview_path')
-        self.copy_and_overwrite('%s/' % figure_prefix, os.path.join(preview_path, 'doc/%s/' % tool))
+        dest_dir = os.path.join(preview_path, 'doc/%s/' % tool)
+        self.copy_and_overwrite('%s/' % figure_prefix, dest_dir)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        shutil.copyfile('%s.css' % tool, os.path.join(dest_dir, '%s.css' % tool))
         # remove tmp files
         shutil.rmtree(new_path)
         

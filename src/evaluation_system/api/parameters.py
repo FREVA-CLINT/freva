@@ -435,7 +435,9 @@ class Float(ParameterType):
 
 class File(String):
     """A parameter representing a file in the system."""
-    pass
+    def __init__(self, file_extension='nc', **kwargs):
+        self.file_extension = file_extension
+        ParameterType.__init__(self, **kwargs)
 
 
 class Directory(String):
