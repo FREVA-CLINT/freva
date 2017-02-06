@@ -159,11 +159,19 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
     reg = re.compile(r'__short_description__\s*=(.*)')
     r = re.compile(r'\'(.*)\'')
     r_2 = re.compile(r'\"(.*)\"')
+    r_list = re.compile(r'\[(.*)\]')
     reg_class_name = re.compile(r'class\s*(.*)')
+    # reg for categories
+    cat_reg = re.compile(r'__category__\s*=(.*)')
+    # reg for tags
+    tag_reg = re.compile(r'__tags__\s*=(.*)')
     for plugin_name, plugin_mod in __plugin_modules__.iteritems():
         f = open(plugin_mod+'.py', 'r')
         description = None
         class_name = None
+        category = None
+        tags = None
+
         class_name_str = ''
         for line in f:
             description = re.search(reg, line)
@@ -173,6 +181,18 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                     description_str = re.search(r_2, description.groups()[0])
                 if description_str is not None:
                     description_str = description_str.groups()[0]
+            # search for category
+            category_search = re.search(cat_reg, line)
+            if category_search:
+                category = re.search(r, category_search.groups()[0])
+                category = category.groups()[0]
+            # search for tags
+            tags_search = re.search(tag_reg, line)
+            if tags_search:
+                tags = re.search(r_list, tags_search.groups()[0])
+                tags = list(eval(tags.groups()[0]))
+
+            # search for classname
             class_name = re.search(reg_class_name, line)
             if class_name is not None:
                 # TODO: Maybe this is not robust enough.
@@ -184,7 +204,9 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                                                           plugin_class=class_name_str,
                                                           plugin_module=plugin_mod,
                                                           description=description_str,
-                                                          user_exported=plugin_name in extra_plugins)
+                                                          user_exported=plugin_name in extra_plugins,
+                                                          category=category,
+                                                          tags=tags)
             __plugins__[class_name_str] = class_name_str
         elif class_name_str != '':
             log.warn("Default plugin %s is being overwritten by: %s",
