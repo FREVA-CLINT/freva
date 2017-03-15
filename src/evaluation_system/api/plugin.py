@@ -731,3 +731,15 @@ It means, **never** start a plug-in comming from unknown sources.
             
         return version
 
+    def load_module(self, module_name):
+        """
+        Helper function to load modules like cdo or nco in python
+        """
+        module_path = config.get('module_path', None)
+        if module_path is None:
+            logging.warning('Module path is not set. Module %s NOT loaded' % module_name)
+            return None
+
+        cmd = os.popen('%s python load %s' % (module_path, module_name))
+        exec cmd in globals(), locals()
+        return True
