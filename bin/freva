@@ -35,7 +35,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
 import sys
-from evaluation_system.commands import FrevaBaseCommand
+from evaluation_system.commands import FrevaBaseCommand, CommandError
 import logging
 import textwrap
 
@@ -187,9 +187,11 @@ To get help for the individual commands use
         """
         try:
             module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
-        except:
-            # raise
+        except ImportError, e:
             module = __import__('evaluation_system.commands.admin.%s' % command, fromlist=['Command'])
+        except:
+            raise
+
         return getattr(module, 'Command')
     
     def parse_arguments(self, argv=None, *args, **kwargs):
