@@ -257,7 +257,12 @@ class splittedFile(object):
                 first = start
             if last is None or end > last:
                 last = end
-        self.dict["parts"]["time"] = "%s-%s" % (first.strftime(datefmt), last.strftime(datefmt))
+                
+        firsty = first.year
+        lasty = last.year
+        first = datetime(1900,first.month,first.day,first.hour,first.minute)
+        last = datetime(1900,last.month,last.day,last.hour,last.minute)
+        self.dict["parts"]["time"] = "%s%s-%s%s" % (str(firsty),first.strftime(datefmt)[4:], str(lasty),last.strftime(datefmt)[4:])
         # merge variables
         # create at first a list of all variables
         variables = []
