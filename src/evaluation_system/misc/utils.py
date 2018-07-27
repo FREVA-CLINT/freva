@@ -379,6 +379,9 @@ class PrintableList(list):
         '''
         return self.seperator.join(map(str,self))
 
+    def __unicode__(self):
+        return self.__str__()
+
 
 class initOrder(object):
     '''

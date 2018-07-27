@@ -727,9 +727,9 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
     # create the batch command
     command = ['/bin/bash',
                '-c',
-               '%s %s --uid=%s %s\n' % (config.get('scheduler_command'),  # SCHEDULER_COMMAND,
+               '%s %s %s\n' % (config.get('scheduler_command'),  # SCHEDULER_COMMAND,
                                         config.SCHEDULER_OPTIONS,
-                                        user.getName(),
+                                        #user.getName(),
                                         full_path)]
 
     # run this 
