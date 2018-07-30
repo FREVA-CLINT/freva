@@ -21,7 +21,9 @@ https://github.com/FREVA-CLINT/Freva/blob/master/docu/guides/bag.pdf
 (TO BE UPDATED)
 
 Quick Install:
+
 Quick Installation Guide - the fastest way, if you knowwhat yoo do
+
 ##############
 Step 1: Needed Software
 MySQL server: Install, give access to it, and open its port.
@@ -29,11 +31,13 @@ SOLR port: Open port 8983.
 SLURM scheduler: Install it.
 Software: bash, mysql, git, python-dev, java (1.6, 1.7, 1.8), libmysql(-dev), libffi(-dev),
 libssl(-dev), libsabl(-dev), httpd(-dev), netcdf4, hdf5, cdo, nco, wget, curl
+
 ##############
 Step 2: The Install-Script
 Download install-script:
 wget https://github.com/FREVA-CLINT/Freva/blob/master/build/install.sh
 Adapt install-script: Fill out the config area and execute it with switched switches
+
 #############
 Step 3: The Basic Setup and Testing
 Load Freva: modules or source
