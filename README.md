@@ -25,37 +25,67 @@ Quick Install:
 Quick Installation Guide - the fastest way, if you knowwhat yoo do
 
 ##############
+
 Step 1: Needed Software
+
 MySQL server: Install, give access to it, and open its port.
+
 SOLR port: Open port 8983.
+
 SLURM scheduler: Install it.
+
 Software: bash, mysql, git, python-dev, java (1.6, 1.7, 1.8), libmysql(-dev), libffi(-dev),
+
 libssl(-dev), libsabl(-dev), httpd(-dev), netcdf4, hdf5, cdo, nco, wget, curl
 
 ##############
+
 Step 2: The Install-Script
+
 Download install-script:
+
 wget https://github.com/FREVA-CLINT/Freva/blob/master/build/install.sh
+
 Adapt install-script: Fill out the config area and execute it with switched switches
 
 #############
+
 Step 3: The Basic Setup and Testing
+
 Load Freva: modules or source
+
 ls /path/2/project−ces/misc4freva/loadscripts/
+
 Test plugin:
+
 export EVALUATION SYSTEM PLUGINS=/path/2/project−ces/plugins4freva,example;
+
 freva −−plugin ExamplePlugin project=bla product=bla institute=bla model=bla
+
 Test history:
+
 freva −−history ENTER
+
 Test databrowser:
+
 ln −s /path/2/project−ces/misc4freva/db4freva/cmor4freva/examplestructure4solr/project /path/2/project−ces/data4freva/crawl_my_data/project
+
 /path/2/project−ces/freva/sbin/solr_server path2ingest /path/2/project−ces/data 4freva/crawl_ my_ data/project
+
 freva −−databrowser ENTER
+
 Test crawl my data:
+
 mkdir /path/2/project-ces/data4freva/crawl_my_data/user-smith
-ln -s /path/2/project-ces/misc4freva/db4freva/cmor4freva/example_structure4solr/project/product /path/2/project-ces/data4freva/crawl_my_data/user-smith/product
+
+ln -s /path/2/project-ces/misc4freva/db4freva/cmor4freva/example_structure4solr/project/product /path/2/project-ces/data4freva/crawl_my_data/user-smith/prod
+uct
+
 freva --crawl_my_data 
+
 freva --databrowser project=user-smith ENTER
+
 Test batchmode:
+
 freva --plugin ExamplePlugin project=user-smith product=product institute=institute model=model experiment=experiment time_frequency=time_frequency variable=variable --batchmode=True
 
