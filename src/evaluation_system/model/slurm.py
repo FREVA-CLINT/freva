@@ -173,9 +173,6 @@ class slurm_file(object):
         # Workaround for Slurm in www-miklip
         # fp.write("source /client/etc/profile.miklip\n")
        
-        # Workaround for Slurm on fu
-        if self.source_file:
-            fp.write("source %s\n" % self.source_file) 
         # write options
         opts = self._options.items()
 
@@ -187,6 +184,10 @@ class slurm_file(object):
             
             string = self.SLURM_CMD + optf.format(option, value) + "\n"
             fp.write(string)
+
+        # Workaround for Slurm on fu
+        if self.source_file:
+            fp.write("source %s\n" % self.source_file)
             
         # write the modules to be loaded
         for mod in self._modules:

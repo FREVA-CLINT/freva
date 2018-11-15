@@ -1,66 +1,15 @@
-[submodule "tools/vecap"]
-	path = tools/vecap
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/vecap.git
-[submodule "tools/climval"]
-	path = tools/climval
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/climval.git
-[submodule "tools/pca"]
-	path = tools/pca
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/pca.git
 [submodule "tools/movieplotter"]
 	path = tools/movieplotter
 	url = ssh://miklip.dkrz.de/miklip/integration/repositories/movie_plotter
-[submodule "tools/diffplotter"]
-	path = tools/diffplotter
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/plot_diff.git
-[submodule "tools/zykpak"]
-	path = tools/zykpak
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/zykpak.git
-[submodule "tools/goddard"]
-	path = tools/goddard
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/goddard.git
-[submodule "tools/percentile"]
-	path = tools/percentile
-	url = /miklip/integration/repositories/percentile.git
-[submodule "tools/dsi"]
-	path = tools/dsi
-	url = /miklip/integration/repositories/dsi.git
-[submodule "tools/vady"]
-	path = tools/vady
-	url = /miklip/integration/repositories/vady.git
-[submodule "tools/leadtimeselektor"]
-	path = tools/leadtimeselektor
-	url = /miklip/integration/repositories/leadtimeselector.git
-[submodule "tools/etccdi"]
-	path = tools/etccdi
-	url = /miklip/integration/repositories/etccdi.git
 [submodule "tools/monsoon"]
 	path = tools/monsoon
 	url = /miklip/integration/repositories/monsoon.git
 [submodule "tools/movie_plotter"]
 	path = tools/movie_plotter
 	url = ssh://u290038@miklip.dkrz.de/miklip/integration/repositories/movie_plotter.git
-[submodule "tools/blocking"]
-	path = tools/blocking
-	url = /miklip/integration/repositories/blocking.git
 [submodule "tools/stormtrack"]
 	path = tools/stormtrack
 	url = /miklip/integration/repositories/stormtrack.git
 [submodule "tools/integ_vecap"]
 	path = tools/integ_vecap
 	url = /miklip/integration/repositories/integ_vecap.git
-[submodule "tools/eady"]
-	path = tools/eady
-	url = /miklip/integration/repositories/eady.git
-[submodule "tools/troughident"]
-	path = tools/troughident
-	url = /miklip/integration/repositories/troughident.git
-[submodule "tools/vadycirc"]
-	path = tools/vadycirc
-	url = /miklip/integration/repositories/vadycirc.git
-[submodule "tools/ldai"]
-	path = tools/ldai
-	url = /miklip/integration/repositories/ldai.git
-[submodule "tools/pott"]
-	path = tools/pott
-	url = /miklip/integration/repositories/pott.git
