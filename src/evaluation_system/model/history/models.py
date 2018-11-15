@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from evaluation_system.model.plugins.models import Version, Parameter
+from evaluation_system.misc.utils import PrintableList
 import re
 import os
 import json
@@ -137,11 +138,14 @@ class History(models.Model):
 
         for c in config:
             name = c.parameter_id.parameter_name
-
             if load_default_values and c.is_default:
                 d[name] = json.loads(c.parameter_id.default)
             else:    
                 d[name] = json.loads(c.value)
+
+            # we have to take care that some special values are casted to the right class
+            if c.parameter_id.parameter_type == 'Range' and d[name] is not None:
+                d[name] = PrintableList(d[name])
 
         return d
 
