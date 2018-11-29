@@ -557,7 +557,7 @@ if no configuration is provided the default one will be used.
         :return: file name
         """
         
-        filename = datetime.now().strftime('%Y%m%d_%H%M%S_') + self.__class__.__name__
+        filename = datetime.now().strftime('%Y%m%d_%H%M%S_') + self.__class__.__name__ + '_' + str(self.rowid)
         return filename
         
 

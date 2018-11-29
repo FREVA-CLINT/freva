@@ -716,6 +716,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
         utils.supermakedirs(slurmoutdir, 0777)
 
     # write the SLURM file
+    p.rowid = rowid
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
     with open(full_path, 'w') as fp:
         p.writeSlurmFile(fp,
