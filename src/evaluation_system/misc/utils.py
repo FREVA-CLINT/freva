@@ -6,6 +6,7 @@ internal package.
 '''
 import copy
 import os
+import errno
 from difflib import get_close_matches
 from string import Template
 from re import split
@@ -45,8 +46,15 @@ def supermakedirs(path, mode):
         return []
     (head, tail) = os.path.split(path)
     res = supermakedirs(head, mode)
-    os.mkdir(path)
-    os.chmod(path, mode)
+    # In some rare cases we run into race conditions creating directories.
+    # This prevents the system from raising an error
+    try:
+        os.mkdir(path)
+        os.chmod(path, mode)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
+        pass
     res += [path]
     return res
 
