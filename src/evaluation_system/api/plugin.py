@@ -189,6 +189,12 @@ a list (or anything iterable) to :class:`prepareOutput` .
                         config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
         return config_dict        
     
+    def quitnkill(self):
+        """If error occurs quit python and kill child processes by group ID"""
+        PID= os.getpid()
+        self.call('setsid nohup bash -c "kill -9 -- -%s"  </dev/null &>/dev/null &' % PID)
+        raise SystemExit
+
     def linkmydata(self,outputdir=None):
         """Link the CMOR Data Structure of any output created by a tool
            crawl the directory and ingest the directory with solr::
