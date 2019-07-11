@@ -144,7 +144,9 @@ For Example:
             elif options.show_config:
                 tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 print pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict)
-           
+            #elif self.DEBUG == True:
+            #    print 'DEBUGDEBUGDEBUG'
+
             elif options.scheduled_id:
                 scheduled_id = options.scheduled_id
                 logging.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
@@ -166,7 +168,6 @@ For Example:
                 
                 logging.debug('Running %s with configuration: %s', tool_name, tool_dict)
                 if not options.dry_run and (not error or DEBUG):
-                    
                     # we check if the user is external and activate batchmode
                     django_user = User.objects.get(username=user.User().getName())
                     if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
@@ -184,6 +185,10 @@ For Example:
                         print 'Your job\'s progress will be shown with the command'
                         print 'tail -f ', file
                     else:
+                        if self.DEBUG==True:
+                            tool_dict['debug']=True
+                        else: 
+                            tool_dict['debug']=False
                         pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
                         
@@ -191,7 +196,6 @@ For Example:
                         # for readability don't show the warning in debug mode 
                         if warning and not DEBUG:
                             log.warning(warning)
-
             if self.DEBUG:
                 logging.debug("Arguments: %s", self.last_args)
                 import json
