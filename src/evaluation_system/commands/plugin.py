@@ -187,8 +187,8 @@ For Example:
                     else:
                         if self.DEBUG==True:
                             tool_dict['debug']=True
-                        else: 
-                            tool_dict['debug']=False
+                        #else: 
+                        #    tool_dict['debug']=False
                         pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
                         
