@@ -4,11 +4,11 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=/work/bmx828 #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=/work/ch1187 #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
 # SWITCHES
-makeOwnPython=False
-makeFreva=False
-makeConfig=False
+makeOwnPython=True
+makeFreva=True
+makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
@@ -16,7 +16,7 @@ makeMYSQLtables=False
 #PYTHON AREA
 ##########
 # DEFINITLY NEEDED LIST
-MUSTHAVEPIPLIST="MySQL-python==1.2.5 Django>=1.8,<1.9 pyPdf==1.13,mysqlclient"
+MUSTHAVEPIPLIST="MySQL-python==1.2.5 Django>=1.8,<1.9 pyPdf==1.13"
 # SECOND LIST NOT NEEDED 4 BASIC INSTALLATION
 NICE2HAVEPIPLIST="numpy==1.9.2 netCDF4==1.1.1 nco==0.0.2 cdo==1.2.3 virtualenv==13.1.2"
 export HDF5_DIR=/sw/rhel6-x64/hdf5/hdf5-1.8.14-gcc48 #/usr/local/hdf5
