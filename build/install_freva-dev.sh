@@ -73,9 +73,9 @@ mkdir -m 751 -p $DBDIR/metadata
 if [ "$makeOwnPython" = "True" ]; then
     #command -v gcc >/dev/null 2>&1 || { echo >&2 "NEED gcc but it's not installed.  Aborting."; exit 1; }
     mkdir -p $YOURPYTHON
-    md5sum=69c64167b8cf3a8fc6b50d12d8476337
-    wget https://repo.anaconda.com/archive/Anaconda2-2019.10-Linux-x86_64.sh -O /tmp/anaconda2.sh
-    if [ $(md5sum /tmp/anaconda2.sh| awk '{print $1}') != $md5sum ];then
+    shasum=b820dde1a0ba868c4c948fe6ace7300a252b33b5befd078a15d4a017476b8979
+    wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O /tmp/anaconda2.sh
+    if [ $(sha256sum /tmp/anaconda2.sh| awk '{print $1}') != $shasum ];then
         >&2 echo 'Checksums do not match'
         exit 1
     fi
