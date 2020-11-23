@@ -4,13 +4,13 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=/work/ch1187/$USER #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=/opt/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
 # SWITCHES
-makeOwnPython=True
-makeFreva=True
+makeOwnPython=False
+makeFreva=False
 makeConfig=True
-makeStartscript=True
-makeSOLRSERVER=False
+makeStartscript=False
+makeSOLRSERVER=True
 makeMYSQLtables=False
 ##########
 #PYTHON AREA
@@ -89,7 +89,7 @@ fi
 
 
 if [ "$makeFreva" = "True" ]; then
-    git clone https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
+    git clone -b freva-dev https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
 fi
 
 if [ "$makeConfig" = "True" ] ; then
@@ -170,9 +170,9 @@ db.db=$MYSQLDB
 
 #: Define access to the solr instance
 solr.host=$SOLRHOST
-solr.port=8983
+solr.port=8989
 solr.core=files
-solr.name=mysolr
+solr.name=test_solr
 solr.user=$SOLRUSER
 solr.memory=500M
 solr.root=$DBDIR/solr/
@@ -434,8 +434,8 @@ if [ "$makeSOLRSERVER" = "True" ] ; then
     cp -r $FREVA/etc/solr/home/latest/conf/* $SOLRSERVER/home/latest/conf/
     $FREVA/sbin/solr_server start
     sleep 5
-    curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
-    curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
+    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
+    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
 fi
 
 
