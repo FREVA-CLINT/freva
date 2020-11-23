@@ -13,6 +13,7 @@
 SCRIPT_PATH=$(readlink -f $(dirname $0))
 FREVA_ROOT=$SCRIPT_PATH/../
 IFS="=" read -r RAW_VAR SOLR_ROOT <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.root)"
+IFS="=" read -r RAW_VAR SOLR_PORT <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.port)"
 # STRUCTURE FOR SOLR , READ FROM CONFIG
 IFS="=" read -r RAW_VAR SERVER_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.server)"
 IFS="=" read -r RAW_VAR INCOMING_DIR <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.incoming)"
@@ -34,7 +35,7 @@ TOOL_HOME=$BASE_DIR/solr # dir where solr.xml file is located
 PID_FILE=$BASE_DIR/var/$TOOL_NAME.pid
 LOG_FILE=$BASE_DIR/log/$TOOL_NAME.log
 # THE SOLR SERVER RAWSTART COMMAND
-TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
+TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Djetty.port=$SOLR_PORT -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
 [[ $TOOL_USER != $USER ]] && EXECUTEAS="sudo -u $TOOL_USER" || EXECUTEAS=""
 ################
 #CHECK IF RIGHT PATHES ARE SET (JUST POSSIBLE IN SAME FILE SYSTEM)
