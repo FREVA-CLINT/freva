@@ -4,7 +4,7 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=/work/ch1187 #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=/work/ch1187/$USER #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
 # SWITCHES
 makeOwnPython=True
 makeFreva=True
@@ -15,13 +15,8 @@ makeMYSQLtables=False
 ##########
 #PYTHON AREA
 ##########
-# DEFINITLY NEEDED LIST
-MUSTHAVEPIPLIST="MySQL-python==1.2.5 Django>=1.8,<1.9 pyPdf==1.13"
-# SECOND LIST NOT NEEDED 4 BASIC INSTALLATION
-NICE2HAVEPIPLIST="numpy==1.9.2 netCDF4==1.1.1 nco==0.0.2 cdo==1.2.3 virtualenv==13.1.2"
-export HDF5_DIR=/sw/rhel6-x64/hdf5/hdf5-1.8.14-gcc48 #/usr/local/hdf5
-export NETCDF4_DIR=/sw/rhel6-x64/netcdf/netcdf_c-4.3.2-gcc48 #/usr/local/netcdf-4.3.0/gcc-4.7.2
-export CDO_DIR=/sw/rhel6-x64/cdo/cdo-1.7.0-gcc48 #/usr/local/cdo
+# Install the following python packages from conda
+CONDA_PKGS="numpy=1.9.3 netcdf4 nco cdo libnetcdf pypdf2 'django>=1.8,<1.9' python-cdo mysql-python pip"
 ##########
 
 ###########
@@ -62,6 +57,12 @@ CONFIGDIR=$MISC/config4freva
 YOURPYTHON=$MISC/python4freva
 STARTDIR=$MISC/loadscripts
 DBDIR=$MISC/db4freva
+
+
+export HDF5_DIR=$YOURPYTHON #/usr/local/hdf5
+export NETCDF4_DIR=$YOURPYTHON #/usr/local/netcdf-4.3.0/gcc-4.7.2
+export CDO_DIR=$YOURPYTHON #/usr/local/cdo
+
 #Make directories
 mkdir -m 777 -p $DBDIR/preview
 mkdir -m 751 -p $DBDIR/solr
@@ -70,25 +71,20 @@ mkdir -m 751 -p $DBDIR/metadata
 ##############
 
 if [ "$makeOwnPython" = "True" ]; then
-    command -v gcc >/dev/null 2>&1 || { echo >&2 "NEED gcc but it's not installed.  Aborting."; exit 1; }
+    #command -v gcc >/dev/null 2>&1 || { echo >&2 "NEED gcc but it's not installed.  Aborting."; exit 1; }
     mkdir -p $YOURPYTHON
-    cd $YOURPYTHON
-    wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tar.xz -O $YOURPYTHON/python.tar
-    tar -xvf $YOURPYTHON/python.tar -C $YOURPYTHON --strip-components 1
-    rm $YOURPYTHON/python.tar
-    $YOURPYTHON/configure --prefix=$YOURPYTHON
-    make
-    make install
-    wget https://bootstrap.pypa.io/get-pip.py
-    bin/python get-pip.py
-    for PACKAGE in $MUSTHAVEPIPLIST; do 
-	bin/python -m pip install $PACKAGE
-	[[ $? -ne 0 ]] && echo "NECESSARY $PACKAGE - bin/python -m pip install $PACKAGE failed! EXIT" && exit
-    done
-    for PACKAGE in $NICE2HAVEPIPLIST; do 
-        bin/python -m pip install $PACKAGE
-        [[ $? -ne 0 ]] && echo "NICE2HAVE $PACKAGE - bin/python -m pip install $PACKAGE failed! NOT exit"
-    done
+    shasum=b820dde1a0ba868c4c948fe6ace7300a252b33b5befd078a15d4a017476b8979
+    wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O /tmp/anaconda2.sh
+    if [ $(sha256sum /tmp/anaconda2.sh| awk '{print $1}') != $shasum ];then
+        >&2 echo 'Checksums do not match'
+        exit 1
+    fi
+    chmod +x /tmp/anaconda2.sh
+    /tmp/anaconda2.sh -p /tmp/anaconda -b -f -u
+    /tmp/anaconda/bin/conda create -c conda-forge -q -p $YOURPYTHON python=2.7.18 $CONDA_PKGS -y
+    let success=$?
+    rm -r /tmp/anaconda /tmp/anaconda2.sh
+    [[ $success -ne 0 ]] && echo "conda create -c conda-forge -q -p $YOURPYTHON python=2.7.18 $CONDA_PKGS -y failed! EXIT" && exit 1
 fi
 
 
