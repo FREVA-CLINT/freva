@@ -26,6 +26,8 @@ IFS="=" read -r RAW_VAR TOOL_NAME <<< "$(cat $FREVA_ROOT/etc/evaluation_system.c
 IFS="=" read -r RAW_VAR TOOL_USER <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.user)"
 # SET THE MEMORY OF THE SOLR SERVER (XXXXM for MB or XG for GB)
 IFS="=" read -r RAW_VAR TOOL_MEM <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.memory)"
+# SET THE SOLR SERVER HEAP SIZE
+IFS="=" read -r RAW_VAR HEAP_SIZE <<< "$(cat $FREVA_ROOT/etc/evaluation_system.conf | grep solr.heep_size)"
 
 # END OF CONFIG
 ################
@@ -35,7 +37,7 @@ TOOL_HOME=$BASE_DIR/solr # dir where solr.xml file is located
 PID_FILE=$BASE_DIR/var/$TOOL_NAME.pid
 LOG_FILE=$BASE_DIR/log/$TOOL_NAME.log
 # THE SOLR SERVER RAWSTART COMMAND
-TOOL_CMD="java -server -Xmx$TOOL_MEM -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Djetty.port=$SOLR_PORT -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
+TOOL_CMD="java -server -Xmx$TOOL_MEM -XX:PermSize=$HEAP_SIZE -Djava.util.logging.config.file=$BASE_DIR/etc/logging.properties -Djetty.port=$SOLR_PORT -Dsolr.solr.home=$TOOL_HOME -jar start.jar"
 [[ $TOOL_USER != $USER ]] && EXECUTEAS="sudo -u $TOOL_USER" || EXECUTEAS=""
 ################
 #CHECK IF RIGHT PATHES ARE SET (JUST POSSIBLE IN SAME FILE SYSTEM)
