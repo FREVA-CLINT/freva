@@ -152,7 +152,7 @@ class slurm_file(object):
         module_file = options.pop('module_command')
         self.add_module(module_file)
 
-        for opt, val in options.iteritems():
+        for opt, val in options.items():
             if opt.startswith('option_'):
                 opt = opt.replace('option_','')
                 if val == 'None':
@@ -174,7 +174,7 @@ class slurm_file(object):
         # fp.write("source /client/etc/profile.miklip\n")
        
         # write options
-        opts = self._options.items()
+        opts = tuple(self._options.items())
 
         for opt in opts:
             # use the stored format
@@ -194,7 +194,7 @@ class slurm_file(object):
             fp.write(self.MLOAD_CMD + mod + "\n")
             
         # variables to export
-        variables = self._variables.items()
+        variables = tuple(self._variables.items())
         
         for var in variables:
             fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")

@@ -21,7 +21,7 @@ import netCDF4
 def print_arguments(config_dict):
     Logger.Indent("-> started with parameters:", 4, 7)
     params = []
-    for key, value in config_dict.iteritems():
+    for key, value in config_dict.items():
         params.append("-> %-15s = %s" % (key, value))
     params.sort()
     for param in params:
@@ -363,7 +363,7 @@ class basePlugin(object):
         else:
             ensembles = [ensembles]
         if decadals is not None:
-            years = map(int, decadals)
+            years = list(map(int, decadals))
         else:
             years = None
         if firstyear is not None:
@@ -564,7 +564,7 @@ class basePlugin(object):
 
         # remove groups that only contain one file
         keys_to_remove = []
-        for key, value in datasets.iteritems():
+        for key, value in datasets.items():
             if len(value) < 2:
                 keys_to_remove.append(key)
         if len(keys_to_remove) > 0:
@@ -575,7 +575,7 @@ class basePlugin(object):
         keys_to_remove = []
         new_datasets = {}
         if groupby == "experiment":
-            for key, value in datasets.iteritems():
+            for key, value in datasets.items():
                 newlist = self.split_file_list_by_timecontinously(value)
                 if newlist is not None:
                     keys_to_remove.append(key)
@@ -584,11 +584,11 @@ class basePlugin(object):
             if len(keys_to_remove) > 0:
                 for key in keys_to_remove:
                     del datasets[key]
-                for key, value in new_datasets.iteritems():
+                for key, value in new_datasets.items():
                     datasets[key] = value
             # remove again groups that only contain one file
             keys_to_remove = []
-            for key, value in datasets.iteritems():
+            for key, value in datasets.items():
                 if len(value) < 2:
                     keys_to_remove.append(key)
             if len(keys_to_remove) > 0:
@@ -619,12 +619,12 @@ class basePlugin(object):
                 ensembles[ensemble_part].append(onefile)
         # find the maximum number of files per member
         max_files = 0
-        for ensemble_part, filelist in ensembles.iteritems():
+        for ensemble_part, filelist in ensembles.items():
             if len(filelist) > max_files:
                 max_files = len(filelist)
         # copy all ensemble members with the maximal number of files to the result list
         result = []
-        for ensemble_part, filelist in ensembles.iteritems():
+        for ensemble_part, filelist in ensembles.items():
             if len(filelist) == max_files:
                 result.extend(filelist)
             else:
@@ -785,7 +785,7 @@ class basePlugin(object):
                 return newlist
             else:
                 # create splittedFile objects from the list
-                sflist = map(lambda x: splittedFile(x), newlist)
+                sflist = list(map(lambda x: splittedFile(x), newlist))
                 return sflist
         else:
             return None
@@ -881,7 +881,7 @@ class basePlugin(object):
 
         # iterate over all groups and use cdo to calculate the statistics with CDO
         commands = []
-        for key, value in self.ensemble_groups.iteritems():
+        for key, value in self.ensemble_groups.items():
             group_files = []
             for stat in stats:
                 output_name = self.get_output_from_input_name(

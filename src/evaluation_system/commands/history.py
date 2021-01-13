@@ -61,7 +61,7 @@ DATE FORMAT
         since = timestamp_from_string(args.since) if args.since else None
         until = timestamp_from_string(args.until) if args.until else None
         tool_name = args.plugin
-        entry_ids = map(int, args.entry_ids.split(',')) if args.entry_ids else None
+        entry_ids = list(map(int, args.entry_ids.split(','))) if args.entry_ids else None
         return_command = args.return_command
         # parse arguments *!!!*
         for args in self.last_args:

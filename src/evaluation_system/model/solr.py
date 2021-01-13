@@ -47,7 +47,7 @@ and read from the configuration file.
                 else:
                     constraint = '%s:%s' % (key, value)
                 params.append(('fq', constraint,))
-        return urllib.urlencode(params)
+        return urllib.parse.urlencode(params)
     
     def _search(self, batch_size=10000, latest_version=False, _retrieve_metadata=False, **partial_dict):
         """This encapsulates the Solr call to get documents and returns an iterator providing the. The special

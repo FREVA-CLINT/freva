@@ -5,7 +5,7 @@ This module manages the central configuration of the system.
 '''
 import os
 import logging
-from ConfigParser import SafeConfigParser, NoSectionError
+from configparser import SafeConfigParser, NoSectionError
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict

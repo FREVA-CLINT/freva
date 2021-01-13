@@ -3,7 +3,7 @@
 This files encapsulates access to the esgf p2p system.
 """
 import json
-import urllib2
+import urllib
 import sys
 import logging
 import copy
@@ -130,7 +130,7 @@ This would remove all values for both *institute* and *model* leaving everything
         """:returns: (str) a string containing the wget script that can be used for downloading the selected files""" 
         query = self.__constraints_to_str(constraints, type=P2P.TYPE.FILE)
         request = 'http://%s/%s?%s' % (self.node, self.wget_api, query)
-        return urllib2.urlopen(request, None,  self._time_out).read()
+        return urllib.request.urlopen(request, None,  self._time_out).read()
         
     def raw_search(self, query):
         """A raw search to the Solr index returning everything we get back.
@@ -139,7 +139,7 @@ This would remove all values for both *institute* and *model* leaving everything
         request = '%s&%s' % (self.__get_url(), query)
 
         log.debug(request)
-        response = json.load(urllib2.urlopen(request, None,  self._time_out))
+        response = json.load(urllib.request.urlopen(request, None,  self._time_out))
 
         return response
 
@@ -179,7 +179,7 @@ This would remove all values for both *institute* and *model* leaving everything
 :type batch_size: int
 :param constraints: dictionary with any P2P Search API constraints."""
         # if we have a limit use it also here.
-        max_items = sys.maxint
+        max_items = sys.maxsize
         if 'limit' in constraints:
             max_items = int(constraints['limit'])
         else:

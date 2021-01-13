@@ -6,8 +6,6 @@ Created on 15.03.2013
 This types represent the type of parameter a plugin expects and gives some 
 metadata about them.
 '''
-from types import (TypeType, StringType, IntType, FloatType,
-                   LongType, BooleanType)
 
 from evaluation_system.misc.py27 import OrderedDict
 from evaluation_system.misc.utils import (find_similar_words, PrintableList,
@@ -73,7 +71,7 @@ stored here."""
     
     def parameters(self):
         ":returns: all parameters stored in here (in order as they were defined)"
-        return self._params.values()
+        return list(self._params.values())
     
     def complete(self, config_dict=None, add_missing_defaults=False):
         """Completes a given dictionary with default values if required.
@@ -290,7 +288,7 @@ changes significantly, but appears similar to the previous version
         Read the id from database
         '''
         if self.id is None:
-            type = self.__class__.__name__
+            itype = self.__class__.__name__
 
             o = Parameter.objects.get_or_create(tool=tool,
                                                 version=self.version,
@@ -298,7 +296,7 @@ changes significantly, but appears similar to the previous version
                                                 default=self.default,
                                                 impact=self.impact,
                                                 parameter_name=self.name,
-                                                parameter_type=type)
+                                                parameter_type=itype)
                 
             self.id = o[0].id
         
@@ -317,13 +315,13 @@ changes significantly, but appears similar to the previous version
                                                        len(values))
             )
             
-        if self.regex is not None and self._pattern is None and isinstance(values[0], basestring):
+        if self.regex is not None and self._pattern is None and isinstance(values[0], str):
             import re
             self._pattern = re.compile(self.regex)
         
         if self._pattern:
             for val in values:
-                if isinstance(val, basestring) and not self._pattern.search(val):
+                if isinstance(val, str) and not self._pattern.search(val):
                     raise ValidationError("Invalid Value: %s" % val)
         
         #so it works transparent
@@ -346,7 +344,7 @@ changes significantly, but appears similar to the previous version
     def parse(self, value):
         """The default parser that just passes the work to the base_type"""
         if self.max_items > 1:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 if self.item_separator is not None:
                     return [self.base_type(v) for v in self._verified(value.split(self.item_separator))]
                 elif value[0] == '[':
@@ -390,7 +388,7 @@ value will be used."""
     @staticmethod
     def infer_type(value):
         """Infer the type of a given default"""
-        if isinstance(value, TypeType):
+        if isinstance(value, type):
             t = value
         else:
             t = type(value)
@@ -407,26 +405,19 @@ value will be used."""
 
 class String(ParameterType):
     """A simple string parameter."""
-    base_type = StringType
+    base_type = str
 
 
 class Integer(ParameterType):
     """An integer parameter."""
-    base_type = IntType
+    base_type = int
     def __init__(self, regex='^[+-]?[0-9]+$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
 
-class Long(Integer):
-    """A long parameter, it's the same as an integer but is handled from 
-    the beginning as a long. In Python there is no real difference between a 
-    long and an integer."""
-    base_type = LongType
-
-
 class Float(ParameterType):
     """A float parameter."""
-    base_type = FloatType
+    base_type = float
     def __init__(self,
                  regex='^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$',
                  **kwargs):
@@ -463,7 +454,7 @@ class Date(String):
 class Bool(ParameterType):
     """A boolean paramter. Boolean parameters might be parsed from the 
     strings as defined in :class:`Bool.parse`"""
-    base_type = BooleanType
+    base_type = bool
 
     def parse(self, bool_str):
         """Parses a string and extract a boolean value out of it. We don't 
@@ -476,7 +467,7 @@ in the following way (case insensitive)::
 :param bool_str:  the string value containing a boolean value.
 :raises ValidationException: if the given string does not match any of these 
 values."""
-        if isinstance(bool_str, basestring) and bool_str: 
+        if isinstance(bool_str, str) and bool_str: 
             if bool_str.lower() in ['true', 't', 'yes' , 'y', 'on', '1']:
                 return True
             elif bool_str.lower() in ['false', 'f', 'no', 'n', 'off', '0']: 
@@ -491,7 +482,6 @@ _type_mapping = {
                 str : String,
                 int : Integer,
                 float : Float,
-                long : Long,
                 bool: Bool
                 }
         
@@ -508,21 +498,21 @@ class Range(String):
     def __init__(self,*args,**kwargs):
         #set max_items to a very large number...
         kwargs['max_items'] = 1e20
-        self.base_type = IntType#self.PrintableList
+        self.base_type = int#self.PrintableList
         super(Range,self).__init__(*args,**kwargs)
     
-    def _parseColon(self, str):
+    def _parseColon(self, string):
         """
         Parse colon separated strings
         
         :param str: 'start:step:stop'
         :returns: list with integers
         """
-        tmp = map(int,str.split(':'))
+        tmp = list(map(int, string.split(':')))
         if len(tmp) == 2:
-            return range(tmp[0],tmp[1]+1)
+            return list(range(tmp[0],tmp[1]+1))
         elif len(tmp) == 3:
-            return range(tmp[0],tmp[2]+1,tmp[1])
+            return list(range(tmp[0],tmp[2]+1,tmp[1]))
         elif len(tmp) == 1:
             return tmp
         else:

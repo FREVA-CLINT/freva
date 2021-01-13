@@ -112,7 +112,8 @@ class EsgfFuse(Operations):
     def download(self, esgfpath, path, filename, cdo=Cdo()):
         httppath, _ = self.get_url(path)
 
-        file(self.esgftmp+path+'.lock', 'w').close()
+        with open(self.esgftmp+path+'.lock', 'w'):
+            pass
         cmor_path = Solr2EsgfConfig().project_select(esgfpath, filename)
         wgetlog = '%s_wget_%s.log' % (socket.gethostname(), datetime.now().strftime('%Y%m%d'))
         self.rwlock.release()
@@ -124,10 +125,10 @@ class EsgfFuse(Operations):
             return
         self.threadLimiter.acquire()
         process = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        all = process.communicate()[0]
+        all_res = process.communicate()[0]
         self.rwlock.acquire()
-        with file(self.logpath+wgetlog, 'a+') as f:
-            f.write(all+'\n')
+        with open(self.logpath+wgetlog, 'a+') as f:
+            f.write(all_res+'\n')
         self.rwlock.release()
 #                         if 'OpenSSL: error:' in line:
 #                             download.write('Certificate Error:\n')

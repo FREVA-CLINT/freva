@@ -13,7 +13,7 @@ We define two cores::
 
 import os
 import shutil
-import urllib2
+import urllib
 import json
 from datetime import datetime
 import logging
@@ -105,10 +105,10 @@ get downloaded from Solr)"""
         if self.echo:
             log.debug(query)
         
-        req = urllib2.Request(query, json.dumps(list_of_dicts))
+        req = urllib.request.Request(query, json.dumps(list_of_dicts))
         req.add_header("Content-type", "application/json")
 
-        return urllib2.urlopen(req).read()
+        return urllib.request.urlopen(req).read()
 
     def get_json(self, endpoint, use_core=True, check_response=True):
         """Return some json from server. Is the raw access to Solr.

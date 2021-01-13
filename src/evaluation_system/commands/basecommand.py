@@ -44,9 +44,8 @@ class FrevaParser(OptionParser):
             raise BadOptionError(msg.replace('no such option: --', ''))
         self.exit(2, "%s: error: %s\n" % (self.get_prog_name(), msg))    
 
-
-class FrevaBaseCommand(object):
-    __metaclass__ = abc.ABCMeta
+# TODO: I don't really see the point in having a meta class here
+class FrevaBaseCommand(metaclaass=abc.ABCMeta):
     
     DEBUG = False
     __is_admin = None
@@ -184,11 +183,10 @@ class FrevaBaseCommand(object):
         exit(0)
             
 
-class BaseCommand(object):  # pragma nocover
+class BaseCommand(metaclaass=abc.ABCMeta):  # pragma nocover
     """
     DEPRECATED: User FrevaBaseCommand instead
     """
-    __metaclass__ = abc.ABCMeta
     
     DEBUG = False
     

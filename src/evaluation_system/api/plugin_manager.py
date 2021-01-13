@@ -165,7 +165,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
     cat_reg = re.compile(r'__category__\s*=(.*)')
     # reg for tags
     tag_reg = re.compile(r'__tags__\s*=(.*)')
-    for plugin_name, plugin_mod in __plugin_modules__.iteritems():
+    for plugin_name, plugin_mod in __plugin_modules__.items():
         f = open(plugin_mod+'.py', 'r')
         description = None
         class_name = None
@@ -328,7 +328,7 @@ user default, tool default
                 complete_conf.update(p.readConfiguration(f))
     # now if we still have a config file update what the configuration with it
     
-    if isinstance(config_file, basestring):
+    if isinstance(config_file, str):
         if config_file == '-':
             # reading from stdin
             complete_conf.update(p.readConfiguration(sys.stdin))
@@ -441,7 +441,7 @@ def _preview_generate_name(plugin_name, file_name, metadata):
     :type metadata: dict
     :param metadata: the meta-data for the file, to access timestamp
     """
-    random_suffix = ''.join(random.choice(string.letters) for i in xrange(8))
+    random_suffix = ''.join(random.choice(string.ascii_letters) for i in range(8))
 
     ctime = metadata.get('timestamp', '')
     

@@ -7,7 +7,7 @@ Created on 10.05.2016
 
 import unittest
 from evaluation_system.api.parameters import (
-    ParameterType, ParameterDictionary, String, Float, Long, Integer, Bool,
+    ParameterType, ParameterDictionary, String, Float, Integer, Bool,
     File, Date, Range, ValidationError, SelectField, SolrField, Directory,
     Unknown) 
 
@@ -16,7 +16,6 @@ class Test(unittest.TestCase):
     def test_infer_type(self):
         self.assertEquals(ParameterType.infer_type(1).__class__, Integer)
         self.assertEquals(ParameterType.infer_type(1.0).__class__, Float) 
-        self.assertEquals(ParameterType.infer_type(1L).__class__, Long)  
         self.assertEquals(ParameterType.infer_type('str').__class__, String)
         self.assertEquals(ParameterType.infer_type(True).__class__, Bool)    
 
@@ -43,9 +42,6 @@ class Test(unittest.TestCase):
                  ('+2E-2', 0.02), (False, 0.0),
                   ('12.', 12.0), ('.42', 0.42)],
                 ['+-0', 'not a number!!', '123,321.2',  None]),
-            (Long(),
-                [('123',123L),('0', 0L),('-1',-1L), (True, 1L)],    
-                ['+-0', 'not a number!!', None]),
             (Bool(),
                 [('1',True),('0', False),('True',True), ('false', False),
                  ('no', False), ('YES', True)],    
@@ -133,26 +129,24 @@ class Test(unittest.TestCase):
                               "a=1 b=2".split())
 
         p_dict = ParameterDictionary(Integer(name='int'), 
-                                     Long(name='long'),
                                      Float(name='float'), 
                                      Bool(name='bool'),
                                      String(name='string'),
                                      File(name='file', default='/tmp/file1'),
                                      Date(name='date'),
                                      Range(name='range'))
-        res = p_dict.parseArguments("int=1 long=1 date=1 bool=1".split())
-        self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L))
+        res = p_dict.parseArguments("int=1 date=1 bool=1".split())
+        self.assertEqual(res, dict(int=1, date='1', bool=True))
         
-        res = p_dict.parseArguments("int=1 long=1 date=1 bool=1".split(),
+        res = p_dict.parseArguments("int=1 date=1 bool=1".split(),
                                     use_defaults=True)
-        self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L,
-                                   file='/tmp/file1'))
+        self.assertEqual(res, dict(int=1, date='1', bool=True, file='/tmp/file1'))
 
         res = p_dict.parseArguments(
-            "int=1 long=1 date=1 bool=1 range=1:5".split(),
+            "int=1 date=1 bool=1 range=1:5".split(),
             use_defaults=True, complete_defaults=True
         )
-        self.assertEqual(res, dict(int=1, date='1', bool=True, long=1L,
+        self.assertEqual(res, dict(int=1, date='1', bool=True,
                                    range=range(1,6), file='/tmp/file1',
                                    float=None, string=None))
 
@@ -165,7 +159,6 @@ class Test(unittest.TestCase):
                                ("bool", True),  #Special case!
                                ("float=1.2", 1.2), ("float=-1e-1",-0.1),
                                ("float=2E2",200.0),
-                               ("long=0", 0L), ("long=-42", -42L), 
                                ("string=1", "1"), ("string=ä", "ä")]:
             res = p_dict.parseArguments(arg.split())
             self.assertEqual(res, {arg.split('=')[0]:parsed_val},

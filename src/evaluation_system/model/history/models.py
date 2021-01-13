@@ -321,7 +321,7 @@ class ResultTag(models.Model):
     """
 
     class flagType:
-        [caption,] = range(1)    
+        [caption,] = [0]    
     
     class Meta:
         app_label = 'history'   

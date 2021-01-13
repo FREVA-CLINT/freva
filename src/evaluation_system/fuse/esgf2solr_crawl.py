@@ -14,7 +14,7 @@ class Esgf2Solr(object):
         self.outpath = outpath
         self.show_facets ='experiment'
 
-        self.facets = {'project':self.project.values()[0],'type':'File'}
+        self.facets = {'project': list(self.project.values())[0],'type':'File'}
         self.fields = ['title','size',
                       'project','product','institute','model','experiment',
                       'time_frequency','realm','variable','ensemble','timestamp']
@@ -60,7 +60,7 @@ class Esgf2Solr(object):
                             esgffiles[self.prepath+esgfpath+filename] = 0
                         if timestamp >= esgffiles[self.prepath+esgfpath+filename]:
                             esgffiles[self.prepath+esgfpath+filename] = timestamp
-                    [f.write(key+',%s\n' % value) for key, value in esgffiles.iteritems()]
+                    [f.write(key+',%s\n' % value) for key, value in esgffiles.items()]
                 f.close()
         except IOError:
             raise IOError('Path does not exist')
