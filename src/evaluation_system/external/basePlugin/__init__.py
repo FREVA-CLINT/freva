@@ -112,7 +112,7 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
         try:
             starttime = datetime.strptime(timepart_split[0], datefmt)
             endtime = datetime.strptime(timepart_split[1], datefmt)
-        except ValueError, ve:
+        except ValueError(ve):
             Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
         return (datefmt, starttime, endtime)
 
@@ -149,7 +149,7 @@ def get_start_and_end_time_from_DRSFile(dfile, include_str=True, only_str=False)
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError, ve:
+    except ValueError(ve):
         Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
     if include_str and not only_str:
         return (starttime, endtime, timepart_split[0], timepart_split[1])
@@ -189,7 +189,7 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError, ve:
+    except ValueError(ve):
         if allow_no_time:
             return None, None
         else:
@@ -335,7 +335,7 @@ class basePlugin(object):
     def __init__(self, output=None, project="baseline1", model="mpi-esm-lr", experiment=None):
         # store some information for later usage
         if output is None:
-            raise Exception, "No output directory specified!"
+            raise Exception("No output directory specified!")
         subdir = "%s_%s_%s" % (time.strftime('%Y%m%d-%H%M%S'), project, model)
         subdir = subdir.replace("_*", "")
         if experiment is not None and experiment != "*":
@@ -865,8 +865,8 @@ class basePlugin(object):
             # check for any errors
             for c in exitcodes:
                 if c[0] != 0:
-                    raise Exception, "exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!" % (
-                    c[0], c[2], c[1])
+                    raise Exception("exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!" % (
+                    c[0], c[2], c[1]))
 
     def calculate_ensemble_stat(self, plugin_path, dryrun=False, separate=True, has_mon=False):
         """

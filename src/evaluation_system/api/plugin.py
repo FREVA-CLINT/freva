@@ -747,7 +747,7 @@ It means, **never** start a plug-in comming from unknown sources.
             return None
 
         cmd = os.popen('%s python %s %s' % (module_path, command, module_name))
-        exec cmd in globals(), locals()
+        exec(cmd in globals(), locals())
         return True
 
     def load_module(self, module_name):

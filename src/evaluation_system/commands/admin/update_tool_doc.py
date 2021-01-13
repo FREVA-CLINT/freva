@@ -44,7 +44,7 @@ class Command(FrevaBaseCommand):
         tex_file = self.args.tex_file
         tool = self.args.tool.lower()
         if not tex_file:
-            print 'Can\'t find a .tex file in this directory!'
+            print('Can\'t find a .tex file in this directory!')
             return
         file_root = tex_file.split('.')[0]
         # copy folder to /tmp for processing

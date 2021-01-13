@@ -239,7 +239,7 @@ improve readability.
         json_str = json.dumps(dictio, sort_keys=True, indent=2)
         if return_str:
             return json_str
-        print json_str
+        print(json_str)
 
     @staticmethod
     def extract_catalog(dictio):

@@ -472,7 +472,7 @@ def _preview_unique_file(plugin_name, file_name, ext, metadata):
     full_name = os.path.join(full_path, name)
     
     if path.strip() and not os.path.isdir(full_path):
-        utils.supermakedirs(full_path, 0777)
+        utils.supermakedirs(full_path, 0o0777)
         
     if os.path.isfile(full_name):
         return _preview_unique_file(plugin_name, file_name, ext, metadata)
@@ -694,7 +694,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
     
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
     if not os.path.exists(slurmindir):
-        utils.supermakedirs(slurmindir, 0777)
+        utils.supermakedirs(slurmindir, 0o0777)
 
     version_details = getVersion(plugin_name)
     rowid = user.getUserDB().storeHistory(p,
@@ -713,7 +713,7 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
         slurmoutdir = os.path.join(slurmoutdir, plugin_name)
 
     if not os.path.exists(slurmoutdir):
-        utils.supermakedirs(slurmoutdir, 0777)
+        utils.supermakedirs(slurmoutdir, 0o0777)
 
     # write the SLURM file
     p.rowid = rowid
@@ -867,7 +867,7 @@ def getConfigName(pluginname):
             if modulename == getmodule(module):
                 return name
 
-    except Exception, e:
+    except Exception as e:
         log.debug('[getConfigName] ' + str(e))
     
     return None
@@ -892,7 +892,7 @@ def getErrorWarning(tool_name):
 
         warning_file = config.get_plugin(plugin_name, "warning_file", '')
         warning_message = config.get_plugin(plugin_name, "warning_message", '')
-    except Exception, e:
+    except Exception as e:
         log.debug(str(e))
     
     if error_file:
@@ -900,7 +900,7 @@ def getErrorWarning(tool_name):
             f = open(error_file, 'r')
             error_message = f.read()
             f.close()
-        except Exception, e:
+        except Exception as e:
             if not error_message:
                 log.warn('Could not read error description\n%s' % str(e)) 
                 error_message = ''
@@ -910,7 +910,7 @@ def getErrorWarning(tool_name):
             f = open(warning_file, 'r')
             warning_message = f.read()
             f.close()
-        except Exception, e:
+        except Exception as e:
             if not warning_message:
                 log.warn('Could not read warning\n%s' % str(e))
                 warning_message = ''

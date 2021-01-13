@@ -52,10 +52,10 @@ class Command(FrevaBaseCommand):
         path = os.path.dirname(os.path.abspath(__file__))
         #script_path = path + '/../../../sbin/crawl_data'
         script_path = path + '/../../../sbin/solr_server path2ingest'
-        print 'Please wait while the system is crawling your data'
+        print('Please wait while the system is crawling your data')
         out = subprocess.Popen('/bin/bash '+script_path + ' ' + crawl_dir, shell=True)
-        print out.wait()
-        print 'Finished.\nCrawling took ' + str(time.time() - t1) + ' seconds'
+        print(out.wait())
+        print('Finished.\nCrawling took ' + str(time.time() - t1) + ' seconds')
 
 
 if __name__ == "__main__":

@@ -86,12 +86,12 @@ DATE FORMAT
                     command_string = pm.getCommandStringFromRow(row, command_name, command_options)
 
                     if len(rows) > 1:
-                        print command_string + ';'
+                        print(command_string + ';')
 
                     else:
-                        print command_string
+                        print(command_string)
             else:
-                print '\n'.join([row.__str__(compact=not args.full_text) for row in rows])
+                print('\n'.join([row.__str__(compact=not args.full_text) for row in rows]))
         else:
             log.error("No results. Check query.")
 

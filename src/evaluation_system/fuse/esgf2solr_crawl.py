@@ -24,7 +24,7 @@ class Esgf2Solr(object):
     def find_experiment(self, p2p=P2P()):
         results = p2p.get_facets(self.show_facets, **self.project)
         if len(results['experiment'].keys()) == 0:
-            raise Exception, 'Experiment not found'
+            raise Exception('Experiment not found')
         self.experiments = results['experiment'].keys()
                
     def get_path(self, p2p=P2P()):
@@ -63,4 +63,4 @@ class Esgf2Solr(object):
                     [f.write(key+',%s\n' % value) for key, value in esgffiles.iteritems()]
                 f.close()
         except IOError:
-            raise IOError, 'Path does not exist'
+            raise IOError('Path does not exist')

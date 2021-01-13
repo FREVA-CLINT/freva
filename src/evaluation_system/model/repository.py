@@ -36,7 +36,7 @@ def getVersion(src_file):
             lines = stdout.split('\n')
             repository = lines[-3]
             version = lines[-2]
-        except Exception, e:
+        except Exception as e:
             if not stderr:
                 stderr = str(e)
                

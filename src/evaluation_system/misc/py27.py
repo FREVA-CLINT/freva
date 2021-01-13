@@ -10,4 +10,4 @@ try:
     import collections
     OrderedDict = collections.OrderedDict
 except:  # pragma: no cover
-    raise Exception, 'Python 2.6 is not longer supported!'
+    raise Exception('Python 2.6 is not longer supported!')

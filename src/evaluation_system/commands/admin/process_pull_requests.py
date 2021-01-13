@@ -30,13 +30,13 @@ class Command(FrevaBaseCommand):
         tools = pm.getPlugins()
         for request in pull_requests:
             try:
-                print 'Processing pull request for %s by %s' % (request.tool, request.user)
+                print(f'Processing pull request for {request.tool} by {request.user}')
                 request.status = 'processing'
                 request.save()
                 tool_name = request.tool.lower()
                 # Does tool exist?
                 if tool_name not in tools.keys():
-                    raise CommandError, 'Plugin %s does not exist' % request.tool
+                    raise CommandError(f'Plugin {request.tool} does not exist')
 
                 # get repo path
                 path = '/'.join(tools[tool_name]['plugin_module'].split('/')[:-1])
@@ -51,7 +51,7 @@ class Command(FrevaBaseCommand):
                         'cd %s; git checkout version_%s ' % (path, request.tagged_version)
                     )
                     if exit_code > 1:
-                        raise CommandError, 'Something went wrong, please contact the admins'
+                        raise CommandError('Something went wrong, please contact the admins')
 
                 request.status = 'success'
                 request.save()

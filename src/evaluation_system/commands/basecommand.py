@@ -105,7 +105,7 @@ class FrevaBaseCommand(object):
             if self.DEBUG:  # or __name__ != "__main__":
                 raise
             else:
-                print "ERROR: ", sys.exc_info()[1]
+                print("ERROR: ", sys.exc_info()[1])
             exit(2)
             
     def parse_arguments(self, argv=None, *args, **kwargs):
@@ -124,14 +124,14 @@ class FrevaBaseCommand(object):
             # Did you mean functionality
             similar_words = None
             trimmed_args = []
-            print self._args
+            print(self._args)
             for arg in self._args:
                 trimmed_args.append(arg['name'][2:]) 
             similar_words = find_similar_words(e.opt_str, trimmed_args)
             mesg = str(e)
             if similar_words:
                 mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-            print mesg
+            print(mesg)
             exit(2)
         
     def _call(self, cmd_str):
@@ -177,9 +177,9 @@ class FrevaBaseCommand(object):
 
     def auto_doc(self, message=None):
         try:
-            print self.__description__+'\n'
+            print(self.__description__+'\n')
         except:
-            print self.__short_description__+'\n'
+            print(self.__short_description__+'\n')
         self.parser.print_help()
         exit(0)
             
@@ -247,7 +247,7 @@ class BaseCommand(object):  # pragma nocover
             if self.DEBUG:  # or __name__ != "__main__":
                 raise
             else:
-                print "ERROR: ", sys.exc_info()[1]
+                print("ERROR: ", sys.exc_info()[1])
             exit(2)
 
     def parse_arguments(self, argv=None, *args, **kwargs):
@@ -270,7 +270,7 @@ class BaseCommand(object):  # pragma nocover
             mesg = e.msg
             if similar_words:
                 mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-            print mesg
+            print(mesg)
             exit(2)
         
     def _call(self, cmd_str):
@@ -331,7 +331,7 @@ class BaseCommand(object):  # pragma nocover
         script_name = os.path.basename(script_file)
         # check if in unit tests (runfiles.py is starting the unit test)
         if script_name == 'runfiles.py':
-            print "No auto doc for unit test."
+            print("No auto doc for unit test.")
             return
         
         re_start = re.compile('.*\*!!!\*$')
@@ -373,12 +373,12 @@ class BaseCommand(object):  # pragma nocover
         else:
             message = ''
         if results:
-            print '%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results))
+            print('%s [opt] query %s\nopt:\n%s' % (script_name, message, '\n'.join(results)))
         else:
-            print '%s %s' % (script_name, message)
+            print('%s %s' % (script_name, message))
         
         if not hasattr(self, '__description__'):
             self.__description__ = self.__short_description__
         
-        print '\n'.join([textwrap.fill(r, width=env['columns'], replace_whitespace=False) for r in (self.__description__).splitlines()])
+        print('\n'.join([textwrap.fill(r, width=env['columns'], replace_whitespace=False) for r in (self.__description__).splitlines()]))
         exit(0)

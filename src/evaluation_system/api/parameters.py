@@ -337,8 +337,8 @@ changes significantly, but appears similar to the previous version
                 return self.item_separator.join(value)
             else:
                 #assume is a json array:
-                print value
-                print json.dumps(value)
+                print(value)
+                print(json.dumps(value))
                 return json.dumps(value)
                 
         else:
@@ -608,17 +608,18 @@ class SelectField(String):
         try:
             self.options = kwargs.pop('options')
         except KeyError:
-            raise KeyError, 'You have to specifiy an options dictionary for this field type!'    
+            raise KeyError('You have to specifiy an options dictionary for this field type!')
         super(SelectField,self).__init__(*args,**kwargs)
         
     def _verified(self, orig_values):
         
         if orig_values not in self.options.values():
-            raise ValueError, 'Only the following values are allowed for "%s": %s' % (self.name, ','.join(self.options.values()))
+            values = ','.join([v for v in self.options.values()])
+            raise ValueError(f'Only the following values are allowed for "{self.name}": {values}')
         return True
 
     def parse(self, value):
         if self._verified(value):
-            for key, val in self.options.iteritems():
+            for key, val in self.options.items():
                 if value == val:
-                    return key        
+                    return key

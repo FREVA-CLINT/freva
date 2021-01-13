@@ -120,7 +120,7 @@ class UserDB(object):
                                       is_default=p.is_default)
             
                 param.save()
-        except Exception, e:
+        except Exception as e:
             raise e
                 
         return newentry.id
