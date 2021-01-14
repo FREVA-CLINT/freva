@@ -112,7 +112,7 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
         try:
             starttime = datetime.strptime(timepart_split[0], datefmt)
             endtime = datetime.strptime(timepart_split[1], datefmt)
-        except ValueError(ve):
+        except ValueError as ve:
             Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
         return (datefmt, starttime, endtime)
 
