@@ -45,7 +45,7 @@ class FrevaParser(OptionParser):
         self.exit(2, "%s: error: %s\n" % (self.get_prog_name(), msg))    
 
 # TODO: I don't really see the point in having a meta class here
-class FrevaBaseCommand(metaclaass=abc.ABCMeta):
+class FrevaBaseCommand(metaclass=abc.ABCMeta):
     
     DEBUG = False
     __is_admin = None
