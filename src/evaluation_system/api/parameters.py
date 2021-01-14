@@ -7,7 +7,6 @@ This types represent the type of parameter a plugin expects and gives some
 metadata about them.
 '''
 
-from evaluation_system.misc.py27 import OrderedDict
 from evaluation_system.misc.utils import (find_similar_words, PrintableList,
                                           initOrder)
 from evaluation_system.model.plugins.models import Parameter
@@ -26,7 +25,7 @@ class ParameterNotFoundError(Exception):
     pass
 
 
-class ParameterDictionary(OrderedDict):
+class ParameterDictionary(dict):
     """A dictionary managing parameters for a plugin. It works just like a
     normal dictionary with some added functionality and the fact that the
     contains are stored in the same order they where defined. This order
@@ -40,9 +39,9 @@ class ParameterDictionary(OrderedDict):
 
 :param list_of_parameters: parameters defined in order. The order will be kept,
 so it's important."""
-        OrderedDict.__init__(self)
+        super().__init__()
 
-        self._params = OrderedDict()
+        self._params = {}
         for param in list_of_parameters:
             #check name is unique
             if param.name in self._params:

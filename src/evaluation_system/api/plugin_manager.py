@@ -33,7 +33,7 @@ from evaluation_system.api.parameters import ParameterNotFoundError
 
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
-from evaluation_system.misc import config, utils, py27
+from evaluation_system.misc import config, utils
 from subprocess import Popen, STDOUT, PIPE
 from multiprocessing import Pool
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
 
 # all plugins modules will be dynamically loaded here.
-# __plugin_modules__ = py27.OrderedDict() # we use a ordered dict.
+# __plugin_modules__ = dict() # we use a ordered dict.
 # This allows to override plugins
 __plugin_modules_user__ = {}
 """Dictionary of modules holding the plug-ins."""
@@ -96,12 +96,12 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
 #         __plugin_modules__.pop(item)
 #     for item in __plugins__.keys():
 #         __plugins__.pop(item)
-    __plugin_modules__ = py27.OrderedDict()  # we use a ordered dict. This allows to override plugins
+    __plugin_modules__ = dict()  # we use a ordered dict. This allows to override plugins
     __plugins__ = {}
     __plugins_meta = {}
-    __plugin_modules_user__[user_name] = py27.OrderedDict()
-    __plugins_user__[user_name] = py27.OrderedDict()
-    __plugins_meta_user[user_name] = py27.OrderedDict()
+    __plugin_modules_user__[user_name] = dict()
+    __plugins_user__[user_name] = dict()
+    __plugins_meta_user[user_name] = dict()
 
     extra_plugins = list()
     if PLUGIN_ENV in os.environ:
