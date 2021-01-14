@@ -29,6 +29,7 @@ import imp
 import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
+from evaluation_system.api.parameters import ParameterNotFoundError
 
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
