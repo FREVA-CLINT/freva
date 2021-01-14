@@ -3,7 +3,7 @@
 
 This module creates SLURM scheduler files
 """
-from evaluation_system.misc import py27, config
+from evaluation_system.misc import config
 from django.contrib.auth.models import User
 
 
@@ -12,7 +12,7 @@ class slurm_file(object):
     SLURM_CMD = "#SBATCH "
     MLOAD_CMD = "module load "
     EXPORT_CMT = "EXPORT"
-    
+
     class EntryFormat:
         """
         This class describes the format of an option for SLURM.
@@ -23,20 +23,20 @@ class slurm_file(object):
             """
             self._ind = indicator
             self._sep = separator
-            
+
         def indicator(self):
             """
             returns the option indicator usually "-" or "--"
             """
             return self._ind
-        
+
         def separator(self):
             """
             returns the separator between options and value.
             (e.g. " " or "=")
             """
             return self._sep
-        
+
         def format(self, opt, val):
             """
             this applies the saved format to a given option
@@ -45,10 +45,10 @@ class slurm_file(object):
             :return: a formatted string
             """
             string = str(self._ind) + str(opt) + str(self._sep)
-            
+
             if val is not None:
                 string += str(val)
-                
+
             return string
 
     def __init__(self):
@@ -56,17 +56,17 @@ class slurm_file(object):
         set the member variables
         """
         #: the options to be set, dictionary of string, (string, entry_format)
-        self._options = py27.OrderedDict()
-        
+        self._options = {}
+
         #: shell variables to be set, a dictionary of string, string
-        self._variables = py27.OrderedDict()
+        self._variables = {}
 
         #: a list of modules to be load
         self._modules = []
-        
+
         #: the command to start in the scheduler
         self._cmdstring = ""
-        
+
     def set_envvar(self, var, value):
         """
         Adds an environment variable to be set
@@ -74,7 +74,7 @@ class slurm_file(object):
         :param value: the value (will be converted to string)
         """
         self._variables[var] = str(value)
-    
+
     def add_dash_option(self, opt, val):
         """
         Adds an option beginning with a dash
@@ -85,9 +85,9 @@ class slurm_file(object):
             e = self.EntryFormat('-', '')
         else:
             e = self.EntryFormat('-', ' ')
-            
+
         self._options[opt] = (val, e)
-        
+
     def add_ddash_option(self, opt, val):
         """
         Adds an option beginning with a double dash
@@ -98,7 +98,7 @@ class slurm_file(object):
             e = self.EntryFormat('--', '')
         else:
             e = self.EntryFormat('--', '=')
-            
+
         self._options[opt] = (val, e)
 
     def add_module(self, mod):
@@ -107,8 +107,8 @@ class slurm_file(object):
         :param mod: the module name
         :type mod: string
         """
-        self._modules.append(mod) 
-        
+        self._modules.append(mod)
+
     def set_cmdstring(self, cmdstring):
         """
         Sets the command string to be executed by slurm
@@ -116,13 +116,13 @@ class slurm_file(object):
         :type cmdstring: string
         """
         self._cmdstring = cmdstring
-        
+
     def set_default_options(self, user, cmdstring, outdir=None):
         """
         Sets the default options for a given user and a
         given command string.
         :param user: an user object
-        :type user: evaluation_system.model.user.User 
+        :type user: evaluation_system.model.user.User
         :param cmdstring: the command
         :type cmdstring: string
         """
@@ -130,7 +130,7 @@ class slurm_file(object):
         if not outdir:
             outdir = user.getUserSchedulerOutputDir()
         email = user.getEmail()
-        
+
         # we check if the user is external and activate batch mode
         django_user = User.objects.get(username=user.getName())
         if django_user.groups.filter(name=config.get('external_group',
@@ -147,7 +147,7 @@ class slurm_file(object):
         if email:
             self.add_ddash_option("mail-user", email)
         self.set_cmdstring(cmdstring)
-        
+
         self.source_file = options.pop('source', False)
         module_file = options.pop('module_command')
         self.add_module(module_file)
@@ -163,16 +163,16 @@ class slurm_file(object):
     def write_to_file(self, fp):
         """
         Write the configuration to the SLURM scheduler to a given file handler
-        
+
         :param fp: file to write to
         :type fp: file handler
         """
         # Execute with bash
         fp.write(self.SHELL_CMD + "\n")
-        
+
         # Workaround for Slurm in www-miklip
         # fp.write("source /client/etc/profile.miklip\n")
-       
+
         # write options
         opts = tuple(self._options.items())
 
@@ -181,24 +181,24 @@ class slurm_file(object):
             optf = opt[1][1]
             option = opt[0]
             value = opt[1][0]
-            
+
             string = self.SLURM_CMD + optf.format(option, value) + "\n"
             fp.write(string)
 
         # Workaround for Slurm on fu
         if self.source_file:
             fp.write("source %s\n" % self.source_file)
-            
+
         # write the modules to be loaded
         for mod in self._modules:
             fp.write(self.MLOAD_CMD + mod + "\n")
-            
+
         # variables to export
         variables = tuple(self._variables.items())
-        
+
         for var in variables:
             fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")
-        
+
         if self.scheduler_options.get('chmod_output', False):
             # workaround for slurm file acces
             fp.write('JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o "StdOut=[^ ]*" | awk -F= \'{print $2}\')\n')

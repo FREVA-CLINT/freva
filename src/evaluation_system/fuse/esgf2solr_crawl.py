@@ -63,4 +63,4 @@ class Esgf2Solr(object):
                     [f.write(key+',%s\n' % value) for key, value in esgffiles.items()]
                 f.close()
         except IOError:
-            raise IOError('Path does not exist')
+            raise FileNotFoundError('Path does not exist')

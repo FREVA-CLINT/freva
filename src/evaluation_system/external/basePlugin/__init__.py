@@ -112,7 +112,7 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
         try:
             starttime = datetime.strptime(timepart_split[0], datefmt)
             endtime = datetime.strptime(timepart_split[1], datefmt)
-        except ValueError(ve):
+        except ValueError as ve:
             Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
         return (datefmt, starttime, endtime)
 
@@ -149,7 +149,7 @@ def get_start_and_end_time_from_DRSFile(dfile, include_str=True, only_str=False)
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError(ve):
+    except ValueError as ve:
         Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
     if include_str and not only_str:
         return (starttime, endtime, timepart_split[0], timepart_split[1])
@@ -189,7 +189,7 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError(ve):
+    except ValueError as ve:
         if allow_no_time:
             return None, None
         else:
