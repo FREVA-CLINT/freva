@@ -380,7 +380,7 @@ be used, using the configuration from the config file).
                                 batch_latest = []
                                 batch_latest_new = {}
                     except:
-                        print("Can't ingest file {file_path}")
+                        print(f"Can't ingest file {file_path}")
                         if abort_on_errors:
                             raise
 
