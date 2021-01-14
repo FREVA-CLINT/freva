@@ -189,7 +189,7 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError(ve):
+    except ValueError as ve:
         if allow_no_time:
             return None, None
         else:
