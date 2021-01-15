@@ -40,7 +40,7 @@ class EsgfFuse(Operations):
         
         self.gid = grp.getgrnam("bmx828").gr_gid
         try:
-            os.makedirs(self.logpath, 0775)
+            os.makedirs(self.logpath, 0e0775)
         except OSError as exception:
             if exception.errno != errno.EEXIST:
                 raise
@@ -73,7 +73,7 @@ class EsgfFuse(Operations):
          
         cmor_path = Solr2EsgfConfig().project_select(esgfpath, filename)
         fields = ['url', 'size', 'timestamp']
-        print path 
+        print(path)
         facets = {'project': cmor_path['project'],
                   'type': 'File',
                   'product': cmor_path['product'],
@@ -106,13 +106,14 @@ class EsgfFuse(Operations):
         try:
             return url, size
         except UnboundLocalError:
-            print 'PATH: '+path
-            print 'No url for this PATH'         
+            print('PATH: '+path)
+            print('No url for this PATH')
          
     def download(self, esgfpath, path, filename, cdo=Cdo()):
         httppath, _ = self.get_url(path)
 
-        file(self.esgftmp+path+'.lock', 'w').close()
+        with open(self.esgftmp+path+'.lock', 'w'):
+            pass
         cmor_path = Solr2EsgfConfig().project_select(esgfpath, filename)
         wgetlog = '%s_wget_%s.log' % (socket.gethostname(), datetime.now().strftime('%Y%m%d'))
         self.rwlock.release()
@@ -124,10 +125,10 @@ class EsgfFuse(Operations):
             return
         self.threadLimiter.acquire()
         process = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-        all = process.communicate()[0]
+        all_res = process.communicate()[0]
         self.rwlock.acquire()
-        with file(self.logpath+wgetlog, 'a+') as f:
-            f.write(all+'\n')
+        with open(self.logpath+wgetlog, 'a+') as f:
+            f.write(all_res+'\n')
         self.rwlock.release()
 #                         if 'OpenSSL: error:' in line:
 #                             download.write('Certificate Error:\n')
@@ -147,11 +148,11 @@ class EsgfFuse(Operations):
                          
     def getattr(self, path, fh=None):
         filepath, extension = os.path.splitext(path)
-        st = dict(st_mode=(S_IFDIR | 0755), st_nlink=2)
+        st = dict(st_mode=(S_IFDIR | 0e0755), st_nlink=2)
         if extension == '.nc':
             try:
                 self.threadLimiter.acquire()
-                st = dict(st_mode=(S_IFREG | 0444), st_size=self.get_url(path, True)[1])
+                st = dict(st_mode=(S_IFREG | 0e0444), st_size=self.get_url(path, True)[1])
                 self.threadLimiter.release()
             except TypeError:
                 raise FuseOSError(ENETUNREACH, 'Bla')
@@ -176,7 +177,7 @@ class EsgfFuse(Operations):
             self.rwlock.release()
         except IOError:
             try:
-                os.makedirs(self.esgftmp+esgfpath, 0775)
+                os.makedirs(self.esgftmp+esgfpath, 0e0775)
             except OSError as exception:
                 if exception.errno != errno.EEXIST:
                     raise

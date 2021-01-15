@@ -13,7 +13,7 @@ We define two cores::
 
 import os
 import shutil
-import urllib2
+import urllib
 import json
 from datetime import datetime
 import logging
@@ -105,10 +105,10 @@ get downloaded from Solr)"""
         if self.echo:
             log.debug(query)
         
-        req = urllib2.Request(query, json.dumps(list_of_dicts))
+        req = urllib.request.Request(query, json.dumps(list_of_dicts))
         req.add_header("Content-type", "application/json")
 
-        return urllib2.urlopen(req).read()
+        return urllib.request.urlopen(req).read()
 
     def get_json(self, endpoint, use_core=True, check_response=True):
         """Return some json from server. Is the raw access to Solr.
@@ -269,7 +269,7 @@ later on normally this is too slow for this phase, so the default is False.
                         if abort_on_errors:
                             raise
                         else:
-                            print "Error ingesting %s" % path
+                            print(f"Error ingesting {path}")
                             continue
                 ts = os.path.getmtime(path)
                 f.write('%s,%s\n' % (path, ts))
@@ -371,7 +371,7 @@ be used, using the configuration from the config file).
                             batch_latest.append(metadata)
 
                         if len(batch) >= batch_size:
-                            print "Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size)
+                            print("Sending entries %s-%s" % (batch_count * batch_size, (batch_count+1) * batch_size))
                             core_all_files.post(batch)
                             batch = []
                             batch_count += 1
@@ -380,13 +380,13 @@ be used, using the configuration from the config file).
                                 batch_latest = []
                                 batch_latest_new = {}
                     except:
-                        print "Can't ingest file %s" % file_path
+                        print(f"Can't ingest file {file_path}")
                         if abort_on_errors:
                             raise
 
             # flush
             if len(batch) > 0:
-                print "Sending last %s entries and %s entries to latest core" % (len(batch), len(batch_latest))
+                print("Sending last %s entries and %s entries to latest core" % (len(batch), len(batch_latest)))
 		#print len(batch_latest)
                 core_all_files.post(batch)
                 batch = []

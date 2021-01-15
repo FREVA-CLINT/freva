@@ -5,15 +5,17 @@ This module provides different utilities that does not depend on any other
 internal package.
 '''
 import copy
-import os
-import errno
-from difflib import get_close_matches
-from string import Template
-from re import split
 from copy import deepcopy
+import contextlib
+from io import StringIO
+from difflib import get_close_matches
+import errno
+import os
+from re import split
+from string import Template
+import sys
 
 
-import sys, StringIO, contextlib
 class Data(object):
     pass
 
@@ -70,7 +72,7 @@ def mp_wrap_fn(args):
     
     return function_to_call(*args)
 
-class Struct(object):
+class Struct:
     """This class is used for converting dictionaries into classes in order 
     to access them
 more comfortably using the dot syntax."""
@@ -100,7 +102,7 @@ more comfortably using the dot syntax."""
 
     def __repr__(self):
         def to_str(val):
-            if isinstance(val, basestring): return "'" + val + "'"
+            if isinstance(val, str): return "'" + val + "'"
             return val
 
         return "<%s>" % ",".join([ "%s:%s" % (att, to_str(self.__dict__[att]))
@@ -108,6 +110,9 @@ more comfortably using the dot syntax."""
     def __eq__(self, other):
         if isinstance(other, Struct):
             return self.toDict().__eq__(other.toDict())
+
+    def __hash__(self):
+        return 0
 
     @staticmethod
     def from_dict(dictionary, recurse=False):
@@ -123,7 +128,7 @@ more comfortably using the dot syntax."""
 
         #If a list, apply to elements within
         if type(dictionary) == list: 
-            return map(lambda d: Struct.from_dict(d, recurse) ,dictionary)
+            return list(map(lambda d: Struct.from_dict(d, recurse) ,dictionary))
         #not a dictionary, return unchanged
         if type(dictionary) != dict: 
             return dictionary
@@ -177,7 +182,7 @@ in the background when retrieving the values."""
                 return val
 
         def i(self):
-            for key in var_dict.keys() + templ_self.translation_dict.keys():
+            for key in list(var_dict.keys()) + list(templ_self.translation_dict.keys()):
                 yield (key, self[key])
             
         return type('dict_wrapper', (object,), {'__getitem__':f, 'items':i})()
@@ -250,7 +255,7 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
             for var, value in result.items():
                 
                 tmpl = None
-                if isinstance(value, basestring) and '$' in value:
+                if isinstance(value, str) and '$' in value:
                     #something that might need to get replaced!
                     tmpl = Template(value)
                 elif isinstance(value, Template):
@@ -404,6 +409,3 @@ class initOrder(object):
         
     def initCompare(self, other):
         return self.__number - other.__number
-        
-    def __cmp__(self, other):
-        return self.initCompare(other)

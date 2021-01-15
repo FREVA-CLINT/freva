@@ -21,7 +21,7 @@ import netCDF4
 def print_arguments(config_dict):
     Logger.Indent("-> started with parameters:", 4, 7)
     params = []
-    for key, value in config_dict.iteritems():
+    for key, value in config_dict.items():
         params.append("-> %-15s = %s" % (key, value))
     params.sort()
     for param in params:
@@ -112,7 +112,7 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
         try:
             starttime = datetime.strptime(timepart_split[0], datefmt)
             endtime = datetime.strptime(timepart_split[1], datefmt)
-        except ValueError, ve:
+        except ValueError as ve:
             Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
         return (datefmt, starttime, endtime)
 
@@ -149,7 +149,7 @@ def get_start_and_end_time_from_DRSFile(dfile, include_str=True, only_str=False)
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError, ve:
+    except ValueError as ve:
         Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
     if include_str and not only_str:
         return (starttime, endtime, timepart_split[0], timepart_split[1])
@@ -189,7 +189,7 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
-    except ValueError, ve:
+    except ValueError as ve:
         if allow_no_time:
             return None, None
         else:
@@ -335,7 +335,7 @@ class basePlugin(object):
     def __init__(self, output=None, project="baseline1", model="mpi-esm-lr", experiment=None):
         # store some information for later usage
         if output is None:
-            raise Exception, "No output directory specified!"
+            raise Exception("No output directory specified!")
         subdir = "%s_%s_%s" % (time.strftime('%Y%m%d-%H%M%S'), project, model)
         subdir = subdir.replace("_*", "")
         if experiment is not None and experiment != "*":
@@ -363,7 +363,7 @@ class basePlugin(object):
         else:
             ensembles = [ensembles]
         if decadals is not None:
-            years = map(int, decadals)
+            years = list(map(int, decadals))
         else:
             years = None
         if firstyear is not None:
@@ -564,7 +564,7 @@ class basePlugin(object):
 
         # remove groups that only contain one file
         keys_to_remove = []
-        for key, value in datasets.iteritems():
+        for key, value in datasets.items():
             if len(value) < 2:
                 keys_to_remove.append(key)
         if len(keys_to_remove) > 0:
@@ -575,7 +575,7 @@ class basePlugin(object):
         keys_to_remove = []
         new_datasets = {}
         if groupby == "experiment":
-            for key, value in datasets.iteritems():
+            for key, value in datasets.items():
                 newlist = self.split_file_list_by_timecontinously(value)
                 if newlist is not None:
                     keys_to_remove.append(key)
@@ -584,11 +584,11 @@ class basePlugin(object):
             if len(keys_to_remove) > 0:
                 for key in keys_to_remove:
                     del datasets[key]
-                for key, value in new_datasets.iteritems():
+                for key, value in new_datasets.items():
                     datasets[key] = value
             # remove again groups that only contain one file
             keys_to_remove = []
-            for key, value in datasets.iteritems():
+            for key, value in datasets.items():
                 if len(value) < 2:
                     keys_to_remove.append(key)
             if len(keys_to_remove) > 0:
@@ -619,12 +619,12 @@ class basePlugin(object):
                 ensembles[ensemble_part].append(onefile)
         # find the maximum number of files per member
         max_files = 0
-        for ensemble_part, filelist in ensembles.iteritems():
+        for ensemble_part, filelist in ensembles.items():
             if len(filelist) > max_files:
                 max_files = len(filelist)
         # copy all ensemble members with the maximal number of files to the result list
         result = []
-        for ensemble_part, filelist in ensembles.iteritems():
+        for ensemble_part, filelist in ensembles.items():
             if len(filelist) == max_files:
                 result.extend(filelist)
             else:
@@ -785,7 +785,7 @@ class basePlugin(object):
                 return newlist
             else:
                 # create splittedFile objects from the list
-                sflist = map(lambda x: splittedFile(x), newlist)
+                sflist = list(map(lambda x: splittedFile(x), newlist))
                 return sflist
         else:
             return None
@@ -865,8 +865,8 @@ class basePlugin(object):
             # check for any errors
             for c in exitcodes:
                 if c[0] != 0:
-                    raise Exception, "exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!" % (
-                    c[0], c[2], c[1])
+                    raise Exception("exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!" % (
+                    c[0], c[2], c[1]))
 
     def calculate_ensemble_stat(self, plugin_path, dryrun=False, separate=True, has_mon=False):
         """
@@ -881,7 +881,7 @@ class basePlugin(object):
 
         # iterate over all groups and use cdo to calculate the statistics with CDO
         commands = []
-        for key, value in self.ensemble_groups.iteritems():
+        for key, value in self.ensemble_groups.items():
             group_files = []
             for stat in stats:
                 output_name = self.get_output_from_input_name(

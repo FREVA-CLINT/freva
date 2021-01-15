@@ -5,7 +5,7 @@ This module manages the central configuration of the system.
 '''
 import os
 import logging
-from ConfigParser import SafeConfigParser, NoSectionError
+from configparser import SafeConfigParser, NoSectionError
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
@@ -239,7 +239,7 @@ def get_section(section_name):
     try:
         return dict(conf.items(section_name))
     except NoSectionError:
-        raise NoSectionError, 'There is no "%s" section in config file' % section_name
+        raise NoSectionError(f'There is no "{section_name}" section in config file')
     
     
     

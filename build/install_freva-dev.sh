@@ -4,19 +4,21 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=/opt/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
 # SWITCHES
-makeOwnPython=False
-makeFreva=False
+makeOwnPython=True
+makeFreva=True
 makeConfig=True
-makeStartscript=False
+makeStartscript=True
 makeSOLRSERVER=True
 makeMYSQLtables=False
 ##########
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="numpy=1.9.3 netcdf4 nco cdo libnetcdf pypdf2 'django>=1.8,<1.9' python-cdo mysql-python pip"
+CONDA_PKGS="conda numpy=1.9.3 pypdf2 'django>=1.8,<1.9' pip libnetcdf cdo nco netcdf4 pytest"
+PYTHONVERSION="3.7"
+PIP_PKGS="pymysql cdo"
 ##########
 
 ###########
@@ -24,7 +26,7 @@ CONDA_PKGS="numpy=1.9.3 netcdf4 nco cdo libnetcdf pypdf2 'django>=1.8,<1.9' pyth
 ###########
 ADMINS=b380001 #freva
 PROJECTWEBSITE=www-regiklim.dkrz.de #just for info printing
-USERRESULTDIR=/work/bmx828/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
+USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
 #SCHEDULER - SLURM                           
 SLURMCOMMAND=sbatch #sbatch/None
 #MYSQL
@@ -73,20 +75,20 @@ mkdir -m 751 -p $DBDIR/metadata
 if [ "$makeOwnPython" = "True" ]; then
     #command -v gcc >/dev/null 2>&1 || { echo >&2 "NEED gcc but it's not installed.  Aborting."; exit 1; }
     mkdir -p $YOURPYTHON
-    shasum=b820dde1a0ba868c4c948fe6ace7300a252b33b5befd078a15d4a017476b8979
-    wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh -O /tmp/anaconda2.sh
-    if [ $(sha256sum /tmp/anaconda2.sh| awk '{print $1}') != $shasum ];then
+    shasum=1314b90489f154602fd794accfc90446111514a5a72fe1f71ab83e07de9504a7
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/anaconda.sh
+    if [ $(sha256sum /tmp/anaconda.sh| awk '{print $1}') != $shasum ];then
         >&2 echo 'Checksums do not match'
         exit 1
     fi
-    chmod +x /tmp/anaconda2.sh
-    /tmp/anaconda2.sh -p /tmp/anaconda -b -f -u
-    /tmp/anaconda/bin/conda create -c conda-forge -q -p $YOURPYTHON python=2.7.18 $CONDA_PKGS -y
+    chmod +x /tmp/anaconda.sh
+    /tmp/anaconda.sh -p /tmp/anaconda -b -f -u
+    /tmp/anaconda/bin/conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y
     let success=$?
-    rm -r /tmp/anaconda /tmp/anaconda2.sh
-    [[ $success -ne 0 ]] && echo "conda create -c conda-forge -q -p $YOURPYTHON python=2.7.18 $CONDA_PKGS -y failed! EXIT" && exit 1
+    rm -r /tmp/anaconda /tmp/anaconda.sh
+    [[ $success -ne 0 ]] && echo "conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y failed! EXIT" && exit 1
+    $YOURPYTHON/bin/python -m pip install $PIP_PKGS
 fi
-
 
 if [ "$makeFreva" = "True" ]; then
     git clone -b freva-dev https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA

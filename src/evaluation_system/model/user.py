@@ -7,7 +7,7 @@ might be required anywhere else.
 import pwd
 import os
 import sys
-from ConfigParser import SafeConfigParser as Config
+from configparser import SafeConfigParser as Config
 from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
 
@@ -55,7 +55,7 @@ the current user, i.e. the one that started the application, is created instead.
             uid = os.getuid()
             
         self._userdata = None
-        if isinstance(uid, basestring):
+        if isinstance(uid, str):
             self._userdata = pwd.getpwnam(uid)
         else:
             self._userdata = pwd.getpwuid(uid)
@@ -180,7 +180,7 @@ the current user, i.e. the one that started the application, is created instead.
         
         if create and not os.path.isdir(dir_name):
             #we are letting this fail in case of problems.
-            utils.supermakedirs(dir_name, 0755)
+            utils.supermakedirs(dir_name, 0e0755)
             
         return dir_name
 

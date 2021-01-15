@@ -13,7 +13,7 @@ from datetime import datetime
 import json
 import re
 import logging
-from evaluation_system.misc import py27, config
+from evaluation_system.misc import config
 from evaluation_system.model.history.models import Configuration
 
 log = logging.getLogger(__name__)
@@ -90,10 +90,10 @@ class UserDB(object):
             flag = 0
         if version_details is None:
             version_details = 1
-        
+
         toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
-        
+
         newentry = hist.History(timestamp=datetime.now(),
                                 tool=toolname,
                                 version=version,
@@ -106,23 +106,23 @@ class UserDB(object):
         # set caption
         if caption:
             newentry.caption = caption
-        
+
         tool.__parameters__.synchronize(toolname)
-        
+
         try:
             newentry.save()
-    
+
             for p in tool.__parameters__._params.values():
                 name = p.name
                 param = Configuration(history_id_id=newentry.id,
                                       parameter_id_id=p.id,
                                       value=json.dumps(config_dict[name]),
                                       is_default=p.is_default)
-            
+
                 param.save()
-        except Exception, e:
+        except Exception as e:
             raise e
-                
+
         return newentry.id
 
     def scheduleEntry(self, row_id, uid, slurmFileName):
@@ -130,16 +130,16 @@ class UserDB(object):
         :param row_id: The index in the history table
         :param uid: the user id
         :param slurmFileName: The slurm file belonging to the history entry
-        Sets the name of the slurm file 
+        Sets the name of the slurm file
         """
-        
+
         h = hist.History.objects.get(id=row_id,
                                      uid_id=uid,
                                      status=hist.History.processStatus.not_scheduled)
-        
+
         h.slurm_output = slurmFileName
         h.status = hist.History.processStatus.scheduled
-        
+
         h.save()
 
     class ExceptionStatusUpgrade(Exception):
@@ -153,32 +153,32 @@ class UserDB(object):
         """
         :param row_id: The index in the history table
         :param uid: the user id
-        :param status: the new status 
-        After validation the status will be upgraded. 
+        :param status: the new status
+        After validation the status will be upgraded.
         """
 
         h = hist.History.objects.get(pk=row_id,
                                      uid_id=uid)
-                
+
         if h.status < status:
             raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
-        
+
         h.status = status
-        
+
         h.save()
 
     def changeFlag(self, row_id, uid, flag):
         """
         :param row_id: The index in the history table
         :param uid: the user id
-        :param flag: the new flag 
-        After validation the status will be upgraded. 
+        :param flag: the new flag
+        After validation the status will be upgraded.
         """
-        
+
         h = hist.History.objects.get(id=row_id, uid_id=uid)
-        
+
         h.flag = flag
-        
+
         h.save()
 
     def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
@@ -220,12 +220,12 @@ class UserDB(object):
              o = o[:limit]
 
         return o
-                    
+
     def addHistoryTag(self, hrowid, tagType, text, uid=None):
         """
         :type hrowid: integer
         :param hrowid: the row id of the history entry where the results belong to
-        :type tagType: integer 
+        :type tagType: integer
         :param tagType: the kind of tag
         :type: text: string
         :param: text: the text belonging to the tag
@@ -236,17 +236,17 @@ class UserDB(object):
         h = hist.HistoryTag(history_id_id=hrowid,
                             type=tagType,
                             text=text)
-        
+
         if uid is not None:
             h.uid_id = uid
-            
+
         h.save()
 
     def updateHistoryTag(self, trowid, tagType=None, text=None, uid=None):
         """
         :type trowid: integer
         :param trowid: the row id of the tag
-        :type tagType: integer 
+        :type tagType: integer
         :param tagType: the kind of tag
         :type: text: string
         :param: text: the text belonging to the tag
@@ -256,20 +256,20 @@ class UserDB(object):
 
         h = hist.HistoryTag.objects.get(id=trowid,
                                         uid_id=uid)
-        
+
         if tagType is not None:
             h.type = tagType
-                
+
         if text is not None:
             h.text = text
 
         h.save()
-    
+
     def storeResults(self, rowid, results):
         """
         :type rowid: integer
         :param rowid: the row id of the history entry where the results belong to
-        :type results: dict with entries {str : dict} 
+        :type results: dict with entries {str : dict}
         :param results: meta-dictionary with meta-data dictionaries assigned to the file names.
         """
         reg_ex = None
@@ -284,10 +284,10 @@ class UserDB(object):
 
         for file_name in results:
             metadata = results[file_name]
-            
+
             type_name = metadata.get('type', '')
             type_number = hist.Result.Filetype.unknown
-            
+
             preview_path = metadata.get('preview_path', '')
             preview_file = ''
 
@@ -295,7 +295,7 @@ class UserDB(object):
                 # We store the relative path for previews only.
                 # Which allows us to move the preview files to a different folder.
                 preview_file = reg_ex.match(preview_path).group(2)
-                        
+
             if type_name == 'plot':
                 type_number = hist.Result.Filetype.plot
             elif type_name == 'data':
@@ -305,9 +305,9 @@ class UserDB(object):
                             output_file=file_name,
                             preview_file=preview_file,
                             file_type=type_number)
-            
+
             h.save()
-            
+
             result_id = h.pk
             self._storeResultTags(result_id, metadata)
 
@@ -315,51 +315,51 @@ class UserDB(object):
         """
         :type result_id: integer
         :param result_id: the id of the result entry where the tag belongs to
-        :type metadata: dict with entries {str : dict} 
+        :type metadata: dict with entries {str : dict}
         :param metadata: meta-dictionary with meta-data dictionaries assigned to the file names.
         """
-        
+
         data_to_store = []
 
-        # append new tags here        
+        # append new tags here
         caption = metadata.get('caption', None)
 
         if caption:
             data_to_store.append(hist.ResultTag(result_id_id=result_id,
                                                 type=hist.ResultTag.flagType.caption,
                                                 text=caption))
-                        
+
         hist.ResultTag.objects.bulk_create(data_to_store)
 
     def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
         repository = '%s;%s' % (repos_tool, repos_api)
-        
+
         retval = None
-        
+
         try:
             p = pin.Version.objects.filter(tool=toolname,
                                            version=version,
                                            internal_version_tool=internal_version_tool[:40],
                                            internal_version_api=internal_version_api[:40],
                                            repository=repository)[0]
-            
+
             retval = p.pk
-        
+
         except (IndexError, pin.Version.DoesNotExist) as e:
             pass
-        
+
         return retval
 
     def newVersion(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
         repository = '%s;%s' % (repos_tool, repos_api)
-        
+
         p = pin.Version(timestamp=datetime.now(),
                         tool=toolname,
                         version=version,
                         internal_version_tool=internal_version_tool,
                         internal_version_api=internal_version_api,
                         repository=repository)
-        
+
         p.save()
 
         result_id = p.pk
@@ -368,24 +368,24 @@ class UserDB(object):
 
     def getUserId(self, username):
         retval = 0
-        
+
         try:
             u = User.objects.get(username=username)
-            
+
             retval = u.pk
         except User.DoesNotExist:
             pass
-        
+
         return retval
 
     def updateUserLogin(self, row_id, email=None):
         u = User.objects.get(id=row_id)
-        
+
         u.last_login = datetime.now()
-        
+
         if email is not None:
             u.email = email
-            
+
         u.save()
 
     def createUser(self,
@@ -395,10 +395,10 @@ class UserDB(object):
                    last_name='',):
 
         timestamp = datetime.now()
-        
+
         u = User(username=username,
                  password='NoPasswd',
-                 date_joined=timestamp, 
+                 date_joined=timestamp,
                  last_login=timestamp,
                  first_name=first_name,
                  last_name=last_name,
@@ -406,9 +406,9 @@ class UserDB(object):
                  is_active=1,
                  is_staff=0,
                  is_superuser=0)
-        
+
         u.save()
-        
+
     def create_user_crawl(self, crawl_dir, username):
         from solr_models.models import UserCrawl
         crawl = UserCrawl(status='waiting', user_id=self.getUserId(username), path_to_crawl=crawl_dir)

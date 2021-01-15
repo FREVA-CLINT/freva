@@ -15,8 +15,7 @@ import shutil
 import re
 from time import time
 from datetime import datetime
-from ConfigParser import SafeConfigParser
-from exceptions import ValueError
+from configparser import SafeConfigParser
 import logging
 log = logging.getLogger(__name__)
 from pyPdf import PdfFileReader
@@ -32,8 +31,8 @@ class ConfigurationError(Exception):
     """Signals the configuration failed somehow."""
     pass
 
-        
-class PluginAbstract(object):
+# TODO: I don't really see why we would need a metaclass here. Simple base.
+class PluginAbstract(metaclass=abc.ABCMeta):
     """This is the base class for all plug-ins. It is the only class that needs to be inherited from when implementing a plug-in.
     
 From it, you'll need to implement the few attributes and/or methods marked as abstract with the decorator
@@ -78,8 +77,6 @@ We might have to change this in the future if it's not enough. Another approach 
 
 For more general (and less technical) information refer to the wiki: https://code.zmaw.de/projects/miklip-d-integration/wiki
 """
-    
-    __metaclass__ = abc.ABCMeta
 
     special_variables = None
     """This dictionary is used to resolve the *special variables* that are available
@@ -134,7 +131,7 @@ the current user, i.e. the user that started this program, is created."""
             USER_UID           = user.getName,
             SYSTEM_DATE        = lambda: datetime.now().strftime('%Y%m%d'),
             SYSTEM_DATETIME    = lambda: datetime.now().strftime('%Y%m%d_%H%M%S'),
-            SYSTEM_TIMESTAMP   = lambda: str(long(time() * 1000)),
+            SYSTEM_TIMESTAMP   = lambda: str(int(time() * 1000)),
             SYSTEM_RANDOM_UUID = lambda: str(uuid4()))
         
     @abc.abstractproperty
@@ -180,7 +177,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
     
     def append_unique_id(self, config_dict, unique_output):
         from evaluation_system.api.parameters import Directory, CacheDirectory
-        for key, param in self.__parameters__.iteritems():
+        for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
             if isinstance(tmp_param, Directory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
@@ -263,7 +260,7 @@ Use it for the return call of runTool.
 :return: dictionary with the paths to the files that were created as key and a dictionary as value.
     """
         result = {}
-        if isinstance(output_files, basestring): output_files = [output_files]
+        if isinstance(output_files, str): output_files = [output_files]
         for file_path in output_files:
             metadata = {}
 
@@ -747,7 +744,7 @@ It means, **never** start a plug-in comming from unknown sources.
             return None
 
         cmd = os.popen('%s python %s %s' % (module_path, command, module_name))
-        exec cmd in globals(), locals()
+        exec(cmd in globals(), locals())
         return True
 
     def load_module(self, module_name):

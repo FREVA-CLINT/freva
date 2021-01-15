@@ -30,8 +30,8 @@ class Command(FrevaBaseCommand):
         for job in running_jobs:
             slurm_status = job.get_slurm_status()
             if 'cancelled' in slurm_status.lower() or 'timeout' in slurm_status.lower() or 'fail' in slurm_status.lower():
-                print slurm_status, job.tool
-                print 'Setting job %s to broken' % job.id
+                print(slurm_status, job.tool)
+                print(f'Setting job {job.id} to broken')
                 job.status = job.processStatus.broken
                 job.save()
             elif 'completed' in slurm_status.lower():

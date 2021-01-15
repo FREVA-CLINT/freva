@@ -90,18 +90,18 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
         if download_file:
             with open(download_file, 'w') as f:
                 f.write(p2p.get_wget(**facets))
-                print "Download script successfully saved to %s" % download_file
+                print(f"Download script successfully saved to {download_file}")
                 return 0   # there's nothing more to be executed after this
             return 1
         if datasets: 
-            print '\n'.join(['%s - version: %s' % d for d in sorted(p2p.get_datasets_names(**facets))])
+            print('\n'.join(['%s - version: %s' % d for d in sorted(p2p.get_datasets_names(**facets))]))
         if query: 
             if len(query.split(',')) > 1:
                 # we get multiple fields queried, return in a tructured fashion
                 p2p.show(p2p.get_datasets(fields=query,**facets))
             else:
                 # if only one then return directly
-                print '\n'.join([str(d[query]) for d in p2p.get_datasets(fields=query, **facets)])
+                print('\n'.join([str(d[query]) for d in p2p.get_datasets(fields=query, **facets)]))
             
         if show_facets:
             results = p2p.get_facets(show_facets, **facets)
@@ -111,14 +111,14 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
                     values = "<No Results>"
                 else:
                     values = '\n\t'.join(['%s: %s' % (k, results[facet_key][k]) for k in sorted(results[facet_key])])
-                print '[%s]\n\t%s' % (facet_key, values)
+                print('[%s]\n\t%s' % (facet_key, values))
         if not (datasets or query or show_facets):
             # default
             for result in p2p.files(fields='url', **facets):
                 for url_encoded in result['url']:
                     url, _, access_type = url_encoded.split('|')
                     if access_type.lower().startswith(url_type):
-                        print url
+                        print(url)
 
 if __name__ == "__main__":  # pragma nocover
     Command().run()

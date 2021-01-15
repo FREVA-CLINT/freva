@@ -61,7 +61,7 @@ DATE FORMAT
         since = timestamp_from_string(args.since) if args.since else None
         until = timestamp_from_string(args.until) if args.until else None
         tool_name = args.plugin
-        entry_ids = map(int, args.entry_ids.split(',')) if args.entry_ids else None
+        entry_ids = list(map(int, args.entry_ids.split(','))) if args.entry_ids else None
         return_command = args.return_command
         # parse arguments *!!!*
         for args in self.last_args:
@@ -86,12 +86,12 @@ DATE FORMAT
                     command_string = pm.getCommandStringFromRow(row, command_name, command_options)
 
                     if len(rows) > 1:
-                        print command_string + ';'
+                        print(command_string + ';')
 
                     else:
-                        print command_string
+                        print(command_string)
             else:
-                print '\n'.join([row.__str__(compact=not args.full_text) for row in rows])
+                print('\n'.join([row.__str__(compact=not args.full_text) for row in rows]))
         else:
             log.error("No results. Check query.")
 

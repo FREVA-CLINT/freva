@@ -62,15 +62,15 @@ For Example:
                 lines = ['No description.']
             if len(lines) > 1:
                 # multi-line
-                print '%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset + ('\n' + ' '*offset).join(lines[1:]))
+                print('%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset + ('\n' + ' '*offset).join(lines[1:])))
             else:
-                print '%s: %s' % (plugin['name'], lines[0])
-        return 0   
-   
+                print('%s: %s' % (plugin['name'], lines[0]))
+        return 0
+
     def auto_doc(self, message=None):
         if len(self.last_args) > 0:
             plugin = pm.getPluginInstance(self.last_args[0])
-            print plugin.getHelp()
+            print(plugin.getHelp())
             exit(0)
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
@@ -78,7 +78,7 @@ For Example:
     def handle_pull_request(self, tool_name):
         tag = self.args.tag
         if not tag:
-            print 'Missing required option "--tag"'
+            print('Missing required option "--tag"')
             return
         # create new entry in
         freva_user = user.User()
@@ -87,16 +87,16 @@ For Example:
             user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting'
         )
 
-        print 'Please wait while your pull request is processed'
+        print('Please wait while your pull request is processed')
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
             pull_request = ToolPullRequest.objects.get(id=pull_request.id)
 
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
-            print 'The pull request failed.\nPlease contact the admins.'
+            print('The pull request failed.\nPlease contact the admins.')
         else:
-            print '%s plugin is now updated in the system.\nNew version: %s' % (tool_name, tag)
+            print(f'{tool_name} plugin is now updated in the system.\nNew version: {tag}')
 
     def _run(self):
         # defaults
@@ -116,8 +116,8 @@ For Example:
 
         if options.repos_version:
             (repos, version) = pm.getPluginVersion(tool_name)
-            print 'Repository and version of %s:\n%s\n%s' % (tool_name, repos, version)
-            return 0    
+            print(f'Repository and version of :{tool_name}\n{repos}\n{version}')
+            return 0
         
         email = None
         
@@ -143,7 +143,7 @@ For Example:
                 logging.info("Configuration file saved in %s", save_in)
             elif options.show_config:
                 tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
-                print pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict)
+                print(pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict))
             #elif self.DEBUG == True:
             #    print 'DEBUGDEBUGDEBUG'
 
@@ -180,10 +180,10 @@ For Example:
                                                      caption=caption,
                                                      unique_output=unique_output)
 
-                        print 'Scheduled job with history id', id
-                        print 'You can view the job\'s status with the command squeue'
-                        print 'Your job\'s progress will be shown with the command'
-                        print 'tail -f ', file
+                        print('Scheduled job with history id', id)
+                        print('You can view the job\'s status with the command squeue')
+                        print('Your job\'s progress will be shown with the command')
+                        print('tail -f ', file)
                     else:
                         if self.DEBUG==True:
                             tool_dict['debug']=True

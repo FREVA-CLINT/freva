@@ -93,7 +93,7 @@ class Command(FrevaBaseCommand):
                 else:
                     SolrCore.load_fs_from_file(dump_file=ingest_file, batch_size=batch_size,
                                                abort_on_errors=abort_on_errors)
-            print capture.result
+            print(capture.result)
             try:
                 crawl = UserCrawl.objects.get(tar_file=fn)
                 crawl.ingest_msg = crawl.ingest_msg + '\n' + capture.result + '\n\nNow you can find your data using "solr_search"'

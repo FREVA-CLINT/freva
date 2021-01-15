@@ -18,11 +18,3 @@ This packages contains modules that have no relation to any other package.
     :members:
     :undoc-members:
     :show-inheritance:
-
-:mod:`py27` Module
---------------------
-
-.. automodule:: evaluation_system.misc.py27
-    :members:
-    :undoc-members:
-    :show-inheritance:

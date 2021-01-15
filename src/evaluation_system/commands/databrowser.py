@@ -95,7 +95,7 @@ For Example:
                 
             for att, values in SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict).items():
                 # values come in pairs: (value, count)
-                value_count = len(values)/2
+                value_count = len(values) // 2
                 if args.relevant_only and value_count < 2:
                     continue
                 
