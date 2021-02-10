@@ -109,6 +109,49 @@ def dummy_solr(dummy_env, dummy_settings):
     server.latest.delete('*')
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
+@pytest.fixture(scope='module')
+def dummy_plugin(dummy_env, dummy_settings):
+
+    os.environ = dummy_env
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
+    yield DummyPlugin()
+
+@pytest.fixture(scope='module')
+def dummy_history(dummy_env, dummy_settings):
+
+    os.environ = dummy_env
+    from evaluation_system.model.history.models import History
+    yield History
+    History.objects.all().delete()
+
+@pytest.fixture(scope='module')
+def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history):
+
+    os.environ = dummy_env
+    from django.contrib.auth.models import User
+    from evaluation_system.tests.mocks.dummy import DummyUser
+    User.objects.filter(username='dummy_user').delete()
+    user_entry = namedtuple('dummy_user', ['user', 'row_id'])
+    with DummyUser(random_home=True, pw_name='someone') as user:
+        user_entry.user = user
+        user_entry.row_id = user.getUserDB().storeHistory(
+            dummy_plugin,
+            config_dict, 'user',
+            dummy_history.processStatus.not_scheduled,
+            caption='My caption')
+        yield user_entry
+        User.objects.filter(username='dummy_user').delete()
+
+
+
+@pytest.fixture(scope='session')
+def config_dict():
+    yield {'the_number': 42,
+            'number': 12,
+            'something': 'else',
+            'other': 'value',
+            'input': '/folder'}
+
 @pytest.fixture(scope='session')
 def dummy_cmd(dummy_settings):
 
