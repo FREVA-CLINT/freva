@@ -86,7 +86,7 @@ To get help for the individual commands use
             if self.DEBUG:  # or __name__ != "__main__":
                 raise
             else:
-                print "ERROR: ", sys.exc_info()[1]
+                print("ERROR: ", sys.exc_info()[1])
             exit(2)
     
     def find_commands(self, management_dir):
@@ -161,13 +161,13 @@ To get help for the individual commands use
         Override FrevaBaseCommands auto_doc.
         We just want to show all available commands
         """
-        print '%s \nAvailable commands:\n%s' % ('Freva', '\n'.join(self.list_commands(self.commands)))
+        print('%s \nAvailable commands:\n%s' % ('Freva', '\n'.join(self.list_commands(self.commands))))
         
         if self.is_admin:
-            print '\n\nAdministration commands:\n%s' % '\n'.join(self.list_commands(self.admin_commands))
+            print('\n\nAdministration commands:\n%s' % '\n'.join(self.list_commands(self.admin_commands)))
         env = self.getEnvironment()
-        print '\n'.join([textwrap.fill(r, width=env['columns'],
-                                       replace_whitespace=False) for r in self.__short_description__.splitlines()])
+        print('\n'.join([textwrap.fill(r, width=env['columns'],
+                                       replace_whitespace=False) for r in self.__short_description__.splitlines()]))
 
     def _reorder_commands(self, command_list):
         """
@@ -187,7 +187,7 @@ To get help for the individual commands use
         """
         try:
             module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
-        except ImportError, e:
+        except ImportError as e:
             module = __import__('evaluation_system.commands.admin.%s' % command, fromlist=['Command'])
         except:
             raise
