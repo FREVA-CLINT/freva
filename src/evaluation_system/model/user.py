@@ -7,7 +7,7 @@ might be required anywhere else.
 import pwd
 import os
 import sys
-from configparser import SafeConfigParser as Config
+from configparser import ConfigParser as Config
 from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
 
