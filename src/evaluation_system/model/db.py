@@ -3,8 +3,9 @@
 
 This modules encapsulates all access to databases.
 """
-import history.models as hist
-import plugins.models as pin
+
+import evaluation_system.model.history.models as hist
+import evaluation_system.model.plugins.models as pin
 
 from django.contrib.auth.models import User
 from django.db import transaction
