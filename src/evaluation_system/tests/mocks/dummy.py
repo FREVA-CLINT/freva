@@ -1,9 +1,3 @@
-"""
-
-Created on 13.05.2016
-
-@author: Sebastian Illing
-"""
 
 import tempfile
 import shutil
@@ -32,22 +26,29 @@ class DummyPlugin(PluginAbstract):
 
     def runTool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
-        print "Dummy tool was run with: %s" % config_dict
+        print(f"Dummy tool was run with: {config_dict}")
         return {'/tmp/dummyfile1': dict(type='plot'), '/tmp/dummyfile2': dict(type='data')}
 
 
 class DummyUser(User):
     """Create a dummy User object that allows testing"""
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self._random_home:
+            self.cleanRandomHome()
+        return True
+
     def __init__(self, random_home=False, uid=None, **override):
-        self.__random_home = None
+        self._random_home = None
         if random_home:
             if 'pw_dir' in override:
                 raise Exception("Can't define random_home and provide a home directory")
             override['pw_dir'] = tempfile.mkdtemp('_dummyUser')
-            self.__random_home = override['pw_dir'] 
-            
-        super(DummyUser, self).__init__(uid=uid)
-        
+            self._random_home = override['pw_dir'] 
+        super().__init__(uid=uid)
         class DummyUserData(list):
             """Override a normal list and make it work like the pwd read-only struct"""
             _NAMES = 'pw_name pw_passwd pw_uid pw_gid pw_gecos pw_dir pw_shell'.split()
@@ -60,18 +61,18 @@ class DummyUser(User):
                 if name[0] != '_' and name in self._NAMES:
                     return self[self._NAMES.index(name)]
                 return list.__getattribute__(self, name)
-                    
-        
         # copy the current data
         user_data = list(self._userdata[:])
         for key, value in override.items():
             if key in DummyUserData._NAMES:
                 user_data[DummyUserData._NAMES.index(key)] = value
-        
         self._userdata = DummyUserData(user_data)
         self._db = UserDB(self)
-        
+
+
     def cleanRandomHome(self):
-        if self.__random_home and os.path.isdir(self.__random_home) and self.__random_home.startswith(tempfile.gettempdir()):
+        try:
             # make sure the home is a temporary one!!!
-            shutil.rmtree(self.__random_home)
+            shutil.rmtree(self._random_home)
+        except (FileNotFoundError, OSError):
+            pass
