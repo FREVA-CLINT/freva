@@ -14,6 +14,7 @@ We define two cores::
 import os
 import shutil
 import urllib
+import urllib.request
 import json
 from datetime import datetime
 import logging
@@ -104,8 +105,8 @@ get downloaded from Solr)"""
         query = self.core_url + endpoint
         if self.echo:
             log.debug(query)
-        
-        req = urllib.request.Request(query, json.dumps(list_of_dicts))
+        post_data = json.dumps(list_of_dicts).encode('ascii')
+        req = urllib.request.Request(query, post_data)
         req.add_header("Content-type", "application/json")
 
         return urllib.request.urlopen(req).read()
@@ -129,8 +130,8 @@ get downloaded from Solr)"""
         if self.echo:
             log.debug(query)
         
-        req = urllib2.Request(query)
-        response = json.loads(urllib2.urlopen(req).read())
+        req = urllib.request.Request(query)
+        response = json.loads(urllib.request.urlopen(req).read())
         if response['responseHeader']['status'] != 0:
             raise Exception("Error while accessing Core %s. Response: %s" % (self.core, response))
         
@@ -243,7 +244,6 @@ later on normally this is too slow for this phase, so the default is False.
  Most of the times there are many files being found that are no data at all."""
 
         log.debug('starting sequential ingest')
-
         if dump_file.endswith('.gz'):
             # print "Using gzip"
             import gzip
