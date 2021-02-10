@@ -84,8 +84,20 @@ def test_add_history_tag(dummy_user, dummy_history):
     assert len(tags) == 1
     assert tags[0].type == HistoryTag.tagType.note_public
 
+def test_update_history_tag(dummy_user):
+    from evaluation_system.model.history.models import History, HistoryTag
+    dummy_user.user.getUserDB().addHistoryTag(dummy_user.row_id,
+            HistoryTag.tagType.note_public, 'Some note', uid='user')
+    h_tag = History.objects.get(id=dummy_user.row_id).historytag_set.last()
+    dummy_user.user.getUserDB().updateHistoryTag(h_tag.id,
+            HistoryTag.tagType.note_deleted, 'New text', uid='user')
+    h_tag = History.objects.get(id=dummy_user.row_id).historytag_set.last()
+    assert h_tag.type == HistoryTag.tagType.note_deleted
+    assert h_tag.text == 'New text'
+
 def test_store_results(dummy_user, dummy_history):
 
+    from evaluation_system.model.history.models import ResultTag
     results = {'/some/result.png': {'type': 'plot', 'caption': 'super plot'},
                '/some/other.eps': {'type': 'data'}}
     dummy_user.user.getUserDB().storeResults(dummy_user.row_id, results)
@@ -93,7 +105,7 @@ def test_store_results(dummy_user, dummy_history):
     h = dummy_history.objects.get(id=dummy_user.row_id)
 
     assert h.result_set.count() == 2
-    for key, val in results.iteritems():
+    for key, val in results.items():
         assert h.result_set.filter(history_id_id=dummy_user.row_id,
                                             output_file=key).exists()
         if val.get('caption', None):
