@@ -13,11 +13,6 @@ import logging
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
-#from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
-#from evaluation_system.model.history.models import History, HistoryTag, ResultTag
-#from evaluation_system.model.plugins.models import Version
-#from django.contrib.auth.models import User
-#from evaluation_system.model.solr_models.models import UserCrawl
 import pytest
 
 
@@ -89,23 +84,23 @@ def test_add_history_tag(dummy_user, dummy_history):
     assert len(tags) == 1
     assert tags[0].type == HistoryTag.tagType.note_public
 
-# def test_store_results(dummy_user, dummy_history):
-# 
-#     results = {'/some/result.png': {'type': 'plot', 'caption': 'super plot'},
-#                '/some/other.eps': {'type': 'data'}}
-#     dummy_user.user.getUserDB().storeResults(dummy_user.row_id, results)
-# 
-#     h = dummy_history.objects.get(id=dummy_user.row_id)
-# 
-#     assert h.result_set.count() == 2
-#     for key, val in results.iteritems():
-#         assert h.result_set.filter(history_id_id=dummy_user.row_id,
-#                                             output_file=key).exists()
-#         if val.get('caption', None):
-#             res_tag = h.result_set.get(output_file=key).resulttag_set.first()
-#             assert res_tag.type == ResultTag.flagType.caption
-#             assert res_tag.text == val['caption']
-# 
+def test_store_results(dummy_user, dummy_history):
+
+    results = {'/some/result.png': {'type': 'plot', 'caption': 'super plot'},
+               '/some/other.eps': {'type': 'data'}}
+    dummy_user.user.getUserDB().storeResults(dummy_user.row_id, results)
+
+    h = dummy_history.objects.get(id=dummy_user.row_id)
+
+    assert h.result_set.count() == 2
+    for key, val in results.iteritems():
+        assert h.result_set.filter(history_id_id=dummy_user.row_id,
+                                            output_file=key).exists()
+        if val.get('caption', None):
+            res_tag = h.result_set.get(output_file=key).resulttag_set.first()
+            assert res_tag.type == ResultTag.flagType.caption
+            assert res_tag.text == val['caption']
+
 def test_version(dummy_user):
     from evaluation_system.model.plugins.models import Version
     Version.objects.all().delete()
