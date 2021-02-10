@@ -18,7 +18,7 @@ from datetime import datetime
 from configparser import SafeConfigParser
 import logging
 log = logging.getLogger(__name__)
-from pyPdf import PdfFileReader
+from PyPDF2 import PdfFileReader
 
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
