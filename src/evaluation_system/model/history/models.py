@@ -343,7 +343,7 @@ class HistoryTag(models.Model):
     """
 
     class tagType:
-        [caption, note_public, note_private, note_deleted, follow, unfollow] = range(6)
+        [caption, note_public, note_private, note_deleted, follow, unfollow] = list(range(6))
     
     class Meta:
         app_label = 'history'
