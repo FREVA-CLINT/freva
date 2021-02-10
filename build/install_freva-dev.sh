@@ -16,9 +16,9 @@ makeMYSQLtables=False
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="conda numpy=1.9.3 pypdf2 'django>=1.8,<1.9' pip libnetcdf cdo nco netcdf4 pytest"
+CONDA_PKGS="conda configparser numpy=1.9.3 pypdf2 'django>=1.8,<1.9' pip libnetcdf cdo nco netcdf4 pytest ipython"
 PYTHONVERSION="3.7"
-PIP_PKGS="pymysql cdo"
+PIP_PKGS="pymysql mysqlclient cdo"
 ##########
 
 ###########
