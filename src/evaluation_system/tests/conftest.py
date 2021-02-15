@@ -104,6 +104,8 @@ def dummy_solr(dummy_env, dummy_settings):
             core_all_files=server.all_files, core_latest=server.latest
         )
         server.DRSFile = DRSFile
+        server.fn = str(Path(server.tmpdir) / server.files[0])
+        server.drs = DRSFile.from_path(server.fn)
         yield server
     server.all_files.delete('*')
     server.latest.delete('*')
@@ -151,6 +153,31 @@ def config_dict():
             'something': 'else',
             'other': 'value',
             'input': '/folder'}
+
+@pytest.fixture(scope='session')
+def tmp_dir():
+    with TemporaryDirectory(prefix='freva_test_') as td:
+        yield Path(td)
+        [f.unlink() for f in Path(td).rglob('*.*')]
+
+
+
+@pytest.fixture(scope='session')
+def search_dict():
+    yield {'variable': 'tas',
+           'project': 'CMIP5',
+           'product': 'output1',
+           'time_frequency': 'mon',
+           'experiment': 'decadal2000',
+           'model': 'MPI-ESM-LR',
+           'ensemble': 'r1i1p1',
+           }
+
+@pytest.fixture(scope='module')
+def esgf_command():
+    from evaluation_system.commands.esgf import Command
+    yield Command()
+
 
 @pytest.fixture(scope='session')
 def dummy_cmd(dummy_settings):
