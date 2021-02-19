@@ -3,6 +3,7 @@ from datetime import datetime
 from django.conf import settings
 import django
 from io import StringIO
+import imp
 import json
 import os
 import pytest
@@ -246,6 +247,19 @@ def hist_obj():
             timestamp=datetime.now(),
             uid=User.objects.first()
         )
+
+@pytest.fixture(scope='module')
+def freva_lib():
+    sys.dont_write_bytecode = True
+    py_source_open_mode = "U"
+    py_source_description = (".py", py_source_open_mode, imp.PY_SOURCE)
+    freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
+    with open(freva_bin, py_source_open_mode) as module_file:
+        Freva = imp.load_module(
+                'freva', module_file, str(freva_bin), py_source_description)
+        yield Freva.Freva()
+        import evaluation_system.api.plugin_manager as pm
+        pm.reloadPlugins()
 
 @pytest.fixture(scope='session')
 def prog_name():
