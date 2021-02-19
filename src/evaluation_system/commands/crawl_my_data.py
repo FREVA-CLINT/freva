@@ -40,10 +40,7 @@ class Command(FrevaBaseCommand):
         # For miklip we want to use a prefix
         # TODO: Get this directly from config?
         project = config.get('project_name')
-        path_prefix = ''
-        if project.lower() == 'miklip':
-            path_prefix = 'user-'
-        user_root_path = os.path.join(root_path, path_prefix+User().getName()) 
+        user_root_path = os.path.join(root_path, 'user-'+User().getName()) 
         if crawl_dir:
             if root_path not in crawl_dir:
                 raise Exception('You are only allowed to crawl data in this root path %s' % root_path)
