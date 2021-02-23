@@ -3,7 +3,7 @@ from datetime import datetime
 from django.conf import settings
 import django
 from io import StringIO
-import imp
+import importlib as imp
 import json
 import os
 import pytest
@@ -112,7 +112,7 @@ def dummy_solr(dummy_env, dummy_settings):
     server.latest.delete('*')
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def dummy_plugin(dummy_env, dummy_settings):
 
     os.environ = dummy_env
@@ -126,6 +126,35 @@ def dummy_history(dummy_env, dummy_settings):
     from evaluation_system.model.history.models import History
     yield History
     History.objects.all().delete()
+
+@pytest.fixture(scope='module')
+def plugin_command(dummy_settings, dummy_env):
+
+    from evaluation_system.misc import config
+    from evaluation_system.api import plugin_manager as pm
+    from evaluation_system.commands.plugin import Command
+    config.reloadConfiguration()
+    pm.reloadPlugins()
+    yield Command()
+
+@pytest.fixture(scope='module')
+def test_user(dummy_env, dummy_settings, config_dict):
+
+    from evaluation_system.model.history.models import History
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username='test_user2', password='123')
+    hist = History.objects.create(
+            timestamp=datetime.now(),
+            status=History.processStatus.running,
+            uid=user,
+            configuration='{"some": "config", "dict": "values"}',
+            tool='dummytool',
+            slurm_output='/path/to/slurm-44742.out'
+        )
+    yield user, hist
+    user.delete()
+    hist
+
 
 @pytest.fixture(scope='module')
 def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history):
@@ -180,6 +209,8 @@ def esgf_command():
     yield Command()
 
 
+
+
 @pytest.fixture(scope='session')
 def dummy_cmd(dummy_settings):
 
@@ -223,7 +254,10 @@ def dummy_settings(dummy_env):
     django.setup()
     from evaluation_system.misc import config
     yield config
-    del os.environ[config._DEFAULT_ENV_CONFIG_FILE]
+    try:
+        del os.environ[config._DEFAULT_ENV_CONFIG_FILE]
+    except KeyError:
+        pass
     config.reloadConfiguration()
 
 @pytest.fixture(scope='module')

@@ -18,7 +18,7 @@ class DummyPlugin(PluginAbstract):
     __parameters__ =  ParameterDictionary(
                                    Integer(name='number', help='This is just a number, not really important'),
                                    Integer(name='the_number',mandatory=True,help='This is *THE* number. Please provide it'), 
-                                   String(name='something',default='test'), 
+                                   String(name='something',default='test'),
                                    Float(name='other',default=1.4),
                                    Directory(name='input'))
     _runs = []
