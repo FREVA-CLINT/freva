@@ -40,7 +40,7 @@ def getVersion(src_file):
             if not stderr:
                 stderr = str(e)
                
-            log.warn("Could not read git version")
+            log.warning("Could not read git version")
             log.debug("Error while reading git version:\n%s", stderr)
     
             repository = 'unknown'
