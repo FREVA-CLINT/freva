@@ -15,7 +15,7 @@ import shutil
 import re
 from time import time
 from datetime import datetime
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 import logging
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
@@ -484,13 +484,12 @@ The values are assumed to be in a section named just like the class implementing
         return result
         
     def readConfiguration(self, fp):
-        """Read the configuration from a file object using a SafeConfigParser. See also :class:`saveConfiguration` .
+        """Read the configuration from a file object using a ConfigParser. See also :class:`saveConfiguration` .
 
 :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
 :return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
          information found in ``fp``"""
-        config_parser = SafeConfigParser()
-        config_parser.readfp(fp)
+        config_parser = ConfigParser()
         return self.readFromConfigParser(config_parser)
 
     def saveConfiguration(self, fp, config_dict=None, include_defaults=False):
@@ -696,10 +695,10 @@ It means, **never** start a plug-in comming from unknown sources.
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
 
-        p = sub.call(['/bin/bash', bash_opt, cmd_string])
+        res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
 
         # this is due to backward compatibility
-        return ' '
+        return res.stdout.decode()
 
     
     def _splitPath(self, path):
