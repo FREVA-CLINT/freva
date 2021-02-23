@@ -118,42 +118,32 @@ For Example:
             (repos, version) = pm.getPluginVersion(tool_name)
             print(f'Repository and version of :{tool_name}\n{repos}\n{version}')
             return 0
-        
         email = None
-        
         unique_output = options.unique_output.lower() if options.unique_output else 'true'
         unique_output = unique_output not in ['false', '0', 'no']
-        
         mode = options.batchmode.lower() if options.batchmode else 'false'
         batchmode = mode in ['true', '1', 'yes', 'on', 'web']
         if not batchmode and mode not in ['false', '0', 'no', 'off']:
-            raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')  
-        
+            raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
         # get the plugin
         if tool_name:
             caption = None
-            
             if options.caption:
-                caption = pm.generateCaption(options.caption, tool_name)    
-            
+                caption = pm.generateCaption(options.caption, tool_name)
             if options.save_config or options.save:
                 tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
-                cfg_file_save = options.save_config 
+                cfg_file_save = options.save_config
                 save_in = pm.writeSetup(tool_name, tool_dict, config_file=cfg_file_save)
                 logging.info("Configuration file saved in %s", save_in)
             elif options.show_config:
                 tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 print(pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict))
-            #elif self.DEBUG == True:
-            #    print 'DEBUGDEBUGDEBUG'
-
             elif options.scheduled_id:
                 scheduled_id = options.scheduled_id
                 logging.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
-                if not options.dry_run: 
+                if not options.dry_run:
                     pm.runTool(tool_name, scheduled_id=scheduled_id,
                                unique_output=unique_output)
-                                     
             else:
                 # now run the tool
                 (error, warning) = pm.getErrorWarning(tool_name)
