@@ -9,7 +9,7 @@ import os
 import pytest
 from pathlib import Path
 import sys
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
 
 
@@ -74,21 +74,36 @@ def dummy_git_path():
         tool_path = Path(td) / 'test_tool'
         yield repo_path, tool_path
 
+@pytest.fixture(scope='function')
+def temp_dir():
+    with TemporaryDirectory() as td:
+        yield td
+
+@pytest.fixture(scope='module')
+def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
+
+    from evaluation_system.model.solr_models.models import UserCrawl
+    # At this point files have been ingested into the server already,
+    # delete them again
+    [getattr(dummy_solr, key).delete('*') for key in ('all_files', 'latest')]
+    yield dummy_solr
+    UserCrawl.objects.all().delete()
+
 @pytest.fixture(scope='module')
 def dummy_solr(dummy_env, dummy_settings):
 
     os.environ = dummy_env
     dummy_settings.reloadConfiguration()
     server = namedtuple('solr', ['solr_port',
-                                          'solr_host',
-                                          'all_files',
-                                          'latest',
-                                          'tmpdir',
-                                          'drsfile',
-                                          'files',
-                                          'cmd',
-                                          'dump_file'
-                                          'DRSFILE'])
+                                  'solr_host',
+                                  'all_files',
+                                  'latest',
+                                  'tmpdir',
+                                  'drsfile',
+                                  'files',
+                                  'cmd',
+                                  'dump_file'
+                                  'DRSFILE'])
     server.solr_port = dummy_settings.get('solr.port')
     server.solr_host = dummy_settings.get('solr.host')
     from evaluation_system.model.solr_core import SolrCore
