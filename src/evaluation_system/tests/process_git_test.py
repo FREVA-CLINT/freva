@@ -69,3 +69,12 @@ def test_command_success(dummy_pr, stdout, dummy_git_path):
     assert new_pr.status == 'success'
     assert repository.tags[0].name == 'v2.0'
     assert len(repository.tags) == 1
+
+def test_get_version():
+    from evaluation_system.model.repository import getVersion
+    # self version test
+    version = getVersion('.')
+    assert len(version) == 2
+
+    not_versioned = getVersion('/tmp')
+    assert not_versioned == ('unknown', 'unknown')
