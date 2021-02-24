@@ -1,6 +1,15 @@
 import sys
+import shlex
+from subprocess import run, PIPE
 from difflib import SequenceMatcher
 
+
+def runCmd(cmd):
+
+    if isinstance(cmd, str):
+        cmd = shlex.split(cmd)
+    res = run(cmd, stdout=PIPE, stdin=PIPE)
+    return res.stdout.decode()
 
 def run_command_with_capture(cmd, stdout, args_list=[], stderr=None, attr='run'):
     sys.stdout = stdout

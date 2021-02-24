@@ -8,6 +8,7 @@ import json
 import os
 import pytest
 from pathlib import Path
+import shutil
 import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
@@ -192,24 +193,28 @@ def test_user(dummy_env, dummy_settings, config_dict):
     user.delete()
     hist
 
+@pytest.fixture(scope='session')
+def temp_user():
+    os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+    from evaluation_system.tests.mocks.dummy import DummyUser
+    with DummyUser(random_home=True, pw_name='someone') as user:
+        yield user
 
-@pytest.fixture(scope='module')
-def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history):
+@pytest.fixture(scope='function')
+def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user):
 
     os.environ = dummy_env
     from django.contrib.auth.models import User
-    from evaluation_system.tests.mocks.dummy import DummyUser
     User.objects.filter(username='dummy_user').delete()
     user_entry = namedtuple('dummy_user', ['user', 'row_id'])
-    with DummyUser(random_home=True, pw_name='someone') as user:
-        user_entry.user = user
-        user_entry.row_id = user.getUserDB().storeHistory(
-            dummy_plugin,
-            config_dict, 'user',
-            dummy_history.processStatus.not_scheduled,
-            caption='My caption')
-        yield user_entry
-        User.objects.filter(username='dummy_user').delete()
+    user_entry.user = temp_user
+    user_entry.row_id = user.getUserDB().storeHistory(
+        dummy_plugin,
+        config_dict, 'user',
+        dummy_history.processStatus.not_scheduled,
+        caption='My caption')
+    yield user_entry
+    User.objects.filter(username='dummy_user').delete()
 
 
 
