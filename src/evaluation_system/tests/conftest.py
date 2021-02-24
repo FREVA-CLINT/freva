@@ -74,7 +74,7 @@ def dummy_git_path():
         tool_path = Path(td) / 'test_tool'
         yield repo_path, tool_path
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def dummy_solr(dummy_env, dummy_settings):
 
     os.environ = dummy_env
@@ -87,6 +87,7 @@ def dummy_solr(dummy_env, dummy_settings):
                                           'drsfile',
                                           'files',
                                           'cmd',
+                                          'dump_file'
                                           'DRSFILE'])
     server.solr_port = dummy_settings.get('solr.port')
     server.solr_host = dummy_settings.get('solr.host')
@@ -96,7 +97,8 @@ def dummy_solr(dummy_env, dummy_settings):
     from evaluation_system.misc.utils import supermakedirs
     server.all_files = SolrCore(core='files', host=server.solr_host, port=server.solr_port)
     server.latest = SolrCore(core='latest', host=server.solr_host, port=server.solr_port)
-    print(server.solr_port, server.solr_host)
+    server.all_files.delete('*')
+    server.latest.delete('*')
     with TemporaryDirectory(prefix='solr') as td:
         supermakedirs(str(Path(td) / 'solr_core'), 0o0777)
         server.tmpdir = str(Path(td) / 'solr_core')
@@ -120,12 +122,16 @@ def dummy_solr(dummy_env, dummy_settings):
             dump_file, abort_on_errors=True,
             core_all_files=server.all_files, core_latest=server.latest
         )
+        server.dump_file = dump_file
         server.DRSFile = DRSFile
         server.fn = str(Path(server.tmpdir) / server.files[0])
         server.drs = DRSFile.from_path(server.fn)
         yield server
-    server.all_files.delete('*')
-    server.latest.delete('*')
+    try:
+        server.all_files.delete('*')
+        server.latest.delete('*')
+    except:
+        pass
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
 @pytest.fixture(scope='function')
