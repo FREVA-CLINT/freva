@@ -4,85 +4,68 @@ Created on 28.06.2016
 @author: Sebastian Illing
 """
 import os
-import unittest
-from evaluation_system.commands.admin.process_pull_requests import Command
-from evaluation_system.tests.capture_std_streams import stdout
-from evaluation_system.misc import config
-from django.contrib.auth.models import User
-from evaluation_system.api import plugin_manager as pm
-from evaluation_system.model.history.models import History
-from evaluation_system.model.plugins.models import ToolPullRequest
+from pathlib import Path
 import sys
 import shutil
+
 from git import Repo, Tag
+import pytest
 
+from evaluation_system.tests import run_command_with_capture
 
-class BaseCommandTest(unittest.TestCase):
-    
-    def setUp(self):
-        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
-        config.reloadConfiguration()
-        pm.reloadPlugins()
-        self.cmd = Command()
+def test_command_fail(dummy_pr, stdout):
+    from evaluation_system.model.plugins.models import ToolPullRequest
+    from django.contrib.auth.models import User
+    # add an entry to pull-requests
+    pr = ToolPullRequest.objects.create(
+        tool='murcss',
+        tagged_version='1.0',
+        user=User.objects.first(),
+        status='waiting'
+    )
+    sys.stdout = stdout
+    stdout.startCapturing()
+    stdout.reset()
+    with pytest.raises(SystemExit):
+        dummy_pr.run([])
+    stdout.stopCapturing()
+    cmd_out = stdout.getvalue()
+    new_pr = ToolPullRequest.objects.get(id=pr.id)
+    assert new_pr.status == 'failed'
+    assert 'ERROR:   Plugin murcss does not exist' in cmd_out
 
-    def tearDown(self):
-        ToolPullRequest.objects.all().delete()
-        if config._DEFAULT_ENV_CONFIG_FILE in os.environ:
-            del os.environ[config._DEFAULT_ENV_CONFIG_FILE]
+def test_command_success(dummy_pr, stdout, dummy_git_path):
 
-    def test_command_fail(self):
-        # add an entry to pull-requests
-        pr = ToolPullRequest.objects.create(
-            tool='murcss',
-            tagged_version='1.0',
-            user=User.objects.first(),
-            status='waiting'
-        )
-        stdout.startCapturing()
-        stdout.reset()
-        with self.assertRaises(SystemExit):
-            self.cmd.run([])
-        stdout.stopCapturing()
-        cmd_out = stdout.getvalue()
-        new_pr = ToolPullRequest.objects.get(id=pr.id)
-        self.assertEqual(new_pr.status, 'failed')
-        self.assertIn('ERROR:   Plugin murcss does not exist', cmd_out)
+    from evaluation_system.api import plugin_manager as pm
+    from evaluation_system.model.plugins.models import ToolPullRequest
+    from django.contrib.auth.models import User
+    repo_path, tool_path = dummy_git_path
+    os.makedirs(repo_path)
+    this_dir = Path(__file__).parent
+    shutil.copy(this_dir / 'mocks' / 'result_tags.py', repo_path)
+    # prepare git repo
+    os.system('cd %s; git init; git add *; git commit -m "first commit" ' % (repo_path))
+    # clone it
+    os.system('git clone %s %s' % (repo_path, tool_path))
+    # create a new tag
+    os.system('cd %s; git tag -a v2.0 -m "new tag"' % (repo_path))
+    # add plugin to system
+    os.environ['EVALUATION_SYSTEM_PLUGINS'] = f'{tool_path},result_tags'
+    pm.reloadPlugins()
+    repository = Repo(tool_path)
+    assert len(repository.tags) == 0
 
-    def test_command_success(self):
+    pr = ToolPullRequest.objects.create(
+        tool='resulttagtest',
+        tagged_version='v2.0',
+        user=User.objects.first(),
+        status='waiting'
+    )
+    # finally run the command
+    cmd_out = run_command_with_capture(dummy_pr, stdout,)
 
-        repo_path = '/tmp/test_plugin.git'
-        tool_path = '/tmp/test_tool'
-        os.makedirs(repo_path)
-        shutil.copy('tests/mocks/result_tags.py', repo_path)
-        # prepare git repo
-        os.system('cd %s; git init; git add *; git commit -m "first commit" ' % (repo_path))
-        # clone it
-        os.system('git clone %s %s' % (repo_path, tool_path))
-        # create a new tag
-        os.system('cd %s; git tag -a v2.0 -m "new tag"' % (repo_path))
-        # add plugin to system
-        os.environ['EVALUATION_SYSTEM_PLUGINS'] = '/tmp/test_tool,result_tags'
-        pm.reloadPlugins()
-        repository = Repo(tool_path)
-        self.assertEqual(len(repository.tags), 0)
-
-        pr = ToolPullRequest.objects.create(
-            tool='resulttagtest',
-            tagged_version='v2.0',
-            user=User.objects.first(),
-            status='waiting'
-        )
-        # finally run the command
-        stdout.startCapturing()
-        stdout.reset()
-        self.cmd.run([])
-        stdout.stopCapturing()
-        cmd_out = stdout.getvalue()
-
-        self.assertIn('Processing pull request for resulttagtest by', cmd_out)
-        new_pr = ToolPullRequest.objects.get(id=pr.id)
-        self.assertEqual(new_pr.status, 'success')
-        self.assertEqual(repository.tags[0].name, 'v2.0')
-        self.assertEqual(len(repository.tags), 1)
-        shutil.rmtree(repo_path)
-        shutil.rmtree(tool_path)
+    assert 'Processing pull request for resulttagtest by' in cmd_out
+    new_pr = ToolPullRequest.objects.get(id=pr.id)
+    assert new_pr.status == 'success'
+    assert repository.tags[0].name == 'v2.0'
+    assert len(repository.tags) == 1

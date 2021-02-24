@@ -58,6 +58,22 @@ def dummy_env():
     yield os.environ
     os.environ = env
 
+@pytest.fixture(scope='module')
+def dummy_pr(dummy_env, dummy_settings):
+
+    from evaluation_system.commands.admin.process_pull_requests import Command
+    from evaluation_system.api import plugin_manager as pm
+    pm.reloadPlugins()
+    dummy_settings.reloadConfiguration()
+    yield Command()
+
+@pytest.fixture(scope='module')
+def dummy_git_path():
+    with TemporaryDirectory(prefix='git') as td:
+        repo_path = Path(td) / 'test_plugin.git'
+        tool_path = Path(td) / 'test_tool'
+        yield repo_path, tool_path
+
 @pytest.fixture(scope='session')
 def dummy_solr(dummy_env, dummy_settings):
 
