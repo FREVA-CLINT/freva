@@ -42,8 +42,6 @@ def test_ingest(dummy_solr):
       from evaluation_system.model.solr_core import SolrCore
       from evaluation_system.model.solr import SolrFindFiles
       from evaluation_system.misc.utils import supermakedirs
-      from evaluation_system.model.file import DRSFile, CMIP5
-      from copy import deepcopy
       latest_versions = [dummy_solr.files[0], dummy_solr.files[1], dummy_solr.files[3]]
       multiversion_latest = dummy_solr.files[3]
       old_versions = [dummy_solr.files[2], dummy_solr.files[4]]
