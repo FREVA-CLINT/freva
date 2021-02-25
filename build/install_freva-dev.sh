@@ -12,6 +12,7 @@ makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
+GitBranch=update_tests
 ##########
 #PYTHON AREA
 ##########
@@ -93,7 +94,7 @@ if [ "$makeOwnPython" = "True" ]; then
 fi
 
 if [ "$makeFreva" = "True" ]; then
-    git clone -b freva-dev https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
+    git clone -b $GitBranch https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
 fi
 
 if [ "$makeConfig" = "True" ] ; then
