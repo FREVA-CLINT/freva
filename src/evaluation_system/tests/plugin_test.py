@@ -3,9 +3,6 @@ Created on 13.05.2016
 
 @author: Sebastian Illing
 """
-from evaluation_system.api.parameters import (ParameterDictionary,
-                                              String, Integer, Float,
-                                              Bool, Directory, ValidationError)
 
 import os
 import datetime
@@ -15,6 +12,7 @@ from tempfile import NamedTemporaryFile
 import sys
 
 from evaluation_system.tests import similar_string
+
 
 def test_incomplete_abstract(dummy_plugin):
     # this is an incomplete class not implementing all required fields
@@ -32,44 +30,49 @@ def test_complete_abstract(dummy_plugin):
 
 def test_setup_configuration(dummy_plugin):
     from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
-    user = DummyUser(random_home=True)
-    dummy = DummyPlugin(user=user)
-    dummy.__parameters__ = ParameterDictionary(String(name='a',
-                                                      mandatory=True))
-    # the default behavior is to check for None values and fail if found
-    with pytest.raises(ValidationError):
-        dummy.setupConfiguration()
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  ValidationError,
+                                                  String)
+    with DummyUser(random_home=True) as user:
+        dummy = DummyPlugin(user=user)
+        dummy.__parameters__ = ParameterDictionary(String(name='a',
+                                                          mandatory=True))
+        # the default behavior is to check for None values and fail if found
+        with pytest.raises(ValidationError):
+            dummy.setupConfiguration()
 
-    # it can be turned off
-    res = dummy.setupConfiguration(check_cfg=False)
-    assert res == {'a': None}
+        # it can be turned off
+        res = dummy.setupConfiguration(check_cfg=False)
+        assert res == {'a': None}
 
-    # check template
-    res = dummy.setupConfiguration(dict(num=1), check_cfg=False)
-    assert 1 == res['num']
+        # check template
+        res = dummy.setupConfiguration(dict(num=1), check_cfg=False)
+        assert 1 == res['num']
 
-    # check indirect resolution
-    res = dummy.setupConfiguration(dict(num='${a}x', a=1),
-                                   check_cfg=False)
-    assert "1x" == res['num']
+        # check indirect resolution
+        res = dummy.setupConfiguration(dict(num='${a}x', a=1),
+                                       check_cfg=False)
+        assert "1x" == res['num']
 
-    # check indirect resolution can also be turned off
-    res = dummy.setupConfiguration(dict(num='${a}x', a=1),
-                                   check_cfg=False, recursion=False)
-    assert "${a}x" == res['num']
+        # check indirect resolution can also be turned off
+        res = dummy.setupConfiguration(dict(num='${a}x', a=1),
+                                       check_cfg=False, recursion=False)
+        assert "${a}x" == res['num']
 
-    # check user special values work
-    res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),
-                                   check_cfg=False)
-    assert user.getUserBaseDir() == res['num']
+        # check user special values work
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),
+                                       check_cfg=False)
+        assert user.getUserBaseDir() == res['num']
 
-    res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),
-                                   check_cfg=False, substitute=False)
-    assert '$USER_BASE_DIR' == res['num']
+        res = dummy.setupConfiguration(dict(num='$USER_BASE_DIR'),
+                                       check_cfg=False, substitute=False)
+        assert '$USER_BASE_DIR' == res['num']
 
-    user.cleanRandomHome()
 
 def test_parse_arguments(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary, String,
+                                                  Integer, ValidationError,
+                                                  Bool)
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(String(name='a'),
                                                String(name='b'))
@@ -101,6 +104,9 @@ def test_parse_arguments(dummy_plugin):
                          'Error when parsing %s, got %s' % (arg, res)
 
 def test_parse_metadict(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary, String,
+                                                  Integer, Bool, Float,
+                                                  ValidationError)
     dummy = dummy_plugin
     for d, res_d in [(Integer(name='a', default=0), 1),
                      (Integer(name='a'), 1),
@@ -123,6 +129,8 @@ def test_parse_metadict(dummy_plugin):
         dummy._parseConfigStrValue('b', '1')
 
 def test_read_config_parser(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary, String,
+                                                  Integer, ValidationError)
     from configparser import ConfigParser
     from io import StringIO
     conf = ConfigParser()
@@ -149,6 +157,8 @@ def test_read_config_parser(dummy_plugin):
         dummy.readFromConfigParser(conf)
 
 def test_save_config(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String)
     from io import StringIO
     res_str = StringIO()
     dummy = dummy_plugin
@@ -216,32 +226,33 @@ dj1yfk"""))
     dummy.saveConfiguration(res_str, {'a': 1}, include_defaults=True)
 
 def test_read_config(dummy_plugin):
-    from io import StringIO
-    res_str = StringIO()
+    from evaluation_system.api.parameters import (ParameterDictionary, Integer,
+                                                  String, Float)
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
         Integer(name='a'),
         String(name='b', default='test'),
         Float(name='other', default=1.4)
     )
-    for resource, expected_dict in [('[DummyPlugin]\na=1',
+    for resource, expected_dict in [(u'[DummyPlugin]\na=1',
                                      dict(a=1, b='test', other=1.4)),
-                                    ('[DummyPlugin]\na=  1  \n', dict(a=1, b='test',
+                                    (u'[DummyPlugin]\na= 1 \n', dict(a=1, b='test',
                                                                       other=1.4)),
-                                    ('[DummyPlugin]\na=1\nb=2', dict(a=1, b="2",
+                                    (u'[DummyPlugin]\na=1\nb=2', dict(a=1, b="2",
                                                                     other=1.4)),
-                                    ('[DummyPlugin]\n#a=1\nb=2\n#asd\nother=1e10',
+                                    (u'[DummyPlugin]\n#a=1\nb=2\n#asd\nother=1e10',
                                     dict(a=None, b="2", other=1e10)),
-                                    ('[DummyPlugin]\na=-2\nb=blah blah blah',
+                                    (u'[DummyPlugin]\na=-2\nb=blah blah blah',
                                     dict(a=-2, b="blah blah blah", other=1.4))]:
-        res_str.truncate(0)
-        return
-        res_str.write(resource.strip("\x00").encode())
-        res_str.seek(0)
-        conf_dict = dummy.readConfiguration(res_str)
-        assert conf_dict == expected_dict
+        with NamedTemporaryFile() as tf:
+            open(tf.name, 'w').write(resource)
+            with open(tf.name, 'r') as f:
+                conf_dict = dummy.readConfiguration(f)
+                assert conf_dict == expected_dict
 
 def testSubstitution(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
         Integer(name='a'), String(name='b', default='value:$a'),
@@ -253,6 +264,8 @@ b: - (default: value:$a [value:72])
 c: - (default: $USER_OUTPUT_DIR [""")
 
 def test_help(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String)
     dummy = dummy_plugin
     dummy.__version__ = (1, 2, 3)
     dummy.__parameters__ = ParameterDictionary(
@@ -277,6 +290,8 @@ example (default: test)
         assert similar_string(dummy.getHelp().strip(), resource.strip())
 
 def test_show_config(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Float)
     from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
     user = DummyUser(random_home=True)
     dummy = DummyPlugin(user=user)
@@ -297,6 +312,8 @@ def test_show_config(dummy_plugin):
     user.cleanRandomHome()
 
 def test_usage(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String)
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
         Integer(name='a', help='This is very important'),
@@ -313,6 +330,8 @@ def test_usage(dummy_plugin):
     assert res_str1.strip('\x00') == res_str2.strip('\x00')
 
 def test_run(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     from evaluation_system.tests.mocks.dummy import DummyPlugin
     dummy = dummy_plugin
     # no config
@@ -331,6 +350,8 @@ def test_run(dummy_plugin):
     DummyPlugin._runs = []
 
 def test_get_class_base_dir(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     dummy = dummy_plugin
     import evaluation_system.tests.mocks
     import os
@@ -344,8 +365,11 @@ def test_get_class_base_dir(dummy_plugin):
     module_name = re.sub("\.pyc?$", "", module_name)
     assert module_name == 'evaluation_system.tests.mocks.dummy'
 
-def test_special_variables(dummy_plugin):
-    dummy = dummy_plugin
+def test_special_variables():
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
+    dummy = DummyPlugin()
     special_vars = dict(sv_USER_BASE_DIR="$USER_BASE_DIR",
                         sv_USER_OUTPUT_DIR="$USER_OUTPUT_DIR",
                         sv_USER_PLOTS_DIR="$USER_PLOTS_DIR",
@@ -364,13 +388,22 @@ def test_special_variables(dummy_plugin):
     assert re.match('[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$',
                              result['sv_SYSTEM_RANDOM_UUID'])
 
-def test_compose_command(dummy_plugin):
+def test_compose_command():
+
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
+    dummy_plugin = DummyPlugin()
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     command = dummy_plugin.composeCommand(config_dict={'the_number': 22},
                                         caption='This is the caption')
     assert similar_string(command, \
         'freva --plugin DummyPlugin --batchmode=False --caption \'This is the caption\' --unique_output True the_number=22 something=test other=1.4')
 
-def test_write_slurm_field(dummy_plugin):
+def test_write_slurm_field(dummy_settings_single):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
+    dummy_plugin = DummyPlugin()
     fp = open('/tmp/slurm_test.sh', 'w')
     slurm_file = dummy_plugin.writeSlurmFile(
         fp, config_dict={'the_number': 22}
@@ -381,27 +414,43 @@ def test_write_slurm_field(dummy_plugin):
         dummy_plugin.composeCommand(config_dict={'the_number': 22})
 
 def test_suggest_slurm_file_name(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     dummy_plugin.rowid = 1
     fn = dummy_plugin.suggestSlurmFileName()
     date_str = datetime.datetime.now().strftime('%Y%m%d_%H%M')
     assert 'DummyPlugin' in fn
     assert date_str in fn
 
-def test_append_unique_output(dummy_plugin):
-    config_dict = {'the_number': 42, 'input': '/my/input/dir'}
-    dummy_plugin.rowid = 1
-    new_config = dummy_plugin.append_unique_id(config_dict.copy(), True)
-    assert new_config['input'] == '/my/input/dir/1'
-    new_config = dummy_plugin.append_unique_id(config_dict.copy(), False)
-    assert new_config['input'] == '/my/input/dir'
+def test_append_unique_output():
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
+    from evaluation_system.misc import config
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
 
+    try:
+        dummy_plugin = DummyPlugin()
+        config._config[config.DIRECTORY_STRUCTURE_TYPE] = 'scratch'
+        config_dict = {'the_number': 42, 'input': '/my/input/dir',
+                       'directory_structure_type': 'scratch'}
+        dummy_plugin.rowid = 1
+        new_config = dummy_plugin.append_unique_id(config_dict.copy(), True)
+        assert new_config['input'] == '/my/input/dir/1'
+        new_config = dummy_plugin.append_unique_id(config_dict.copy(), False)
+        assert new_config['input'] == '/my/input/dir'
+    finally:
+        config._config[config.DIRECTORY_STRUCTURE_TYPE] = 'local'
+        config.reloadConfiguration()
 def test_run_tool(dummy_plugin):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     result = dummy_plugin._runTool({'the_answer': 42})
     assert result == {'/tmp/dummyfile1': dict(type='plot'),
                               '/tmp/dummyfile2': dict(type='data')}
 
 def test_prepare_output(dummy_plugin):
-
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     fn = Path(__file__).absolute().parent / 'test_output' / 'vecap_test_output.pdf'
     types_to_check = [
         {'suffix': '.jpg', 'type': 'plot', 'todo': 'copy'},
@@ -427,6 +476,7 @@ def test_prepare_output(dummy_plugin):
     assert len(meta_data) == 2
 
 def test_call(dummy_plugin):
-
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, String, Directory)
     res = dummy_plugin.call('echo /bin/bash').strip('\n')
     assert res == '/bin/bash'

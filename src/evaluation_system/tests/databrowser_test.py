@@ -1,7 +1,6 @@
 import os
 import shutil
 
-from evaluation_system.commands.basecommand import CommandError
 import pytest
 
 from evaluation_system.tests import run_command_with_capture, similar_string
@@ -13,6 +12,7 @@ def test_index_len(dummy_solr):
 
 
 def test_search_files(dummy_solr, stdout):
+     from evaluation_system.commands.basecommand import CommandError
 
      all_files_output = sorted([f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc',
              f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc',

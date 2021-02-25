@@ -5,20 +5,25 @@ Created on 10.05.2016
 @author: Sebastian Illing
 '''
 
-from evaluation_system.api.parameters import (
-    ParameterType, ParameterDictionary, String, Float, Integer, Bool,
-    File, Date, Range, ValidationError, SelectField, SolrField, Directory,
-    Unknown) 
 import pytest
 
 
-def test_infer_type():
+def test_infer_type(dummy_env):
+    from evaluation_system.api.parameters import (ParameterType,
+                                                  Integer,
+                                                  Float,
+                                                  Bool,
+                                                  String,
+                                                  ValidationError)
     assert ParameterType.infer_type(1).__class__ == Integer
     assert ParameterType.infer_type(1.0).__class__ == Float 
     assert ParameterType.infer_type('str').__class__ == String
     assert ParameterType.infer_type(True).__class__ == Bool    
 
-def test_parsing():
+def test_parsing(dummy_env):
+    from evaluation_system.api.parameters import (String, Integer, Float,
+            Bool, Range, SelectField, SolrField, Directory, Unknown,
+            ValidationError)
     test_cases = [
         (String(), 
             [('asd', 'asd'), (None, 'None'), (1, '1'), (True, 'True')],
@@ -87,7 +92,9 @@ def test_parsing():
                     with pytest.raises(ValidationError):
                         case_type.parse(unparseable)
 
-def test_parameters_dictionary():
+def test_parameters_dictionary(dummy_env):
+    from evaluation_system.api.parameters import (String, ParameterDictionary)
+
     p1 = String(name='param1', default='default default 1')
     p2 = String(name='param2', default='default default 2',
                 max_items=3, item_separator=':')
@@ -111,8 +118,10 @@ def test_parameters_dictionary():
     assert list(p_dict.values()) == [p.default for p in params]
     assert p_dict.parameters() == params
 
-def test_parse_arguments():
-
+def test_parse_arguments(dummy_env):
+    from evaluation_system.api.parameters import (String, ParameterDictionary,
+                                           Integer, Float, Bool, String, File,
+                                           Date, Range, ValidationError)
     p_dict = ParameterDictionary(String(name='a'), String(name='b'))
     res = p_dict.parseArguments("a=1 b=2".split())
     assert res == dict(a='1', b='2')
@@ -175,7 +184,9 @@ def test_parse_arguments():
     assert p_dict.parseArguments(["file=a", "file=b"]) == \
                       dict(file=['a','b'])
 
-def test_complete():
+def test_complete(dummy_env):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                           Integer, File, Date)
     p_dict = ParameterDictionary(Integer(name='int'), 
                                  File(name='file', default='/tmp/file1'),
                                  Date(name='date'))
@@ -193,7 +204,10 @@ def test_complete():
     p = ParameterDictionary(Integer(name='a', default='0'))
     assert p.complete(add_missing_defaults=True) == {'a':0}
 
-def test_defaults():
+def test_defaults(dummy_env):
+    from evaluation_system.api.parameters import (ParameterDictionary, Bool,
+                                           Integer, File, Date, Range, Float,
+                                           ValidationError)
     #All these should cause no exception
     Bool(name='a', default=True)
     Bool(name='a', default="True")
@@ -211,7 +225,9 @@ def test_defaults():
     assert p_dict.parseArguments(["date=2"], use_defaults=True) == \
                       {'date': '2', 'file': ['/tmp/file1']}
 
-def test_validate_errors():
+def test_validate_errors(dummy_env):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                           Integer, File, Float)
     p_dict = ParameterDictionary(Integer(name='int', mandatory=True), 
                                  File(name='file', max_items=2,
                                       item_separator=':'),
@@ -226,14 +242,17 @@ def test_validate_errors():
     assert p_dict.validate_errors({'int':[1,2,3,4,5]}) == \
                       {'too_many_items': [('int',1)], 'missing': ['float']}
 
-def test_help():
+def test_help(dummy_env):
+    from evaluation_system.api.parameters import (ParameterDictionary,
+                                                  Integer, Float)
     p_dict = ParameterDictionary(
                  Integer(name='answer',help='just some value',
                          default=42, print_format='%sm'),
                  Float(name='other',help='just some super float',
                        default=71.7, print_format='%.2f'))
 
-def test_special_cases():
+def test_special_cases(dummy_env):
+    from evaluation_system.api.parameters import (Range,)
     # test __str__ method of Range()
     test_cases = [('1960:1970', range(1960, 1970 + 1)),
                   ('1970,1971,1972', [1970, 1971, 1972]),
@@ -245,7 +264,8 @@ def test_special_cases():
         assert str(case_type.parse(case)) == \
                          ','.join(map(str,result))
 
-def test_parameter_options():
+def test_parameter_options(dummy_env):
+    from evaluation_system.api.parameters import SelectField, SolrField
     # Arguments of SelectField
     with pytest.raises(KeyError):
         SelectField()

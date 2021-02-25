@@ -11,13 +11,12 @@ import shutil
 
 import pytest
 
-os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
 DUMMY_USER = {'pw_name':'someone'}
 
 from evaluation_system.tests import runCmd
 
 
-def test_dummy_user(temp_user):
+def test_dummy_user(temp_user, dummy_settings):
     """Be sure the dummy user is created as expected"""
     dummy_name='non-existing name'
     from evaluation_system.model.user import User
@@ -49,35 +48,40 @@ def test_dummy_user(temp_user):
         assert cnfg.get('test2', 'key2') == 'Some\nmany\nlines=2'
         assert cnfg.getint('test2', 'key3') == 420
 
-def test_getters(temp_user):
+def test_getters(dummy_settings, dummy_env):
     """Test the object creation and some basic return functions"""
     from evaluation_system.model.user import User
-    assert DUMMY_USER['pw_name'] == temp_user.getName()
-    assert temp_user.getUserHome().startswith(tempfile.gettempdir())
-    assert int(runCmd('id -u')) == temp_user.getUserID()
     from evaluation_system.misc import config
-    print(config.get('directory_structure_type'))
-    db = temp_user.getUserDB()
-    assert db is not None
-    baseDir = '/'.join([temp_user.getUserHome(), config.get(config.BASE_DIR)])
-    assert baseDir == temp_user.getUserBaseDir()
-    tool1_cnfDir = os.path.join(baseDir, User.CONFIG_DIR, 'tool1')
-    tool1_chDir = os.path.join(baseDir, User.CACHE_DIR, 'tool1')
-    tool1_outDir = os.path.join(baseDir, User.OUTPUT_DIR, 'tool1')
-    tool1_plotDir = os.path.join(baseDir, User.PLOTS_DIR, 'tool1')
-    
-    assert temp_user.getUserScratch() == \
-                     '/tmp/scratch/%s' % temp_user.getName()
-    #check we get the configuration directory of the given tool
-    assert tool1_cnfDir == temp_user.getUserConfigDir('tool1')
-    assert tool1_chDir == temp_user.getUserCacheDir('tool1')
-    assert tool1_outDir == temp_user.getUserOutputDir('tool1')
-    assert tool1_plotDir == temp_user.getUserPlotsDir('tool1')
-    #check we get the general directory of the tools (should be the parent of the previous one)
-    assert os.path.dirname(tool1_cnfDir) == temp_user.getUserConfigDir()
-    assert os.path.dirname(tool1_chDir) == temp_user.getUserCacheDir()
-    assert os.path.dirname(tool1_outDir) == temp_user.getUserOutputDir()
-    assert os.path.dirname(tool1_plotDir) == temp_user.getUserPlotsDir()
+    from evaluation_system.tests.mocks.dummy import DummyUser
+    try:
+        config._config[config.DIRECTORY_STRUCTURE_TYPE] = 'local'
+        with DummyUser(random_home=True, pw_name='someone') as temp_user:
+            assert DUMMY_USER['pw_name'] == temp_user.getName()
+            assert temp_user.getUserHome().startswith(tempfile.gettempdir())
+            assert int(runCmd('id -u')) == temp_user.getUserID()
+            print(config.get('directory_structure_type'))
+            db = temp_user.getUserDB()
+            assert db is not None
+            baseDir = '/'.join([temp_user.getUserHome(), config.get(config.BASE_DIR)])
+            assert baseDir == temp_user.getUserBaseDir()
+            tool1_cnfDir = os.path.join(baseDir, User.CONFIG_DIR, 'tool1')
+            tool1_chDir = os.path.join(baseDir, User.CACHE_DIR, 'tool1')
+            tool1_outDir = os.path.join(baseDir, User.OUTPUT_DIR, 'tool1')
+            tool1_plotDir = os.path.join(baseDir, User.PLOTS_DIR, 'tool1')
+            assert temp_user.getUserScratch() == \
+                             '/tmp/scratch/%s' % temp_user.getName()
+            #check we get the configuration directory of the given tool
+            assert tool1_cnfDir == temp_user.getUserConfigDir('tool1')
+            assert tool1_chDir == temp_user.getUserCacheDir('tool1')
+            assert tool1_outDir == temp_user.getUserOutputDir('tool1')
+            assert tool1_plotDir == temp_user.getUserPlotsDir('tool1')
+            #check we get the general directory of the tools (should be the parent of the previous one)
+            assert os.path.dirname(tool1_cnfDir) == temp_user.getUserConfigDir()
+            assert os.path.dirname(tool1_chDir) == temp_user.getUserCacheDir()
+            assert os.path.dirname(tool1_outDir) == temp_user.getUserOutputDir()
+            assert os.path.dirname(tool1_plotDir) == temp_user.getUserPlotsDir()
+    finally:
+        config.reloadConfiguration()
     
 def test_directory_creation(temp_user):
     """
@@ -114,13 +118,11 @@ def test_directory_creation2(temp_user):
         assert os.path.isdir(dir1)
     finally:
         shutil.rmtree(Path(temp_user.getUserBaseDir()).parent)
-def test_central_directory_Creation():
+def test_central_directory_Creation(temp_dir, dummy_settings):
     from evaluation_system.tests.mocks.dummy import DummyUser
     from evaluation_system.misc import config
-    import shutil
     try:
-        temp_dir = tempfile.mkdtemp(__name__)
-        config._config[config.BASE_DIR_LOCATION] = temp_dir
+        config._config[config.BASE_DIR_LOCATION] = str(temp_dir)
         config._config[config.DIRECTORY_STRUCTURE_TYPE] = config.DIRECTORY_STRUCTURE.CENTRAL
         with DummyUser(random_home=False,  **DUMMY_USER) as temp_user:
             dir1 = temp_user.getUserBaseDir()
@@ -133,9 +135,9 @@ def test_central_directory_Creation():
                                            str(temp_user.getName()),User.OUTPUT_DIR, 'sometool')
     finally:
         config.reloadConfiguration()
-        if os.path.isdir(temp_dir) and temp_dir.startswith(tempfile.gettempdir()):
-            #make sure the home is a temporary one!!!
-            shutil.rmtree(temp_dir)
-def test_config_file(temp_user):
+        #if os.path.isdir(temp_dir) and temp_dir.startswith(tempfile.gettempdir()):
+        #    #make sure the home is a temporary one!!!
+        #    shutil.rmtree(temp_dir)
+def test_config_file(temp_user, dummy_settings):
     tool = 'test_tool'
     assert temp_user.getUserConfigDir(tool) + '/%s.conf' % tool == temp_user.getUserToolConfig(tool)

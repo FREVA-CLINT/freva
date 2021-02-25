@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 from evaluation_system.tests import run_command_with_capture, similar_string
 
-os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(Path(__file__).parent / 'test.conf')
 
 def test_list_tools(stdout, plugin_command):
     plugin_list = run_command_with_capture(plugin_command, stdout, [])

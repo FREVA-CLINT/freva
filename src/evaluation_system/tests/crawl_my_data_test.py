@@ -33,7 +33,7 @@ Options:
 '''
     assert similar_string(doc_str, target_str) is True
 
-def test_crawl_my_data(stdout):
+def test_crawl_my_data(stdout, dummy_settings):
     from evaluation_system.commands.crawl_my_data import Command
     sys.stdout = stdout
     dummy_cmd = Command()
@@ -46,5 +46,5 @@ def test_crawl_my_data(stdout):
     assert 'Finished' in output
     assert 'Crawling took' in output
 
-    #with pytest.raises(SystemExit):
-    #    pytest.raises(dummy_cmd.run(['--path=/tmp/forbidden/folder']))
+    with pytest.raises(SystemExit):
+        pytest.raises(dummy_cmd.run(['--path=/tmp/forbidden/folder']))

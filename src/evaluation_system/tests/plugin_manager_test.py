@@ -13,42 +13,43 @@ import time
 import datetime
 import getpass
 
-from evaluation_system.api.parameters import ValidationError
-
-import evaluation_system.misc.config as config
-from evaluation_system.api.plugin import ConfigurationError
-from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
-from evaluation_system.model.history.models import History
-from django.contrib.auth.models import User
 import pytest
 # logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-import evaluation_system.api.plugin_manager as pm
 
 class Test(unittest.TestCase):
-
     def setUp(self):
         # this gets overwritten by the nosetest framework (it reloads all modules again)
         # we have to reset it every time.
-        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+        import evaluation_system.api.plugin_manager as pm
+        import evaluation_system.misc.config as config
+        from evaluation_system.api.plugin import ConfigurationError
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        from django.contrib.auth.models import User
+        #os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
         config.reloadConfiguration()
         self.user = DummyUser(random_home=True, pw_name='test_user')
         pm.reloadPlugins(self.user.getName())
         self.user_django, created = User.objects.get_or_create(username=self.user.getName())
 
     def tearDown(self):
+        from evaluation_system.model.history.models import History
+        from django.contrib.auth.models import User
         User.objects.filter(username=self.user.getName()).delete()
         History.objects.all().delete()
-        del os.environ['EVALUATION_SYSTEM_CONFIG_FILE']
+        #del os.environ['EVALUATION_SYSTEM_CONFIG_FILE']
 
     def test_modules(self):
+        import evaluation_system.api.plugin_manager as pm
         pm.reloadPlugins()
         pmod = pm.__plugin_modules_user__
         assert pmod is not None
         assert len(pmod) > 0
 
     def test_plugins(self):
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        import evaluation_system.api.plugin_manager as pm
         # force reload to be sure the dummy is loaded
         assert len(pm.getPlugins()) > 0
         assert 'dummyplugin' in pm.getPlugins()
@@ -57,6 +58,9 @@ class Test(unittest.TestCase):
         assert dummy['plugin_class'] == 'DummyPlugin'
          
     def testDefaultPluginConfigStorage(self):
+        import evaluation_system.api.plugin_manager as pm
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        from django.contrib.auth.models import User
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         assert os.path.isdir(home)
@@ -65,6 +69,9 @@ class Test(unittest.TestCase):
         assert os.path.isfile(conf_file)
 
     def test_plugin_config_storage(self):
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        import evaluation_system.api.plugin_manager as pm
+        from evaluation_system.api.parameters import ValidationError
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         assert os.path.isdir(home)
@@ -98,6 +105,8 @@ class Test(unittest.TestCase):
         assert res['something'] == 'super_test'
 
     def test_parse_arguments(self):
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        import evaluation_system.api.plugin_manager as pm
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         assert os.path.isdir(home)
@@ -122,7 +131,9 @@ class Test(unittest.TestCase):
             shutil.rmtree(home)
 
     def test_write_setup(self):
-        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        import evaluation_system.api.plugin_manager as pm
+        #os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
         user = DummyUser(random_home=True, pw_name='test_user')
         home = user.getUserHome()
         f = pm.writeSetup('DummyPlugin', dict(number="$the_number", the_number=42), user)
@@ -132,6 +143,8 @@ class Test(unittest.TestCase):
             assert num_line == 'number=$the_number'
 
     def test_get_history(self):
+        from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+        import evaluation_system.api.plugin_manager as pm
         user = DummyUser(random_home=True, pw_name=getpass.getuser())
         home = user.getUserHome()
 
@@ -153,6 +166,7 @@ class Test(unittest.TestCase):
         assert g1[0] == g2[0]
 
     def testDynamicPluginLoading(self):
+        import evaluation_system.api.plugin_manager as pm
         basic_plugin = """
 from sys import modules
 plugin = modules['evaluation_system.api.plugin']
@@ -206,6 +220,7 @@ class %s(plugin.PluginAbstract):
             shutil.rmtree(path2)
 
     def test_get_plugin_dict(self):
+        import evaluation_system.api.plugin_manager as pm
         with pytest.raises(pm.PluginManagerException):
             pm.getPluginDict('Not available')
         pl = pm.getPluginDict('DummyPlugin')
@@ -213,6 +228,7 @@ class %s(plugin.PluginAbstract):
         assert pl['plugin_class'] == 'DummyPlugin'
 
     def test_preview_generation(self):
+        import evaluation_system.api.plugin_manager as pm
         d = '/tmp/preview.pdf'
         s = os.path.dirname(__file__)+'/test_output/vecap_test_output.pdf'
         pm._preview_copy(s,d)
@@ -258,6 +274,8 @@ class %s(plugin.PluginAbstract):
             os.remove(r)
 
     def test_get_command_string(self):
+        from evaluation_system.model.history.models import History
+        import evaluation_system.api.plugin_manager as pm
         h = History.objects.create(
             timestamp=datetime.datetime.now(),
             status=History.processStatus.running,
@@ -272,6 +290,8 @@ class %s(plugin.PluginAbstract):
         assert h.tool in cmd
 
     def test_load_scheduled_conf(self):
+        from evaluation_system.model.history.models import History
+        import evaluation_system.api.plugin_manager as pm
         h = History.objects.create(
             timestamp=datetime.datetime.now(),
             status=History.processStatus.scheduled,

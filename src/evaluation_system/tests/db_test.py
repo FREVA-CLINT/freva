@@ -5,7 +5,6 @@ Created on 23.05.2016
 """
 
 from datetime import datetime, timedelta
-import unittest
 import os
 import tempfile
 import shutil
@@ -58,13 +57,13 @@ def test_get_history(dummy_user, dummy_plugin, config_dict):
     for u in users:
         dummy_user.user.getUserDB().storeHistory(dummy_plugin,
                                                  config_dict,
-                                                 u, 1, 
+                                                 u, 1,
                                                  caption=f'My {u}')
 
     history = dummy_user.user.getUserDB().getHistory()
-    assert history.count() == 6
+    assert history.count() == 5
     history = dummy_user.user.getUserDB().getHistory(uid='user')
-    assert history.count() == 4
+    assert history.count() == 3
     history = dummy_user.user.getUserDB().getHistory(uid='user',
                                                      tool_name='dummyplugin',
                                                      limit=2)

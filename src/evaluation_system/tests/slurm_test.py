@@ -8,9 +8,9 @@ from time import sleep
 
 
 
-def testStartSlurm():
+def testStartSlurm(dummy_config):
     from evaluation_system.model import slurm, user
-    from evaluation_system.misc import config, utils
+    from evaluation_system.misc import utils
     """
     This executes a simple slurm scheduler test
     1. check if slurm is available
@@ -19,6 +19,7 @@ def testStartSlurm():
     """
     sbatch_exe = spawn.find_executable('sbatch')
     squeue_exe = spawn.find_executable('squeue')
+    print(dummy_config.SCHEDULER_OPTIONS)
     # check weather the commands exist     
     assert not (sbatch_exe is None), "can not find 'sbatch'"
     assert not (squeue_exe is None), "can not find 'squeue'"
@@ -44,7 +45,7 @@ def testStartSlurm():
     user = test_user.getName()
     command = ['/bin/bash',
                '-c',
-               f'{sbatch_exe} {config.SCHEDULER_OPTIONS} {infile}\n']
+               f'{sbatch_exe} {dummy_config.SCHEDULER_OPTIONS} {infile}\n']
     # submit the job 
     p = run(command, stdout=PIPE, stderr=PIPE)
     (stdout, stderr) = p.stdout.decode(), p.stderr.decode()

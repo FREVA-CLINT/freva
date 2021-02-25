@@ -1,16 +1,12 @@
-import logging
 from pathlib import Path
 import os
 import pytest
 import sys
 
-if not logging.getLogger().handlers:
-    logging.basicConfig(level=logging.DEBUG)
 
 from evaluation_system.tests import similar_string
 
-def test_help_command(dummy_cmd, prog_name, stdout):
-
+def test_help_command(dummy_cmd, stdout, prog_name):
         sys.stdout = stdout
         stdout.startCapturing()
         stdout.reset()

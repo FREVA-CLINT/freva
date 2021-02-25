@@ -3,7 +3,7 @@ from datetime import datetime
 from django.conf import settings
 import django
 from io import StringIO
-import importlib as imp
+import importlib
 import json
 import os
 import pytest
@@ -13,6 +13,20 @@ import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
 
+
+# The following is a recipe by 'Ciro Santilli TRUMP BAN IS BAD'
+# which was taken from stackoverflow 
+#(https://stackoverflow.com/questions/19009932/import-arbitrary-python-source-file-python-3-3#19011259)
+def import_path(path):
+    module_name = os.path.basename(path).replace('-', '_')
+    spec = importlib.util.spec_from_loader(
+        module_name,
+        importlib.machinery.SourceFileLoader(module_name, str(path))
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[module_name] = module
+    return module
 
 
 
@@ -50,7 +64,7 @@ class OutputWrapper:
     def __getattr__(self, *args, **kwargs):
         return self.__original.__getattribute__(*args, **kwargs)
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(scope='session')
 def dummy_env():
 
     test_conf = Path(__file__).absolute().parent / 'test.conf'
@@ -75,10 +89,10 @@ def dummy_git_path():
         tool_path = Path(td) / 'test_tool'
         yield repo_path, tool_path
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def temp_dir():
     with TemporaryDirectory() as td:
-        yield td
+        yield Path(td)
 
 @pytest.fixture(scope='module')
 def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
@@ -90,10 +104,9 @@ def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
     yield dummy_solr
     UserCrawl.objects.all().delete()
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def dummy_solr(dummy_env, dummy_settings):
 
-    os.environ = dummy_env
     dummy_settings.reloadConfiguration()
     server = namedtuple('solr', ['solr_port',
                                   'solr_host',
@@ -141,7 +154,7 @@ def dummy_solr(dummy_env, dummy_settings):
         server.dump_file = dump_file
         server.DRSFile = DRSFile
         server.fn = str(Path(server.tmpdir) / server.files[0])
-        server.drs = DRSFile.from_path(server.fn)
+        server.drs = server.DRSFile.from_path(server.fn)
         yield server
     try:
         server.all_files.delete('*')
@@ -150,22 +163,28 @@ def dummy_solr(dummy_env, dummy_settings):
         pass
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
+def dummy_config(dummy_env, dummy_settings_single):
+
+    from evaluation_system.misc import config, utils
+    config.reloadConfiguration()
+    yield config
+    config.reloadConfiguration()
+
+@pytest.fixture(scope='module')
 def dummy_plugin(dummy_env, dummy_settings):
 
-    os.environ = dummy_env
     from evaluation_system.tests.mocks.dummy import DummyPlugin
     yield DummyPlugin()
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def dummy_history(dummy_env, dummy_settings):
 
-    os.environ = dummy_env
     from evaluation_system.model.history.models import History
     yield History
     History.objects.all().delete()
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def plugin_command(dummy_settings, dummy_env):
 
     from evaluation_system.misc import config
@@ -174,6 +193,8 @@ def plugin_command(dummy_settings, dummy_env):
     config.reloadConfiguration()
     pm.reloadPlugins()
     yield Command()
+    config.reloadConfiguration()
+    pm.reloadPlugins()
 
 @pytest.fixture(scope='module')
 def test_user(dummy_env, dummy_settings, config_dict):
@@ -193,9 +214,8 @@ def test_user(dummy_env, dummy_settings, config_dict):
     user.delete()
     hist
 
-@pytest.fixture(scope='session')
-def temp_user():
-    os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+@pytest.fixture(scope='function')
+def temp_user(dummy_settings):
     from evaluation_system.tests.mocks.dummy import DummyUser
     with DummyUser(random_home=True, pw_name='someone') as user:
         yield user
@@ -203,12 +223,11 @@ def temp_user():
 @pytest.fixture(scope='function')
 def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user):
 
-    os.environ = dummy_env
     from django.contrib.auth.models import User
     User.objects.filter(username='dummy_user').delete()
     user_entry = namedtuple('dummy_user', ['user', 'row_id'])
     user_entry.user = temp_user
-    user_entry.row_id = user.getUserDB().storeHistory(
+    user_entry.row_id = temp_user.getUserDB().storeHistory(
         dummy_plugin,
         config_dict, 'user',
         dummy_history.processStatus.not_scheduled,
@@ -218,7 +237,7 @@ def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_histo
 
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def config_dict():
     yield {'the_number': 42,
             'number': 12,
@@ -226,7 +245,7 @@ def config_dict():
             'other': 'value',
             'input': '/folder'}
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def tmp_dir():
     with TemporaryDirectory(prefix='freva_test_') as td:
         yield Path(td)
@@ -234,7 +253,7 @@ def tmp_dir():
 
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def search_dict():
     yield {'variable': 'tas',
            'project': 'CMIP5',
@@ -253,7 +272,7 @@ def esgf_command():
 
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def dummy_cmd(dummy_settings):
 
     from evaluation_system.commands import FrevaBaseCommand
@@ -273,7 +292,33 @@ def dummy_cmd(dummy_settings):
 
     yield DummyCommand()
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(scope='module')
+def dummy_settings_single(dummy_env):
+    # Application definition
+    local_db = Path(__file__).absolute().parent / 'local.db'
+    SETTINGS = {}
+    SETTINGS['INSTALLED_APPS'] = (
+        'django.contrib.auth',  # We need this to access user groups
+        'django.contrib.flatpages'
+    )
+    SETTINGS['DATABASES'] = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(local_db)
+        }
+    }
+    try:
+        settings.configure(**SETTINGS)
+    except RuntimeError:
+        pass
+    django.setup()
+    from evaluation_system.misc import config
+    yield config
+    config.reloadConfiguration()
+
+
+
+@pytest.fixture(scope='session')
 def dummy_settings(dummy_env):
     # Application definition
     local_db = Path(__file__).absolute().parent / 'local.db'
@@ -288,7 +333,6 @@ def dummy_settings(dummy_env):
             'NAME': str(local_db)
         }
     }
-    os.environ = dummy_env
     try:
         settings.configure(**SETTINGS)
     except RuntimeError:
@@ -296,10 +340,6 @@ def dummy_settings(dummy_env):
     django.setup()
     from evaluation_system.misc import config
     yield config
-    try:
-        del os.environ[config._DEFAULT_ENV_CONFIG_FILE]
-    except KeyError:
-        pass
     config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
@@ -311,46 +351,48 @@ def broken_run(dummy_settings):
     config.reloadConfiguration()
     pm.reloadPlugins()
     yield Command()
+    config.reloadConfiguration()
+    pm.reloadPlugins()
 
 @pytest.fixture(scope='module')
 def hist_obj():
 
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
+    from evaluation_system.misc import config
     yield History.objects.create(
             status=History.processStatus.running,
             slurm_output='/some/out.txt',
             timestamp=datetime.now(),
             uid=User.objects.first()
         )
+    config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
 def freva_lib():
     sys.dont_write_bytecode = True
-    py_source_open_mode = "U"
-    py_source_description = (".py", py_source_open_mode, imp.PY_SOURCE)
     freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
-    with open(freva_bin, py_source_open_mode) as module_file:
-        Freva = imp.load_module(
-                'freva', module_file, str(freva_bin), py_source_description)
-        yield Freva.Freva()
-        import evaluation_system.api.plugin_manager as pm
-        pm.reloadPlugins()
+    Freva = import_path(freva_bin)
+    yield Freva.Freva()
+    import evaluation_system.api.plugin_manager as pm
+    pm.reloadPlugins()
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def prog_name():
     return Path(sys.argv[0]).name
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def stderr():
     __original_stderr = sys.stderr
     sys.stderr = OutputWrapper(sys.stderr)
     yield sys.stderr
     sys.stderr = __original_stderr
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def stdout():
+    from evaluation_system.misc import config
     __original_stdout = sys.stdout
     sys.stdout = OutputWrapper(sys.stdout)
     yield sys.stdout
     sys.stdout = __original_stdout
+    config.reloadConfiguration()
