@@ -4,13 +4,13 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE
 # SWITCHES
 makeOwnPython=True
 makeFreva=True
 makeConfig=True
 makeStartscript=True
-makeSOLRSERVER=True
+makeSOLRSERVER=False
 makeMYSQLtables=False
 ##########
 #PYTHON AREA
@@ -30,15 +30,15 @@ USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE 
 #SCHEDULER - SLURM
 SLURMCOMMAND=sbatch #sbatch/None
 #MYSQL
-MYSQLHOST=localhost #localhost
-MYSQLUSER=evaluationsystem #freva
-MYSQLPASSWD=m1kl3valus3r
-MYSQLDB=evaluationsystem #freva
+MYSQLHOST=www-regiklim.dkrz.de #localhost
+MYSQLUSER=test_user #freva
+MYSQLPASSWD=T3st
+MYSQLDB=freva_dev #freva
 #SOLR
 SOLRHOST=www-regiklim.dkrz.de #localhost
 SOLRUSER=b380001 #freva
 SOLRPORT=8989
-SOLRNAME=test_server
+SOLRNAME=test_solr
 #############
 
 
@@ -449,5 +449,5 @@ if [ "$makeMYSQLtables" = "True" ] ; then
     echo "When no error occurs, and bash asks for the MYSQL password..."
     echo "type password 2 create mysql tables, existing tables will be OVERWRITTEN"
     echo "type ctrl -d to abort"
-    mysql -u $MYSQLUSER -p $MYSQLDB < $FREVA/scripts/database/create_tables_20151214.sql    
+    mysql -u $MYSQLUSER -p $MYSQLDB -h $MYSQLHOST < $FREVA/scripts/database/create_tables_20151214.sql    
 fi
