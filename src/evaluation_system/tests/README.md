@@ -1,16 +1,22 @@
-Run the tests with coverage:
---
+# HOWTO: Installing and running pytest of the python3 source code
 
-1. Load virtual python
-. vepy/bin/activate
+## Installing the freva development version
+To install the python3 verion, which is currently still unter development
+you have to use the `install_freva-dev.sh` in the `build` directory.
+It should be sufficient to only set the `Path2Eva` and the `USERRESULTDIR`,
+environment variables (if desired). A test servers for apache solr and mariadb
+are up and running on the virtual machine www-regiklim.dkrz.de. Since this
+virtual machine is only accessible from within the dkrz network freva-dev
+should also from a machine with access to the dkrz internal network (e.g mistral).
 
-2. Start solr server
-cd tests/solr_server/test_solr
-java -server -Xmx100M  -Dsolr.solhome=/home/illing/workspace/evaluation_system/src/evaluation_system/tests/solr_server/test_solr/solr -jar start.jar
+## Running the tests
 
-3. Run the tests
-cd src/evaluation_system
-nosetests -s -x --with-coverage  --cover-package=. --cover-tests --cover-html --cover-erase --cover-inclusive tests/
+To run the test change into the newly created freva-dev instance located in
+`$Pth2Eva/$NameYourEvaluationSystem/freva/src/evaluation_system`.
+You'll then only have to submit the following command:
 
+```bash
 
+$: make test
 
+```
