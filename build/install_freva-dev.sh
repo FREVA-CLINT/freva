@@ -25,18 +25,20 @@ PIP_PKGS="pymysql mysqlclient pytest-env coverage"
 # MAIN CONFIG-FILE AREA
 ###########
 ADMINS=b380001 #freva
-PROJECTWEBSITE=www-regiklim.dkrz.de #just for info printing
+PROJECTWEBSITE=localhost #just for info printing
 USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
-#SCHEDULER - SLURM                           
+#SCHEDULER - SLURM
 SLURMCOMMAND=sbatch #sbatch/None
 #MYSQL
-MYSQLHOST=www-regiklim.dkrz.de #localhost
+MYSQLHOST=localhost #localhost
 MYSQLUSER=evaluationsystem #freva
 MYSQLPASSWD=m1kl3valus3r
 MYSQLDB=evaluationsystem #freva
 #SOLR
 SOLRHOST=www-regiklim.dkrz.de #localhost
 SOLRUSER=b380001 #freva
+SOLRPORT=8989
+SOLRNAME=test_server
 #############
 
 
@@ -172,9 +174,9 @@ db.db=$MYSQLDB
 
 #: Define access to the solr instance
 solr.host=$SOLRHOST
-solr.port=8989
+solr.port=$SOLRPORT
 solr.core=files
-solr.name=test_solr
+solr.name=$SOLRNAME
 solr.user=$SOLRUSER
 solr.memory=4096M
 solr.heap_size=512M
@@ -437,8 +439,8 @@ if [ "$makeSOLRSERVER" = "True" ] ; then
     cp -r $FREVA/etc/solr/home/latest/conf/* $SOLRSERVER/home/latest/conf/
     $FREVA/sbin/solr_server start
     sleep 5
-    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
-    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
+    curl "http://${SOLRHOST}:${SOLRPORT}/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
+    curl "http://${SOLRHOST:${SOLRPORT}/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
 fi
 
 
