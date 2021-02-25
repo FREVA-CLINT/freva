@@ -210,6 +210,7 @@ solr.backup=$DBDIR/solr/backup/
 
 
 EOF
+    rm -f ${FREVA}/etc/evaluation_system.conf
     ln -s ${CONFIGDIR}/evaluation_system.conf ${FREVA}/etc/evaluation_system.conf
 
     cat -> ${CONFIGDIR}/file.py <<EOF
@@ -441,7 +442,7 @@ if [ "$makeSOLRSERVER" = "True" ] ; then
     $FREVA/sbin/solr_server start
     sleep 5
     curl "http://${SOLRHOST}:${SOLRPORT}/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
-    curl "http://${SOLRHOST:${SOLRPORT}/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
+    curl "http://${SOLRHOST}:${SOLRPORT}/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
 fi
 
 
