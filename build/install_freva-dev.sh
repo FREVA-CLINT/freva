@@ -313,7 +313,7 @@ defaults
 EOF
     
     cat $FREVA/src/evaluation_system/model/bottom4filepy >> ${CONFIGDIR}/file.py
-    ln -s ${CONFIGDIR}/file.py $FREVA/src/evaluation_system/model/file.py
+#    ln -s ${CONFIGDIR}/file.py $FREVA/src/evaluation_system/model/file.py
     mkdir -p $DATA/model/global/cmip5 $DATA/crawl_my_data $DATA/reanalysis $DATA/observations
 fi
 
