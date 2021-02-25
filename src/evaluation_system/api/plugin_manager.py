@@ -25,7 +25,7 @@ import datetime
 import shutil
 import logging
 import json
-import imp
+import importlib.machinery
 import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
@@ -291,8 +291,10 @@ will be used.
     if user is None:
         user = User()
     plugin_dict = getPluginDict(plugin_name, user_name)
-    plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
-    return getattr(plugin_module, plugin_dict['plugin_class'])(user=user)
+    #plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
+    plugin_module = importlib.machinery.SourceFileLoader('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
+    mod = plugin_module.load_module()
+    return getattr(mod, plugin_dict['plugin_class'])(user=user)
 
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None, check_errors=True):
