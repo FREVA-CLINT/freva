@@ -182,7 +182,6 @@ a list (or anything iterable) to :class:`prepareOutput` .
             if isinstance(tmp_param, Directory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
                     if key in config_dict.keys() and config_dict[key] is not None:
-                        #print config_dict[key], 'dummp config dict'
                         config_dict[key] = os.path.join(config_dict[key], str(self.rowid))
         return config_dict        
     
@@ -490,6 +489,7 @@ The values are assumed to be in a section named just like the class implementing
 :return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
          information found in ``fp``"""
         config_parser = ConfigParser()
+        config_parser.readfp(fp)
         return self.readFromConfigParser(config_parser)
 
     def saveConfiguration(self, fp, config_dict=None, include_defaults=False):
