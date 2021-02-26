@@ -6,6 +6,7 @@ $(shell cat ../../../misc4freva/loadscripts/loadfreva.source|grep -v autocomplet
 include .include
 export $(shell sed 's/=.*//' .include)
 test:
-	python3 -m coverage run --source=$(PWD) -m pytest -vv $(PWD)/tests
-	python3 -m coverage report --omit='external/*,fuse/*' -m
 	rm -f .include
+	python3 -m coverage run --source=$(PWD) -m pytest -vv $(PWD)/tests
+	python3 -m coverage html -d codecov --omit='external/*,fuse/*'
+	python3 -m coverage report --omit='external/*,fuse/*' -m

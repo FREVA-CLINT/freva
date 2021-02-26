@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage report</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="coverage_html.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.index_ready);
+    </script>
+</head>
+<body class="indexfile">
+<div id="header">
+    <div class="content">
+        <h1>Coverage report:
+            <span class="pc_cov">88%</span>
+        </h1>
+        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <form id="filter_container">
+            <input id="filter" type="text" value="" placeholder="filter..." />
+        </form>
+    </div>
+</div>
+<div class="help_panel">
+    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+    <p class="keyhelp">
+        <span class="key">n</span>
+        <span class="key">s</span>
+        <span class="key">m</span>
+        <span class="key">x</span>
+        <span class="key">c</span> &nbsp; change column sorting
+    </p>
+    </div>
+</div>
+<div id="index">
+    <table class="index">
+        <thead>
+            <tr class="tablehead" title="Click to sort">
+                <th class="name left headerSortDown shortkey_n">Module</th>
+                <th class="shortkey_s">statements</th>
+                <th class="shortkey_m">missing</th>
+                <th class="shortkey_x">excluded</th>
+                <th class="right shortkey_c">coverage</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr class="total">
+                <td class="name left">Total</td>
+                <td>5017</td>
+                <td>585</td>
+                <td>232</td>
+                <td class="right" data-ratio="4432 5017">88%</td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr class="file">
+                <td class="name left"><a href="__init___py.html">__init__.py</a></td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 1">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="api___init___py.html">api/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="api_parameters_py.html">api/parameters.py</a></td>
+                <td>279</td>
+                <td>20</td>
+                <td>0</td>
+                <td class="right" data-ratio="259 279">93%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="api_plugin_py.html">api/plugin.py</a></td>
+                <td>335</td>
+                <td>70</td>
+                <td>0</td>
+                <td class="right" data-ratio="265 335">79%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="api_plugin_manager_py.html">api/plugin_manager.py</a></td>
+                <td>467</td>
+                <td>125</td>
+                <td>0</td>
+                <td class="right" data-ratio="342 467">73%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands___init___py.html">commands/__init__.py</a></td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 1">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_admin___init___py.html">commands/admin/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_admin_check_4_broken_runs_py.html">commands/admin/check_4_broken_runs.py</a></td>
+                <td>19</td>
+                <td>3</td>
+                <td>2</td>
+                <td class="right" data-ratio="16 19">84%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_admin_process_pull_requests_py.html">commands/admin/process_pull_requests.py</a></td>
+                <td>31</td>
+                <td>3</td>
+                <td>2</td>
+                <td class="right" data-ratio="28 31">90%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_admin_solr_ingest_py.html">commands/admin/solr_ingest.py</a></td>
+                <td>62</td>
+                <td>8</td>
+                <td>4</td>
+                <td class="right" data-ratio="54 62">87%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_admin_update_tool_doc_py.html">commands/admin/update_tool_doc.py</a></td>
+                <td>55</td>
+                <td>55</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 55">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_basecommand_py.html">commands/basecommand.py</a></td>
+                <td>114</td>
+                <td>19</td>
+                <td>158</td>
+                <td class="right" data-ratio="95 114">83%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_crawl_my_data_py.html">commands/crawl_my_data.py</a></td>
+                <td>32</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="31 32">97%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_databrowser_py.html">commands/databrowser.py</a></td>
+                <td>65</td>
+                <td>2</td>
+                <td>2</td>
+                <td class="right" data-ratio="63 65">97%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_esgf_py.html">commands/esgf.py</a></td>
+                <td>63</td>
+                <td>8</td>
+                <td>2</td>
+                <td class="right" data-ratio="55 63">87%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_history_py.html">commands/history.py</a></td>
+                <td>41</td>
+                <td>7</td>
+                <td>0</td>
+                <td class="right" data-ratio="34 41">83%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="commands_plugin_py.html">commands/plugin.py</a></td>
+                <td>112</td>
+                <td>14</td>
+                <td>0</td>
+                <td class="right" data-ratio="98 112">88%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="misc___init___py.html">misc/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="misc_config_py.html">misc/config.py</a></td>
+                <td>84</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="83 84">99%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="misc_utils_py.html">misc/utils.py</a></td>
+                <td>186</td>
+                <td>31</td>
+                <td>0</td>
+                <td class="right" data-ratio="155 186">83%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model___init___py.html">model/__init__.py</a></td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 1">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_db_py.html">model/db.py</a></td>
+                <td>167</td>
+                <td>10</td>
+                <td>0</td>
+                <td class="right" data-ratio="157 167">94%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_esgf_py.html">model/esgf.py</a></td>
+                <td>121</td>
+                <td>35</td>
+                <td>0</td>
+                <td class="right" data-ratio="86 121">71%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_file_py.html">model/file.py</a></td>
+                <td>141</td>
+                <td>16</td>
+                <td>52</td>
+                <td class="right" data-ratio="125 141">89%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_history___init___py.html">model/history/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_history_models_py.html">model/history/models.py</a></td>
+                <td>161</td>
+                <td>36</td>
+                <td>0</td>
+                <td class="right" data-ratio="125 161">78%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_plugins___init___py.html">model/plugins/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_plugins_models_py.html">model/plugins/models.py</a></td>
+                <td>37</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="36 37">97%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_repository_py.html">model/repository.py</a></td>
+                <td>33</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="31 33">94%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_slurm_py.html">model/slurm.py</a></td>
+                <td>85</td>
+                <td>13</td>
+                <td>0</td>
+                <td class="right" data-ratio="72 85">85%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_solr_py.html">model/solr.py</a></td>
+                <td>72</td>
+                <td>9</td>
+                <td>10</td>
+                <td class="right" data-ratio="63 72">88%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_solr_core_py.html">model/solr_core.py</a></td>
+                <td>214</td>
+                <td>41</td>
+                <td>0</td>
+                <td class="right" data-ratio="173 214">81%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_solr_models___init___py.html">model/solr_models/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_solr_models_models_py.html">model/solr_models/models.py</a></td>
+                <td>13</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="13 13">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="model_user_py.html">model/user.py</a></td>
+                <td>110</td>
+                <td>11</td>
+                <td>0</td>
+                <td class="right" data-ratio="99 110">90%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="settings___init___py.html">settings/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="settings_database_py.html">settings/database.py</a></td>
+                <td>12</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="10 12">83%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests___init___py.html">tests/__init__.py</a></td>
+                <td>26</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="26 26">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_aa_config_test_py.html">tests/aa_config_test.py</a></td>
+                <td>95</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="95 95">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_basecommand_test_py.html">tests/basecommand_test.py</a></td>
+                <td>34</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="34 34">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_check_4_broken_runs_command_test_py.html">tests/check_4_broken_runs_command_test.py</a></td>
+                <td>16</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="16 16">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_conftest_py.html">tests/conftest.py</a></td>
+                <td>232</td>
+                <td>12</td>
+                <td>0</td>
+                <td class="right" data-ratio="220 232">95%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_crawl_my_data_test_py.html">tests/crawl_my_data_test.py</a></td>
+                <td>32</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="32 32">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_databrowser_test_py.html">tests/databrowser_test.py</a></td>
+                <td>60</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="60 60">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_db_test_py.html">tests/db_test.py</a></td>
+                <td>97</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="96 97">99%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_esgf_test_py.html">tests/esgf_test.py</a></td>
+                <td>18</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="18 18">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_file_test_py.html">tests/file_test.py</a></td>
+                <td>54</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="54 54">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_freva_test_py.html">tests/freva_test.py</a></td>
+                <td>25</td>
+                <td>5</td>
+                <td>0</td>
+                <td class="right" data-ratio="20 25">80%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_history_command_test_py.html">tests/history_command_test.py</a></td>
+                <td>26</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="26 26">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_history_models_test_py.html">tests/history_models_test.py</a></td>
+                <td>15</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="15 15">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_mocks___init___py.html">tests/mocks/__init__.py</a></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 0">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_mocks_dummy_py.html">tests/mocks/dummy.py</a></td>
+                <td>51</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="51 51">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_mocks_result_tags_py.html">tests/mocks/result_tags.py</a></td>
+                <td>13</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="13 13">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_parameters_test_py.html">tests/parameters_test.py</a></td>
+                <td>133</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="133 133">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_plugin_command_test_py.html">tests/plugin_command_test.py</a></td>
+                <td>69</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="69 69">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_plugin_manager_test_py.html">tests/plugin_manager_test.py</a></td>
+                <td>202</td>
+                <td>24</td>
+                <td>0</td>
+                <td class="right" data-ratio="178 202">88%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_plugin_test_py.html">tests/plugin_test.py</a></td>
+                <td>259</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="259 259">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_process_git_test_py.html">tests/process_git_test.py</a></td>
+                <td>49</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="49 49">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_process_pull_request_command_test_py.html">tests/process_pull_request_command_test.py</a></td>
+                <td>49</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="49 49">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_slurm_test_py.html">tests/slurm_test.py</a></td>
+                <td>38</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="38 38">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_solr_core_test_py.html">tests/solr_core_test.py</a></td>
+                <td>71</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="71 71">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_solr_ingest_test_py.html">tests/solr_ingest_test.py</a></td>
+                <td>24</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="24 24">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_solr_test_py.html">tests/solr_test.py</a></td>
+                <td>26</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="26 26">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_user_test_py.html">tests/user_test.py</a></td>
+                <td>95</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="95 95">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="tests_utils_test_py.html">tests/utils_test.py</a></td>
+                <td>94</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="94 94">100%</td>
+            </tr>
+        </tbody>
+    </table>
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
+</div>
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.4</a>,
+            created at 2021-02-26 14:13 +0100
+        </p>
+    </div>
+</div>
+</body>
+</html>
