@@ -1,18 +1,42 @@
 # HOWTO: Installing and running pytest of the python3 source code
 
 ## Installing the freva development version
-To install the python3 verion, which is currently still unter development
-you have to use the `install_freva-dev.sh` in the `build` directory.
-It should be sufficient to only set the `Path2Eva` and the `USERRESULTDIR`,
-environment variables (if desired). A test servers for apache solr and mariadb
-are up and running on the virtual machine www-regiklim.dkrz.de. Since this
-virtual machine is only accessible from within the dkrz network freva-dev
-should also from a machine with access to the dkrz internal network (e.g mistral).
+To get the devlopment branch of freva clone `update_tests` branch of Freva
+
+```bash
+$: git clone -b update_tests https://gitlab.dkrz.de/freva/evaluation_system.git
+```
+
+or check out the `update_tests` branch you have an existing freva source.
+
+```bash
+$: git checkout update_tests
+```
+
+To install the development (python3) verion, navigte the the `build` folder
+and execute the `install_freva-dev.sh`
+
+```bash
+$: ./install_freva-dev.sh
+```
+
+Before install the latest freva dev version you might want to set follwing
+variables in the `install_freva-dev.sh` script:
+
+- `Path2Eva`: The path where the actual freva instance will be installed to
+- `USERRESULTDIR` : Directory for storing user data.
+
+Test servers for apache solr and mariadb are up and running on the virtual
+machine *www-regiklim.dkrz.de*. Since this
+
+> **_Note:_** The virtual machine is only accessible from within the dkrz network, freva-dev should also be installed from a machine with access to the dkrz internal network (e.g mistral).
 
 ## Running the tests
 
-To run the test change into the newly created freva-dev instance located in
-`$Pth2Eva/$NameYourEvaluationSystem/freva/src/evaluation_system`.
+The install script will run the tests automatically. If you chnage the source
+code and want to run the tests again navigate into your install directory (
+`$Pth2Eva/$NameYourEvaluationSystem/freva/src/evaluation_system`). 
+
 You'll then only have to submit the following command:
 
 ```bash
