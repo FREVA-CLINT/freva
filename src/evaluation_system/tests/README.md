@@ -40,7 +40,31 @@ code and want to run the tests again navigate into your install directory (
 You'll then only have to submit the following command:
 
 ```bash
-
 $: make test
-
 ```
+
+### Uploading code coverage results
+Gitlab pages seems not to work at the moment. For the time being we can try
+to upload the code coverage report to a swift container. To do that change into
+the `$Pth2Eva/$NameYourEvaluationSystem` directory and load the drkz `swift` module
+
+```bash
+$: module load swift
+```
+
+The target container should is located in the *ch1187* project. If you are prompted
+that your token has expired renew it by
+
+```bash
+$: swift token-new
+```
+
+and choose *ch1187* as account, followed by your login credentials. 
+
+To upload the test report simply type
+
+```bash
+$: swift upload freva-dev public
+```
+
+You should then be able to inspect the results on the [public swift browser](https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/freva-dev/public/index.html)
