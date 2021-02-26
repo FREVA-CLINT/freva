@@ -6,10 +6,10 @@
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
 Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE
 # SWITCHES
-makeOwnPython=True
-makeFreva=True
-makeConfig=True
-makeStartscript=True
+makeOwnPython=False
+makeFreva=False
+makeConfig=False
+makeStartscript=False
 makeSOLRSERVER=False
 makeMYSQLtables=False
 GitBranch=update_tests
@@ -18,7 +18,7 @@ makeTests=True
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="cdo conda configparser coverage 'django>=1.8,<1.9' ipython libnetcdf mysql-python nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env python-cdo"
+CONDA_PKGS="cdo conda configparser coverage 'django>=1.8,<1.9' git gitpython ipython libnetcdf mysqlclient nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env python-cdo"
 PYTHONVERSION="3.7"
 PIP_PKGS=""
 ##########
@@ -28,7 +28,7 @@ PIP_PKGS=""
 ###########
 ADMINS=b380001 #freva
 PROJECTWEBSITE=localhost #just for info printing
-USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
+USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user
 #SCHEDULER - SLURM
 SLURMCOMMAND=sbatch #sbatch/None
 #MYSQL
@@ -89,9 +89,13 @@ if [ "$makeOwnPython" = "True" ]; then
     /tmp/anaconda.sh -p /tmp/anaconda -b -f -u
     /tmp/anaconda/bin/conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y
     let success=$?
-    rm -r /tmp/anaconda /tmp/anaconda.sh
+    rm -rf /tmp/anaconda /tmp/anaconda.sh
     [[ $success -ne 0 ]] && echo "conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y failed! EXIT" && exit 1
-    $YOURPYTHON/bin/python -m pip install $PIP_PKGS
+    if [ "$PIP_PKGS" ];then
+        $YOURPYTHON/bin/python -m pip install $PIP_PKGS
+        let success=$?
+        [[ $success -ne 0 ]] && echo "$YOURPYTHON/bin/python -m pip install $PIP_PKGS -y failed! EXIT" && exit 1
+    fi
 fi
 
 if [ "$makeFreva" = "True" ]; then
@@ -134,9 +138,9 @@ scratch_dir=None
 
 #: Type of directory structure that will be used to maintain state:
 #:
-#:    local   := <home>/<base_dir>... 
+#:    local   := <home>/<base_dir>...
 #:    central := <base_dir_location>/<base_dir>/<user>/...
-#:    scratch := <base_dir_location>/<user>/<base_dir>... 
+#:    scratch := <base_dir_location>/<user>/<base_dir>...
 #:
 #: (no user info in local since that is included in the home directory already)
 directory_structure_type=scratch
@@ -314,7 +318,7 @@ defaults
     list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)
 """
 EOF
-    
+
     cat $FREVA/src/evaluation_system/model/bottom4filepy >> ${CONFIGDIR}/file.py
 #    ln -s ${CONFIGDIR}/file.py $FREVA/src/evaluation_system/model/file.py
     mkdir -p $DATA/model/global/cmip5 $DATA/crawl_my_data $DATA/reanalysis $DATA/observations
@@ -333,9 +337,9 @@ freva
 EOF
 
     cat -> ${STARTDIR}/loadfreva.modules <<EOF
-#%Module1.0#####################################################################          
+#%Module1.0#####################################################################
 ##
-## FREVA - Freie University Evaluation Framework modulefile
+## FREVA - Free Evaluation Framework modulefile
 ##
 #
 ### BEGIN of config part ********
@@ -453,4 +457,9 @@ if [ "$makeMYSQLtables" = "True" ] ; then
     echo "type password 2 create mysql tables, existing tables will be OVERWRITTEN"
     echo "type ctrl -d to abort"
     mysql -u $MYSQLUSER -p $MYSQLDB -h $MYSQLHOST < $FREVA/scripts/database/create_tables_20151214.sql    
+fi
+
+if [ "$makeTests" = "True" ];then
+
+    cd $FREVA/src/evaluation_system && make test
 fi
