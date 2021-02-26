@@ -13,13 +13,14 @@ makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
 GitBranch=update_tests
+makeTests=True
 ##########
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="conda configparser numpy=1.9.3 pypdf2 'django>=1.8,<1.9' pip libnetcdf cdo nco netcdf4 pytest ipython"
+CONDA_PKGS="cdo conda configparser coverage 'django>=1.8,<1.9' ipython libnetcdf mysql-python nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env python-cdo"
 PYTHONVERSION="3.7"
-PIP_PKGS="pymysql pytest-env coverage"
+PIP_PKGS=""
 ##########
 
 ###########
