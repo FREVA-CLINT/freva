@@ -6,10 +6,10 @@
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
 Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE
 # SWITCHES
-makeOwnPython=False
-makeFreva=False
-makeConfig=False
-makeStartscript=False
+makeOwnPython=True
+makeFreva=True
+makeConfig=True
+makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
 GitBranch=update_tests
