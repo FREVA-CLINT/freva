@@ -18,7 +18,7 @@ makeTests=True
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="cdo conda configparser coverage 'django>=1.8,<1.9' git gitpython ipython libnetcdf mysqlclient nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env python-cdo"
+CONDA_PKGS="cdo conda configparser 'django>=1.8,<1.9' git gitpython ipython libnetcdf mysqlclient nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
 PYTHONVERSION="3.7"
 PIP_PKGS=""
 ##########
@@ -111,7 +111,7 @@ if [ "$makeConfig" = "True" ] ; then
 admins=$ADMINS
 
 project_name=$NameYourEvaluationSystem
-project_website=$PROJECTWEBSITE 
+project_website=$PROJECTWEBSITE
 
 #: The name of the directory storing the evaluation system (output, configuration, etc)
 base_dir=$NameYourEvaluationSystem
@@ -122,7 +122,7 @@ base_dir=$NameYourEvaluationSystem
 base_dir_location=$USERRESULTDIR
 
 #: work directory for the SLURM scheduler
-#: when empty, the configuration will be read from User-object 
+#: when empty, the configuration will be read from User-object
 scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=$DBDIR/slurm
 scheduler_command=$SLURMCOMMAND
@@ -172,7 +172,7 @@ number_of_processes = 6
 db.host=$MYSQLHOST
 db.user=$MYSQLUSER
 db.passwd=$MYSQLPASSWD
-db.db=$MYSQLDB 
+db.db=$MYSQLDB
 
 
 #group for external users
@@ -292,8 +292,8 @@ class DRSFile(object):
          "defaults": {}
          },
          # ADDMORE
- 
-             }   
+
+             }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
 root_dir
@@ -371,7 +371,7 @@ proc ModulesHelp { } {
 #help function to show user help when loading module
 proc show_info {}  {
     puts stderr {
-$NameYourEvaluationSystem by Freva 
+$NameYourEvaluationSystem by Freva
 Available commands:
   --plugin       : Applies some analysis to the given data.
   --history      : provides access to the configuration history
@@ -395,7 +395,7 @@ if { \$curMode eq "load" } {
 	if { \$shell == "bash" || \$shell == "sh" } {
 		        puts ". \$PATH2FREVA/etc/autocomplete.bash;"
 			puts stderr "\$PROJECT Evaluation System by Freva successfully loaded."
-			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser 
+			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser
 by hitting tab as usual."
 			puts stderr "For more help/information check: $PROJECTINFO"
 			show_info
@@ -403,7 +403,7 @@ by hitting tab as usual."
 		puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
 		puts stderr "And load it again -> module load evaluation_system"
 		puts stderr "Your shell now: \$shell"
-		}    
+		}
 } elseif { \$curMode eq "remove" } {
 	puts stderr "\$PROJECT Evaluation System successfully unloaded."
 }
@@ -424,11 +424,11 @@ setenv PYTHON_EGG_CACHE "/tmp"
 # SET PYTHON ALIAS BECAUSE OF LOADING BUG
 set-alias python \$PATH2PYTHON/bin/python
 EOF
-    
+
 fi
 
 if [ "$makeSOLRSERVER" = "True" ] ; then
-    [[ ! -e "${CONFIGDIR}/evaluation_system.conf" ]] && echo "not found -> ${CONFIGDIR}/evaluation_system.conf" && exit 
+    [[ ! -e "${CONFIGDIR}/evaluation_system.conf" ]] && echo "not found -> ${CONFIGDIR}/evaluation_system.conf" && exit
     [[ ! -e "${FREVA}/etc/evaluation_system.conf" ]] && echo "not found -> ${FREVA}/etc/evaluation_system.conf" && exit
     [[ ! -e "$FREVA/etc/getvar_conf.sh" ]] && echo "not found -> $FREVA/etc/getvar_conf.sh" && exit
     mkdir -m 777 -p $($FREVA/etc/getvar_conf.sh solr.incoming)
@@ -456,7 +456,7 @@ if [ "$makeMYSQLtables" = "True" ] ; then
     echo "When no error occurs, and bash asks for the MYSQL password..."
     echo "type password 2 create mysql tables, existing tables will be OVERWRITTEN"
     echo "type ctrl -d to abort"
-    mysql -u $MYSQLUSER -p $MYSQLDB -h $MYSQLHOST < $FREVA/scripts/database/create_tables_20151214.sql    
+    mysql -u $MYSQLUSER -p $MYSQLDB -h $MYSQLHOST < $FREVA/scripts/database/create_tables_20151214.sql
 fi
 
 if [ "$makeTests" = "True" ];then
