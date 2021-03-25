@@ -311,11 +311,11 @@ def dummy_settings_single(dummy_env):
         settings.configure(**SETTINGS)
     except RuntimeError:
         pass
-    django.setup()
+    #django.setup()
     from evaluation_system.misc import config
     yield config
     config.reloadConfiguration()
-
+    django.setup()	
 
 
 @pytest.fixture(scope='session')
@@ -325,7 +325,11 @@ def dummy_settings(dummy_env):
     SETTINGS = {}
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages'
+        #'django.contrib.flatpages',
+        #'django.contrib.messages',
+	'django.contrib.contenttypes',
+        #'django.contrib.sessions',
+	'django.contrib.sites'
     )
     SETTINGS['DATABASES'] = {
         'default': {
@@ -333,6 +337,7 @@ def dummy_settings(dummy_env):
             'NAME': str(local_db)
         }
     }
+    #django.setup()
     try:
         settings.configure(**SETTINGS)
     except RuntimeError:
