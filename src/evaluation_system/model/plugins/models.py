@@ -9,7 +9,7 @@ class ToolPullRequest(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     tool = models.CharField(max_length=50)
     tagged_version = models.CharField(max_length=50)
-    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     STATUS = [('waiting', 'waiting'), ('processing', 'processing'), ('success', 'success'), ('failed', 'failed')]
     status = models.CharField(max_length=10, choices=STATUS)
 
