@@ -2,11 +2,12 @@
 #
 #
 SHELL := /bin/bash
-$(shell cat ../../../misc4freva/loadscripts/loadfreva.source|grep -v autocomplete|grep -v ^freva > .include)
+$(shell cat ../misc4freva/loadscripts/loadfreva.source|grep -v autocomplete|grep -v ^freva > .include)
 include .include
 export $(shell sed 's/=.*//' .include)
 test:
 	rm -f .include
-	python3 -m coverage run --source=$(PWD) -m pytest -vv $(PWD)/tests
-	python3 -m coverage html -d ../../public --omit='external/*,fuse/*'
-	python3 -m coverage report --omit='external/*,fuse/*' -m
+	python3 -m pytest -vv \
+	    --cov=$(PWD) --cov-report=html:public --cov-report term-missing \
+	    --html test_results.html --self-contained-html \
+		$(PWD)/src/evaluation_system/tests
