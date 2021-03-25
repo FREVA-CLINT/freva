@@ -8,4 +8,4 @@
 #but let the git configure files through
 !.git*
 public/
-test_results.html
+test_results/

@@ -9,5 +9,5 @@ test:
 	rm -f .include
 	python3 -m pytest -vv \
 	    --cov=$(PWD) --cov-report=html:public --cov-report term-missing \
-	    --html test_results.html --self-contained-html \
+	    --html test_results/index.html \
 		$(PWD)/src/evaluation_system/tests
