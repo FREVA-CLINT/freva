@@ -16,9 +16,26 @@ def test_infer_type(dummy_env):
                                                   String,
                                                   ValidationError)
     assert ParameterType.infer_type(1).__class__ == Integer
-    assert ParameterType.infer_type(1.0).__class__ == Float 
+    assert ParameterType.infer_type(1.0).__class__ == Float
     assert ParameterType.infer_type('str').__class__ == String
-    assert ParameterType.infer_type(True).__class__ == Bool    
+    assert ParameterType.infer_type(True).__class__ == Bool
+    assert ParameterType.infer_type(str).__class__ == String
+    with pytest.raises(ValueError):
+        assert ParameterType.infer_type(type(str))
+
+def test_parameter_type(dummy_env):
+    from evaluation_system.api.parameters import String, ValidationError
+    with pytest.raises(ValidationError):
+        String(name='foo', max_items=0)
+    s_type = String(name='foo', default='foo;bar',
+                    mandatory=True, max_items=2, item_separator=';')
+    assert s_type.str('foo;bar') == 'foo;bar'
+    assert s_type.str(['foo', 'bar']) == 'foo;bar'
+    s_type.item_separator = None
+    assert s_type.str(['foo', 'bar']) == '["foo", "bar"]'
+    assert s_type.parse('["foo"]') == ['foo']
+    assert s_type.parse('foo') == ['foo']
+    assert s_type.__str__() == s_type.get_type() == 'String'
 
 def test_parsing(dummy_env):
     from evaluation_system.api.parameters import (String, Integer, Float,
@@ -93,18 +110,23 @@ def test_parsing(dummy_env):
                         case_type.parse(unparseable)
 
 def test_parameters_dictionary(dummy_env):
-    from evaluation_system.api.parameters import (String, ParameterDictionary)
+    from evaluation_system.api.parameters import (String, ParameterDictionary,
+                                                  ValidationError)
 
     p1 = String(name='param1', default='default default 1')
     p2 = String(name='param2', default='default default 2',
                 max_items=3, item_separator=':')
     assert p2.parse('a:b:C') == ['a', 'b', 'C']
-
-    p_dict = ParameterDictionary(p1,p2)
+    with pytest.raises(ValueError):
+        ParameterDictionary(p1, p2, p2)
+    p_dict = ParameterDictionary(p1, p2)
+    assert p_dict.__str__().startswith('ParameterDictionary(param1<String>: default default 1, param2<String>:')
     assert len(p_dict) == 2
     assert p1.name in p_dict and p_dict[p1.name] == p1.default
     assert p2.name in p_dict and p_dict[p2.name] == p2.default
     assert len(p_dict.parameters()) == 2
+    with pytest.raises(ValidationError):
+        p_dict.get_parameter('pram1')
     # TODO: Fix error
     # self.assertEquals(p_dict.get_parameter(p1.name), p1)
     # self.assertEquals(p_dict.get_parameter(p2.name), p2)
@@ -144,7 +166,12 @@ def test_parse_arguments(dummy_env):
     res = p_dict.parseArguments("int=1 date=1 bool=1".split(),
                                 use_defaults=True)
     assert res == dict(int=1, date='1', bool=True, file='/tmp/file1')
-
+    p_dict2 = ParameterDictionary(Bool(name='init'),
+                                  Integer(name='num', default=2,
+                                          item_separator=',',
+                                          max_items=1))
+    assert p_dict2.parseArguments('init=0') == dict(init=False)
+    assert p_dict2.parseArguments(['num=0','num=1', 'init=0'], check_errors=False) == dict(num=[0, 1], init=False)
     res = p_dict.parseArguments(
         "int=1 date=1 bool=1 range=1:5".split(),
         use_defaults=True, complete_defaults=True
@@ -216,6 +243,8 @@ def test_defaults(dummy_env):
     Float(name='a', default="1.2e-2")
     Integer(name='a', default='1232')
     Range(name='a', default='1:5:100')
+    ra = Range(name='a', default='1, 2')
+    assert ra.str([1, 2]) == '[1, 2]'
     p_dict = ParameterDictionary(File(name='file', default='/tmp/file1',
                                       mandatory=True, max_items=2,
                                       item_separator=':'),
