@@ -44,36 +44,23 @@ $: make test
 ```
 
 ### Uploading code coverage results
-Gitlab pages seems not to work at the moment. For the time being we can try
-to upload the code coverage report to a swift container. To do that change into
-the `$Pth2Eva/$NameYourEvaluationSystem` directory and load the drkz `swift` module
-
+The test coverage report is uploaded to a swift cloud object container, where it can be displayed in html format. 
+To upload the test coverage report simply do a
 ```bash
-$: module load swift
+$: make upload
 ```
 
-The target container should is located in the *ch1187* project. If you are prompted
-that your token has expired renew it by
+The target container should is located in the *ch1187* project. To upload the content to the cloud container you'll have to give you password.
+You also have to be member of the group *ch1187*.
+
+You should then be able to inspect the results on the [public folder](https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/freva-dev/public/index.html)
+and the [test_results folder](https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/freva-dev/test_results/index.html) of the swift browser.
+
+
+*Note:* The command
 
 ```bash
-$: swift-token new
+$: make
 ```
 
-and choose *ch1187* as account, followed by your login credentials.
-
-To upload the test report simply type
-
-```bash
-$: swift upload freva-dev public
-```
-
-You should then be able to inspect the results on the [public swift browser](https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/freva-dev/public/index.html)
-
-You can also upload the test results in html format via
-
-```bash
-$: swift upload freva-dev test_results
-```
-
-and access it at
-https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/freva-dev/test_results/index.html
+(without test or upload) will execute both, creating the tests and uploading the results.
