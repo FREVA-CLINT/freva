@@ -224,16 +224,16 @@ def temp_user(dummy_settings):
 def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user):
 
     from django.contrib.auth.models import User
-    User.objects.filter(username='dummy_user').delete()
-    user_entry = namedtuple('dummy_user', ['user', 'row_id'])
+    User.objects.filter(username='test_user2').delete()
+    user_entry = namedtuple('test_user2', ['user', 'row_id'])
     user_entry.user = temp_user
     user_entry.row_id = temp_user.getUserDB().storeHistory(
         dummy_plugin,
-        config_dict, 'user',
+        config_dict, 'test_user2',
         dummy_history.processStatus.not_scheduled,
         caption='My caption')
     yield user_entry
-    User.objects.filter(username='dummy_user').delete()
+    User.objects.filter(username='test_user2').delete()
 
 
 
@@ -299,7 +299,9 @@ def dummy_settings_single(dummy_env):
     SETTINGS = {}
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages'
+        'django.contrib.flatpages',
+	'django.contrib.contenttypes',
+	'django.contrib.sites'
     )
     SETTINGS['DATABASES'] = {
         'default': {
@@ -325,7 +327,9 @@ def dummy_settings(dummy_env):
     SETTINGS = {}
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages'
+        'django.contrib.flatpages',
+	'django.contrib.contenttypes',
+	'django.contrib.sites'
     )
     SETTINGS['DATABASES'] = {
         'default': {
