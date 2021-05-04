@@ -11,6 +11,7 @@ try:
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.flatpages',
 	'django.contrib.auth',  # We need this to access user groups
+        'django.contrib.sites'
     )
     SETTINGS['DATABASES'] = {
         'default': {
