@@ -334,7 +334,7 @@ def hist_obj():
     config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
-def freva_lib():
+def freva_lib(dummy_env, dummy_settings):
     sys.dont_write_bytecode = True
     freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
     Freva = import_path(freva_bin)
