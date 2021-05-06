@@ -295,58 +295,15 @@ def dummy_cmd(dummy_settings):
 @pytest.fixture(scope='module')
 def dummy_settings_single(dummy_env):
     # Application definition
-    local_db = Path(__file__).absolute().parent / 'local.db'
-    SETTINGS = {}
-    SETTINGS['INSTALLED_APPS'] = (
-        'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages',
-	'django.contrib.contenttypes',
-	'django.contrib.sites'
-    )
-    SETTINGS['DATABASES'] = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(local_db)
-        }
-    }
-    try:
-        settings.configure(**SETTINGS)
-    except RuntimeError:
-        pass
-    #django.setup()
+    import evaluation_system.settings.database
     from evaluation_system.misc import config
     yield config
     config.reloadConfiguration()
-    django.setup()	
-
 
 @pytest.fixture(scope='session')
 def dummy_settings(dummy_env):
-    # Application definition
-    local_db = Path(__file__).absolute().parent / 'local.db'
-    SETTINGS = {}
-    SETTINGS['INSTALLED_APPS'] = (
-        'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages',
-        'django.contrib.contenttypes',
-        #'django.contrib.flatpages',
-        #'django.contrib.messages',
-        #'django.contrib.sessions',
-        #'django.contrib.sites'
-    )
-    SETTINGS['DATABASES'] = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(local_db)
-        }
-    }
-    #django.setup()
-    try:
-        settings.configure(**SETTINGS)
-    except RuntimeError:
-        pass
-    django.setup()
     from evaluation_system.misc import config
+    import evaluation_system.settings.database
     yield config
     config.reloadConfiguration()
 
