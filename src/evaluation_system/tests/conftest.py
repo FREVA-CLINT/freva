@@ -327,16 +327,12 @@ def dummy_settings(dummy_env):
     SETTINGS = {}
     SETTINGS['INSTALLED_APPS'] = (
         'django.contrib.auth',  # We need this to access user groups
-<<<<<<< HEAD
         'django.contrib.flatpages',
-	'django.contrib.contenttypes',
-=======
+        'django.contrib.contenttypes',
         #'django.contrib.flatpages',
         #'django.contrib.messages',
-	'django.contrib.contenttypes',
         #'django.contrib.sessions',
->>>>>>> 81c110359437db30b277393ced3cb5fc272a71ba
-	'django.contrib.sites'
+        #'django.contrib.sites'
     )
     SETTINGS['DATABASES'] = {
         'default': {
