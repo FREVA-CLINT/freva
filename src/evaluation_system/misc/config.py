@@ -145,7 +145,7 @@ performed."""
                                  _DEFAULT_CONFIG_FILE_LOCATION)
 
     #print os.environ.get('EVALUATION_SYSTEM_CONFIG_FILE', None), 'the config file'
-    log.debug("Loading configuration file from: %s", config_file)
+    log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
         config_parser = ConfigParser()
         with open(config_file, 'r') as fp:
@@ -189,7 +189,6 @@ will be thrown. If not the default value is returned.
 :return: the value associated with the given property, the default one 
 if not found or an exception is thrown if no default is provided.
 """
-        
     if config_prop in _config:
         return _config[config_prop]
     elif default != _nothing:
