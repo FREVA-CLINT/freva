@@ -12,7 +12,7 @@ makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
-GitBranch=update_tests
+GitBranch=Django_test
 makeTests=True
 ##########
 #PYTHON AREA
