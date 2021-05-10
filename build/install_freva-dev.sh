@@ -18,8 +18,8 @@ makeTests=True
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="cdo conda configparser django git gitpython ipython libnetcdf mysqlclient nco netcdf4 numpy pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
-PYTHONVERSION="3.7"
+CONDA_PKGS="cdo conda configparser django ffmpeg git gitpython ipython imagemagick libnetcdf mysqlclient nco netcdf4 numpy pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
+PYTHONVERSION="3.9"
 PIP_PKGS="pytest-html"
 ##########
 
