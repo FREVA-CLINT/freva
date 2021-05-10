@@ -31,7 +31,7 @@ def test_auto_doc(stdout, prog_name, dummy_settings):
  -h, --help   show this help message and exit
  --path=PATH  crawl the given directory
  '''
-     assert similar_string(doc_str, target_str) is True
+     assert similar_string(doc_str, target_str, thresh=.5) is True
 
 def test_crawl_my_data(stdout, dummy_settings):
     from evaluation_system.commands.crawl_my_data import Command
