@@ -63,7 +63,7 @@ def test_get_history(dummy_user, dummy_plugin, config_dict):
     history = dummy_user.user.getUserDB().getHistory()
     assert history.count() == 5
     history = dummy_user.user.getUserDB().getHistory(uid='user')
-    assert history.count() == 3
+    assert history.count() == 2
     history = dummy_user.user.getUserDB().getHistory(uid='user',
                                                      tool_name='dummyplugin',
                                                      limit=2)
