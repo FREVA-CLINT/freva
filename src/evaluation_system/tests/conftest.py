@@ -2,6 +2,7 @@ from collections import namedtuple
 from datetime import datetime
 from django.conf import settings
 import django
+from getpass import getuser
 from io import StringIO
 import importlib
 import json
@@ -163,6 +164,19 @@ def dummy_solr(dummy_env, dummy_settings):
         pass
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
+
+@pytest.fixture(scope='module')
+def django_user(dummy_settings, dummy_env):
+
+    from django.contrib.auth.models import User
+    from evaluation_system.model.history.models import History
+    from django.contrib.auth.models import User
+    user_django, created = User.objects.get_or_create(username=getuser())
+    yield user_django
+    User.objects.filter(username=getuser()).delete()
+    History.objects.all().delete()
+
+
 @pytest.fixture(scope='module')
 def dummy_config(dummy_env, dummy_settings_single):
 
@@ -217,7 +231,8 @@ def test_user(dummy_env, dummy_settings, config_dict):
 @pytest.fixture(scope='function')
 def temp_user(dummy_settings):
     from evaluation_system.tests.mocks.dummy import DummyUser
-    with DummyUser(random_home=True, pw_name='someone') as user:
+    import evaluation_system.api.plugin_manager as pm
+    with DummyUser(random_home=True, pw_name=getuser()) as user:
         yield user
 
 @pytest.fixture(scope='function')
@@ -344,7 +359,7 @@ def freva_lib(dummy_env, dummy_settings):
 
 @pytest.fixture(scope='module')
 def prog_name():
-    return Path(sys.argv[0]).name
+    return Path(' '.join(sys.argv[:])).name
 
 @pytest.fixture(scope='module')
 def stderr():
