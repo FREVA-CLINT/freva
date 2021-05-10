@@ -26,6 +26,6 @@ SETTINGS['DATABASES'] = {
 }
 try:
     settings.configure(**SETTINGS)
+    django.setup()
 except RuntimeError:
     pass
-django.setup()
