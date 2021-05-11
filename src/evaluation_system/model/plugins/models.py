@@ -61,7 +61,7 @@ class Parameter(models.Model):
     #: Name of the tool
     tool = models.CharField(max_length=50)
     #: Version of the tool
-    version = models.IntegerField(max_length=4)
+    version = models.IntegerField()
     #: mandatory
     mandatory = models.BooleanField()
     #: default value
@@ -71,8 +71,7 @@ class Parameter(models.Model):
                       (Impact.affects_plots, 'Parameter affects plots'),
                       (Impact.no_effects, 'No effects on output'),)
     
-    impact = models.IntegerField(max_length = 1,
-                                 choices = IMPACT_CHOICES,
+    impact = models.IntegerField(choices = IMPACT_CHOICES,
                                  default = Impact.affects_values)
 
     def __str__(self):

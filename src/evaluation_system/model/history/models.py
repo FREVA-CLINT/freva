@@ -84,9 +84,9 @@ class History(models.Model):
                             to_field='username',
                             db_column='uid')
     #: Status (scheduled, running, finished, cancelled)
-    status = models.IntegerField(max_length=1, choices=STATUS_CHOICES)
+    status = models.IntegerField(choices=STATUS_CHOICES)
     #: Flag (deleted, private, shared, public)
-    flag = models.IntegerField(max_length=1, choices=FLAG_CHOICES, default=Flag.public)
+    flag = models.IntegerField(choices=FLAG_CHOICES, default=Flag.public)
     # User defined caption for the analysis
     caption = models.CharField(max_length=255, blank=True, null=True)
 
@@ -294,7 +294,7 @@ class Result(models.Model):
     #: path to preview file
     preview_file = models.TextField(default='')
     #: specification of a file type 
-    file_type = models.IntegerField(max_length=2, choices=FILE_TYPE_CHOICES)
+    file_type = models.IntegerField(choices=FILE_TYPE_CHOICES)
     
     class Meta:
         """
@@ -336,7 +336,7 @@ class ResultTag(models.Model):
     #: result id
     result_id = models.ForeignKey(Result,on_delete=models.CASCADE)
     #: specification of a file type 
-    type = models.IntegerField(max_length=2, choices=TYPE_CHOICES)
+    type = models.IntegerField(choices=TYPE_CHOICES)
     #: path to the output file
     text = models.TextField()
 
@@ -363,7 +363,7 @@ class HistoryTag(models.Model):
     #: result id
     history_id = models.ForeignKey(History,on_delete=models.CASCADE)
     #: specification of a file type
-    type = models.IntegerField(max_length=2,choices=TYPE_CHOICES)
+    type = models.IntegerField(choices=TYPE_CHOICES)
     #: path to the output file
     text = models.TextField()
     #: the user, who tagged the history entry
