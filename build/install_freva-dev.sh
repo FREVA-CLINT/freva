@@ -12,7 +12,7 @@ makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
-GitBranch=Django_test
+GitBranch=Django_tests
 makeTests=True
 ##########
 #PYTHON AREA
@@ -461,5 +461,5 @@ fi
 
 if [ "$makeTests" = "True" ];then
 
-    cd $FREVA/src/evaluation_system && make test
+    cd $FREVA && make
 fi
