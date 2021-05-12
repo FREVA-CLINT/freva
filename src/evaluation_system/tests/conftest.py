@@ -242,15 +242,16 @@ def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_histo
 
     from django.contrib.auth.models import User
     User.objects.filter(username='test_user2').delete()
-    user_entry = namedtuple('test_user2', ['user', 'row_id'])
+    user_entry = namedtuple('test_user2', ['user', 'row_id', 'username'])
     user_entry.user = temp_user
+    user_entry.username = 'test_user2'
     user_entry.row_id = temp_user.getUserDB().storeHistory(
         dummy_plugin,
-        config_dict, 'test_user2',
+        config_dict, user_entry.username,
         dummy_history.processStatus.not_scheduled,
         caption='My caption')
     yield user_entry
-    User.objects.filter(username='test_user2').delete()
+    User.objects.filter(username=user_entry.username).delete()
 
 
 
