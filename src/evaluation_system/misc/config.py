@@ -144,7 +144,6 @@ performed."""
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                                  _DEFAULT_CONFIG_FILE_LOCATION)
 
-    #print os.environ.get('EVALUATION_SYSTEM_CONFIG_FILE', None), 'the config file'
     log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
         config_parser = ConfigParser()
