@@ -9,6 +9,7 @@ import os
 import tempfile
 import shutil
 import logging
+from getpass import getuser
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -142,10 +143,14 @@ def test_create_user(dummy_user):
 
 def test_create_user_crawl(dummy_user):
     from evaluation_system.model.solr_models.models import UserCrawl
-    dummy_user.user.getUserDB().create_user_crawl('/some/test/folder', 'user')
+    from django.contrib.auth.models import User
+    dummy_user.user.getUserDB().createUser('new_user', 'test@test.de', 't', 'u')
+    dummy_user.user.getUserDB().create_user_crawl('/some/test/folder',
+                                                  'new_user')
     assert UserCrawl.objects.filter(status='waiting',
                                     path_to_crawl='/some/test/folder').exists()
     UserCrawl.objects.all().delete()
+    User.objects.filter(username='new_user').delete()
 
 def test_timestamp_to_string():
     from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
