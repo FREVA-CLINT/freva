@@ -4,7 +4,7 @@ from evaluation_system.misc import config
 import json, time
 import django
 
-SETTINGS = dict(TIME_ZONE='UTC', USE_TZ=True)
+SETTINGS = dict(TIME_ZONE='UTC', USE_TZ=False)
 
 # Application definition
 SETTINGS['INSTALLED_APPS'] = (
