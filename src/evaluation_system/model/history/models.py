@@ -32,7 +32,7 @@ class History(models.Model):
         broken             - an exception occurred
         not_scheduled      - an error occurred during scheduling
         """
-        finished, finished_no_output, broken, running, scheduled, not_scheduled = range(6)
+        finished, finished_no_output, broken, running, scheduled, not_scheduled = list(range(6))
         
     class Flag:
         """
