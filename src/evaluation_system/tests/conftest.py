@@ -71,8 +71,10 @@ def dummy_env():
     test_conf = Path(__file__).absolute().parent / 'test.conf'
     env = os.environ.copy()
     os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(test_conf)
+    from evaluation_system.misc import config
+    config.reloadConfiguration()
     yield os.environ
-    os.environ = env
+    #os.environ = env
 
 @pytest.fixture(scope='module')
 def dummy_pr(dummy_env, dummy_settings):
