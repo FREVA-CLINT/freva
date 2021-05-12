@@ -16,7 +16,7 @@ DUMMY_USER = {'pw_name':'someone'}
 from evaluation_system.tests import runCmd
 
 
-def test_dummy_user(temp_user, dummy_settings):
+def test_dummy_user(temp_user, dummy_settings, dummy_env):
     """Be sure the dummy user is created as expected"""
     dummy_name='non-existing name'
     from evaluation_system.model.user import User
@@ -83,7 +83,7 @@ def test_getters(dummy_settings, dummy_env):
     finally:
         config.reloadConfiguration()
     
-def test_directory_creation(temp_user):
+def test_directory_creation(temp_user, dummy_env):
     """
     This tests assures we always know what is being created 
     in the framework directory
@@ -105,7 +105,7 @@ def test_directory_creation(temp_user):
         for directory in created_dirs:
             assert os.path.isdir(directory)
 
-def test_directory_creation2(temp_user):
+def test_directory_creation2(temp_user, dummy_env):
     try:
 
         testUser = temp_user
@@ -118,7 +118,7 @@ def test_directory_creation2(temp_user):
         assert os.path.isdir(dir1)
     finally:
         shutil.rmtree(Path(temp_user.getUserBaseDir()).parent)
-def test_central_directory_Creation(temp_dir, dummy_settings):
+def test_central_directory_Creation(temp_dir, dummy_settings, dummy_env):
     from evaluation_system.tests.mocks.dummy import DummyUser
     from evaluation_system.misc import config
     try:
