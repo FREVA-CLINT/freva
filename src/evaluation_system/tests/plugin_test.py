@@ -135,7 +135,7 @@ def test_read_config_parser(dummy_plugin):
     from io import StringIO
     conf = ConfigParser()
     conf_str = "[DummyPlugin]\na=42\nb=text"
-    conf.readfp(StringIO(conf_str))
+    conf.read_file(StringIO(conf_str))
     dummy = dummy_plugin
     # check parsing
     for d, res_d in [([Integer(name='a')], dict(a=42)),
