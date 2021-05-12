@@ -8,7 +8,7 @@ export $(shell sed 's/=.*//' .include)
 all: test upload
 test:
 	rm -f .include
-	python3 -m pytest -vv \
+	pytest -vv \
 	    --cov=$(PWD)/src/evaluation_system --cov-report=html:public --cov-report term-missing \
 	    --html test_results/index.html \
 		$(PWD)/src/evaluation_system/tests
