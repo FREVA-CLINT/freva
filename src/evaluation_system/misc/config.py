@@ -5,7 +5,7 @@ This module manages the central configuration of the system.
 '''
 import os
 import logging
-from configparser import SafeConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
@@ -144,12 +144,11 @@ performed."""
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                                  _DEFAULT_CONFIG_FILE_LOCATION)
 
-    #print os.environ.get('EVALUATION_SYSTEM_CONFIG_FILE', None), 'the config file'
-    log.debug("Loading configuration file from: %s", config_file)
+    log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
-        config_parser = SafeConfigParser()
+        config_parser = ConfigParser()
         with open(config_file, 'r') as fp:
-            config_parser.readfp(fp)
+            config_parser.read_file(fp)
             if not config_parser.has_section(CONFIG_SECTION_NAME):
                 raise ConfigurationException(("Configuration file is missing section %s.\n"
                     + "For Example:\n[%s]\nprop=value\n...") \
@@ -189,7 +188,6 @@ will be thrown. If not the default value is returned.
 :return: the value associated with the given property, the default one 
 if not found or an exception is thrown if no default is provided.
 """
-        
     if config_prop in _config:
         return _config[config_prop]
     elif default != _nothing:
@@ -231,7 +229,7 @@ def keys():
     return _config.keys()
 
 def get_section(section_name):
-    conf = SafeConfigParser()
+    conf = ConfigParser()
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                                  _DEFAULT_CONFIG_FILE_LOCATION)
     conf.read(config_file)

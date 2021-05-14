@@ -14,6 +14,7 @@ We define two cores::
 import os
 import shutil
 import urllib
+import urllib.request
 import json
 from datetime import datetime
 import logging
@@ -104,8 +105,8 @@ get downloaded from Solr)"""
         query = self.core_url + endpoint
         if self.echo:
             log.debug(query)
-        
-        req = urllib.request.Request(query, json.dumps(list_of_dicts))
+        post_data = json.dumps(list_of_dicts).encode('ascii')
+        req = urllib.request.Request(query, post_data)
         req.add_header("Content-type", "application/json")
 
         return urllib.request.urlopen(req).read()
@@ -129,8 +130,8 @@ get downloaded from Solr)"""
         if self.echo:
             log.debug(query)
         
-        req = urllib2.Request(query)
-        response = json.loads(urllib2.urlopen(req).read())
+        req = urllib.request.Request(query)
+        response = json.loads(urllib.request.urlopen(req).read())
         if response['responseHeader']['status'] != 0:
             raise Exception("Error while accessing Core %s. Response: %s" % (self.core, response))
         
@@ -141,21 +142,22 @@ get downloaded from Solr)"""
 dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
         return self.get_json('admin/luke')['fields']
     
-    def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml'):
+    def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml', check_if_exist=True):
         """Creates (actually "register") this core. The Core configuration and directories must
 be generated beforehand (not the data one). You may clone an existing one or start from scratch.
 
 :param instance_dir: main directory for this core
 :param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
 :param config: The configuration file (expected in instance_dir/conf)
-:param schema: The schema file (expected in instance_dir/conf)"""
+:param schema: The schema file (expected in instance_dir/conf)
+:param check_if_exist: check for the existence of the instance directorie"""
         # check basic configuration (it must exists!)
         if instance_dir is None and self.instance_dir is None:
-            raise Exception("No Instance directory defined!")
+            raise ValueError("No Instance directory defined!")
         elif instance_dir is not None:
             self.instance_dir = instance_dir
-        if not os.path.isdir(self.instance_dir):
-            raise Exception("Expected Solr Core configuration not found in %s" % self.instance_dir)
+        if not os.path.isdir(self.instance_dir) and check_if_exist:
+            raise FileNotFoundError("Expected Solr Core configuration not found in %s" % self.instance_dir)
         
         if data_dir is not None:
             self.data_dir = data_dir
@@ -243,17 +245,12 @@ later on normally this is too slow for this phase, so the default is False.
  Most of the times there are many files being found that are no data at all."""
 
         log.debug('starting sequential ingest')
-
+        open_method, mode = open, 'w'
         if dump_file.endswith('.gz'):
             # print "Using gzip"
             import gzip
-            # the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
-            # Let's leave this python 2.6 compatible...
-            f = gzip.open(dump_file, 'wb')
-        else:
-            f = open(dump_file, 'w')
-
-        try:
+            open_method, mode = gzip.open, 'wt'
+        with open_method(dump_file, mode) as f:
             batch_count = 0
             
             # store metadata
@@ -276,8 +273,6 @@ later on normally this is too slow for this phase, so the default is False.
                 batch_count += 1
                 if batch_count >= batch_size:
                     f.flush()
-        finally:
-            f.close()
 
     @staticmethod
     def load_fs_from_file(dump_file, batch_size=10000, abort_on_errors=False, core_all_files=None, core_latest=None):
@@ -298,22 +293,16 @@ be used, using the configuration from the config file).
 :param core_latest: if desired you can pass the SolrCore managing the latest file versions (if not the one named
 'latest' will be used, using the configuration from the config file).
 """
-        
+        open_method, mode = open, 'r'
         if dump_file.endswith('.gz'):
             # print "Using gzip"
             import gzip
-            # the with statement support started with python 2.7 (http://docs.python.org/2/library/gzip.html)
-            # Let's leave this python 2.6 compatible...
-            f = gzip.open(dump_file, 'rb')
-        else:
-            f = open(dump_file, 'r')
-
+            open_method, mode = gzip.open, 'rt'
         if core_latest is None:
             core_latest = SolrCore(core='latest')
         if core_all_files is None:
             core_all_files = SolrCore(core='files')
-        
-        try:
+        with open_method(dump_file, mode) as f:
             batch_count = 0
             batch = []
             batch_latest = []
@@ -395,8 +384,6 @@ be used, using the configuration from the config file).
                     core_latest.post(batch_latest)
                     batch_latest = []
                 
-        finally:
-            f.close()
     
     @staticmethod
     def to_solr_dict(drs_file):

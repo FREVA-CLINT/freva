@@ -8,7 +8,9 @@ esgf - Command to access esgf data
 @contact:    sebastian.illing@met.fu-berlin.de
 """
 
+from pathlib import Path
 import sys
+
 from evaluation_system.commands import FrevaBaseCommand
 from evaluation_system.model.esgf import P2P
 
@@ -88,7 +90,9 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
         p2p = P2P()
     
         if download_file:
-            with open(download_file, 'w') as f:
+            download_file = Path(download_file)
+            download_file.touch(0o755)
+            with download_file.open('bw') as f:
                 f.write(p2p.get_wget(**facets))
                 print(f"Download script successfully saved to {download_file}")
                 return 0   # there's nothing more to be executed after this

@@ -4,39 +4,43 @@
 ###############
 #MAIN OPTIONS AREA
 NameYourEvaluationSystem=freva-dev #project-ces WILL BE DIRECTORY in $Path2Eva
-Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE 
+Path2Eva=$HOME/workspace/ #ROOT PATH WHERE THE PROJECTS EVALUATION SYSTEM WILL BE
 # SWITCHES
 makeOwnPython=True
 makeFreva=True
 makeConfig=True
 makeStartscript=True
-makeSOLRSERVER=True
+makeSOLRSERVER=False
 makeMYSQLtables=False
+GitBranch=Django_tests
+makeTests=True
 ##########
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="conda numpy=1.9.3 pypdf2 'django>=1.8,<1.9' pip libnetcdf cdo nco netcdf4 pytest"
-PYTHONVERSION="3.7"
-PIP_PKGS="pymysql cdo"
+CONDA_PKGS="cdo conda configparser django ffmpeg git gitpython ipython imagemagick libnetcdf mysqlclient nco netcdf4 numpy pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
+PYTHONVERSION="3.9"
+PIP_PKGS="pytest-html"
 ##########
 
 ###########
 # MAIN CONFIG-FILE AREA
 ###########
 ADMINS=b380001 #freva
-PROJECTWEBSITE=www-regiklim.dkrz.de #just for info printing
-USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user                        
-#SCHEDULER - SLURM                           
+PROJECTWEBSITE=localhost #just for info printing
+USERRESULTDIR=$HOME/workspace/freva-dev/work #/home/ or /scratch or /work WHERE USERNAME HAS ALREADY A DIRECTORY e.g. /home/user
+#SCHEDULER - SLURM
 SLURMCOMMAND=sbatch #sbatch/None
 #MYSQL
 MYSQLHOST=www-regiklim.dkrz.de #localhost
-MYSQLUSER=evaluationsystem #freva
-MYSQLPASSWD=m1kl3valus3r
-MYSQLDB=evaluationsystem #freva
+MYSQLUSER=test_user #freva
+MYSQLPASSWD=T3st
+MYSQLDB=freva_dev #freva
 #SOLR
 SOLRHOST=www-regiklim.dkrz.de #localhost
 SOLRUSER=b380001 #freva
+SOLRPORT=8989
+SOLRNAME=test_solr
 #############
 
 
@@ -85,13 +89,17 @@ if [ "$makeOwnPython" = "True" ]; then
     /tmp/anaconda.sh -p /tmp/anaconda -b -f -u
     /tmp/anaconda/bin/conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y
     let success=$?
-    rm -r /tmp/anaconda /tmp/anaconda.sh
+    rm -rf /tmp/anaconda /tmp/anaconda.sh
     [[ $success -ne 0 ]] && echo "conda create -c conda-forge -q -p $YOURPYTHON python=$PYTHONVERSION $CONDA_PKGS -y failed! EXIT" && exit 1
-    $YOURPYTHON/bin/python -m pip install $PIP_PKGS
+    if [ "$PIP_PKGS" ];then
+        $YOURPYTHON/bin/python -m pip install $PIP_PKGS
+        let success=$?
+        [[ $success -ne 0 ]] && echo "$YOURPYTHON/bin/python -m pip install $PIP_PKGS -y failed! EXIT" && exit 1
+    fi
 fi
 
 if [ "$makeFreva" = "True" ]; then
-    git clone -b freva-dev https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
+    git clone -b $GitBranch https://gitlab.dkrz.de/freva/evaluation_system.git $FREVA
 fi
 
 if [ "$makeConfig" = "True" ] ; then
@@ -103,7 +111,7 @@ if [ "$makeConfig" = "True" ] ; then
 admins=$ADMINS
 
 project_name=$NameYourEvaluationSystem
-project_website=$PROJECTWEBSITE 
+project_website=$PROJECTWEBSITE
 
 #: The name of the directory storing the evaluation system (output, configuration, etc)
 base_dir=$NameYourEvaluationSystem
@@ -114,7 +122,7 @@ base_dir=$NameYourEvaluationSystem
 base_dir_location=$USERRESULTDIR
 
 #: work directory for the SLURM scheduler
-#: when empty, the configuration will be read from User-object 
+#: when empty, the configuration will be read from User-object
 scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=$DBDIR/slurm
 scheduler_command=$SLURMCOMMAND
@@ -130,9 +138,9 @@ scratch_dir=None
 
 #: Type of directory structure that will be used to maintain state:
 #:
-#:    local   := <home>/<base_dir>... 
+#:    local   := <home>/<base_dir>...
 #:    central := <base_dir_location>/<base_dir>/<user>/...
-#:    scratch := <base_dir_location>/<user>/<base_dir>... 
+#:    scratch := <base_dir_location>/<user>/<base_dir>...
 #:
 #: (no user info in local since that is included in the home directory already)
 directory_structure_type=scratch
@@ -164,7 +172,7 @@ number_of_processes = 6
 db.host=$MYSQLHOST
 db.user=$MYSQLUSER
 db.passwd=$MYSQLPASSWD
-db.db=$MYSQLDB 
+db.db=$MYSQLDB
 
 
 #group for external users
@@ -172,9 +180,9 @@ db.db=$MYSQLDB
 
 #: Define access to the solr instance
 solr.host=$SOLRHOST
-solr.port=8989
+solr.port=$SOLRPORT
 solr.core=files
-solr.name=test_solr
+solr.name=$SOLRNAME
 solr.user=$SOLRUSER
 solr.memory=4096M
 solr.heap_size=512M
@@ -207,6 +215,7 @@ solr.backup=$DBDIR/solr/backup/
 
 
 EOF
+    rm -f ${FREVA}/etc/evaluation_system.conf
     ln -s ${CONFIGDIR}/evaluation_system.conf ${FREVA}/etc/evaluation_system.conf
 
     cat -> ${CONFIGDIR}/file.py <<EOF
@@ -283,8 +292,8 @@ class DRSFile(object):
          "defaults": {}
          },
          # ADDMORE
- 
-             }   
+
+             }
     """Describes the DRS structure of different types of data. The key values of this dictionary are:
 
 root_dir
@@ -309,9 +318,9 @@ defaults
     list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)
 """
 EOF
-    
+
     cat $FREVA/src/evaluation_system/model/bottom4filepy >> ${CONFIGDIR}/file.py
-    ln -s ${CONFIGDIR}/file.py $FREVA/src/evaluation_system/model/file.py
+#    ln -s ${CONFIGDIR}/file.py $FREVA/src/evaluation_system/model/file.py
     mkdir -p $DATA/model/global/cmip5 $DATA/crawl_my_data $DATA/reanalysis $DATA/observations
 fi
 
@@ -328,9 +337,9 @@ freva
 EOF
 
     cat -> ${STARTDIR}/loadfreva.modules <<EOF
-#%Module1.0#####################################################################          
+#%Module1.0#####################################################################
 ##
-## FREVA - Freie University Evaluation Framework modulefile
+## FREVA - Free Evaluation Framework modulefile
 ##
 #
 ### BEGIN of config part ********
@@ -362,7 +371,7 @@ proc ModulesHelp { } {
 #help function to show user help when loading module
 proc show_info {}  {
     puts stderr {
-$NameYourEvaluationSystem by Freva 
+$NameYourEvaluationSystem by Freva
 Available commands:
   --plugin       : Applies some analysis to the given data.
   --history      : provides access to the configuration history
@@ -386,7 +395,7 @@ if { \$curMode eq "load" } {
 	if { \$shell == "bash" || \$shell == "sh" } {
 		        puts ". \$PATH2FREVA/etc/autocomplete.bash;"
 			puts stderr "\$PROJECT Evaluation System by Freva successfully loaded."
-			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser 
+			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser
 by hitting tab as usual."
 			puts stderr "For more help/information check: $PROJECTINFO"
 			show_info
@@ -394,7 +403,7 @@ by hitting tab as usual."
 		puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
 		puts stderr "And load it again -> module load evaluation_system"
 		puts stderr "Your shell now: \$shell"
-		}    
+		}
 } elseif { \$curMode eq "remove" } {
 	puts stderr "\$PROJECT Evaluation System successfully unloaded."
 }
@@ -415,11 +424,11 @@ setenv PYTHON_EGG_CACHE "/tmp"
 # SET PYTHON ALIAS BECAUSE OF LOADING BUG
 set-alias python \$PATH2PYTHON/bin/python
 EOF
-    
+
 fi
 
 if [ "$makeSOLRSERVER" = "True" ] ; then
-    [[ ! -e "${CONFIGDIR}/evaluation_system.conf" ]] && echo "not found -> ${CONFIGDIR}/evaluation_system.conf" && exit 
+    [[ ! -e "${CONFIGDIR}/evaluation_system.conf" ]] && echo "not found -> ${CONFIGDIR}/evaluation_system.conf" && exit
     [[ ! -e "${FREVA}/etc/evaluation_system.conf" ]] && echo "not found -> ${FREVA}/etc/evaluation_system.conf" && exit
     [[ ! -e "$FREVA/etc/getvar_conf.sh" ]] && echo "not found -> $FREVA/etc/getvar_conf.sh" && exit
     mkdir -m 777 -p $($FREVA/etc/getvar_conf.sh solr.incoming)
@@ -437,8 +446,8 @@ if [ "$makeSOLRSERVER" = "True" ] ; then
     cp -r $FREVA/etc/solr/home/latest/conf/* $SOLRSERVER/home/latest/conf/
     $FREVA/sbin/solr_server start
     sleep 5
-    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
-    curl "http://localhost:8989/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
+    curl "http://${SOLRHOST}:${SOLRPORT}/solr/admin/cores?action=CREATE&name=files&instanceDir=$SOLRSERVER/home/files"
+    curl "http://${SOLRHOST}:${SOLRPORT}/solr/admin/cores?action=CREATE&name=latest&instanceDir=$SOLRSERVER/home/latest"
 fi
 
 
@@ -447,5 +456,10 @@ if [ "$makeMYSQLtables" = "True" ] ; then
     echo "When no error occurs, and bash asks for the MYSQL password..."
     echo "type password 2 create mysql tables, existing tables will be OVERWRITTEN"
     echo "type ctrl -d to abort"
-    mysql -u $MYSQLUSER -p $MYSQLDB < $FREVA/scripts/database/create_tables_20151214.sql    
+    mysql -u $MYSQLUSER -p $MYSQLDB -h $MYSQLHOST < $FREVA/scripts/database/create_tables_20151214.sql
+fi
+
+if [ "$makeTests" = "True" ];then
+
+    cd $FREVA && make
 fi

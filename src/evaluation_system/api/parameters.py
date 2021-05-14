@@ -11,7 +11,6 @@ from evaluation_system.misc.utils import (find_similar_words, PrintableList,
                                           initOrder)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.history.models import Configuration
-from symbol import raise_stmt
 import json
 
 
@@ -133,7 +132,8 @@ for those not provided parameters that has no defaults.
 :param check_errors: if errors in arguments should be checked.
 """
         config = {}
-
+        if not isinstance(opt_arr, (list, tuple, set)):
+            opt_arr = [opt_arr]
         for option in opt_arr:
             parts = option.split('=')
             if len(parts) == 1:

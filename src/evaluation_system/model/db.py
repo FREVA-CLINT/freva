@@ -3,8 +3,9 @@
 
 This modules encapsulates all access to databases.
 """
-import history.models as hist
-import plugins.models as pin
+
+import evaluation_system.model.history.models as hist
+import evaluation_system.model.plugins.models as pin
 
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -410,7 +411,7 @@ class UserDB(object):
         u.save()
 
     def create_user_crawl(self, crawl_dir, username):
-        from solr_models.models import UserCrawl
+        from evaluation_system.model.solr_models.models import UserCrawl
         crawl = UserCrawl(status='waiting', user_id=self.getUserId(username), path_to_crawl=crawl_dir)
         crawl.save()
         return crawl.id

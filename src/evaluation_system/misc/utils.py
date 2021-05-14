@@ -22,7 +22,7 @@ class Data(object):
 @contextlib.contextmanager
 def capture_stdout():
     old = sys.stdout
-    capturer = StringIO.StringIO()
+    capturer = StringIO()
     sys.stdout = capturer
     data = Data()
     yield data

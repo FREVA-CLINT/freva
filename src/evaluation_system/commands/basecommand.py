@@ -123,9 +123,8 @@ class FrevaBaseCommand(metaclass=abc.ABCMeta):
             # Did you mean functionality
             similar_words = None
             trimmed_args = []
-            print(self._args)
             for arg in self._args:
-                trimmed_args.append(arg['name'][2:]) 
+                trimmed_args.append(arg['name'][2:])
             similar_words = find_similar_words(e.opt_str, trimmed_args)
             mesg = str(e)
             if similar_words:
@@ -183,7 +182,7 @@ class FrevaBaseCommand(metaclass=abc.ABCMeta):
         exit(0)
             
 
-class BaseCommand(metaclaass=abc.ABCMeta):  # pragma nocover
+class BaseCommand(metaclass=abc.ABCMeta):  # pragma nocover
     """
     DEPRECATED: User FrevaBaseCommand instead
     """

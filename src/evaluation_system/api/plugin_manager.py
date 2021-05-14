@@ -25,7 +25,7 @@ import datetime
 import shutil
 import logging
 import json
-import imp
+import importlib.machinery
 import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
@@ -34,7 +34,7 @@ from evaluation_system.api.parameters import ParameterNotFoundError
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
-from subprocess import Popen, STDOUT, PIPE
+from subprocess import PIPE, run
 from multiprocessing import Pool
 log = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 __plugin_modules__[module_name] = os.path.join(path, module_name)
                 extra_plugins.append(module_name)
             else:
-                log.warn("Cannot load %s, directory missing: %s", module_name, path)
+                log.warning("Cannot load %s, directory missing: %s", module_name, path)
 
     # the same for user specific env variable
     if user_name:
@@ -291,8 +291,10 @@ will be used.
     if user is None:
         user = User()
     plugin_dict = getPluginDict(plugin_name, user_name)
-    plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
-    return getattr(plugin_module, plugin_dict['plugin_class'])(user=user)
+    #plugin_module = imp.load_source('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
+    plugin_module = importlib.machinery.SourceFileLoader('%s' % plugin_dict['plugin_class'], plugin_dict['plugin_module']+'.py')
+    mod = plugin_module.load_module()
+    return getattr(mod, plugin_dict['plugin_class'])(user=user)
 
 
 def parseArguments(plugin_name, arguments, use_user_defaults=False, user=None, config_file=None, check_errors=True):
@@ -405,7 +407,7 @@ def _preview_copy(source_path, dest_path):
         shutil.copyfile(source_path, dest_path)
     else:
         command = ['convert', '-resize', '800x>', source_path, dest_path]
-        sub.call(command)
+        res = run(command, stdout=PIPE, stderr=PIPE)
     os.chmod(dest_path, 509)
 
 def _preview_convert(source_path, dest_path):
@@ -418,8 +420,8 @@ def _preview_convert(source_path, dest_path):
     """
 
     # a not very pythonic work-around
-    command = ['convert', '-resize', '800x', source_path, dest_path]
-    sub.call(command)
+    command = ['convert', '-resize', '800x-1', source_path, dest_path]
+    res = run(command, stdout=PIPE, stderr=PIPE)
     # we need this on mistral, becuase otherwise apache can't read the files
     # TODO: Why was is working on MiKlip?
     os.chmod(dest_path, 509)
@@ -736,9 +738,8 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 
     # run this
     logging.debug("Command: " + str(command))
-    p = Popen(command, stdout=PIPE, stderr=STDOUT)
-    (stdout, stderr) = p.communicate()
-
+    res = run(command, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = res.stdout.decode(), res.stderr.decode()
     logging.debug("scheduler call output:\n" + str(stdout))
     logging.debug("scheduler call error:\n" + str(stderr))
 

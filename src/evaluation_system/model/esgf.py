@@ -3,7 +3,7 @@
 This files encapsulates access to the esgf p2p system.
 """
 import json
-import urllib
+import urllib.request
 import sys
 import logging
 import copy
