@@ -12,7 +12,7 @@ makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
-GitBranch=Django_tests
+GitBranch=freva-dev
 makeTests=True
 ##########
 #PYTHON AREA
