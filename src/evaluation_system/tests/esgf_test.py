@@ -7,7 +7,7 @@ Created on 30.05.2016
 from evaluation_system.tests import run_command_with_capture
 
 
-def test_show_facet(esgf_command, stdout):
+def test_show_facet(esgf_command, stdout, dummy_config):
     res = run_command_with_capture(
             esgf_command,
             stdout,
@@ -15,7 +15,7 @@ def test_show_facet(esgf_command, stdout):
     assert '[product]' in res
     assert '[project]' in res
 
-def test_find_files(esgf_command, stdout, search_dict):
+def test_find_files(esgf_command, stdout, search_dict, dummy_config):
 
 
     result_to_be = ['http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
@@ -31,7 +31,7 @@ def test_find_files(esgf_command, stdout, search_dict):
     )
     assert 'cmip5.output1.MPI-M.MPI-ESM-LR.decadal2000.mon.atmos.Amon.r1i1p1 - version: 20120529' in res
 
-def test_download_script(esgf_command, stdout, search_dict, tmp_dir):
+def test_download_script(esgf_command, stdout, search_dict, tmp_dir, dummy_config):
     fn = tmp_dir / 'download_test_script.sh'
     res = run_command_with_capture(esgf_command, stdout,
         ['%s=%s' % (key, val) for key, val in search_dict.items()]\

@@ -11,7 +11,6 @@ from evaluation_system.misc.utils import (find_similar_words, PrintableList,
                                           initOrder)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.history.models import Configuration
-from symbol import raise_stmt
 import json
 
 

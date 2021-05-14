@@ -489,7 +489,7 @@ The values are assumed to be in a section named just like the class implementing
 :return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
          information found in ``fp``"""
         config_parser = ConfigParser()
-        config_parser.readfp(fp)
+        config_parser.read_file(fp)
         return self.readFromConfigParser(config_parser)
 
     def saveConfiguration(self, fp, config_dict=None, include_defaults=False):

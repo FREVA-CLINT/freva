@@ -9,7 +9,7 @@ class ToolPullRequest(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     tool = models.CharField(max_length=50)
     tagged_version = models.CharField(max_length=50)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     STATUS = [('waiting', 'waiting'), ('processing', 'processing'), ('success', 'success'), ('failed', 'failed')]
     status = models.CharField(max_length=10, choices=STATUS)
 
@@ -61,7 +61,7 @@ class Parameter(models.Model):
     #: Name of the tool
     tool = models.CharField(max_length=50)
     #: Version of the tool
-    version = models.IntegerField(max_length=4)
+    version = models.IntegerField()
     #: mandatory
     mandatory = models.BooleanField()
     #: default value
@@ -71,8 +71,7 @@ class Parameter(models.Model):
                       (Impact.affects_plots, 'Parameter affects plots'),
                       (Impact.no_effects, 'No effects on output'),)
     
-    impact = models.IntegerField(max_length = 1,
-                                 choices = IMPACT_CHOICES,
+    impact = models.IntegerField(choices = IMPACT_CHOICES,
                                  default = Impact.affects_values)
 
     def __str__(self):

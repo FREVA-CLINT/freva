@@ -43,11 +43,12 @@ class DummyUser(User):
 
     def __init__(self, random_home=False, uid=None, **override):
         self._random_home = None
+        self.username = override.get('pw_name', None)
         if random_home:
             if 'pw_dir' in override:
                 raise Exception("Can't define random_home and provide a home directory")
             override['pw_dir'] = tempfile.mkdtemp('_dummyUser')
-            self._random_home = override['pw_dir'] 
+            self._random_home = override['pw_dir']
         super().__init__(uid=uid)
         class DummyUserData(list):
             """Override a normal list and make it work like the pwd read-only struct"""

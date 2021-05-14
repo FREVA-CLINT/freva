@@ -25,7 +25,7 @@ Options:
   -h, --help    show this help message and exit
   --input=PATH  Some input value
 '''
-        assert similar_string(doc_str, target_str) is True
+        assert similar_string(doc_str, target_str, 0.75 ) is True
 
 def test_bad_option(dummy_cmd, stdout):
 

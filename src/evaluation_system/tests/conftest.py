@@ -2,6 +2,7 @@ from collections import namedtuple
 from datetime import datetime
 from django.conf import settings
 import django
+from getpass import getuser
 from io import StringIO
 import importlib
 import json
@@ -70,8 +71,10 @@ def dummy_env():
     test_conf = Path(__file__).absolute().parent / 'test.conf'
     env = os.environ.copy()
     os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(test_conf)
+    from evaluation_system.misc import config
+    config.reloadConfiguration()
     yield os.environ
-    os.environ = env
+    #os.environ = env
 
 @pytest.fixture(scope='module')
 def dummy_pr(dummy_env, dummy_settings):
@@ -163,6 +166,19 @@ def dummy_solr(dummy_env, dummy_settings):
         pass
     DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
 
+
+@pytest.fixture(scope='module')
+def django_user(dummy_settings, dummy_env):
+
+    from django.contrib.auth.models import User
+    from evaluation_system.model.history.models import History
+    from django.contrib.auth.models import User
+    user_django, created = User.objects.get_or_create(username=getuser())
+    yield user_django
+    User.objects.filter(username=getuser()).delete()
+    History.objects.all().delete()
+
+
 @pytest.fixture(scope='module')
 def dummy_config(dummy_env, dummy_settings_single):
 
@@ -217,23 +233,25 @@ def test_user(dummy_env, dummy_settings, config_dict):
 @pytest.fixture(scope='function')
 def temp_user(dummy_settings):
     from evaluation_system.tests.mocks.dummy import DummyUser
-    with DummyUser(random_home=True, pw_name='someone') as user:
+    import evaluation_system.api.plugin_manager as pm
+    with DummyUser(random_home=True, pw_name=getuser()) as user:
         yield user
 
 @pytest.fixture(scope='function')
 def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user):
 
     from django.contrib.auth.models import User
-    User.objects.filter(username='dummy_user').delete()
-    user_entry = namedtuple('dummy_user', ['user', 'row_id'])
+    User.objects.filter(username='test_user2').delete()
+    user_entry = namedtuple('test_user2', ['user', 'row_id', 'username'])
     user_entry.user = temp_user
+    user_entry.username = 'test_user2'
     user_entry.row_id = temp_user.getUserDB().storeHistory(
         dummy_plugin,
-        config_dict, 'user',
+        config_dict, user_entry.username,
         dummy_history.processStatus.not_scheduled,
         caption='My caption')
     yield user_entry
-    User.objects.filter(username='dummy_user').delete()
+    User.objects.filter(username=user_entry.username).delete()
 
 
 
@@ -295,50 +313,15 @@ def dummy_cmd(dummy_settings):
 @pytest.fixture(scope='module')
 def dummy_settings_single(dummy_env):
     # Application definition
-    local_db = Path(__file__).absolute().parent / 'local.db'
-    SETTINGS = {}
-    SETTINGS['INSTALLED_APPS'] = (
-        'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages'
-    )
-    SETTINGS['DATABASES'] = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(local_db)
-        }
-    }
-    try:
-        settings.configure(**SETTINGS)
-    except RuntimeError:
-        pass
-    django.setup()
+    import evaluation_system.settings.database
     from evaluation_system.misc import config
     yield config
     config.reloadConfiguration()
 
-
-
 @pytest.fixture(scope='session')
 def dummy_settings(dummy_env):
-    # Application definition
-    local_db = Path(__file__).absolute().parent / 'local.db'
-    SETTINGS = {}
-    SETTINGS['INSTALLED_APPS'] = (
-        'django.contrib.auth',  # We need this to access user groups
-        'django.contrib.flatpages'
-    )
-    SETTINGS['DATABASES'] = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': str(local_db)
-        }
-    }
-    try:
-        settings.configure(**SETTINGS)
-    except RuntimeError:
-        pass
-    django.setup()
     from evaluation_system.misc import config
+    import evaluation_system.settings.database
     yield config
     config.reloadConfiguration()
 
@@ -369,7 +352,7 @@ def hist_obj():
     config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
-def freva_lib():
+def freva_lib(dummy_env, dummy_settings):
     sys.dont_write_bytecode = True
     freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
     Freva = import_path(freva_bin)
@@ -379,7 +362,7 @@ def freva_lib():
 
 @pytest.fixture(scope='module')
 def prog_name():
-    return Path(sys.argv[0]).name
+    return Path(' '.join(sys.argv[:])).name
 
 @pytest.fixture(scope='module')
 def stderr():

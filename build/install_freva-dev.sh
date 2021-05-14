@@ -12,14 +12,14 @@ makeConfig=True
 makeStartscript=True
 makeSOLRSERVER=False
 makeMYSQLtables=False
-GitBranch=update_tests
+GitBranch=Django_tests
 makeTests=True
 ##########
 #PYTHON AREA
 ##########
 # Install the following python packages from conda
-CONDA_PKGS="cdo conda configparser 'django>=1.8,<1.9' git gitpython ipython libnetcdf mysqlclient nco netcdf4 numpy=1.9.3 pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
-PYTHONVERSION="3.7"
+CONDA_PKGS="cdo conda configparser django ffmpeg git gitpython ipython imagemagick libnetcdf mysqlclient nco netcdf4 numpy pip pymysql pypdf2 pytest pytest-env pytest-cov pytest-html python-cdo"
+PYTHONVERSION="3.9"
 PIP_PKGS="pytest-html"
 ##########
 
@@ -461,5 +461,5 @@ fi
 
 if [ "$makeTests" = "True" ];then
 
-    cd $FREVA/src/evaluation_system && make test
+    cd $FREVA && make
 fi

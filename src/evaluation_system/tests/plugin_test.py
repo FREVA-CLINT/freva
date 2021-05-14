@@ -135,7 +135,7 @@ def test_read_config_parser(dummy_plugin):
     from io import StringIO
     conf = ConfigParser()
     conf_str = "[DummyPlugin]\na=42\nb=text"
-    conf.readfp(StringIO(conf_str))
+    conf.read_file(StringIO(conf_str))
     dummy = dummy_plugin
     # check parsing
     for d, res_d in [([Integer(name='a')], dict(a=42)),
@@ -194,7 +194,7 @@ b) Retains somehow the format
 c) its compact
 We'll have to see how that works out..."""),
                                         String(name='b', mandatory=True, help='Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.'),
-                                        String(name='c', help="""This is to check the format is preserved
+                                        String(name='c', help=r"""This is to check the format is preserved
              \..,.-
              .\   |         __
              .|    .-     /  .;
@@ -362,7 +362,7 @@ def test_get_class_base_dir(dummy_plugin):
     module_name = os.path.abspath(evaluation_system.tests.\
                                   mocks.dummy.__file__)[len(dummy.getClassBaseDir())+1:].replace('/', '.')
     print(module_name, 'blablabla')
-    module_name = re.sub("\.pyc?$", "", module_name)
+    module_name = re.sub("\\.pyc?$", "", module_name)
     assert module_name == 'evaluation_system.tests.mocks.dummy'
 
 def test_special_variables():

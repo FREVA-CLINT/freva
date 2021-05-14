@@ -9,14 +9,15 @@ import os
 import tempfile
 import shutil
 import logging
+from getpass import getuser
 if not logging.getLogger().handlers:
     logging.basicConfig(level=logging.DEBUG)
 
 import pytest
 
 
-def test_store_history(dummy_history, dummy_user, dummy_plugin, config_dict):
-    row_id = dummy_user.user.getUserDB().storeHistory(
+def test_store_history(dummy_history, temp_user, dummy_plugin, config_dict):
+    row_id = temp_user.getUserDB().storeHistory(
         dummy_plugin, config_dict, 'user', 1, caption='My caption'
     )
     h = dummy_history.objects.get(id=row_id)
@@ -27,7 +28,7 @@ def test_store_history(dummy_history, dummy_user, dummy_plugin, config_dict):
 
 def test_schedule_entry(dummy_user, dummy_history):
     dummy_user.user.getUserDB().scheduleEntry(dummy_user.row_id,
-                                              'user',
+                                              dummy_user.username,
                                               '/slurm/output/file.txt')
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.status == dummy_history.processStatus.scheduled
@@ -36,17 +37,17 @@ def test_schedule_entry(dummy_user, dummy_history):
 def test_upgrade_status(dummy_user, dummy_history):
 
     with pytest.raises(dummy_user.user.getUserDB().ExceptionStatusUpgrade):
-        dummy_user.user.getUserDB().upgradeStatus(dummy_user.row_id, 'user', 6)
+        dummy_user.user.getUserDB().upgradeStatus(dummy_user.row_id, dummy_user.username, 6)
 
     dummy_user.user.getUserDB().upgradeStatus(dummy_user.row_id,
-                                              'user',
+                                              dummy_user.username,
                                               dummy_history.processStatus.finished)
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.status == dummy_history.processStatus.finished
 
 def test_change_flag(dummy_user, dummy_history):
     dummy_user.user.getUserDB().changeFlag(dummy_user.row_id,
-                                           'user', 
+                                           dummy_user.username,
                                            dummy_history.Flag.deleted)
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.flag == dummy_history.Flag.deleted
@@ -63,12 +64,12 @@ def test_get_history(dummy_user, dummy_plugin, config_dict):
     history = dummy_user.user.getUserDB().getHistory()
     assert history.count() == 5
     history = dummy_user.user.getUserDB().getHistory(uid='user')
-    assert history.count() == 3
+    assert history.count() == 2
     history = dummy_user.user.getUserDB().getHistory(uid='user',
                                                      tool_name='dummyplugin',
                                                      limit=2)
     assert history.count() == 2
-    history = dummy_user.user.getUserDB().getHistory(uid='user',
+    history = dummy_user.user.getUserDB().getHistory(uid=dummy_user.username,
                                                     entry_ids=dummy_user.row_id)
     assert history.count() == 1
 
@@ -142,10 +143,14 @@ def test_create_user(dummy_user):
 
 def test_create_user_crawl(dummy_user):
     from evaluation_system.model.solr_models.models import UserCrawl
-    dummy_user.user.getUserDB().create_user_crawl('/some/test/folder', 'user')
+    from django.contrib.auth.models import User
+    dummy_user.user.getUserDB().createUser('new_user', 'test@test.de', 't', 'u')
+    dummy_user.user.getUserDB().create_user_crawl('/some/test/folder',
+                                                  'new_user')
     assert UserCrawl.objects.filter(status='waiting',
                                     path_to_crawl='/some/test/folder').exists()
     UserCrawl.objects.all().delete()
+    User.objects.filter(username='new_user').delete()
 
 def test_timestamp_to_string():
     from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
