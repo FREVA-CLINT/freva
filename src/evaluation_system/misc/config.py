@@ -4,8 +4,11 @@
 This module manages the central configuration of the system.
 '''
 import os
+import os.path as osp
+from distutils.sysconfig import get_python_lib
 import logging
-from configparser import ConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
+import sys
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
@@ -22,15 +25,15 @@ the future for the next project phase.'''
 
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_SYSTEM_HOME = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-4]) 
-_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % _SYSTEM_HOME
-
-SPECIAL_VARIABLES =  TemplateDict(
-                                  EVALUATION_SYSTEM_HOME=_SYSTEM_HOME)
+_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % osp.abspath(sys.prefix)
+EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
+SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
 #: config options
 BASE_DIR = 'base_dir'
 'The name of the directory storing the evaluation system (output, configuration, etc)'
+
+ROOT_DIR = 'root_dir'
 
 DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 '''Defines which directory structure is going to be used. 
@@ -146,7 +149,7 @@ performed."""
 
     log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
-        config_parser = ConfigParser()
+        config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         with open(config_file, 'r') as fp:
             config_parser.read_file(fp)
             if not config_parser.has_section(CONFIG_SECTION_NAME):

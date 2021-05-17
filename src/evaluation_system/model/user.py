@@ -7,7 +7,7 @@ might be required anywhere else.
 import pwd
 import os
 import sys
-from configparser import ConfigParser as Config
+from configparser import ConfigParser as Config, ExtendedInterpolation
 from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
 
@@ -68,9 +68,11 @@ the current user, i.e. the one that started the application, is created instead.
         else:
             self._email = email
         
-        self._userconfig = Config()
+        self._userconfig = Config(interpolation=ExtendedInterpolation())
         #try to load teh configuration from the very first time.
-        self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self._userdata.pw_dir, User.EVAL_SYS_CONFIG)])
+        self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG,
+                              os.path.join(self._userdata.pw_dir, 
+                                           User.EVAL_SYS_CONFIG)])
         
         self._db = UserDB(self)
         
@@ -106,8 +108,10 @@ the current user, i.e. the one that started the application, is created instead.
         
     def reloadConfig(self):
         """Reloads user central configuration from disk (not the plug-in related one)."""
-        self._userconfig = Config()
-        self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG, os.path.join(self.getUserBaseDir(), User.EVAL_SYS_CONFIG)])
+        self._userconfig = Config(interpolation=ExtendedInterpolation())
+        self._userconfig.read([User.EVAL_SYS_DEFAULT_CONFIG,
+                               os.path.join(self.getUserBaseDir(),
+                                            User.EVAL_SYS_CONFIG)])
         return self._userconfig
     
     def writeConfig(self):
