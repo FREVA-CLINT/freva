@@ -12,27 +12,64 @@ Find details for users, developers, and admins of Freva in the guides.
 
 https://github.com/FREVA-CLINT/Freva/tree/master/docu/guides
 
-### Install:
+## Deployment (with python distribution):
 
-First you will need the installation script which can be downloaded using the `wget` command:
-
-```bash
-$: wget wget -r -H -N --cut-dirs=2 --content-disposition -I "/v1/" "https://swift.dkrz.de/v1/dkrz_3d3c7abc-1681-4012-b656-3cc1058c52a9/public/install_freva-dev.sh?temp_url_sig=c2631336fdc8a288a530bc423c8433a4d3dfb1ef&temp_url_prefix=&temp_url_expires=2295-02-24T15:00:20Z"
-```
-Once downloaded make the script executable 
-
-```bash
-$: chmod +x install_freva-dev.sh
-```
-
-Inside the script you can adjust some settings. The most important setttings are:
-
-- NameYourEvaluationSystem
-- Path2Eva
-- GitBranch
-
-once edited the script can be executed
+Since version 2021.5 there is `evaluation_system` package is deployed *within*
+the python environment. No seperation between the two is needed. Here we assume
+you want to deploy the code along with fresh python installation that should
+located `install_prefix`. To deploy, that is install a fresh python distribution
+and the `evaluation_system` package use the `install.py` script:
 
 ```bash
-:$ ./install_freva-dev.sh
+$: python install.py install_prefix
 ```
+
+Additional fine tuning is possible via the following command line arguments:
+
+```bash
+usage: deploy_freva [-h] [--packages [PACKAGES [PACKAGES ...]]] [--channel CHANNEL] [--shell SHELL] [--python PYTHON] [--pip [PIP [PIP ...]]] [--develop] [--no_conda] install_prefix
+
+This Programm sets up a conda environment for jupyter on mistral
+
+positional arguments:
+  install_prefix        Install prefix for the environment.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --packages [PACKAGES [PACKAGES ...]]
+                        Pacakges that are installed (default: ['cdo', 'conda', 'configparser',
+                        'django', 'ffmpeg', 'git', 'gitpython', 'imagemagick',
+                        'ipython', 'libnetcdf', 'mysqlclient', 'nco', 'netcdf4',
+                        'numpy', 'pip', 'pymysql', 'pypdf2', 'pytest',
+                        'pytest-cov', 'pytest-env', 'pytest-html',
+                        'python-cdo', 'xarray'])
+  --channel CHANNEL     Conda channel to be used (default: conda-forge)
+  --shell SHELL         Shell type (default: bash)
+  --python PYTHON       Python Version (default: 3.9)
+  --pip [PIP [PIP ...]]
+                        Additional packages that should be installed using pip
+                        (default: ['pytest-html', 'python-git', 'python-swiftclient'])
+  --develop             Use the develop flag when installing the evaluation_system package (default: False)
+  --no_conda            Do not create conda environment (default: False)
+```
+
+### Central configuration
+
+The default configuration is located in `install_prefx/etc/evaluation_system.conf`.
+Here you should set the entries pointing to the mysql database and the apache solr server.
+
+> **_Note:_** Since version 2021.5 the config files can take variables that can be reused within the configfile, see https://docs.python.org/3/library/configparser.html#configparser.ExtendedInterpolation for details. Configurations containing the '$' charatcter must be escaped by '$$' (additional $) to avoid conflicts.
+
+### The module file
+The deployment process will create a module file, which is located in `loadfreva.modules`. Copy this file to the appropriate location of your central modules system to make use of it.
+
+## Installing the python package, without deployment.
+
+It is also possible to only install the python core packages. For example when installing the packe as part of a submodule. This can simply be done by the following command:
+
+```bash
+$: pip install (-e) .
+```
+
+This command will install the `evaluation_system` code into whatever python environment is activated. Use the `-e` flag for debugging.
+
