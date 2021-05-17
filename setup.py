@@ -5,7 +5,7 @@ import re
 from setuptools import setup, find_packages
 import sys
 
-from install import find_version, read
+from deploy import find_version, read
 
 
 setup(name="evaluation_system",
