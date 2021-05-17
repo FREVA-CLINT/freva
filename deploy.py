@@ -109,7 +109,7 @@ def reporthook(count, block_size, total_size):
 def parse_args(argv=None):
     """Consturct command line argument parser."""
 
-    ap = argparse.ArgumentParser(prog='install_freva',
+    ap = argparse.ArgumentParser(prog='deploy_freva',
             description="""This Programm sets up a conda environment for jupyter on mistral""", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     ap.add_argument('install_prefix', type=Path,
