@@ -92,7 +92,7 @@ To get help for the individual commands use
         """
         if self._commands is None:
             base_dir = os.path.dirname(os.path.abspath(__file__))     
-            self._commands = self.find_commands(os.path.join(base_dir, '..', 'src', 'evaluation_system/commands'))
+            self._commands = self.find_commands(base_dir)
         return self._commands
     
     def _run(self):
