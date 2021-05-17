@@ -354,9 +354,8 @@ def hist_obj():
 @pytest.fixture(scope='module')
 def freva_lib(dummy_env, dummy_settings):
     sys.dont_write_bytecode = True
-    freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
-    Freva = import_path(freva_bin)
-    yield Freva.Freva()
+    from evaluation_system.commands._main import Freva
+    yield Freva()
     import evaluation_system.api.plugin_manager as pm
     pm.reloadPlugins()
 

@@ -75,7 +75,7 @@ def test_config_file():
         # check $EVALUATION_SYSTEM_HOME get's resolved properly
         fd, name = tempfile.mkstemp(__name__, text=True)
         with os.fdopen(fd, 'w') as f:
-            f.write('[evaluation_system]\n%s=$EVALUATION_SYSTEM_HOME\n' % config.BASE_DIR)
+            f.write('[evaluation_system]\n%s=$$EVALUATION_SYSTEM_HOME\n' % config.BASE_DIR)
 
         assert config.get(config.BASE_DIR) == 'evaluation_system'
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
@@ -97,13 +97,13 @@ def test_plugin_conf():
 base_dir=~
 
 [plugin:pca]
-plugin_path=$EVALUATION_SYSTEM_HOME/tool/pca
-python_path=$EVALUATION_SYSTEM_HOME/tool/pca/integration
+plugin_path=$$EVALUATION_SYSTEM_HOME/tool/pca
+python_path=$$EVALUATION_SYSTEM_HOME/tool/pca/integration
 module=pca.api
 
 [plugin:climval]
-plugin_path=$EVALUATION_SYSTEM_HOME/tool/climval
-python_path=$EVALUATION_SYSTEM_HOME/tool/climval/src
+plugin_path=$$EVALUATION_SYSTEM_HOME/tool/climval
+python_path=$$EVALUATION_SYSTEM_HOME/tool/climval/src
 module=climval.tool
 
 """)

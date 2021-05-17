@@ -131,9 +131,9 @@ def test_parse_metadict(dummy_plugin):
 def test_read_config_parser(dummy_plugin):
     from evaluation_system.api.parameters import (ParameterDictionary, String,
                                                   Integer, ValidationError)
-    from configparser import ConfigParser
+    from configparser import ConfigParser, ExtendedInterpolation
     from io import StringIO
-    conf = ConfigParser()
+    conf = ConfigParser(interpolation=ExtendedInterpolation())
     conf_str = "[DummyPlugin]\na=42\nb=text"
     conf.read_file(StringIO(conf_str))
     dummy = dummy_plugin
