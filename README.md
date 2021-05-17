@@ -1,4 +1,3 @@
-
 # Free Evaluation System Framework for Earth System Modeling
 
 ## INFO:
@@ -73,3 +72,11 @@ $: pip install (-e) .
 
 This command will install the `evaluation_system` code into whatever python environment is activated. Use the `-e` flag for debugging.
 
+## Running tests and uploading test coverage files
+
+The system can be tested with `Makefile`. To run the tests and upload the coverage files simply use the make command:
+
+```bash
+$:  FREVA_ENV=install_prefix make all
+```
+If the `$FREVA_ENV` variable is not set `make` will take the current python environment. 
