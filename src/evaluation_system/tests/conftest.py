@@ -74,7 +74,12 @@ def dummy_env():
     from evaluation_system.misc import config
     config.reloadConfiguration()
     yield os.environ
-    #os.environ = env
+    print(config.get('base_dir_location'))
+    try:
+        shutil.rmtree(config.get('base_dir_location'))
+    except:
+        pass
+    os.environ = env
 
 @pytest.fixture(scope='module')
 def dummy_pr(dummy_env, dummy_settings):
