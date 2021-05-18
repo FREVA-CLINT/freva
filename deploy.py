@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import shlex
 import sys
+from subprocess import CalledProcessError
 import shutil
 import urllib.request
 from tempfile import NamedTemporaryFile, TemporaryDirectory
@@ -138,7 +139,7 @@ class Installer:
     default_pkgs = sorted(['cdo', 'conda', 'configparser',
                     'django', 'ffmpeg', 'git', 'gitpython',
                     'ipython', 'imagemagick', 'libnetcdf',
-                    'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pip',
+                    'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pip', 'pillow',
                     'pymysql', 'pypdf2', 'pytest', 'pytest-env',
                     'pytest-cov', 'pytest-html', 'python-cdo', 'xarray'])
     pip_pkgs = sorted(['pytest-html', 'python-git', 'python-swiftclient'])
