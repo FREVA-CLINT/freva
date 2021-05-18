@@ -409,7 +409,7 @@ def test_write_slurm_field(dummy_settings_single, temp_script):
         slurm_file = dummy_plugin.writeSlurmFile(
             fp, config_dict={'the_number': 22}
         )
-    assert os.path.isfile('/tmp/slurm_test.sh')
+    assert os.path.isfile(temp_script)
     assert slurm_file._cmdstring == \
         dummy_plugin.composeCommand(config_dict={'the_number': 22})
 
