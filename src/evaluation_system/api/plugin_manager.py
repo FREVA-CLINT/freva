@@ -22,6 +22,7 @@ import random
 import string
 import re
 import datetime
+from PIL import Image
 import shutil
 import logging
 import json
@@ -406,11 +407,10 @@ def _preview_copy(source_path, dest_path):
     if source_path.split('.')[-1] in ['pdf', 'zip']:  # don't resize pdf files
         shutil.copyfile(source_path, dest_path)
     else:
-        command = ['convert', '-resize', '800x>', source_path, dest_path]
-        res = run(command, stdout=PIPE, stderr=PIPE)
-    os.chmod(dest_path, 509)
+        _preview_convert(source_path, dest_path)
 
-def _preview_convert(source_path, dest_path):
+
+def _preview_convert(source_path, dest_path, width=800):
     """
     Converts images
     :type source_path: str
@@ -419,16 +419,12 @@ def _preview_convert(source_path, dest_path):
     :param dest_path: The file name of the converted file
     """
 
-    # a not very pythonic work-around
-    command = ['convert', '-resize', '800x-1', source_path, dest_path]
-    res = run(command, stdout=PIPE, stderr=PIPE)
-    # we need this on mistral, becuase otherwise apache can't read the files
-    # TODO: Why was is working on MiKlip?
+    with Image.open(source_path) as img:
+        x, y = img.size
+        height = 2 * (int(y / (x / width)) // 2)
+        im_resize = img.resize((width, height))
+        im_resize.save(dest_path)
     os.chmod(dest_path, 509)
-
-    # The following is preferable when supported by the installed PIT version
-    # im = Image.open(source_path)
-    # im.save(dest_path)
 
 
 def _preview_generate_name(plugin_name, file_name, metadata):
