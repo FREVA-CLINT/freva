@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import os.path as osp
 from pathlib import Path
 import re
@@ -6,6 +7,7 @@ from setuptools import setup, find_packages
 import sys
 
 from deploy import find_version, read
+
 
 
 setup(name="evaluation_system",
@@ -18,6 +20,15 @@ setup(name="evaluation_system",
       license="BSD-3-Clause",
       packages=find_packages('src'),
       package_dir={"":"src"},
+      install_requires=['django',
+                        'ffmpeg',
+                        'numpy',
+                        'python-git',
+                        'mysqlclient',
+                        'pymysql',
+                        'configparser',
+                        'pillow',
+                        'pypdf2',],
       extras_require={
         'docs': [
               'sphinx',
@@ -32,6 +43,7 @@ setup(name="evaluation_system",
               'pytest-cov',
               'nbval',
               'h5netcdf',
+              'python-swiftclient',
               'testpath',
           ]
         },
