@@ -65,6 +65,12 @@ class OutputWrapper:
     def __getattr__(self, *args, **kwargs):
         return self.__original.__getattribute__(*args, **kwargs)
 
+@pytest.fixture(scope='function')
+def temp_script():
+
+    with NamedTemporaryFile(suffix='test.sh') as tf:
+        yield tf.name
+
 @pytest.fixture(scope='session')
 def dummy_env():
 

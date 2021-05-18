@@ -399,16 +399,16 @@ def test_compose_command():
     assert similar_string(command, \
         'freva --plugin DummyPlugin --batchmode=False --caption \'This is the caption\' --unique_output True the_number=22 something=test other=1.4')
 
-def test_write_slurm_field(dummy_settings_single):
+def test_write_slurm_field(dummy_settings_single, temp_script):
     from evaluation_system.api.parameters import (ParameterDictionary,
                                                   Integer, String, Directory)
     from evaluation_system.tests.mocks.dummy import DummyPlugin
     dummy_plugin = DummyPlugin()
-    fp = open('/tmp/slurm_test.sh', 'w')
-    slurm_file = dummy_plugin.writeSlurmFile(
-        fp, config_dict={'the_number': 22}
-    )
-    fp.close()
+    
+    with open(temp_script, 'w') as fp:
+        slurm_file = dummy_plugin.writeSlurmFile(
+            fp, config_dict={'the_number': 22}
+        )
     assert os.path.isfile('/tmp/slurm_test.sh')
     assert slurm_file._cmdstring == \
         dummy_plugin.composeCommand(config_dict={'the_number': 22})
