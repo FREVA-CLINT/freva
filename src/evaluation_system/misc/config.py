@@ -114,6 +114,9 @@ DB_PASSWD = 'db.passwd'
 DB_DB = 'db.db'
 ''' the database name on the server '''
 
+DB_PORT = 'db.port'
+''' database connection port'''
+
 #: Solr #########################
 SOLR_HOST = 'solr.host'
 '''Hostname of the Solr instance.'''
@@ -170,7 +173,6 @@ performed."""
                   config_file)
     
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
-    
     #perform all special checks
     if not DIRECTORY_STRUCTURE.validate(_config[DIRECTORY_STRUCTURE_TYPE]):
         raise ConfigurationException("value (%s) of %s is not valid. Should be one of: %s" \
