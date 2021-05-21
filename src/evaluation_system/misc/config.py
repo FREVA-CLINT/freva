@@ -234,17 +234,13 @@ def keys():
     return _config.keys()
 
 def get_section(section_name):
-    conf = ConfigParser()
+    conf = ConfigParser(interpolation=ExtendedInterpolation())
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                                  _DEFAULT_CONFIG_FILE_LOCATION)
     conf.read(config_file)
-    
     try:
-        return dict(conf.items(section_name))
+        section = dict(conf.items(section_name))
     except NoSectionError:
         raise NoSectionError(f'There is no "{section_name}" section in config file')
-    
-    
-    
-    
-    
+    return SPECIAL_VARIABLES.substitute(section)
+
