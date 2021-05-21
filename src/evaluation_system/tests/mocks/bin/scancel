@@ -1,0 +1,16 @@
+#!/bin/bash
+
+JOB_ID=${!#}
+if [ -z "${MOCK_SLURM}" ];then
+    MOCK_SLURM=/tmp/mock_slurm
+fi
+IFS=$'\n'
+id_file=$MOCK_SLURM/$JOB_ID
+if [ ! -f $id_file ];then
+    exit 0
+fi
+pid=$(head -n1 $id_file| awk '{print $2}')
+if [ "$(ps aux|grep -v grep | grep $pid)" ];then
+    kill -9 $pid &> /dev/null
+    echo EXIT -1 >> $id_file
+fi

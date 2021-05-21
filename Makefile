@@ -1,7 +1,8 @@
 # makefile used for testing
 #
 #
-export PATH := $(FREVA_ENV)/bin:$(PATH)
+export PATH := $(FREVA_ENV)/bin:$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
+export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 all: test upload
 test:
 	rm -f .include

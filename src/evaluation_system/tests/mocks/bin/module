@@ -1,0 +1,13 @@
+#!/bin/bash
+
+module_file=$(readlink -f ${!#})
+IFS=$'\n'
+for i in $(sed -n -e '/prepend-path/p' $module_file);do
+    t=$(echo $i|awk '{print $NF}')
+    var=$(echo $i | awk '{print $2}')
+    if [ $var == 'PATH' ];then
+        export PATH=$t:$PATH
+    elif [ $var == 'LD_LIBRARY_PATH' ];then
+        export LD_LIBRARY_PATH=$t:$LD_LIBRARY_PATH
+    fi
+done
