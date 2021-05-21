@@ -17,12 +17,6 @@ def testStartSlurm(dummy_config):
     2. write a slurm file
     3. execute the file with slurm
     """
-    sbatch_exe = spawn.find_executable('sbatch')
-    squeue_exe = spawn.find_executable('squeue')
-    print(dummy_config.SCHEDULER_OPTIONS)
-    # check weather the commands exist     
-    assert not (sbatch_exe is None), "can not find 'sbatch'"
-    assert not (squeue_exe is None), "can not find 'squeue'"
     # create a user object
     test_user = user.User()
     # we need a user to access the std slurm input and output directory         
@@ -30,6 +24,7 @@ def testStartSlurm(dummy_config):
                                 test_user.getName())
     # create the slurm file object
     infile = os.path.join(slurm_in_dir, 'slurm_test_input_file')
+    infile = 'testing.sh'
     # set the SLURM output directory
     slurm_out_dir = test_user.getUserSchedulerOutputDir()
     with open(infile, 'w') as fp:
@@ -66,7 +61,7 @@ def testStartSlurm(dummy_config):
     p = run(command, stdout=PIPE, stderr=PIPE)
     (stdout, stderr) = p.stdout.decode(), p.stderr.decode()
     # Cancel the job
-    p = run(['/bin/bash', '-c', 'scancel', f'{slurm_id}'], stdout=PIPE)
+    p = run(['scancel', f'{slurm_id}'], stdout=PIPE, env=os.environ)
     assert len(p.stdout.decode()) == 0
 
 
