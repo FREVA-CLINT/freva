@@ -22,9 +22,9 @@ def testStartSlurm(dummy_config):
     # we need a user to access the std slurm input and output directory         
     slurm_in_dir = os.path.join(test_user.getUserSchedulerInputDir(),
                                 test_user.getName())
+    sbatch_exe = spawn.find_executable('sbatch')
     # create the slurm file object
     infile = os.path.join(slurm_in_dir, 'slurm_test_input_file')
-    infile = 'testing.sh'
     # set the SLURM output directory
     slurm_out_dir = test_user.getUserSchedulerOutputDir()
     with open(infile, 'w') as fp:
