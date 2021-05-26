@@ -216,6 +216,10 @@ class Installer:
                         base_dir_location=self.install_prefix / 'work',
                         base_dir='evaluation_system',
                         project_name='evaluation_system',)
+        if not (this_dir / config_file).is_file():
+            raise ValueError('No config file. Edit and copy the config template'
+                             ' "evaluation_system.conf.tmpl" to '
+                             '"evaluation_system.conf"')
         with (this_dir / config_file).open() as f:
             config = f.readlines()
         for nn, line in enumerate(config):

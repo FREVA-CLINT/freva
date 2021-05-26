@@ -43,33 +43,24 @@ scratch_dir=${base_dir_location}/$$USER
 #: (no user info in local since that is included in the home directory already)
 directory_structure_type=scratch
 
-number_of_processes = 6
+number_of_processes=6
 
 #: database path
 
 #: mySQL settings
-db.host=www-regiklim.dkrz.de
-db.user=test_user
-db.passwd=T3st
-db.db=freva_dev
+db.host=
+db.user=
+db.passwd=
+db.db=
 
 
 #group for external users
 #external_group=frevaext
 
 #: Define access to the solr instance
-solr.host=www-regiklim.dkrz.de
+solr.host=
 solr.port=8989
 solr.core=files
-solr.name=test_solr
-solr.user=b380001
-solr.memory=4096M
-solr.heap_size=512M
-solr.root=${root_dir}/share/solr/
-solr.server=${root_dir}/share/solr/server/
-solr.incoming=${root_dir}/share/solr/incoming/
-solr.processing=${root_dir}/share/solr/processing/
-solr.backup=${root_dir}/share/solr/backup/
 
 #shellinabox
 #shellmachine=None
