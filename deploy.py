@@ -240,7 +240,7 @@ class Installer:
                     target.parent.mkdir(exist_ok=True, parents=True)
                     logger.info(f'Copying auxilary file {source}')
                     shutil.copy(source, target)
-        with (this_dir / 'loadfreva.modules').open('w') as f:
+        with (self.install_prefix / 'share' / 'loadfreva.modules').open('w') as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
                           path=self.install_prefix / 'bin',
