@@ -102,7 +102,7 @@ class FrevaBaseCommand(metaclass=abc.ABCMeta):
                 exit(0)
             self.handle_exceptions(e)
             if self.DEBUG:  # or __name__ != "__main__":
-                raise
+                raise e
             else:
                 print("ERROR: ", sys.exc_info()[1])
             exit(2)
