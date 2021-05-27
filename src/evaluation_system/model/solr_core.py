@@ -208,7 +208,6 @@ from this core."""
         if general:
             return response
         else:
-            print(response['status'][self.core])
             return response['status'][self.core]
     
     def clone(self, new_instance_dir, data_dir='data', copy_data=False):

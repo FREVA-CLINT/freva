@@ -80,7 +80,6 @@ def dummy_env():
     from evaluation_system.misc import config
     config.reloadConfiguration()
     yield os.environ
-    print(config.get('base_dir_location'))
     try:
         shutil.rmtree(config.get('base_dir_location'))
     except:
