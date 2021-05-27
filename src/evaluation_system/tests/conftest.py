@@ -100,6 +100,8 @@ def dummy_git_path():
     with TemporaryDirectory(prefix='git') as td:
         repo_path = Path(td) / 'test_plugin.git'
         tool_path = Path(td) / 'test_tool'
+        tool_path.mkdir(exist_ok=True, parents=True)
+        repo_path.mkdir(exist_ok=True, parents=True)
         yield repo_path, tool_path
 
 @pytest.fixture(scope='module')
