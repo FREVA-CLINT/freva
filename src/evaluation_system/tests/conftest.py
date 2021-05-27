@@ -86,6 +86,10 @@ def dummy_env():
         pass
     os.environ = env
 
+@pytest.fixture(scope='session')
+def git_config():
+    yield 'git config init.defaultBranch main; git config user.name your_user; git; config user.email your@email.com'
+
 @pytest.fixture(scope='module')
 def dummy_pr(dummy_env, dummy_settings):
 
