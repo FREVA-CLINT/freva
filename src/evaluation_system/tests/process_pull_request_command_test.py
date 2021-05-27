@@ -40,7 +40,6 @@ def test_command_success(dummy_pr, stdout, dummy_git_path):
     from evaluation_system.model.plugins.models import ToolPullRequest
     from django.contrib.auth.models import User
     repo_path, tool_path = dummy_git_path
-    os.makedirs(repo_path)
     this_dir = Path(__file__).parent
     shutil.copy(this_dir / 'mocks' / 'result_tags.py', repo_path)
     # prepare git repo
