@@ -13,7 +13,9 @@ before_script:
     - git config --global init.defaultBranch main   
     - git config --global user.email "you@example.com"   
     - git config --global user.name "Your Name" 
-unittest:  
+unittest: 
+    tags: 
+        - jekyll
     script:     
         # Do the unit tests     
         - FREVA_ENV=/tmp/evaluation_system make tests
