@@ -1,5 +1,8 @@
 image: solr:latest
 
+variables:
+  USER : root
+
 before_script:
     - apt -y update && apt -y upgrade && apt install git mariadb-server python3 make && service mysql start
     - git clone -b init https://gitlab.dkrz.de/freva/deployment.git /tmp/deployment
