@@ -4,7 +4,7 @@ variables:
   USER : root
 
 before_script:
-    - apt -y update && apt -y upgrade && apt install git mariadb-server python3 make && service mysql start
+    - sudo apt -y update && sudo apt -y upgrade && sudo apt install git mariadb-server python3 make && sudo service mysql start
     - git clone -b init https://gitlab.dkrz.de/freva/deployment.git /tmp/deployment
     - sudo -E -u solr /opt/solr/bin/solr create_core -c latest -d example/files/conf
     - sudo -E -u solr /opt/solr/bin/solr create_core -c files -d example/files/conf
