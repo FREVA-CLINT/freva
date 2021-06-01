@@ -1,11 +1,20 @@
 FROM solr:latest
 MAINTAINER dkrz-clint
 USER root
-RUN /usr/bin/apt -y update && /usr/bin/apt -y upgrade &&\
+ARG NB_USER
+ARG NB_UID
+ENV USER ${NB_USER}
+ENV HOME /home/${NB_USER}
+RUN adduser --disabled-password \
+    --gecos "Default user" \
+    --uid ${NB_UID} \
+    ${NB_USER} && \
+    /usr/bin/apt -y update && /usr/bin/apt -y upgrade &&\
     /usr/bin/apt -y install git mariadb-server python3 make sudo vim && \
     /usr/bin/sudo -E -u solr /usr/bin/git clone -b update_install https://gitlab.dkrz.de/freva/evaluation_system.git /tmp/evaluation_system && \
     mkdir -p /opt/evaluation_system/bin && chown -R solr:solr /opt/evaluation_system &&\
     usermod -aG sudo solr && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers &&\
+    usermod -aG sudo ${NB_USER} &&\
     cp /tmp/evaluation_system/.docker/*.sql /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/.docker/managed-schema /tmp/evaluation_system/ &&\
     cd /tmp/evaluation_system && service mysql start && \
     /usr/bin/sudo -E -u solr /opt/solr/bin/solr start &&\
@@ -22,8 +31,8 @@ RUN /usr/bin/apt -y update && /usr/bin/apt -y upgrade &&\
     /bin/cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ &&\
     cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ &&\
     cd / && /bin/rm -r /tmp/evaluation_system
-USER solr
+USER ${NB_USER}
+WORKDIR ${HOME}
 ENV PATH="/opt/evaluation_system/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
-WORKDIR /opt/solr
 ENTRYPOINT ["/opt/evaluation_system/bin/docker-entrypoint.sh"]
 CMD /opt/evaluation_system/bin/loadfreva.sh
