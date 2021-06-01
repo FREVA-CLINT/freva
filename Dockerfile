@@ -30,6 +30,7 @@ RUN adduser --disabled-password \
     /usr/bin/sudo -E -u solr cp /tmp/evaluation_system/managed-schema /var/solr/data/files/conf/managed-schema &&\
     /bin/cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ &&\
     cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ &&\
+    /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook &&\
     cd / && /bin/rm -r /tmp/evaluation_system
 USER ${NB_USER}
 WORKDIR ${HOME}
