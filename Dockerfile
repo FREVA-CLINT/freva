@@ -6,7 +6,7 @@ RUN /usr/bin/apt -y update && /usr/bin/apt -y upgrade &&\
     /usr/bin/sudo -E -u solr /usr/bin/git clone -b update_install https://gitlab.dkrz.de/freva/evaluation_system.git /tmp/evaluation_system && \
     mkdir -p /opt/evaluation_system/bin && chown -R solr:solr /opt/evaluation_system &&\
     usermod -aG sudo solr && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers &&\
-    cp /tmp/evaluation_system/.docker/*.sql /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/./docker/managed-schema /tmp/evaluation_system/ &&\
+    cp /tmp/evaluation_system/.docker/*.sql /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/.docker/managed-schema /tmp/evaluation_system/ &&\
     cd /tmp/evaluation_system && service mysql start && \
     /usr/bin/sudo -E -u solr /opt/solr/bin/solr start &&\
     /usr/bin/python3 deploy.py /opt/evaluation_system && \
