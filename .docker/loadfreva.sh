@@ -6,7 +6,11 @@ if [ "$VERBOSE" == "yes" ];then
     set -xe
 fi
 
-exec sudo service mysql start
+/usr/bin/git config --global init.defaultBranch main > /dev/null
+/usr/bin/git config --global user.email "user@docker.org" > /dev/null
+/usr/bin/git config --global user.name "Freva" > /dev/null
+
+mysqld_safe &
 exec /opt/docker-solr/scripts/solr-foreground &
 wait
 
