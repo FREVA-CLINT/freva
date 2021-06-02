@@ -1,13 +1,31 @@
 #!/bin/bash
 
-if [ -z "$(echo $PATH|grep -i evaluation_system)" ];then
-    /usr/bin/git config --global init.defaultBranch main &> /dev/null
-    /usr/bin/git config --global user.email "user@docker.org" &> /dev/null
-    /usr/bin/git config --global user.name "Freva" &> /dev/null
-    export PATH=/opt/evaluation_system/bin:$PATH
-    mysqld_safe &
-    /opt/solr/bin/solr start
+mysql_pid=/run/mysqld/mysqld.pid
+solr_pid=/var/solr/solr-8983.pid
+if [ ! -f "${mysql_pid}" ];then
+    mysql_pid=-1111
+else
+    mysql_pid=$(cat ${mysql_pid})
 fi
-exec "/opt/evaluation_system/bin/$@"
+
+if [ ! -f "${solr_pid}" ];then
+    solr_pid=-1111
+else
+    solr_pid=$(cat ${solr_pid})
+fi
+if ! ps -p $mysql_pid > /dev/null;then
+   mysqld_safe &> /dev/null & 
+fi
+
+if ! ps -p $solr_pid > /dev/null;then
+    /opt/solr/bin/solr start &> /dev/null
+fi
+
+
+/usr/bin/git config --global init.defaultBranch main &> /dev/null
+/usr/bin/git config --global user.email "user@docker.org" &> /dev/null
+/usr/bin/git config --global user.name "Freva" &> /dev/null
+export PATH=/opt/evaluation_system/bin:$PATH
+exec /opt/evaluation_system/bin/freva "$@"
 
 
