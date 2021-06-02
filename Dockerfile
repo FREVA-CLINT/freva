@@ -1,10 +1,11 @@
 FROM solr:latest
 MAINTAINER dkrz-clint
 USER root
-ARG NB_USER
-ARG NB_UID
+ARG NB_USER=freva
+ARG NB_UID=1000
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
+
 RUN adduser --disabled-password \
     --gecos "Default user" \
     --uid ${NB_UID} \
@@ -30,10 +31,10 @@ RUN adduser --disabled-password \
     /usr/bin/sudo -E -u solr cp /tmp/evaluation_system/managed-schema /var/solr/data/files/conf/managed-schema &&\
     /bin/cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ &&\
     cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ &&\
-    /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook &&\
+    /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub &&\
     cd / && /bin/rm -r /tmp/evaluation_system
 USER ${NB_USER}
 WORKDIR ${HOME}
 ENV PATH="/opt/evaluation_system/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
 ENTRYPOINT ["/opt/evaluation_system/bin/docker-entrypoint.sh"]
-CMD /opt/evaluation_system/bin/loadfreva.sh
+CMD ["/opt/evaluation_system/bin/loadfreva.sh"]
