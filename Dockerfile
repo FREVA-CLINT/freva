@@ -146,7 +146,7 @@ RUN set -ex; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
   cd / && rm -r /tmp/evaluation_system
 
-COPY src/evaluation_system/tests/mocks/bin/* .docker/*.sh /opt/evaluation_system/bin/
+# COPY src/evaluation_system/tests/mocks/bin/* .docker/*.sh /opt/evaluation_system/bin/
 VOLUME /var/solr
 EXPOSE 8888
 WORKDIR ${HOME}
