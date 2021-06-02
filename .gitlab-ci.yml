@@ -1,4 +1,4 @@
-image: openjdk:11-je
+image: openjdk:11-jre
 
 variables:
 
