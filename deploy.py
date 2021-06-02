@@ -111,7 +111,7 @@ def parse_args(argv=None):
     """Consturct command line argument parser."""
 
     ap = argparse.ArgumentParser(prog='deploy_freva',
-            description="""This Programm sets up a conda environment the the evaluation_system""",
+            description="""This Programm installs the evaluation_system package.""",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     ap.add_argument('install_prefix', type=Path,

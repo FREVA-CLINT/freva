@@ -19,7 +19,7 @@ Since version 2021.5 there is `evaluation_system` package is deployed *within*
 the python environment. No seperation between the two is needed. Here we assume
 you want to deploy the code along with fresh python installation that should
 located `install_prefix`. To deploy, that is install a fresh python distribution
-and the `evaluation_system` package use the `install.py` script:
+and the `evaluation_system` package use the `deploy.py` script:
 
 ```bash
 $: python deploy.py install_prefix
@@ -30,7 +30,7 @@ Additional fine tuning is possible via the following command line arguments:
 ```bash
 usage: deploy_freva [-h] [--packages [PACKAGES [PACKAGES ...]]] [--channel CHANNEL] [--shell SHELL] [--python PYTHON] [--pip [PIP [PIP ...]]] [--develop] [--no_conda] install_prefix
 
-This Programm sets up a conda environment for jupyter on mistral
+This Programm installs the evaluation_system package.
 
 positional arguments:
   install_prefix        Install prefix for the environment.
@@ -62,7 +62,8 @@ Here you should set the entries pointing to the mysql database and the apache so
 > **_Note:_** Since version 2021.5 the config files can take variables that can be reused within the configfile, see https://docs.python.org/3/library/configparser.html#configparser.ExtendedInterpolation for details. Configurations containing the '$' charatcter must be escaped by '$$' (additional $) to avoid conflicts.
 
 ### The module file
-The deployment process will create a module file, which is located in `loadfreva.modules`. Copy this file to the appropriate location of your central modules system to make use of it.
+The deployment process will create a module file, which is located in `install_prefix/share/loadfreva.modules`. Copy this file to the appropriate location of your central modules system to make use of it.
+
 
 ## Installing the python package, without deployment.
 
