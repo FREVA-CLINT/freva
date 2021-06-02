@@ -10,7 +10,7 @@ set -e
 
 export PATH=/opt/evaluation_system/bin:$PATH
 if [ -z "$(ps aux|grep mysqld_safe|grep -v grep)" ];then
-    mysql_safe &
+    mysqld_safe &
 fi
 
 if [ -Z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
