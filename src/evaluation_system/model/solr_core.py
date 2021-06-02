@@ -307,7 +307,6 @@ be used, using the configuration from the config file).
 """
         open_method, mode = open, 'r'
         if dump_file.endswith('.gz'):
-            # print "Using gzip"
             import gzip
             open_method, mode = gzip.open, 'rt'
         if core_latest is None:
@@ -363,8 +362,6 @@ be used, using the configuration from the config file).
                                 #batch_latest = batch_latest_new.values()
                 
                             if not drs_file.get_version() < version:
-                                # print latest_versions
-                                #print drs_file.get_version(), version, metadata
                                 batch_latest.append(metadata)
                         else:
                             # if not version always add to latest
@@ -388,7 +385,6 @@ be used, using the configuration from the config file).
             # flush
             if len(batch) > 0:
                 print("Sending last %s entries and %s entries to latest core" % (len(batch), len(batch_latest)))
-		#print len(batch_latest)
                 core_all_files.post(batch)
                 batch = []
                 batch_count += 1
