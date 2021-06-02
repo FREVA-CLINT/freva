@@ -19,15 +19,18 @@ dev-obs:
                        --dockerfile $CI_PROJECT_DIR/Dockerfile
                        --destination $CI_REGISTRY_IMAGE/freva_build:$IMAGETAG
     tags: 
-        - docker
+        - docker, specific
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'master'"
+        - if: "$CI_COMMIT_BRANCH != 'master'"
+
 
 unittest:
     stage: test
     tags:
-        - docker
+        - docker, specific
     script:
         # Do the unit tests
-
         - cd $CI_PROJECT_DIR; python3 deploy.py /tmp/evaluation_test
         - FREVA_ENV=/tmp/evaluation_system_test make tests
 
