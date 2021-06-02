@@ -1,26 +1,33 @@
-image: solr:latest
+stages:
+    - build
+    - test
 
-variables:
-  USER : root
+dev-obs:
+    stage: build
+    image: 
+        name: gcr.io/kaniko-project/executor:debug
+        entrypoint: [""]
+    script:
+        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context $CI_PROJECT_DIR
+                       --reproducible
+                       --cache
+                       --skip-unused-stages=true
+                       --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+                       --build-arg=IMAGETAG=${IMAGETAG}
+                       --dockerfile $CI_PROJECT_DIR/Dockerfile
+                       --destination $CI_REGISTRY_IMAGE/freva_build:$IMAGETAG
+    tags: 
+        - docker
 
-before_script:
-    - sudo apt -y update && sudo apt -y upgrade && sudo apt install git mariadb-server python3 make && sudo service mysql start
-    - git clone -b init https://gitlab.dkrz.de/freva/deployment.git /tmp/deployment
-    - sudo -E -u solr /opt/solr/bin/solr create_core -c latest -d example/files/conf
-    - sudo -E -u solr /opt/solr/bin/solr create_core -c files -d example/files/conf
-    - sudo -E -u solr cp /tmp/deployment/config/managed-schema /var/solr/data/latest/conf/managed-schema
-    - sudo -E -u solr cp /tmp/deployment/config/managed-schema /var/solr/data/files/conf/managed-schema
-    - cp evaluation_system.conf.tmpl evaluation_system.conf
-    - python3 deploy /tmp/evaluation_system
-    - mysql < src/evaluation_system/tests/mocks/create_user.sql
-    - mysql -u test_user -pT3st -D freva_dev < /tmp/deployment/config/create_tables.sql
-    - git config --global init.defaultBranch main
-    - git config --global user.email "you@example.com"
-    - git config --global user.name "Your Name"
 unittest:
+    stage: test
     tags:
         - docker
     script:
         # Do the unit tests
-        - FREVA_ENV=/tmp/evaluation_system make tests
+
+        - cd $CI_PROJECT_DIR; python3 deploy.py /tmp/evaluation_test
+        - FREVA_ENV=/tmp/evaluation_system_test make tests
 
