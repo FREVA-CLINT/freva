@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ -z "$(echo $PATH|grep -i evaluation_system)" ];then
+    /usr/bin/git config --global init.defaultBranch main &> /dev/null
+    /usr/bin/git config --global user.email "user@docker.org" &> /dev/null
+    /usr/bin/git config --global user.name "Freva" &> /dev/null
+    export PATH=/opt/evaluation_system/bin:$PATH
+    mysqld_safe &
+    /opt/solr/bin/solr start
+fi
+exec "/opt/evaluation_system/bin/$@"
+
+

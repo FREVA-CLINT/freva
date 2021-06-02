@@ -144,6 +144,7 @@ RUN set -ex; \
   cd /tmp/evaluation_system/;\
   /usr/bin/python3 deploy.py /opt/evaluation_system ; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
+  cp /tmp/evaluation_system/.docker/freva /usr/bin/; chmod +x /usr/bin/freva;\
   cd / && rm -r /tmp/evaluation_system
 
 # COPY src/evaluation_system/tests/mocks/bin/* .docker/*.sh /opt/evaluation_system/bin/
