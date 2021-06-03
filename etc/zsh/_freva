@@ -1,0 +1,36 @@
+#compdef freva
+
+__plugin(){
+    integer ret=1
+    local -a args
+    args+=(
+     '--hlep[show this help message and exit]'
+     '--debug[turn on debugging info and show stack trace on exceptions.]'
+     '--repos-version[how the version number from the repository]'
+     '--caption[sets a caption for the results]'
+     '--save[saves the configuration locally for this user.]'
+            )
+      _arguments -w -s -S $args[@]
+
+
+}
+
+_freva() {
+    integer ret=1
+    local context line
+    local curcontext="$curcontext" state
+    local -a args
+    argarray=("--help" "--plugin" "--history" "--databrowser" "--crawl_my_data" "--esgf")
+    args+=(
+        '--help[Show help message]'
+        '--plugin[Applies some analysis to the given data]:->plugin:__plugin'
+        '--history[provides access to the configuration history (use --help for more help)]:history'
+        '--databrowser[Find data in the system]:databrowser'
+        '--crawl_my_data[Use this command to update your projectdata]:crawl'
+        '--esgf[Browse ESGF data and create wget script]:esgf'
+    )
+    local cur=$(echo ${words[2]}|sed 's/-//g')
+    _arguments -w -s -S $args[@] && ret=0
+    return ret
+}
+_freva "$@"
