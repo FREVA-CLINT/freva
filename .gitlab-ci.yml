@@ -16,6 +16,7 @@ dev-obs:
                        --skip-unused-stages=true
                        --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
                        --build-arg=IMAGETAG=${IMAGETAG}
+                       --whitelist-var-run=false
                        --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
                        --destination $CI_REGISTRY_IMAGE/freva_build:$IMAGETAG
     tags:
