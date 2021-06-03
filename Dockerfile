@@ -125,11 +125,11 @@ RUN set -ex; \
   sudo -E -u ${NB_USER} /usr/bin/git clone -b update_install https://gitlab.dkrz.de/freva/evaluation_system.git /tmp/evaluation_system ; \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf ; \
   echo "mysqld_safe &" > /tmp/config ; \
-  echo "mysqladmin --user=${SOLR_USER} --silent --wait=30 ping || exit 1" >> /tmp/config ; \
+  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
   /bin/cp /tmp/evaluation_system/.docker/*.sql /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/.docker/managed-schema /tmp/evaluation_system/ ;\
   cd /tmp/evaluation_system ;\
-  /usr/bin/mysql < /tmp/evaluation_system/create_user.sql ; \
+  /usr/bin/mysql -h 127.0.0.1 < /tmp/evaluation_system/create_user.sql ; \
   /usr/bin/mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/create_tables.sql ;\
   /usr/bin/sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c latest -d /opt/solr/example/files/conf ;\
   /usr/bin/sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
@@ -141,7 +141,8 @@ RUN set -ex; \
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ ; \
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ ;\
   cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/ ;\
-  cd /tmp/evaluation_system/;\
+  cd /tmp/evaluation_system/;
+RUN \
   /usr/bin/python3 deploy.py /opt/evaluation_system ; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
   cp /tmp/evaluation_system/.docker/freva /usr/bin/; chmod +x /usr/bin/freva;\
