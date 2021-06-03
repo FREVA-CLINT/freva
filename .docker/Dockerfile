@@ -53,7 +53,7 @@ RUN set -ex; \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
   mysqladmin shutdown ;\
-  service mariadb start;
+  service mariadb start;\
   mysql < /tmp/evaluation_system/.docker/create_user.sql;\
   mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/.docker/create_tables.sql;\
   service mariadb stop ;\
