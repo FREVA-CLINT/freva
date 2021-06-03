@@ -62,6 +62,7 @@ RUN set -ex; \
   mkdir -p /opt/evaluation_system/bin ;\
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ ; \
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ ;\
+  cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
   cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/
 RUN \
   cd /tmp/evaluation_system/;\
@@ -74,8 +75,6 @@ RUN \
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
   find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
 
-COPY src/evaluation_system/tests/mocks/bin/* .docker/*.sh /opt/evaluation_system/bin/
-COPY .docker/zshrc ${HOME}/.zshrc
 EXPOSE 8888
 WORKDIR ${HOME}
 USER $NB_USER
