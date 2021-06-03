@@ -25,7 +25,8 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
 before_script:
-    - cd $CI_PROJECT_DIR; sudo systemct start mariadb; mysql < .docker/create_user.sql;
+    - mysqld_safe &
+    - cd $CI_PROJECT_DIR; mysql < .docker/create_user.sql;
     - cd $CI_PROJECT_DIR; mysql -u freva -pT3st -D freva -h 127.0.0.1 < .docker/create_tables.sql
     - /opt/solr/bin/solr start -s ${HOME}/solr/data
 unittest:

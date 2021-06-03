@@ -48,8 +48,12 @@ RUN set -ex; \
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/files/conf/managed-schema; \
-  cd /tmp/evaluation_system ;\
+  echo "mysqld_safe &" > /tmp/config ; \
+  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
+  bash /tmp/config && rm -r /tmp/config ; \
+  mysqladmin shutdown ;\
   chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql ;\
+  cd /tmp/evaluation_system ;\
   mkdir -p /opt/evaluation_system/bin ;\
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ ; \
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ ;\
