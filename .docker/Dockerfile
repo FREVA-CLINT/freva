@@ -7,7 +7,7 @@ LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
 ARG NB_USER="freva"
 ARG NB_UID="1000"
 ARG repository="https://gitlab.dkrz.de/freva/evaluation_system"
-ARG branch="update_install"
+ARG branch="new_cmd_arg_complete"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 
@@ -49,10 +49,10 @@ RUN set -ex; \
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/files/conf/managed-schema; \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf ; \
-  service mariadb start;\
+  service mysql start;\
   mysql < /tmp/evaluation_system/.docker/create_user.sql;\
   mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/.docker/create_tables.sql;\
-  service mariadb stop ;\
+  service mysql stop ;\
   chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql ;\
   cd /tmp/evaluation_system ;\
   mkdir -p /opt/evaluation_system/bin ;\
