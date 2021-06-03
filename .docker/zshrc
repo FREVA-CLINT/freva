@@ -1,0 +1,19 @@
+autoload -Uz compinit promptinit
+compinit
+promptinit
+
+# This will set the default prompt to the walters theme
+prompt bart
+
+typeset -U PATH path
+path=("/opt/evaluation_system/bin" "$path[@]")
+export PATH
+setopt COMPLETE_ALIASES
+zstyle ':completion:*' menu select
+zstyle ':completion::complete:*' gain-privileges 1
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+[[ -n "${key[Up]}"   ]] && bindkey -- "${key[Up]}"   up-line-or-beginning-search
+[[ -n "${key[Down]}" ]] && bindkey -- "${key[Down]}" down-line-or-beginning-search
