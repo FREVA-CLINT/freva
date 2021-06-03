@@ -51,6 +51,8 @@ RUN set -ex; \
   echo "mysqld_safe &" > /tmp/config ; \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
+  mysql < /tmp/evaluation_system/.docker/create_user.sql;\
+  mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/.docker/create_tables.sql;\
   mysqladmin shutdown ;\
   chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql ;\
   cd /tmp/evaluation_system ;\
