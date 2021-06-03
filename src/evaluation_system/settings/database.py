@@ -20,7 +20,7 @@ SETTINGS['DATABASES'] = {
         'USER': config.get(config.DB_USER),
         'PASSWORD': config.get(config.DB_PASSWD),
         'HOST': config.get(config.DB_HOST),   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        'PORT': config.get(str(config.DB_PORT), '3306'),
 
     }
 }

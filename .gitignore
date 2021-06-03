@@ -8,6 +8,9 @@
 #but let the git configure files through
 !.git*
 !.coveragerc
+!.docker/
 public/
 test_results/
 etc/evaluation_system.conf
+loadfreva.modules
+*.egg-info

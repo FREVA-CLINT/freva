@@ -52,7 +52,7 @@ DATE FORMAT
    
    Please note that in the shell you need to escape spaces. 
    All these are valid examples (at least for the bash shell):    
-   freva --history --since=2012-10-1\ 10:35
+   freva --history --since=2012-10-1\\ 10:35
    freva --history --since=2012-10-1" "10:35'"""
     
     def _run(self):

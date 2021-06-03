@@ -1,0 +1,31 @@
+#!/bin/bash
+
+JOB_ID=${!#}
+if [ -z "${MOCK_SLURM}" ];then
+    MOCK_SLURM=/tmp/mock_slurm
+fi
+IFS=$'\n'
+id_file=$MOCK_SLURM/$JOB_ID
+if [ ! -f $id_file ];then
+    exit 0
+fi
+state=$(head -n1 $id_file| awk '{print $NF}')
+check=$(fgrep EXIT $id_file | awk '{print $NF}')
+if ( [ $state == 'PD' ] &&  [ -z "$check" ] );then
+    echo -e "JobID|State|ExitCode|\n$JOB_ID|PENDING|0|"
+    exit 0
+fi
+STATUS=RUNNING
+EXIT_CODE=0
+if [ $check ];then
+    STATUS=FINISHED
+    let EXIT_CODE=$check
+    if [ $EXIT_CODE -gt 0 ];then
+        STATUS=FAILED
+    elif [ $EXIT_CODE -eq -1 ];then
+        STATUS=CANCELLED
+    fi
+fi
+echo -e "JobID|State|ExitCode|\n$JOB_ID|$STATUS|$EXIT_CODE|"
+exit 0
+

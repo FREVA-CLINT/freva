@@ -131,9 +131,9 @@ def test_parse_metadict(dummy_plugin):
 def test_read_config_parser(dummy_plugin):
     from evaluation_system.api.parameters import (ParameterDictionary, String,
                                                   Integer, ValidationError)
-    from configparser import ConfigParser
+    from configparser import ConfigParser, ExtendedInterpolation
     from io import StringIO
-    conf = ConfigParser()
+    conf = ConfigParser(interpolation=ExtendedInterpolation())
     conf_str = "[DummyPlugin]\na=42\nb=text"
     conf.read_file(StringIO(conf_str))
     dummy = dummy_plugin
@@ -399,17 +399,17 @@ def test_compose_command():
     assert similar_string(command, \
         'freva --plugin DummyPlugin --batchmode=False --caption \'This is the caption\' --unique_output True the_number=22 something=test other=1.4')
 
-def test_write_slurm_field(dummy_settings_single):
+def test_write_slurm_field(dummy_settings_single, temp_script):
     from evaluation_system.api.parameters import (ParameterDictionary,
                                                   Integer, String, Directory)
     from evaluation_system.tests.mocks.dummy import DummyPlugin
     dummy_plugin = DummyPlugin()
-    fp = open('/tmp/slurm_test.sh', 'w')
-    slurm_file = dummy_plugin.writeSlurmFile(
-        fp, config_dict={'the_number': 22}
-    )
-    fp.close()
-    assert os.path.isfile('/tmp/slurm_test.sh')
+    
+    with open(temp_script, 'w') as fp:
+        slurm_file = dummy_plugin.writeSlurmFile(
+            fp, config_dict={'the_number': 22}
+        )
+    assert os.path.isfile(temp_script)
     assert slurm_file._cmdstring == \
         dummy_plugin.composeCommand(config_dict={'the_number': 22})
 

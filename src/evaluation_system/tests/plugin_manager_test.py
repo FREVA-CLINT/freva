@@ -113,7 +113,7 @@ def test_parse_arguments(dummy_settings, temp_user):
 
     # parsing requesting user default but without any
     for args, result in [("the_number=4", {'other': 1.3999999999999999, 'the_number': 4, 'something': 'test'})]:
-        d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=temp_user)
+        d = pm.parseArguments('Dummyplugin', args.split(), user=temp_user)
         assert d == result
 
     pm.writeSetup('DummyPlugin', dict(number=7, the_number=42), temp_user)

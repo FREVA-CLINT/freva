@@ -75,6 +75,9 @@ input      (default: <undefined>)
 def test_run_plugin(stdout, plugin_command, dummy_history):
 
     sys.stdout = stdout
+    import configparser
+    cfg = configparser.ConfigParser()
+    cfg.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
     stdout.startCapturing()
     stdout.reset()
     with pytest.raises(SystemExit):
@@ -99,9 +102,10 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     # test save config
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=32', '--save', '--debug'])
-    fn = Path('~').expanduser() / 'evaluation_system/config/dummyplugin/dummyplugin.conf'
-    assert fn.is_file()
-    fn.unlink()
+    
+    fn = Path(cfg['evaluation_system']['base_dir_location']) / 'config/dummyplugin/dummyplugin.conf'
+    assert not fn.is_file()
+    #fn.unlink()
     # test show config
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=42', '--show-config'])
     output_str = '\n'.join([l.strip() for l in output_str.split('\n') if l.strip()])

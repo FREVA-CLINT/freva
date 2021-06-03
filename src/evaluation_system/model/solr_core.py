@@ -140,7 +140,19 @@ get downloaded from Solr)"""
     def get_solr_fields(self):
         """Return information about the Solr fields. This is dynamically generated and because of
 dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
-        return self.get_json('admin/luke')['fields']
+        answer = self.get_json('admin/luke')['fields']
+        #TODO: Solr has a language facet. Until we know why, delete it
+        if isinstance(answer, dict):
+            try:
+                del answer['language']
+            except KeyError:
+                pass
+        else:
+            try:
+                answer.remove('language')
+            except ValueError:
+                pass
+        return answer
     
     def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml', check_if_exist=True):
         """Creates (actually "register") this core. The Core configuration and directories must
@@ -295,7 +307,6 @@ be used, using the configuration from the config file).
 """
         open_method, mode = open, 'r'
         if dump_file.endswith('.gz'):
-            # print "Using gzip"
             import gzip
             open_method, mode = gzip.open, 'rt'
         if core_latest is None:
@@ -351,8 +362,6 @@ be used, using the configuration from the config file).
                                 #batch_latest = batch_latest_new.values()
                 
                             if not drs_file.get_version() < version:
-                                # print latest_versions
-                                #print drs_file.get_version(), version, metadata
                                 batch_latest.append(metadata)
                         else:
                             # if not version always add to latest
@@ -376,7 +385,6 @@ be used, using the configuration from the config file).
             # flush
             if len(batch) > 0:
                 print("Sending last %s entries and %s entries to latest core" % (len(batch), len(batch_latest)))
-		#print len(batch_latest)
                 core_all_files.post(batch)
                 batch = []
                 batch_count += 1

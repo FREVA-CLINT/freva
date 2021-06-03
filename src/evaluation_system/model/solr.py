@@ -153,7 +153,13 @@ The implementation contacts the required Solr cores instead of contacting the fi
             query += '&group=true&group.field=file_no_version&group.facet=true'
             
         answer = self.solr.get_json('select?facet=true&rows=0&%s' % query)
-        return answer['facet_counts']['facet_fields']
+        #TODO: why is there a language facit in the solr serach?
+        answer = answer['facet_counts']['facet_fields']
+        try:
+            del answer['language']
+        except KeyError:
+            pass
+        return answer
             
     @staticmethod
     def facets(latest_version=True, facets=None, **partial_dict):

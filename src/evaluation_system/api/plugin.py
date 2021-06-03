@@ -15,7 +15,7 @@ import shutil
 import re
 from time import time
 from datetime import datetime
-from configparser import ConfigParser
+from configparser import ConfigParser, ExtendedInterpolation
 import logging
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
@@ -488,7 +488,7 @@ The values are assumed to be in a section named just like the class implementing
 :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
 :return: a :class:`metadict` which is a clone of :class:`__config_metadict__` (if available) updated with the
          information found in ``fp``"""
-        config_parser = ConfigParser()
+        config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         config_parser.read_file(fp)
         return self.readFromConfigParser(config_parser)
 

@@ -98,5 +98,5 @@ def test_unload_and_create(dummy_solr):
      with pytest.raises(FileNotFoundError):
          dummy_solr.all_files.create()
      dummy_solr.all_files.create(check_if_exist=False)
-     assert len(dummy_solr.all_files.status()) == 9
+     assert len(dummy_solr.all_files.status()) >= 8
 

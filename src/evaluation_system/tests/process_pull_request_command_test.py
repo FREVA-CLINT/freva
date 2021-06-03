@@ -34,17 +34,18 @@ def test_command_fail(dummy_pr, stdout):
     assert new_pr.status == 'failed'
     assert 'ERROR:   Plugin murcss does not exist' in cmd_out
 
-def test_command_success(dummy_pr, stdout, dummy_git_path):
+def test_command_success(dummy_pr, stdout, dummy_git_path, git_config):
 
     from evaluation_system.api import plugin_manager as pm
     from evaluation_system.model.plugins.models import ToolPullRequest
     from django.contrib.auth.models import User
     repo_path, tool_path = dummy_git_path
-    os.makedirs(repo_path)
     this_dir = Path(__file__).parent
     shutil.copy(this_dir / 'mocks' / 'result_tags.py', repo_path)
     # prepare git repo
-    os.system('cd %s; git init; git add *; git commit -m "first commit" ' % (repo_path))
+
+    os.system('cd %s; git init; %s'%(repo_path, git_config))
+    os.system('cd %s; git add *; git commit -m "first commit" ' % (repo_path))
     # clone it
     os.system('git clone %s %s' % (repo_path, tool_path))
     # create a new tag

@@ -4,8 +4,11 @@
 This module manages the central configuration of the system.
 '''
 import os
+import os.path as osp
+from distutils.sysconfig import get_python_lib
 import logging
-from configparser import ConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
+import sys
 log = logging.getLogger(__name__)
 
 from evaluation_system.misc.utils import Struct, TemplateDict
@@ -22,15 +25,15 @@ the future for the next project phase.'''
 
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_SYSTEM_HOME = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-4]) 
-_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % _SYSTEM_HOME
-
-SPECIAL_VARIABLES =  TemplateDict(
-                                  EVALUATION_SYSTEM_HOME=_SYSTEM_HOME)
+_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % osp.abspath(sys.prefix)
+EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
+SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
 #: config options
 BASE_DIR = 'base_dir'
 'The name of the directory storing the evaluation system (output, configuration, etc)'
+
+ROOT_DIR = 'root_dir'
 
 DIRECTORY_STRUCTURE_TYPE = 'directory_structure_type'
 '''Defines which directory structure is going to be used. 
@@ -111,6 +114,9 @@ DB_PASSWD = 'db.passwd'
 DB_DB = 'db.db'
 ''' the database name on the server '''
 
+DB_PORT = 'db.port'
+''' database connection port'''
+
 #: Solr #########################
 SOLR_HOST = 'solr.host'
 '''Hostname of the Solr instance.'''
@@ -146,7 +152,7 @@ performed."""
 
     log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
-        config_parser = ConfigParser()
+        config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         with open(config_file, 'r') as fp:
             config_parser.read_file(fp)
             if not config_parser.has_section(CONFIG_SECTION_NAME):
@@ -167,7 +173,6 @@ performed."""
                   config_file)
     
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
-    
     #perform all special checks
     if not DIRECTORY_STRUCTURE.validate(_config[DIRECTORY_STRUCTURE_TYPE]):
         raise ConfigurationException("value (%s) of %s is not valid. Should be one of: %s" \
@@ -229,17 +234,13 @@ def keys():
     return _config.keys()
 
 def get_section(section_name):
-    conf = ConfigParser()
+    conf = ConfigParser(interpolation=ExtendedInterpolation())
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                                  _DEFAULT_CONFIG_FILE_LOCATION)
     conf.read(config_file)
-    
     try:
-        return dict(conf.items(section_name))
+        section = dict(conf.items(section_name))
     except NoSectionError:
         raise NoSectionError(f'There is no "{section_name}" section in config file')
-    
-    
-    
-    
-    
+    return SPECIAL_VARIABLES.substitute(section)
+

@@ -1,0 +1,48 @@
+#!/bin/bash
+JOB_ID=$((1 + $RANDOM))
+the_script=$(readlink -f ${!#})
+let num_args=$#+1
+for ((n = 1 ; n < $num_args ; n++)); do
+    case ${!n} in
+        -b*|--begin*)
+        let a=$n+1
+        begin=$(echo "${!a}")
+    ;;
+        *)
+    ;;
+esac
+done
+sleep_time=$(echo $begin| sed 's/now//g'|cut -d + -f2)
+if [ -z $sleep_time ];then
+    sleep_time=0
+fi
+let sleep_time=$sleep_time
+if [ -z "${MOCK_SLURM}" ];then
+
+    MOCK_SLURM=/tmp/mock_slurm
+fi
+mkdir -p $MOCK_SLURM/wrapper &> /dev/null
+id_file=$MOCK_SLURM/$JOB_ID
+
+IFS=$'\n'
+for i in $(sed -n -e '/SBATCH/p' $the_script);do
+    if [ "$(echo "$i"|grep '\-D')" ];then
+        out_dir=$(echo $i|awk '{print $NF}')
+    fi
+done
+chmod +x $the_script
+slurm_out="${out_dir}/slurm-${JOB_ID}.o"
+cat -> $MOCK_SLURM/wrapper/${JOB_ID}.sh <<EOF
+#!/bin/bash
+echo ${JOB_ID} \$\$ PD > ${id_file}
+export PATH=$(readlink -f $(dirname $0)):$PATH
+sleep $sleep_time
+echo ${JOB_ID} \$\$ R > ${id_file}
+bash $the_script
+echo "EXIT \$?" >> ${id_file}
+
+EOF
+chmod +x $MOCK_SLURM/wrapper/${JOB_ID}.sh
+bash -c "nohup /tmp/mock_slurm/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
+echo "Submitted batch job $JOB_ID"
+

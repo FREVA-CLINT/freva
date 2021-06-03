@@ -65,6 +65,12 @@ class OutputWrapper:
     def __getattr__(self, *args, **kwargs):
         return self.__original.__getattribute__(*args, **kwargs)
 
+@pytest.fixture(scope='function')
+def temp_script():
+
+    with NamedTemporaryFile(suffix='test.sh') as tf:
+        yield tf.name
+
 @pytest.fixture(scope='session')
 def dummy_env():
 
@@ -74,7 +80,15 @@ def dummy_env():
     from evaluation_system.misc import config
     config.reloadConfiguration()
     yield os.environ
-    #os.environ = env
+    try:
+        shutil.rmtree(config.get('base_dir_location'))
+    except:
+        pass
+    os.environ = env
+
+@pytest.fixture(scope='session')
+def git_config():
+    yield 'git config init.defaultBranch main; git config user.name your_user; git; config user.email your@email.com'
 
 @pytest.fixture(scope='module')
 def dummy_pr(dummy_env, dummy_settings):
@@ -90,6 +104,8 @@ def dummy_git_path():
     with TemporaryDirectory(prefix='git') as td:
         repo_path = Path(td) / 'test_plugin.git'
         tool_path = Path(td) / 'test_tool'
+        tool_path.mkdir(exist_ok=True, parents=True)
+        repo_path.mkdir(exist_ok=True, parents=True)
         yield repo_path, tool_path
 
 @pytest.fixture(scope='module')
@@ -354,9 +370,8 @@ def hist_obj():
 @pytest.fixture(scope='module')
 def freva_lib(dummy_env, dummy_settings):
     sys.dont_write_bytecode = True
-    freva_bin = list(Path(__file__).parents)[3] / 'bin' / 'freva'
-    Freva = import_path(freva_bin)
-    yield Freva.Freva()
+    from evaluation_system.commands._main import Freva
+    yield Freva()
     import evaluation_system.api.plugin_manager as pm
     pm.reloadPlugins()
 

@@ -1,10 +1,8 @@
 # makefile used for testing
 #
 #
-SHELL := /bin/bash
-$(shell cat ../misc4freva/loadscripts/loadfreva.source|grep -v autocomplete|grep -v ^freva > .include)
-include .include
-export $(shell sed 's/=.*//' .include)
+export PATH := $(FREVA_ENV)/bin:$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
+export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 all: test upload
 test:
 	rm -f .include
