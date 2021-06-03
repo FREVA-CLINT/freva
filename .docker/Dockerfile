@@ -48,12 +48,15 @@ RUN set -ex; \
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/files/conf/managed-schema; \
+  sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf ; \
   echo "mysqld_safe &" > /tmp/config ; \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
+  mysqladmin shutdown ;\
+  service mariadb start;
   mysql < /tmp/evaluation_system/.docker/create_user.sql;\
   mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/.docker/create_tables.sql;\
-  mysqladmin shutdown ;\
+  service mariadb stop ;\
   chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql ;\
   cd /tmp/evaluation_system ;\
   mkdir -p /opt/evaluation_system/bin ;\
