@@ -30,7 +30,7 @@ ENV \
     SOLR_PID_DIR=${HOME}/solr \
     SOLR_LOGS_DIR=${HOME}/solr/logs \
     LOG4J_PROPS=${HOME}/solr/log4j2.xml \
-    PATH="/tmp/evaluation_system/src/evaluation_system/tests/mocks/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
+    PATH="/opt/solr/bin:/opt/docker-solr/scripts:$PATH:/tmp/evaluation_system/src/evaluation_system/tests/mocks/bin"
 RUN set -ex; \
   groupadd -r --gid "$NB_GID" "$NB_GROUP"; \
   adduser --uid "$NB_UID" --gid "$NB_GID" --gecos "Default user" \
