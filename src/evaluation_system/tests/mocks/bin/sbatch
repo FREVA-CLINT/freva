@@ -37,10 +37,10 @@ echo ${JOB_ID} \$\$ PD > ${id_file}
 export PATH=$(readlink -f $(dirname $0)):$PATH
 sleep $sleep_time
 echo ${JOB_ID} \$\$ R > ${id_file}
-bash -c $the_script
+bash $the_script
 echo "EXIT \$?" >> ${id_file}
 
 EOF
-bash -c "nohup bash -c ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
+bash "nohup bash ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
 echo "Submitted batch job $JOB_ID"
 
