@@ -30,7 +30,7 @@ ENV \
     SOLR_PID_DIR=${HOME}/solr \
     SOLR_LOGS_DIR=${HOME}/solr/logs \
     LOG4J_PROPS=${HOME}/solr/log4j2.xml \
-    PATH="/opt/evaluation_system/src/evaluation_system/tests/mocks/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
+    PATH="/tmp/evaluation_system/src/evaluation_system/tests/mocks/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
 RUN set -ex; \
   groupadd -r --gid "$NB_GID" "$NB_GROUP"; \
   adduser --uid "$NB_UID" --gid "$NB_GID" --gecos "Default user" \
@@ -67,6 +67,8 @@ RUN set -ex; \
   chmod +x /tmp/evaluation_system/.docker/*.sh;\
   chmod -R 0775 /tmp/evaluation_system/.docker;\
   cp /tmp/evaluation_system/.docker/*.sh /usr/local/bin/;\
+  chmod +x /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* ;\
+  cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/;\
   find /tmp/evaluation_system -type d -print0 | xargs -0 chmod 0775; \
   find /tmp/evaluation_system -type f -print0 | xargs -0 chmod 0665
 
@@ -76,5 +78,5 @@ USER $NB_USER
 # COPY run_unittests /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin
 # COPY test.conf /tmp/evaluation_system/evaluation_system/src/tests/
 # COPY deploy.py /tmp/evaluation_system/
-# CMD /usr/local/loadfreva.sh
+CMD /usr/local/loadfreva.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
