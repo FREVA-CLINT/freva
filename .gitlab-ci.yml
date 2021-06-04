@@ -18,19 +18,19 @@ dev-obs:
                        --build-arg=IMAGETAG=${IMAGETAG}
                        --whitelist-var-run=false
                        --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
-                       --destination $CI_REGISTRY_IMAGE/freva_build:$IMAGETAG
+                       --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
     tags:
         - docker, specific
     rules:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
-unittest:
+test39:
     stage: test
+    image: registry.gitlab.dkrz.de/freva/freva_build:$CI_COMMIT_BRANCH
     tags:
         - docker, specific
     script:
         # Do the unit tests
-        - cd $CI_PROJECT_DIR; python3 deploy.py /tmp/evaluation_test
-        - FREVA_ENV=/tmp/evaluation_system_test make tests
+        - python3 deploy.py /tmp/freva_39 --python=3.9 --run_tests
 
