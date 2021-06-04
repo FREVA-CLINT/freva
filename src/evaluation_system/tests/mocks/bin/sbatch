@@ -30,7 +30,6 @@ for i in $(sed -n -e '/SBATCH/p' $the_script);do
         out_dir=$(echo $i|awk '{print $NF}')
     fi
 done
-chmod +x $the_script
 slurm_out="${out_dir}/slurm-${JOB_ID}.o"
 cat -> $MOCK_SLURM/wrapper/${JOB_ID}.sh <<EOF
 #!/bin/bash
@@ -38,11 +37,10 @@ echo ${JOB_ID} \$\$ PD > ${id_file}
 export PATH=$(readlink -f $(dirname $0)):$PATH
 sleep $sleep_time
 echo ${JOB_ID} \$\$ R > ${id_file}
-bash $the_script
+bash -c $the_script
 echo "EXIT \$?" >> ${id_file}
 
 EOF
-chmod +x $MOCK_SLURM/wrapper/${JOB_ID}.sh
-bash -c "nohup /tmp/mock_slurm/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
+bash -c "nohup bash -c ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
 echo "Submitted batch job $JOB_ID"
 
