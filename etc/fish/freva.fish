@@ -18,7 +18,7 @@ function __fish_facet_in_cmd -d "Check if facet name is already in command line"
 end
 
 function __fish_facet_search
-    bash -c "freva --databrowser --all-facets --relevant-only $argv"
+    sh -c "freva --databrowser --all-facets --relevant-only $argv"
 end
 
 function __fish_complete_solr -d "Completion for the databrowser command"
