@@ -13,6 +13,4 @@ elif [ "$sh" = "zsh" ];then
     let zsh_major=${ZSH_VERSION:0:1}
     fpath+=($etc_dir/zsh)
     source /usr/share/zsh/functions/Completion/compinit 1> /dev/null
-    echo $fpath
-    #. $etc_dir/zsh/freva.zsh #&& . $etc_dir/zsh/solr.sh
 fi
