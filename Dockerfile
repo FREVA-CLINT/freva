@@ -75,7 +75,7 @@ RUN \
   chmod 0771 ${HOME}/solr;\
   cd / && rm -r /tmp/evaluation_system;\
   mkdir -p /etc/jupyter;\
-  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etct/jupyter;\
+  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda; \
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
   find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
