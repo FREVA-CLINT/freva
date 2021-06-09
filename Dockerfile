@@ -68,10 +68,15 @@ RUN \
   cd /tmp/evaluation_system/;\
   /usr/bin/python3 deploy.py /opt/evaluation_system ; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
+  /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
+  /opte/evaluation_system/bin/python3 -m bash_kernel.install;\
   cp /tmp/evaluation_system/.docker/freva /usr/bin/; chmod +x /usr/bin/freva;\
   chown -R ${NB_USER}:${NB_GROUP} /var/solr;\
   chmod 0771 ${HOME}/solr;\
   cd / && rm -r /tmp/evaluation_system;\
+  mkdir -p /etc/jupyter;\
+  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etct/jupyter;\
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda; \
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
   find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
 
