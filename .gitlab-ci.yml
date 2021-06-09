@@ -44,6 +44,9 @@ test39:
 
 pages:
   stage: report
+  image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+  tags:
+    - docker, specific
   dependencies:
     - test39
   script:
