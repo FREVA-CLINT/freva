@@ -8,6 +8,7 @@ prompt bart
 typeset -U PATH path
 path=("/opt/evaluation_system/bin" "$path[@]")
 export PATH
+export SHELL=/usr/bin/zsh
 setopt COMPLETE_ALIASES
 zstyle ':completion:*' menu select
 zstyle ':completion::complete:*' gain-privileges 1
@@ -17,3 +18,5 @@ zle -N down-line-or-beginning-search
 
 [[ -n "${key[Up]}"   ]] && bindkey -- "${key[Up]}"   up-line-or-beginning-search
 [[ -n "${key[Down]}" ]] && bindkey -- "${key[Down]}" down-line-or-beginning-search
+
+source /opt/evaluation_system/etc/autocomplete.bash
