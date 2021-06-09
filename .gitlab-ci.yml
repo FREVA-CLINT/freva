@@ -41,3 +41,10 @@ test39:
       reports:
         junit: report.xml
 
+pages:
+  stage: build
+  dependencies:
+    - test39
+  artifacts:
+    paths:
+      - public/
