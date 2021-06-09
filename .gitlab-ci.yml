@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - report
 
 dev-obs:
     stage: build
@@ -42,7 +43,7 @@ test39:
         junit: report.xml
 
 pages:
-  stage: build
+  stage: report
   dependencies:
     - test39
   script:
