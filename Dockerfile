@@ -7,7 +7,7 @@ LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
 ARG NB_USER="freva"
 ARG NB_UID="1000"
 ARG repository="https://gitlab.dkrz.de/freva/evaluation_system"
-ARG branch="update_install"
+ARG branch="new_cmd_arg_complete"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 
