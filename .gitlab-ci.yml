@@ -45,6 +45,9 @@ pages:
   stage: build
   dependencies:
     - test39
+  script:
+    - echo 'test'
   artifacts:
+    when: always
     paths:
       - public/
