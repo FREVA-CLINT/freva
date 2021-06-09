@@ -30,10 +30,14 @@ test39:
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     tags:
-        - docker, specific
+      - docker, specific
     before_script:
       - cp /tmp/evaluation_system/evaluation_system.conf .
     script:
         # Do the unit tests
-        - python3 deploy.py /tmp/freva_39 --python=3.9 --run_tests
+      - python3 deploy.py /tmp/freva_39 --python=3.9 --run_tests
+    artifacts:
+      when: always
+      reports:
+        junit: report.xml
 
