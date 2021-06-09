@@ -13,4 +13,5 @@ public/
 test_results/
 etc/evaluation_system.conf
 loadfreva.modules
+report.xml
 *.egg-info
