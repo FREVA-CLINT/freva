@@ -7,7 +7,7 @@ all: test upload
 test:
 	rm -f .include
 	pytest -vv \
-	    --cov=$(PWD)/src/evaluation_system --cov-report=html:public --cov-report term-missing \
+	    --cov=$(PWD)/src/evaluation_system --cov-report=html:coverage_report --cov-report term-missing \
 	    --html test_results/index.html  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
 upload:
