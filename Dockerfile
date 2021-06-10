@@ -8,6 +8,7 @@ ARG NB_USER="freva"
 ARG NB_UID="1000"
 ARG repository="https://gitlab.dkrz.de/freva/evaluation_system"
 ARG branch="new_cmd_arg_complete"
+ARG binder="true"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 
@@ -62,23 +63,25 @@ RUN set -ex; \
   mkdir -p /opt/evaluation_system/bin ;\
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ ; \
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ ;\
-  cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
-  cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/
+  cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/;\
+  chmod 0771 ${HOME}/solr;\
+  chown -R ${NB_USER}:${NB_GROUP} /var/solr;\
+  find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
+  find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
 RUN \
+  if [[ "$binder" = "true" ]];then\
+  cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; \
   cd /tmp/evaluation_system/;\
   /usr/bin/python3 deploy.py /opt/evaluation_system ; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
   /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
   /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
   cp /tmp/evaluation_system/.docker/freva /usr/bin/; chmod +x /usr/bin/freva;\
-  chown -R ${NB_USER}:${NB_GROUP} /var/solr;\
-  chmod 0771 ${HOME}/solr;\
   cd / && rm -r /tmp/evaluation_system;\
   mkdir -p /etc/jupyter;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda; \
-  find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
-  find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;if
 
 EXPOSE 8888
 WORKDIR ${HOME}
