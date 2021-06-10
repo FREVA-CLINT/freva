@@ -77,7 +77,6 @@ RUN \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
   /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
   /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
-  cp /tmp/evaluation_system/.docker/freva /usr/bin/; chmod +x /usr/bin/freva;\
   cd / && rm -r /tmp/evaluation_system;\
   mkdir -p /etc/jupyter;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
