@@ -26,7 +26,7 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
-test39:
+test_latest:
 
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
@@ -36,11 +36,13 @@ test39:
       - cp /opt/evaluation_system/etc/evaluation_system.conf .
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_39 --python=3.9 --run_tests
+      - python3 deploy.py /tmp/freva_latest --python=3 --run_tests
     artifacts:
       when: always
       reports:
         junit: report.xml
+      paths:
+        - coverage_report
 
 pages:
   stage: report
@@ -48,9 +50,9 @@ pages:
   tags:
     - docker, specific
   dependencies:
-    - test39
+    - test_latest
   script:
-    - FREVA_ENV=/opt/evaluation_system make test
+    - mv coverage_report public
   artifacts:
     when: always
     paths:
