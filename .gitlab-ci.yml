@@ -45,6 +45,7 @@ test_latest:
         junit: report.xml
       paths:
         - coverage_report
+        - test_results
 
 pages:
   stage: report
@@ -53,8 +54,12 @@ pages:
     - docker, specific
   dependencies:
     - test_latest
+  before_script:
+      - mkdir -p public; cp .docker/index.html public/
   script:
-    - mv coverage_report public
+    - mv coverage_report public/
+    - /opt/allure/bin/allure generate --clean test_results
+    - mv allure-report public/
   artifacts:
     when: always
     paths:

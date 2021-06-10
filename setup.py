@@ -42,6 +42,7 @@ setup(name="evaluation_system",
               'pytest-cov',
               'nbval',
               'h5netcdf',
+              'allure-pytest',
               'python-swiftclient',
               'testpath',
           ]
