@@ -34,7 +34,7 @@ RUN set -ex; \
   --shell /usr/bin/zsh --disabled-password "$NB_USER"
 
 RUN set -ex; \
-  wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz; -O allure.tgz\
+  wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz;\
   tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz;\
   echo SOLR_HOME=${HOME}/solr/data >> /etc/environment;\
   echo SOLR_PID_DIR=${HOME}/solr >> /etc/environment;\
