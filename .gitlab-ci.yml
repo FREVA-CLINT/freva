@@ -55,10 +55,11 @@ pages:
   dependencies:
     - test_latest
   before_script:
-      - mkdir -p public; cp .docker/index.html public/
-  script:
+    - mkdir -p public; cp .docker/index.html public/
     - mv coverage_report public/
+  script:
     - /opt/allure/bin/allure generate --clean test_results
+  after_script:
     - mv allure-report public/
   artifacts:
     when: always
