@@ -17,6 +17,8 @@ dev-obs:
                        --skip-unused-stages=true
                        --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
                        --build-arg=IMAGETAG=${IMAGETAG}
+                       --build-arg=branch=${CI_COMMIT_BRANCH}
+                       --build-arg=binder="false"
                        --whitelist-var-run=false
                        --dockerfile $CI_PROJECT_DIR/Dockerfile
                        --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
@@ -33,10 +35,10 @@ test_latest:
     tags:
       - docker, specific
     before_script:
-      - cp /opt/evaluation_system/etc/evaluation_system.conf .
+      - cp /tmp/evaluation_system/evaluation_system.conf .
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest --python=3 --run_tests
+      - python3 deploy.py /tmp/freva_latest --python=3.9 --run_tests
     artifacts:
       when: always
       reports:
