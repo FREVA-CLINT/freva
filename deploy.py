@@ -261,7 +261,7 @@ class Installer:
     def unittests(self):
         """Run unittests."""
         logger.info('Running unittests:')
-        self.run_cmd(f'FREVA_ENV={self.install_prefix} make test')
+        self.run_cmd(f'FREVA_ENV={self.install_prefix} make all')
 
     @property
     def python_prefix(self):
