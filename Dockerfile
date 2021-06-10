@@ -69,7 +69,7 @@ RUN set -ex; \
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
   find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
 RUN \
-  if [[ "$binder" = "true" ]];then\
+  if [ "$binder" = "true" ];then\
   cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; \
   cd /tmp/evaluation_system/;\
@@ -81,7 +81,7 @@ RUN \
   cd / && rm -r /tmp/evaluation_system;\
   mkdir -p /etc/jupyter;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;if
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
 
 EXPOSE 8888
 WORKDIR ${HOME}
