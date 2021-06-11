@@ -30,13 +30,12 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
 test_latest:
-
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     tags:
       - docker, specific
     before_script:
-      - cp /tmp/evaluation_system/evaluation_system.conf .
+      - cp .docker/evaluation_system.conf .
     script:
         # Do the unit tests
       - python3 deploy.py /tmp/freva_latest --python=3.9 --run_tests
@@ -47,6 +46,8 @@ test_latest:
       paths:
         - coverage_report
         - test_results
+        - report.xml
+
 
 pages:
   stage: report
