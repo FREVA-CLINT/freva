@@ -13,7 +13,8 @@ dev-obs:
         - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - /kaniko/executor --context $CI_PROJECT_DIR
                        --reproducible
-                       --cache
+                       --no-cache
+                       --rm
                        --skip-unused-stages=true
                        --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
                        --build-arg=IMAGETAG=${IMAGETAG}
