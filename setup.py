@@ -38,6 +38,7 @@ setup(name="evaluation_system",
               ],
         'test': [
               'pytest',
+              'nbformat',
               'pytest-html',
               'pytest-cov',
               'nbval',
