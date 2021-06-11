@@ -12,9 +12,8 @@ dev-obs:
         - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
         - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - /kaniko/executor --context $CI_PROJECT_DIR
-                       --reproducible
-                       --no-cache
-                       --rm
+                       #--reproducible
+                       --cleanup
                        --skip-unused-stages=true
                        --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
                        --build-arg=IMAGETAG=${IMAGETAG}
