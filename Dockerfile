@@ -80,6 +80,10 @@ RUN \
   mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva; mkdir -p /opt/evaluation_system/etc/jupyter;\
   mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
   chmod -R 777 /opt/freva-work;\
+  mysqld_safe &;\
+  /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump2.gz;\
+  /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz;\
+  rm /tmp/dump.gz;\
   cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /opt/evaluation_system/etc/jupyter;\

@@ -16,11 +16,11 @@ if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
     export LOG4J_PROPS=${HOME}/solr/log4j2.xml
     exec solr-fg -s ${HOME}/solr/data &
 fi
-if [ -f /opt/evaluation_system/sbin/solr_ingest ];then
-   nohup /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz
-   nohup /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz
-   nohup rm /tmp/dump.gz
-fi
+#if [ -f /opt/evaluation_system/sbin/solr_ingest ];then
+#   /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz
+#   /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz
+#   rm /tmp/dump.gz
+#fi
 
 wait
 
