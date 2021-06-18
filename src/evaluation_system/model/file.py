@@ -7,6 +7,7 @@ These are mainly model and observational and reanalysis data.
 """
 import json
 import glob
+from pathlib import Path
 import os
 import logging
 from evaluation_system.misc.utils import find_similar_words
@@ -32,7 +33,7 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         # cmip5 data
         CMIP5: {
-         "root_dir": "/data/data4freva/model/global",
+         "root_dir": "/mnt/data4freva/model/global",
          "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
          "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
