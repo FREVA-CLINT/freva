@@ -83,7 +83,6 @@ RUN \
   mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva;\
   mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
   chmod -R 777 /opt/freva-work;\
-  /opt/evaluation_system/bin/python3 -m pip install humanize cartopy
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   cd / && rm -r /tmp/evaluation_system;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
