@@ -20,6 +20,4 @@ if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
     export LOG4J_PROPS=${HOME}/solr/log4j2.xml
     nohup /opt/solr/bin/solr start -s ${HOME}/solr/data &> /dev/null &
 fi
-/opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva --output /tmp/dump.gz
-/opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz
 exec /opt/docker-solr/scripts/docker-entrypoint.sh "$@"
