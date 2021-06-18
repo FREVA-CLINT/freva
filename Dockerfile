@@ -103,6 +103,9 @@ RUN \
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
 
+COPY .docker/docker-entrypoint.sh /opt/evaluation_system/bin/
+COPY .docker/loadfreva.sh /opt/evaluation_system/bin/
+
 EXPOSE 8888
 WORKDIR ${HOME}
 USER $NB_USER
