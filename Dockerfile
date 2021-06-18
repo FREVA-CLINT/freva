@@ -71,22 +71,21 @@ RUN set -ex; \
 RUN \
   if [ "$binder" = "true" ];then\
   cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.zshrc; \
   cd /tmp/evaluation_system/;\
   /usr/bin/python3 deploy.py /opt/evaluation_system ; \
   /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
   /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
   /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
   cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva;\
-  mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva;\
+  mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva; mkdir -p /opt/evaluation_system/etc/jupyter;\
   mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
   chmod -R 777 /opt/freva-work;\
   cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
+  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /opt/evaluation_system/etc/jupyter;\
+  chown -R ${NB_USER}:${NB_GROUP} $HOME; \
   cd / && rm -r /tmp/evaluation_system;\
   git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
-  /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz;\
-  /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz;rm /tmp/dump.gz;\
   mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview;\
   chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
