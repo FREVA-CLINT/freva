@@ -85,13 +85,13 @@ RUN \
   chmod -R 777 /opt/freva-work;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   cd / && rm -r /tmp/evaluation_system;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
   git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
   /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz;\
   /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz;rm /tmp/dump.gz;\
-  mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview
-  chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache
+  mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview;\
+  chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share;\
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
 EXPOSE 8888
 WORKDIR ${HOME}
 USER $NB_USER
