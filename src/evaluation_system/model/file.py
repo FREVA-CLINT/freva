@@ -32,7 +32,7 @@ class DRSFile(object):
     DRS_STRUCTURE = {
         # cmip5 data
         CMIP5: {
-         "root_dir": "/home/dkrz/k204230/workspace//freva-dev/data4freva/model/global",
+         "root_dir": "/data/data4freva/model/global",
          "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
          "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
@@ -43,7 +43,7 @@ class DRSFile(object):
          },
         # observations
          OBSERVATIONS: {
-         "root_dir": "/home/dkrz/k204230/workspace//freva-dev/data4freva",
+         "root_dir": "/mnt/data4freva",
          "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
          "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
@@ -53,7 +53,7 @@ class DRSFile(object):
          "defaults": {"project": "observations"}
          },
          REANALYSIS : {
-         "root_dir": "/home/dkrz/k204230/workspace//freva-dev/data4freva",
+         "root_dir": "/mnt/data4freva",
          "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/variable".split('/'),
          "parts_file_name": "variable-cmor_table-project-experiment-ensemble-time".split('-'),
@@ -62,7 +62,7 @@ class DRSFile(object):
          "defaults": {"project": "reanalysis", "product": "reanalysis"}
         },
          CRAWLMYDATA : {
-         "root_dir": "/home/dkrz/k204230/workspace//freva-dev/data4freva/crawl_my_data",
+         "root_dir": str(Path('~/data4freva').expanduser()),
          "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
          "parts_dataset": "project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
          "parts_file_name": "variable-cmor_table-model-experiment-ensemble-time".split('-'),
