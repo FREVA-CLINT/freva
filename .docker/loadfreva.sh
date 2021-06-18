@@ -6,7 +6,7 @@ if [ "$VERBOSE" == "yes" ];then
     set -xe
 fi
 if [ -z "$(ps aux|grep mysqld_safe|grep -v grep)" ];then
-    nohup mysqld_safe &
+    mysqld_safe &
 fi
 
 if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then

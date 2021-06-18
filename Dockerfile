@@ -80,10 +80,19 @@ RUN \
   /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
   /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
   cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva;\
-  mkdir -p /etc/jupyter;\
+  mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva;\
+  mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
+  chmod -R 777 /opt/freva-work;\
+  /opt/evaluation_system/bin/python3 -m pip install humanize cartopy
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   cd / && rm -r /tmp/evaluation_system;\
   chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
+  git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
+  /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz;\
+  /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz;rm /tmp/dump.gz;\
+  mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview
+  chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share
+  chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache
 EXPOSE 8888
 WORKDIR ${HOME}
 USER $NB_USER
