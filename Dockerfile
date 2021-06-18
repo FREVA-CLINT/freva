@@ -83,6 +83,7 @@ RUN \
   mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva;\
   mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
   chmod -R 777 /opt/freva-work;\
+  cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
   cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
   cd / && rm -r /tmp/evaluation_system;\
   git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\

@@ -16,6 +16,8 @@ if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
     export LOG4J_PROPS=${HOME}/solr/log4j2.xml
     exec solr-fg -s ${HOME}/solr/data &
 fi
+/opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva --output /tmp/dump2.gz
+/opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump2.gz
 wait
 #while true;do sleep 1;done
 
