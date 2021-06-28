@@ -72,13 +72,21 @@ def temp_script():
         yield tf.name
 
 @pytest.fixture(scope='session')
-def dummy_env():
+def dummy_key():
+    with NamedTemporaryFile(suffix='.crt') as tf:
+        with Path(tf.name).open('w') as f:
+            f.write('------ PUBLIC KEY ----\n12345\n---- END PUBLIC KEY ----')
+        yield tf.name
+
+@pytest.fixture(scope='session')
+def dummy_env(dummy_key):
 
     test_conf = Path(__file__).absolute().parent / 'test.conf'
     env = os.environ.copy()
     os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(test_conf)
-    from evaluation_system.misc import config
-    config.reloadConfiguration()
+    os.environ['PUBKEY'] = str(dummy_key)
+    #from evaluation_system.misc import config
+    #config.reloadConfiguration()
     yield os.environ
     try:
         shutil.rmtree(config.get('base_dir_location'))
