@@ -141,11 +141,11 @@ def parse_args(argv=None):
 class Installer:
 
 
-    default_pkgs = sorted(['cdo', 'conda', 'configparser',
-                    'django', 'ffmpeg', 'git', 'gitpython',
-                    'ipython', 'imagemagick', 'libnetcdf',
+    default_pkgs = sorted(['cdo', 'conda', 'configparser', 'distributed',
+                    'django', 'ffmpeg', 'git', 'gitpython', 'dask',
+                    'ipython', 'imagemagick', 'libnetcdf', 'humanize',
                     'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pip', 'pillow',
-                    'pymysql', 'pypdf2', 'pytest', 'pytest-env',
+                    'pymysql', 'pypdf2', 'pytest', 'pytest-env', 'cartopy',
                     'pytest-cov', 'pytest-html', 'python-cdo', 'xarray'])
     pip_pkgs = sorted(['pytest-html', 'python-git', 'python-swiftclient'])
 
