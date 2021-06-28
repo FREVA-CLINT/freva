@@ -5,8 +5,11 @@ This module manages the central configuration of the system.
 '''
 import os
 import os.path as osp
+from pathlib import Path
 from distutils.sysconfig import get_python_lib
+import hashlib
 import logging
+import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
 log = logging.getLogger(__name__)
@@ -25,7 +28,8 @@ the future for the next project phase.'''
 
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_DEFAULT_CONFIG_FILE_LOCATION = '%s/etc/evaluation_system.conf' % osp.abspath(sys.prefix)
+_DEFAULT_CONFIG_FILE_LOCATION = Path(sys.prefix) / 'etc/evaluation_system.conf'
+_PUBLIC_KEY_DIR = Path(sys.prefix) / 'share'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
@@ -131,9 +135,31 @@ SOLR_CORE = 'solr.core'
 
 class ConfigurationException(Exception):
     """Mark exceptions thrown in this package"""
-    pass
+    def __init__(self, message):
+        super().__init__(message)
 
 _config = None
+
+def _get_public_key(project_name):
+
+    key_file = os.environ.get('PUBKEY', None) or _PUBLIC_KEY_DIR / f'{project_name}.crt'
+    try:
+        with Path(key_file).open() as f:
+            key = ''.join([k.strip() for k in f.readlines() if not k.startswith('-')])
+        sha = hashlib.sha512(key.encode()).hexdigest()
+    except FileNotFoundError:
+        raise FileNotFoundError(f'{key_file} not found. Secrets are stored in central vault and public key is needed to open the vault. Please deploy the backend again using the vault option.')
+    return sha
+
+def _read_secrets(db_host, sha, key, port=5002, protocol='http'):
+    """Query the vault for data database secrets, of a given key."""
+    url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
+    try:
+        req = requests.get(url).json()
+    except requests.exceptions.ConnectionError:
+        return None
+    return req.get(key, None)
+
 def reloadConfiguration():
     """Reloads the configuration.
 This can be used for reloading a new configuration from disk. 
@@ -161,12 +187,15 @@ performed."""
                         % (CONFIG_SECTION_NAME, CONFIG_SECTION_NAME))
             else:
                 _config.update(config_parser.items(CONFIG_SECTION_NAME))
-                
                 for plugin_section in [s for s in config_parser.sections() if s.startswith(PLUGINS)]:
                     _config[PLUGINS][plugin_section[len(PLUGINS):]] = \
                         SPECIAL_VARIABLES.substitute(dict(config_parser.items(plugin_section)))
-                
-                
+                sha = _get_public_key(config_parser[CONFIG_SECTION_NAME]['project_name'])
+                db_host = config_parser[CONFIG_SECTION_NAME]['db.host']
+                for secret in ('db.user', 'db.passwd', 'db.db'):
+                    # Ask the vault for the secrets
+                    value = _config.get(secret, None)
+                    _config[secret] = _read_secrets(db_host, sha, secret) or value
             log.debug('Configuration loaded from %s', config_file)
     else:
         log.debug('No configuration file found in %s. Using default values.',
@@ -179,7 +208,7 @@ performed."""
                      % (_config[DIRECTORY_STRUCTURE_TYPE], DIRECTORY_STRUCTURE_TYPE, 
                         ', '.join(DIRECTORY_STRUCTURE.toDict().values())))
 #load the configuration for the first time
-reloadConfiguration()
+#reloadConfiguration()
 
 _nothing = object()
 def get(config_prop, default=_nothing):
@@ -236,7 +265,7 @@ def keys():
 def get_section(section_name):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                 _DEFAULT_CONFIG_FILE_LOCATION)
+                                 str(_DEFAULT_CONFIG_FILE_LOCATION))
     conf.read(config_file)
     try:
         section = dict(conf.items(section_name))
