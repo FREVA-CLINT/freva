@@ -5,7 +5,7 @@ import json, time
 import django
 
 SETTINGS = dict(TIME_ZONE='UTC', USE_TZ=False)
-
+config.reloadConfiguration()
 # Application definition
 SETTINGS['INSTALLED_APPS'] = (
     'django.contrib.auth',  # We need this to access user groups
