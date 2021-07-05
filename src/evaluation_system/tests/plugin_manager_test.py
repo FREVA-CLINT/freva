@@ -12,34 +12,12 @@ import re
 import time
 import datetime
 import getpass
-
+from tempfile import TemporaryDirectory
 import pytest
 # logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-# class Test(unittest.TestCase):
-#     def setUp(self):
-#         # this gets overwritten by the nosetest framework (it reloads all modules again)
-#         # we have to reset it every time.
-#         import evaluation_system.api.plugin_manager as pm
-#         import evaluation_system.misc.config as config
-#         from evaluation_system.api.plugin import ConfigurationError
-#         from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
-#         from django.contrib.auth.models import User
-#         #os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
-#         config.reloadConfiguration()
-#         self.user = DummyUser(random_home=True, pw_name='test_user')
-#         pm.reloadPlugins(self.user.getName())
-#         self.user_django, created = User.objects.get_or_create(username=self.user.getName())
-# 
-#     def tearDown(self):
-#         from evaluation_system.model.history.models import History
-#         from django.contrib.auth.models import User
-#         User.objects.filter(username=self.user.getName()).delete()
-#         History.objects.all().delete()
-#         #del os.environ['EVALUATION_SYSTEM_CONFIG_FILE']
-# 
 def test_modules(dummy_settings):
     import evaluation_system.api.plugin_manager as pm
     pm.reloadPlugins()
@@ -47,7 +25,7 @@ def test_modules(dummy_settings):
     assert pmod is not None
     assert len(pmod) > 0
 
-def test_plugins(dummy_settings):
+def test_plugins(dummy_settings, temp_user):
     from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
     import evaluation_system.api.plugin_manager as pm
     # force reload to be sure the dummy is loaded
@@ -56,6 +34,9 @@ def test_plugins(dummy_settings):
     dummy = pm.getPluginDict('dummyplugin')
     assert dummy['description'] == DummyPlugin.__short_description__
     assert dummy['plugin_class'] == 'DummyPlugin'
+    os.environ[f'EVALUATION_SYSTEM_PLUGINS_{temp_user.getName()}'] = f"{str(Path(__file__).parent / 'mocks')},dummy"
+    pm.reloadPlugins(temp_user.getName())
+    os.environ.pop(f'EVALUATION_SYSTEM_PLUGINS_{temp_user.getName()}')
 
 def testDefaultPluginConfigStorage(temp_user):
     import evaluation_system.api.plugin_manager as pm
@@ -278,3 +259,21 @@ def test_load_scheduled_conf(dummy_env, django_user, temp_user):
 
     res = pm.loadScheduledConf('dummytool', h.id, temp_user)
     assert res == {}
+
+def test_2dict_to_conf(dummy_env, dummy_plugin):
+
+    import evaluation_system.api.plugin_manager as pm
+    configuration={"number": 1, "the_number": 2, 'something': 'test'}
+    with pytest.raises(pm.PluginManagerException):
+        pm.dict2conf('dummytool', configuration)
+    with pytest.raises(pm.ParameterNotFoundError):
+        pm.dict2conf('dummyplugin', {'some':'config'})
+    dd = pm.dict2conf('dummyplugin', configuration)
+    assert isinstance(dd, list)
+    assert len(dd) == len(configuration)
+
+def test_scheduletool(dummy_env, dummy_plugin):
+    import evaluation_system.api.plugin_manager as pm
+    
+    with TemporaryDirectory() as td:
+        pm.scheduleTool('dummyplugin', slurmoutdir=str(Path(td) / 'tmp'))

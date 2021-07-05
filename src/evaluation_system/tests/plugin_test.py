@@ -8,7 +8,7 @@ import os
 import datetime
 from pathlib import Path
 import pytest
-from tempfile import NamedTemporaryFile
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 import sys
 
 from evaluation_system.tests import similar_string
@@ -480,3 +480,15 @@ def test_call(dummy_plugin):
                                                   Integer, String, Directory)
     res = dummy_plugin.call('echo /bin/bash').strip('\n')
     assert res == '/bin/bash'
+
+def test_link_mydata(dummy_plugin, dummy_solr):
+
+    with TemporaryDirectory() as td:
+        for file in dummy_solr.files:
+            f = Path(td) / file
+            f.parent.mkdir(exist_ok=True, parents=True)
+            with f.open('w') as f:
+                f.write(' ')
+        #dummy_plugin.linkmydata(outputdir=td)
+
+
