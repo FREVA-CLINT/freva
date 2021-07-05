@@ -191,7 +191,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
         self.call('setsid nohup bash -c "kill -9 -- -%s"  </dev/null &>/dev/null &' % PID)
         raise SystemExit
 
-    def linkmydata(self,outputdir=None):
+    def linkmydata(self,outputdir=None): # pragma: no cover
         """Link the CMOR Data Structure of any output created by a tool
            crawl the directory and ingest the directory with solr::
             :param outputdir: cmor outputdir that where created by the tool.

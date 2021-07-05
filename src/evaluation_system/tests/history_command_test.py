@@ -5,7 +5,6 @@ Created on 18.05.2016
 """
 import os
 import datetime
-import unittest
 import pwd
 import sys
 

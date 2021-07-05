@@ -1,1 +1,1 @@
-from .basecommand import BaseCommand, CommandError, FrevaParser, FrevaBaseCommand
+from .basecommand import CommandError, FrevaParser, FrevaBaseCommand

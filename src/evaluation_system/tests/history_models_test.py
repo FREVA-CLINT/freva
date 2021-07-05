@@ -5,7 +5,8 @@ Created on 23.05.2016
 """
 import unittest
 from datetime import datetime
-
+import pwd
+import os
 
 
 def test_history_model(test_user):
@@ -35,3 +36,31 @@ def test_result_model(test_user):
 
     # test get extension
     assert r.fileExtension() == '.ext'
+
+def test_similar_results(dummy_user, test_user):
+    from evaluation_system.model.history.models import History, Configuration
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
+    hists = []
+    uid = os.getuid()
+    udata = pwd.getpwuid(uid)
+    for i in range(10):
+        hists += [dummy_user.user.getUserDB().storeHistory(
+            tool=DummyPlugin(),
+            config_dict={'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder'},
+            status=0,
+            uid=udata.pw_name
+        )]
+
+    hist = History.objects.create(
+            timestamp=datetime.now(),
+            status=History.processStatus.running,
+            uid=test_user[0],
+            configuration="{'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder'}",
+            tool='dummytool',
+            slurm_output='/path/to/slurm-44742.out'
+        )
+
+    o = Configuration.objects.filter(history_id=hist)
+    sim_res = History.find_similar_entries(o)
+    assert len(sim_res) == 0
+

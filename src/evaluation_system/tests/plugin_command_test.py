@@ -7,12 +7,33 @@ import os
 import sys
 from pathlib import Path
 import pytest
+from tempfile import TemporaryDirectory
 from evaluation_system.tests import run_command_with_capture, similar_string
+from subprocess import run, PIPE
+import shlex
 
+def test_tool_doc(stdout, plugin_doc, plugin_command):
+    from evaluation_system.commands.admin import update_tool_doc
+    test_doc_cmd = [Path(sys.executable),  update_tool_doc.__file__]
+    cmd = ['--tool=DummyPlugin', f'--docpath={plugin_doc.parent}',
+           f'--tex_file={plugin_doc.name}']
+    res = run(test_doc_cmd + cmd, stdout=PIPE, stderr=PIPE)
+    res = run(test_doc_cmd + cmd, stdout=PIPE, stderr=PIPE)
+    out = res.stdout.decode()
+    err = res.stderr.decode()
+    assert 'dummyplugin' in out.lower()
+    assert 'created' in out.lower()
+    cmd.pop(-1)
+    res = run(test_doc_cmd + cmd, stdout=PIPE, stderr=PIPE)
+    out = res.stdout.decode()
+    err = res.stderr.decode()
+    assert 'find' in out
+    #out = run_command_with_capture(Command(), stdout, cmd)
 
 def test_list_tools(stdout, plugin_command):
     plugin_list = run_command_with_capture(plugin_command, stdout, [])
     assert 'DummyPlugin: A dummy plugin\n' in plugin_list
+
 
 def test_help(plugin_command, stdout):
     sys.stdout = stdout

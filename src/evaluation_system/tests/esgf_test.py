@@ -4,6 +4,7 @@ Created on 30.05.2016
 @author: Sebastian Illing
 """
 
+import json
 from evaluation_system.tests import run_command_with_capture
 
 
@@ -11,9 +12,36 @@ def test_show_facet(esgf_command, stdout, dummy_config):
     res = run_command_with_capture(
             esgf_command,
             stdout,
-            ['--show-facet=project,product'])
+            ['--show-facet=project,product', '-d'])
     assert '[product]' in res
     assert '[project]' in res
+
+def test_query(esgf_command, stdout, search_dict, dummy_config):
+    res = run_command_with_capture(
+            esgf_command,
+            stdout,
+            ['--debug', 'project=TEST', '--query=project,product', '--opendap'])
+    res = json.loads(res)[0]
+    assert 'project' in res.keys()
+    res = run_command_with_capture(
+            esgf_command,
+            stdout,
+            ['--debug', 'project=TEST','limit=1', '--query=project', '--gridftp'])
+    assert "['test']" == res.lower().strip()
+    res = run_command_with_capture(
+            esgf_command,
+            stdout,
+            ['project=TEST', '--query=project', '--gridftp'])
+    res = [r for r in res.split('\n') if r.strip()]
+    num_res = len(res)
+    res = run_command_with_capture(
+            esgf_command,
+            stdout,
+            ['project=TEST','offset=1', '--query=project', '--gridftp'])
+    res = [r for r in res.split('\n') if r.strip()]
+    assert num_res == len(res) + 1
+
+
 
 def test_find_files(esgf_command, stdout, search_dict, dummy_config):
 
@@ -40,3 +68,6 @@ def test_download_script(esgf_command, stdout, search_dict, tmp_dir, dummy_confi
     assert fn.is_file()
     assert res == f"Download script successfully saved to {fn}\n"
     assert oct(fn.stat().st_mode)[-3:] == '755'
+
+#def test_catalogue(esgf_command, stdout, search_dict, tmp_dir, dummy_config):
+
