@@ -1,0 +1,25 @@
+#!/bin/bash
+
+need_help="$(echo $1|sed 's/-//g')"
+error_msg="Run freva unit tests, usage:\n $(basename $0) path_to_freva_distribution "
+if [ "${need_help,,}" == "help" ] || [ "${need_help,,}" == "h" ];then
+    echo -e $error_msg
+    exit 0
+fi
+
+FREVA_ENV=$1
+
+if [ -z "$FREVA_ENV" ];then
+    echo -e $error_msg
+    exit 1
+fi
+
+FREVA_ENV=$(readlink -f $FREVA_ENV)
+# Check for freva installation
+if [ ! -d "${FREVA_ENV}" ];then
+    echo -e $error_msg
+    exit 1
+fi
+this_dir=$(dirname $(dirname $(dirname $(readlink -f $0))))
+cd "${this_dir}/../../.."
+FREVA_ENV=$FREVA_ENV make test

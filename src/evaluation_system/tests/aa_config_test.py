@@ -1,7 +1,30 @@
 
 import os
 import pytest
+from pathlib import Path
 
+def test_wrong_config():
+    from evaluation_system.misc import config
+    with pytest.raises(FileNotFoundError):
+         config._get_public_key('false.crt')
+    config.reloadConfiguration()
+    
+def test_vault(dummy_key, requests_mock):
+    from configparser import ConfigParser, ExtendedInterpolation
+    from evaluation_system.misc import config
+    os.environ['PUBKEY'] = dummy_key
+    cfg = ConfigParser(interpolation=ExtendedInterpolation())
+    with (Path(__file__).parent / 'test.conf').open() as f:
+        cfg.read_file(f)
+        db_cfg = {}
+        for key in ('host', 'user', 'passwd', 'db'):
+            db_cfg[f'db.{key}'] = cfg['evaluation_system'][f'db.{key}']
+    sha = config._get_public_key('false.crt')
+    url = f'http://{db_cfg["db.host"]}:5003/vault/data/{sha}'
+    requests_mock.get(url, json=db_cfg)
+    for key in ('db.passwd', 'db.user', 'db.db'):
+        assert config._read_secrets(db_cfg['db.host'], sha, key, port=5003,
+                protocol='http') == db_cfg[key]
 
 def test_get():
     from evaluation_system.misc import config
@@ -37,13 +60,14 @@ def test_DIRECTORY_STRUCTURE():
     assert config.DIRECTORY_STRUCTURE.validate('central')
     assert not config.DIRECTORY_STRUCTURE.validate('asdasdasdasdss')
 
-def test_config_file():
+def test_config_file(dummy_key):
     """If a config file is provided it should be read"""
     from evaluation_system.misc import config
     import tempfile
+    os.environ['PUBKEY'] = dummy_key
     fd, name = tempfile.mkstemp(__name__, text=True)
     with os.fdopen(fd, 'w') as f:
-        f.write('[evaluation_system]\n%s=nowhere\n' % config.BASE_DIR)
+        f.write('[evaluation_system]\n%s=nowhere\nproject_name=test_system\ndb.host=localhost' % config.BASE_DIR)
     assert config.get(config.BASE_DIR) == 'evaluation_system'
     try:
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
@@ -64,7 +88,7 @@ def test_config_file():
         # check directory structure value
         fd, name = tempfile.mkstemp(__name__, text=True)
         with os.fdopen(fd, 'w') as f:
-            f.write('[evaluation_system]\n%s=wrong_value\n' % config.DIRECTORY_STRUCTURE_TYPE)
+            f.write('[evaluation_system]\n%s=wrong_value\nproject_name=test_system\ndb.host=localhost' % config.DIRECTORY_STRUCTURE_TYPE)
 
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
         with pytest.raises(config.ConfigurationException):
@@ -75,7 +99,7 @@ def test_config_file():
         # check $EVALUATION_SYSTEM_HOME get's resolved properly
         fd, name = tempfile.mkstemp(__name__, text=True)
         with os.fdopen(fd, 'w') as f:
-            f.write('[evaluation_system]\n%s=$$EVALUATION_SYSTEM_HOME\n' % config.BASE_DIR)
+            f.write('[evaluation_system]\n%s=$$EVALUATION_SYSTEM_HOME\nproject_name=test_system\ndb.host=localhost' % config.BASE_DIR)
 
         assert config.get(config.BASE_DIR) == 'evaluation_system'
         os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
@@ -85,16 +109,20 @@ def test_config_file():
 
     finally:
         os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
+        os.environ['PUBKEY'] = dummy_key
         os.unlink(name)
 
-def test_plugin_conf():
+def test_plugin_conf(dummy_key):
     import tempfile
     from evaluation_system.misc import config
+    os.environ['PUBKEY'] = dummy_key
     fd, name = tempfile.mkstemp(__name__, text=True)
     with os.fdopen(fd, 'w') as f:
         f.write("""
 [evaluation_system]
 base_dir=~
+project_name=test_system
+db.host=localhost
 
 [plugin:pca]
 plugin_path=$$EVALUATION_SYSTEM_HOME/tool/pca
@@ -124,16 +152,21 @@ module=climval.tool
 
     assert config.get_plugin('climval', config.PLUGIN_MODULE) == \
                       'climval.tool'
+    with pytest.raises(config.ConfigurationException):
+        config.get_plugin('climval', 'missing_modules')
     os.unlink(name)
 
-def test_get_section():
+def test_get_section(dummy_key):
     import tempfile
     from evaluation_system.misc import config
+    os.environ['PUBKEY'] = dummy_key
     fd, name = tempfile.mkstemp(__name__, text=True)
     with os.fdopen(fd, 'w') as f:
         f.write("""
 [evaluation_system]
 base_dir=/home/lala
+project_name=test_proj
+db.host=localhost
 
 [some_other_section]
 param=value
@@ -143,7 +176,8 @@ some=val
     os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
     config.reloadConfiguration()
     eval = config.get_section('evaluation_system')
-    assert eval == {'base_dir': '/home/lala'}
+    assert eval == {'base_dir': '/home/lala', 'project_name': 'test_proj',
+                    'db.host': 'localhost'}
     other = config.get_section('some_other_section')
     assert other == {'param': 'value', 'some': 'val'}
 

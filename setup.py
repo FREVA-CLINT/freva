@@ -38,10 +38,13 @@ setup(name="evaluation_system",
               ],
         'test': [
               'pytest',
+              'nbformat',
               'pytest-html',
               'pytest-cov',
               'nbval',
               'h5netcdf',
+              'requests_mock',
+              'allure-pytest',
               'python-swiftclient',
               'testpath',
           ]

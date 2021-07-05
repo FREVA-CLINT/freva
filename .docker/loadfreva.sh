@@ -6,7 +6,8 @@ if [ "$VERBOSE" == "yes" ];then
     set -xe
 fi
 if [ -z "$(ps aux|grep mysqld_safe|grep -v grep)" ];then
-    nohup mysqld_safe &
+    mysqld_safe &
+    sleep 1
 fi
 
 if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
@@ -17,5 +18,4 @@ if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
     exec solr-fg -s ${HOME}/solr/data &
 fi
 wait
-#while true;do sleep 1;done
 

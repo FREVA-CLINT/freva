@@ -131,6 +131,8 @@ def parse_args(argv=None):
             help='Use the develop flag when installing the evaluation_system package')
     ap.add_argument('--no_conda', action='store_true', default=False,
             help='Do not create conda environment')
+    ap.add_argument('--run_tests', action='store_true', default=False,
+            help='Run unittests after installation')
     args = ap.parse_args()
     return args
 
@@ -139,11 +141,11 @@ def parse_args(argv=None):
 class Installer:
 
 
-    default_pkgs = sorted(['cdo', 'conda', 'configparser',
-                    'django', 'ffmpeg', 'git', 'gitpython',
-                    'ipython', 'imagemagick', 'libnetcdf',
+    default_pkgs = sorted(['cdo', 'conda', 'configparser', 'distributed',
+                    'django', 'ffmpeg', 'git', 'gitpython', 'dask',
+                    'ipython', 'imagemagick', 'libnetcdf', 'humanize',
                     'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pip', 'pillow',
-                    'pymysql', 'pypdf2', 'pytest', 'pytest-env',
+                    'pymysql', 'pypdf2', 'pytest', 'pytest-env', 'cartopy',
                     'pytest-cov', 'pytest-html', 'python-cdo', 'xarray'])
     pip_pkgs = sorted(['pytest-html', 'python-git', 'python-swiftclient'])
 
@@ -255,6 +257,12 @@ class Installer:
                           auto_comp=self.install_prefix / 'etc' / 'autocomplete.bash'
                           ))
 
+
+    def unittests(self):
+        """Run unittests."""
+        logger.info('Running unittests:')
+        self.run_cmd(f'FREVA_ENV={self.install_prefix} make all')
+
     @property
     def python_prefix(self):
         """Get the path of the new conda evnironment."""
@@ -268,4 +276,5 @@ if __name__ == '__main__':
     Inst.pip_install()
     Inst.create_auxilary()
     Inst.create_config()
-
+    if Inst.run_tests:
+        Inst.unittests()

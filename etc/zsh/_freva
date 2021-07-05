@@ -1,0 +1,147 @@
+#compdef freva
+
+__plugin(){
+    # The plugin help menu
+    local -a args
+    args+=(
+     '--hlep[show this help message and exit]'
+     '--debug[turn on debugging info and show stack trace on exceptions.]'
+     '--repos-version[how the version number from the repository]'
+     '--caption[sets a caption for the results]'
+     '--save[saves the configuration locally for this user.]'
+     '--save-config=-[saves the configuration at the given file path]:file:_files'
+     '--show-config[shows the resulting configuration (implies dry-run).]'
+     '--scheduled-id=-[Runs a scheduled job from database]'
+     '--dry-run[dry-run, perform no computation. This is used for viewing and handling the configuration.]'
+     '--batchmode[creates a SLURM job]'
+     '--unique_output[If true append the freva run id to every output folder]'
+     '--pull-request[issue a new pull request for the tool (developer only!)]'
+     '--tag=-[The git tag to pull]'
+            )
+      _arguments -w -s -S $args[@]
+}
+
+__history() {
+   # The history help menu
+   local -a args
+   args+=(
+     '--help[show this help message and exit]'
+     '--debug[turn on debugging info and show stack trace on exceptions.]'
+     '--full_text[If present shows the complete configuration stored]'
+     '--return_command[Show freva commands belonging to the history entries instead of the entries themself.]'
+     '--limit=-[limit the number of entries]'
+     '--plugin=-[Display only entries from plugin "name"]'
+     '--since=-[Retrieve entries older than date (see DATE FORMAT)]'
+     '--until=-[Retrieve entries newer than date (see DATE FORMAT)]'
+     '--entry_ids=-[select entries whose ids are in "ids" (e.g. entry_ids=1,2, or entry_ids=5)]'
+            )
+      _arguments -w -s -S $args[@]
+}
+
+__data_crawl(){
+   # The crawl_my_data help menu
+   local -a args
+   args+=(
+     '--help[show this help message and exit]'
+     '--debug[turn on debugging info and show stack trace on exceptions.]'
+     '--path=-[crawl the given directory]:files:_directories'
+    )
+      _arguments -w -s -S $args[@]
+}
+
+__esgf(){
+   # The esgf help menu
+   local -a args
+   args+=(
+     '--help[show this help message and exit]'
+     '--debug[turn on debugging info and show stack trace on exceptions.]'
+     '--datasets[List the name of the datasets instead of showing the]'
+     '--show-facet=-[List all values for the given facet (cacet search).]'
+     '--opendap[List the name of the datasets instead of showing the urls.]'
+     '--gridftp[Show Opendap endpoints instead of the http ones.]'
+     '--download-script=-[Download a script for getting the files.]:file:_files'
+     '--query=-[Display results from <list> queried fields.]'
+    )
+      _arguments -w -s -S $args[@]
+}
+
+__facet_in_cmd(){
+    # Check if given facet key already exists in cmd
+    local c
+    let c=$CURRENT-1
+    if [ $c -lt 3 ];then
+        echo 1
+        return
+    fi
+    for i in {2..$c};do
+        if [ ! "${arg}" = '-' ];then
+            key=$(echo ${words[$i]}|cut -d = -f1)
+            if [ "$key" = "$1" ];then
+                echo 0
+                return
+            fi
+        fi
+    done
+    echo 1
+}
+
+__solr(){
+    # The databrowser help menu
+    integer ret=1
+    local -a args keys search_keys
+    let n=$CURRENT-1
+    # Get all facets and entries depending on what has alread been typed
+    if [ $n -ge 3 ];then
+        for i in {3..$n};do
+            arg=$(echo ${words[$i]}|cut -c1)
+            if [ ! "${arg}" = '-' ];then
+                search_keys+=("${words[$i]}")
+            fi
+        done
+    fi
+    facets=(${(f)"$(freva --databrowser --all-facets ${search_keys[@]})"})
+    for line in ${facets};do
+        facet=$(echo $line|cut -d : -f1)
+        entries=$(echo $line|cut -d : -f2 |awk '{print $NF}'|sed 's/,/ /g')
+        if [ ${#entries[*]} -ge 2 ] && [ "$(__facet_in_cmd $facet)" = "1" ] ;then
+            keys+=("${facet}[select ${facet} facet]:${facet} facet:(${entries})")
+        fi
+    done
+    _values -s \  'search facets' $keys[@]
+}
+
+
+_freva() {
+    # Define the freva main menu
+    integer ret=1
+    local context line
+    local curcontext="$curcontext" state
+    local -a args
+    # The databrowser menu has multiple op
+    if [ "${words[2]}" = '--databrowser' ];then
+        args+=(
+         '--help[show this help message and exit]'
+         '--debug[turn on debugging info and show stack trace on exceptions.]'
+         '--multiversion[select not only the latest version but all of them]'
+         '--relevant-only[how only facets that filter results (i.e. >1 possible values)]'
+         '--batch-size=-[Number of files to retrieve.]'
+         '--count-facet-values[Show the number of files for each values in each facet]'
+         '--attributes=-[retrieve all possible attributes for the current search instead of the files]'
+         '--all-facets[retrieve all facets (attributes & values) instead of the files]'
+         '--facet=[retrieve these facets (attributes & values) instead of the files]'
+         '*:search facets:__solr'
+        )
+    else
+        args+=(
+            '--help[Show help message]'
+            '--plugin[Applies some analysis to the given data]:->plugin:__plugin'
+            '--history[provides access to the configuration history (use --help for more help)]:history:__history'
+            '--databrowser[Find data in the system]'
+            '--crawl_my_data[Use this command to update your projectdata]:crawl_my_data:__data_crawl'
+            '--esgf[Browse ESGF data and create wget script]:esgf:__esgf'
+        )
+    fi
+    _arguments -w -s -S $args[@] && ret=0
+    return ret
+}
+_freva "$@"

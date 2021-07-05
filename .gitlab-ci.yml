@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - report
 
 dev-obs:
     stage: build
@@ -11,25 +12,58 @@ dev-obs:
         - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
         - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - /kaniko/executor --context $CI_PROJECT_DIR
-                       --reproducible
-                       --cache
+                       --cleanup
                        --skip-unused-stages=true
                        --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
                        --build-arg=IMAGETAG=${IMAGETAG}
-                       --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
-                       --destination $CI_REGISTRY_IMAGE/freva_build:$IMAGETAG
+                       --build-arg=branch=${CI_COMMIT_BRANCH}
+                       --build-arg=binder="false"
+                       --whitelist-var-run=false
+                       --dockerfile $CI_PROJECT_DIR/Dockerfile
+                       --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
     tags:
         - docker, specific
     rules:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
-unittest:
+test_latest:
     stage: test
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     tags:
-        - docker, specific
+      - docker, specific
+    before_script:
+      - cp .docker/evaluation_system.conf .
     script:
         # Do the unit tests
-        - cd $CI_PROJECT_DIR; python3 deploy.py /tmp/evaluation_test
-        - FREVA_ENV=/tmp/evaluation_system_test make tests
+      - python3 deploy.py /tmp/freva_latest --python=3.9 --run_tests
+    artifacts:
+      when: always
+      reports:
+        junit: report.xml
+      paths:
+        - coverage_report
+        - test_results
+        - report.xml
 
+
+pages:
+  stage: report
+  image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+  tags:
+    - docker, specific
+  dependencies:
+    - test_latest
+  before_script:
+    - mkdir -p public; cp .docker/index.html public/
+    - mv coverage_report public/
+  script:
+    - /opt/allure/bin/allure generate --clean test_results
+  after_script:
+    - mv allure-report public/
+  artifacts:
+    when: always
+    paths:
+      - public/
+    reports:
+      junit: report.xml
