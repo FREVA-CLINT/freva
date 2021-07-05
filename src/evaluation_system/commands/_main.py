@@ -157,8 +157,8 @@ To get help for the individual commands use
             module = __import__('evaluation_system.commands.%s' % command, fromlist=['Command'])
         except ImportError as e:
             module = __import__('evaluation_system.commands.admin.%s' % command, fromlist=['Command'])
-        except:
-            raise
+        except Exception as e:
+            raise e
 
         return getattr(module, 'Command')
     
