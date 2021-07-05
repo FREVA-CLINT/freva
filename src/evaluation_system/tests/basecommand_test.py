@@ -27,17 +27,32 @@ Options:
 '''
         assert similar_string(doc_str, target_str, 0.75 ) is True
 
+def test_auto_doc(dummy_cmd, stdout):
+    sys.stdout = stdout
+    stdout.startCapturing()
+    stdout.reset()
+
+
 def test_bad_option(dummy_cmd, stdout):
 
-     sys.stdout = stdout
-     stdout.startCapturing()
-     stdout.reset()
-     with pytest.raises(SystemExit):
-         dummy_cmd.run(['--input1'])
-     help_out = stdout.getvalue()
-     stdout.stopCapturing()
-     target_out =  '''no such option: input1\n Did you mean this?\n\tinput'''
-     assert similar_string(help_out, target_out, 1) is True
+    from optparse import OptionParser, BadOptionError
+    import logging
+    sys.stdout = stdout
+    stdout.startCapturing()
+    stdout.reset()
+    with pytest.raises(SystemExit):
+        dummy_cmd.run(['--input1'])
+    help_out = stdout.getvalue()
+    stdout.stopCapturing()
+    target_out =  '''no such option: input1\n Did you mean this?\n\tinput'''
+    assert similar_string(help_out, target_out, 1) is True
+    assert dummy_cmd.run(['-i']) == 0
+    dummy_cmd.log.handlers.clear()
+    dummy_cmd.set_logger()
+    with pytest.raises(RuntimeError):
+        dummy_cmd.run(['-d', '--fail'])
+    with pytest.raises(SystemExit):
+        dummy_cmd.run()
 
 def test_dummy_command(dummy_cmd, stdout):
 

@@ -180,15 +180,14 @@ This would remove all values for both *institute* and *model* leaving everything
 :param constraints: dictionary with any P2P Search API constraints."""
         # if we have a limit use it also here.
         max_items = sys.maxsize
-        if 'limit' in constraints:
-            max_items = int(constraints['limit'])
-        else:
+        try:
+            max_items = int(constraints['limit'][0])
+        except KeyError:
             # if not set the query limit to the batch size
             constraints['limit'] = batch_size
-        if 'offset' in constraints:
-            sofar = int(constraints['offset'])
-            del constraints['offset']
-        else:
+        try:
+            sofar = int(constraints.pop('offset')[0])
+        except KeyError:
             sofar = 0
 
         result = self.search(offset=sofar, **constraints)
@@ -218,9 +217,11 @@ improve readability.
 :param facets: list of facets to query for.
 :param constraints: dictionary with any P2P Search API constraints.
 :returns: ([{facet:{facet_value:count}}]) the facets count from the server."""
-        if 'limit' in constraints:
+        try:
             constraints = constraints.copy()
             del constraints['limit']
+        except KeyError:
+            pass
 
         # facets encoded as a list
         if len(facets) == 1 and isinstance(facets[0], list):

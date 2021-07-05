@@ -78,6 +78,26 @@ def dummy_key():
             f.write('------ PUBLIC KEY ----\n12345\n---- END PUBLIC KEY ----')
         yield tf.name
 
+
+@pytest.fixture(scope='session')
+def plugin_doc():
+
+    with TemporaryDirectory() as td:
+        dummy_doc = Path(td) / 'dummy_plugin_doc.tex'
+        dummy_bib = Path(td) / 'dummy_plugin.bib'
+        with (dummy_doc).open('w') as f:
+            f.write('''\documentclass[12pt]{article}
+\\usepackage[utf8]{inputenc}
+\\begin{document}
+This is a dummy doc
+\end{document}''')
+        with (dummy_doc).open('w') as f:
+            f.write('''% This file was created with JabRef 2.9.2.
+% Encoding: UTF-8''')
+        yield dummy_doc
+
+
+
 @pytest.fixture(scope='session')
 def dummy_env(dummy_key):
 
@@ -325,11 +345,20 @@ def dummy_cmd(dummy_settings):
         _args = [
             {'name': '--debug', 'short': '-d', 'help': 'turn on debugging info and show stack trace on exceptions.',
              'action': 'store_true'},
+            {'name': '--interrupt', 'short': '-i', 'help': 'interrupt the call',
+             'action': 'store_true'},
+            {'name': '--fail', 'short': '-f', 'help': 'simulate a failed state', 'action':'store_true'},
             {'name': '--help', 'short': '-h', 'help': 'show this help message and exit', 'action': 'store_true'},
          {'name': '--input', 'help': 'Some input value', 'metavar': 'PATH'},
          ]
 
         def _run(self,*args,**kwargs):
+            if self.args.interrupt:
+                raise KeyboardInterrupt('Interrupting the work')
+            if self.args.fail:
+                raise RuntimeError('The did not work')
+            if not self.args.input:
+                raise IOError('Nothing was given')
             print('The answer is %s' % self.args.input)
 
     yield DummyCommand()

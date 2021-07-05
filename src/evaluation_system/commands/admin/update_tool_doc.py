@@ -8,12 +8,15 @@ update_tool_doc -- update the html code of tools
 @contact:    sebastian.illing@met.fu-berlin.de
 """
 
-from evaluation_system.commands import (BaseCommand, CommandError,
-                                        FrevaBaseCommand)
+from evaluation_system.commands import FrevaBaseCommand
 from evaluation_system.misc import config
 import logging, sys
+from pathlib import Path
 import os
 import shutil
+from tempfile import TemporaryDirectory
+from subprocess import run, PIPE
+import shlex
 import re
 from django.contrib.flatpages.models import FlatPage
 
@@ -48,51 +51,45 @@ class Command(FrevaBaseCommand):
             return
         file_root = tex_file.split('.')[0]
         # copy folder to /tmp for processing
-        new_path = '/tmp/%s/' % tool
-        self.copy_and_overwrite(doc_path, new_path)
-        
-        # change path and run "htlatex" and "bibtex"
-        os.chdir(new_path)
-        cfg_file = os.path.dirname(__file__)+'/../../../../etc/ht5mjlatex.cfg' 
-        os.system('htlatex %s "%s"' % (new_path+tex_file, cfg_file))
-        os.system('bibtex %s' % file_root)
-        os.system('htlatex %s "%s"' % (new_path+tex_file, cfg_file))
-         
-        # open html file and remove <head> and <body> tags
-        fi = open(os.path.join(new_path, file_root+'.html'))
-        text = fi.read()
-        text = re.sub("<head>.*?</head>", "", text, flags=re.DOTALL)
-        text = text.replace('</html>', '')
-        text = text.replace('<html>', '')
-        text = text.replace('</body>', '')
-        text = text.replace('<body>', '')
-        
-        figure_prefix = 'figures'
-        # replace img src
-        text = text.replace('src="%s/' % figure_prefix,
-                            'style="width:80%;" src="/static/preview/doc/'+tool+'/')
+        config.reloadConfiguration()
+        with TemporaryDirectory() as td:
+            new_path = Path(td) / tool
+            self.copy_and_overwrite(doc_path, new_path)
+            # change path and run "htlatex" and "bibtex"
+            os.chdir(new_path)
+            bibfiles = [str(f) for f in new_path.rglob('*.bib')]
+            html_file = (new_path / tex_file).with_suffix('.html')
+            pandoc = Path(sys.exec_prefix) / 'bin' / 'pandoc'
+            cmd = f'{pandoc} {new_path / tex_file} -f latex -t html5'
+            if bibfiles:
+                cmd += f' --bibliography {bibfiles[0]}'
+            cmd += f' -o {html_file}'
+            res = run(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+            # open html file and remove <head> and <body> tags
+            with html_file.open() as fi:
+                text = fi.read()
+            figure_prefix = 'figures'
+            # replace img src
+            text = text.replace('src="%s/' % figure_prefix,
+                                'style="width:80%;" src="/static/preview/doc/'+tool+'/')
+            # remove too big sigma symbols
+            text = text.replace('mathsize="big"', '')
+            flat_page, created = FlatPage.objects.get_or_create(
+                title=self.args.tool, url='/about/%s/' % tool)
+            #if created:
+            #    print(flat_page).sites
+            #    flat_page.sites = [1]
+            flat_page.content = text
+            flat_page.save()
+            # Copy images to website preview path
+            preview_path = config.get('preview_path')
+            dest_dir = os.path.join(preview_path, 'doc/%s/' % tool)
+            os.makedirs(dest_dir, exist_ok=True)
+            try:
+                shutil.copyfile('%s.css' % tool, os.path.join(dest_dir, '%s.css' % tool))
+            except FileNotFoundError:
+                pass
+            print(f'Flat pages for {tool} has been created')
 
-        # remove too big sigma symbols
-        text = text.replace('mathsize="big"', '')
-        
-        flat_page, created = FlatPage.objects.get_or_create(
-            title=self.args.tool, url='/about/%s/' % tool
-        )
-        if created:
-            flat_page.sites = [1]
-        flat_page.content = text
-        flat_page.save()
-        
-        # Copy images to website preview path
-        preview_path = config.get('preview_path')
-        dest_dir = os.path.join(preview_path, 'doc/%s/' % tool)
-        self.copy_and_overwrite('%s/' % figure_prefix, dest_dir)
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        shutil.copyfile('%s.css' % tool, os.path.join(dest_dir, '%s.css' % tool))
-        # remove tmp files
-        shutil.rmtree(new_path)
-        
-        
 if __name__ == "__main__":
     Command().run()
