@@ -10,9 +10,10 @@ databrowser - Find data
 
 import logging
 import sys
+from warnings import warn
+
 from evaluation_system.commands import FrevaBaseCommand, CommandError
 from evaluation_system.model.solr import SolrFindFiles
-
 
 class Command(FrevaBaseCommand):
         
@@ -44,89 +45,109 @@ For Example:
     __short_description__ = '''Find data in the system'''
 
     def _run(self):
-        
-        args = self.args 
-        last_args = self.last_args
-        
-        # Are we searching for facets or files?
-        facets = []
-        if args.all_facets:
-            facets = None
-        if args.facet:
-            facets.append(args.facet)
-        
-        latest = not args.multiversion
-        batch_size = args.batch_size if args.batch_size else 10
-        
-        search_dict = {}
+        kwargs = dict(all_facets=self.args.all_facets,
+                      facet=self.args.facet,
+                      multiversion=self.args.multiversion,
+                      batch_size=self.args.batch_size or 10,
+                      count_facet_values=self.args.count_facet_values,
+                      attributes=self.args.attributes)
         # contruct search_dict by looping over last_args
-        for arg in last_args:
+        for arg in self.last_args:
             if '=' not in arg:
                 raise CommandError("Invalid format for query: %s" % arg)
-            
             items = arg.split('=')
             key, value = items[0], ''.join(items[1:])
-
-            if key not in search_dict:
-                search_dict[key] = value
+            if key not in kwargs:
+                kwargs[key] = value
             else:
-                if not isinstance(search_dict[key], list):
-                    search_dict[key] = [search_dict[key]]
-                search_dict[key].append(value)
-        
-        if 'version' in search_dict and latest:
-            # it makes no sense to look for a specific version just among the latest
-            # the speedup is marginal and it might not be what the user expects
-            sys.stderr.write('Turning latest of when searching for a specific version.')
-            latest = False
-            
-        logging.debug("Searching dictionary: %s\n", search_dict)
-        # exit()
+                if not isinstance(kwargs[key], list):
+                    kwargs[key] = [kwargs[key]]
+                kwargs[key].append(value)
+        out = self.search_data(**kwargs)
         # flush stderr in case we have something pending
         sys.stderr.flush()
+        if isinstance(out, dict):
+            # We have facet values as return values
+            for att, values in out.items():
+                add = ''
+                facet_limit = len(values) + 1
+                if 'facet_limit' in kwargs or 'facet.limit' in kwargs:
+                    add = '...'
+                    try:
+                        facet_limit = int(kwargs['facet_limit'])
+                    except KeyError:
+                        facet_limit = int(kwargs['facet.limit'])
+                try:
+                    keys = ','.join([f'{k} ({c})' for n, (k, c) in enumerate(values.items()) if n < facet_limit])
+                except AttributeError:
+                    keys = ','.join([v for n,v in enumerate(values) if n < facet_limit])
+                keys += add
+                sys.stdout.write(f'{att}: {keys}\n')
+                sys.stdout.flush()
+            return
+        if self.args.attributes:
+            sys.stdout.write(', '.join(out)+'\n')
+            sys.stdout.flush()
+            return
+        for key in out:
+            sys.stdout.write(str(key)+'\n')
+        sys.stdout.flush()
 
-        if facets != [] and not args.attributes:
-            if 'facet.limit' in search_dict:
-                facet_limit = int(search_dict['facet.limit'])
-            else:  
-                # default
-                facet_limit = 1000
-                search_dict['facet.limit'] = -1
-                
-            for att, values in SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict).items():
+    @staticmethod
+    def search_data(*args, **search_facets):
+        """Execute the solr search."""
+        if args:
+            raise ValueError(f"Invalid format for query: {args}")
+        multiversion = search_facets.pop('multiversion', False)
+        relevant_only = search_facets.pop('relevant_only', False)
+        batch_size = search_facets.pop('batch_size', 10)
+        count_facet_values = search_facets.pop('count_facet_values', False)
+        attributes = search_facets.pop('attributes', False)
+        all_facets = search_facets.pop('all_facets', False)
+        facet = search_facets.pop('facet', None)
+        # Are we searching for facets or files?
+        facets = []
+        if isinstance(facet, str):
+            facet = [facet]
+        if all_facets:
+            facets = None
+        elif facet:
+            facets += [f for f in facet if f]
+        latest = not multiversion
+        if 'version' in search_facets and latest:
+            # it makes no sense to look for a specific version just among the latest
+            # the speedup is marginal and it might not be what the user expects
+            warn('Turning latest off when searching for a specific version.')
+            latest = False
+        logging.debug("Searching dictionary: %s\n", search_facets)
+        if facets != [] and not attributes:
+            out = {}
+            search_facets['facet.limit'] = search_facets.pop('facet_limit', -1)
+            for att, values in SolrFindFiles.facets(facets=facets,
+                                                    latest_version=latest,
+                                                    **search_facets).items():
                 # values come in pairs: (value, count)
                 value_count = len(values) // 2
-                if args.relevant_only and value_count < 2:
+                if relevant_only and value_count < 2:
                     continue
-                
-                if args.count_facet_values:
-                    sys.stdout.write('%s: %s' % (att, ','.join(['%s (%s)' % (v, c) for v, c in zip(*[iter(values)]*2)])))
+                if count_facet_values:
+                    out[att] = {v: c for v, c in zip(*[iter(values)]*2)}
                 else:
-                    sys.stdout.write('%s: %s' % (att, ','.join(values[::2])))
-                
-                if value_count == facet_limit: 
-                    sys.stdout.write('...')
-                
-                sys.stdout.write('\n')
-                sys.stdout.flush()
-        elif args.attributes:
+                    out[att] = values[::2]
+            return out
+        if attributes:
+            out = []
             # select all is none defined but this flag was set
-            if not facets:
-                facets = None
-            results = SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict)
-            if args.relevant_only:
-                atts = ', '.join([k for k in results if len(results[k]) > 2])
-            else:
-                atts = ', '.join(SolrFindFiles.facets(facets=facets, latest_version=latest, **search_dict))
-            sys.stdout.write(atts)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
-        else:
-            # find the files and display them
-            for f in SolrFindFiles.search(batch_size=batch_size, latest_version=latest, **search_dict):
-                sys.stdout.write(str(f))
-                sys.stdout.write('\n')
-                sys.stdout.flush()
+            facets = facets or None
+            results = SolrFindFiles.facets(facets=facets,
+                                           latest_version=latest,
+                                           **search_facets)
+            if relevant_only:
+                return [k for k in results if len(results[k]) > 2]
+            return [k for k in results]
+        return SolrFindFiles.search(batch_size=batch_size,
+                                    latest_version=latest,
+                                    **search_facets)
 
 if __name__ == "__main__":  # pragma nocover
     Command().run()
