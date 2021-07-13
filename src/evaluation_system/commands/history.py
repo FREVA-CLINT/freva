@@ -70,7 +70,6 @@ DATE FORMAT
         except AttributeError:
             pass
         return_command = kwargs.pop('return_command', None)
-        print(tool_name, limit, since, until, entry_ids)
         # this suspresses this debug info for generating commands
         if not return_command:
             log.debug(f'history of {tool_name}, limit={limit}, since={since},'
@@ -94,7 +93,7 @@ DATE FORMAT
                         cmd += ';'
                     command_string.append(cmd)
             else:
-                command_string = ('\n'.join([row.__str__(compact=not full_text) for row in rows]))
+                command_string = [row.__str__(compact=not full_text) for row in rows]
         return command_string
 
     def _run(self):
@@ -109,16 +108,10 @@ DATE FORMAT
                       command_line=True,
                       )
         # parse arguments *!!!*
-        arg = ''
-        for args in self.last_args:
-            tmp = args.split('=')
-            flag = tmp[0]
-            arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
-        kwargs['arg'] = arg
         commands = self.search_history(sys.argv[0], **kwargs)
         if not commands:
             log.error("No results. Check query.")
-        for cmd in commands:
+        for command in commands:
             print(command)
 
 if __name__ == "__main__":
