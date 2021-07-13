@@ -3,8 +3,7 @@ __all__ = ['history']
 
 from evaluation_system.commands.history import Command
 
-def history(full_text=False, return_command=False,
-            limit=10, plugin=None, since=None, unitl=None,
+def history(limit=10, plugin=None, since=None, until=None,
             entry_ids=None):
     """Get access to the configuration history.
 
@@ -41,12 +40,14 @@ def history(full_text=False, return_command=False,
         Missing values are assumed to be the minimal allowed value. For example:
         "2012" = "2012-01-01 00:00:00.0"
     """
-    if not isinstance(entry_ids, (list, tuple, set)):
+    if not isinstance(entry_ids, (list, tuple, set)) and entry_ids is not None:
         entry_ids = [entry_ids]
-    return Command.search_history(full_text=full_text,
-                                  return_command=return_command,
+    return Command.search_history('freva',
+                                  full_text=True,
+                                  return_command=True,
                                   limit=limit,
                                   plugin=plugin,
-                                  since=sine,
-                                  unitl=until,
-                                  entry_ids=entry_ids)
+                                  since=since,
+                                  until=until,
+                                  entry_ids=entry_ids,
+                                  command_line=True)

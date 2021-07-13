@@ -802,6 +802,24 @@ def getCommandString(entry_id, user=None, command_name='freva', command_options=
 
     return getCommandStringFromRow(h[0], command_name, command_options)
 
+def getCommandConfigFromRow(history_row, command_name, command_options):
+    '''Get the configuration of a plugin command.'''
+
+    configuration = history_row.config_dict()
+    result = {'name': command_name, 'options': command_options,
+              'tool': history_row.tool, 'args':{}}
+    # find lists
+    re_list_pattern = r"^\[.*\]$"
+    re_list = re.compile(re_list_pattern)
+    for k, value in configuration.items():
+        if value is not None:
+            # convert non-None values to string
+            value = str(value)
+            # remove brackets from list
+            if re_list.match(value):
+                value = value[1:-1]
+            result['args'][k] = value
+    return result
 
 def getCommandStringFromRow(history_row, command_name='analyze', command_options='--tool'):
     """
@@ -809,28 +827,17 @@ def getCommandStringFromRow(history_row, command_name='analyze', command_options
     :type history_row: row
     :param history_row: row of the history table
     """
-
-    result = "%s %s %s" % (command_name, command_options, history_row.tool)
-
-    configuration = history_row.config_dict()
-
-    # find lists
-    re_list_pattern = r"^\[.*\]$"
-    re_list = re.compile(re_list_pattern)
-
-    for k in configuration.keys():
-        value = configuration[k]
-
-        if value is not None:
-            # convert non-None values to string
-            value = str(value)
-
-            # remove brackets from list
-            if re_list.match(value):
-                value = value[1:-1]
-
-            result = "%s %s='%s'" % (result, str(k), value)
-
+    try:
+        config = getCommandConfigFromRow(history_row, command_name, command_options)
+        tool = history_row.tool
+    except AttributeError:
+        config = history_row
+        command_name = config['name']
+        command_options = config['options']
+        tool = config['tool']
+    result = "%s %s %s" % (command_name, command_options, tool)
+    for key, value in config['args'].items():
+        result = "%s %s='%s'" % (result, str(key), str(value))
     return result
 
 

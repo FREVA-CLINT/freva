@@ -73,31 +73,28 @@ DATE FORMAT
         rows = pm.getHistory(user=None, plugin_name=tool_name,
                              limit=limit, since=since,
                              until=until, entry_ids=entry_ids)
-        command_string = []
+        commands = []
         if rows:
             # pass some option for generating the command string
             if return_command:
                 for row in rows:
-                    command_name = sys.argv[0]
                     command_options = '--plugin'
                     if debug:
                         command_options = f"-d {command_options}"
-                    cmd = pm.getCommandStringFromRow(row,
+                    cmd = pm.getCommandConfigFromRow(row,
                                                      command_name,
                                                      command_options)
-                    if len(rows) > 1:
-                        cmd += ';'
-                    command_string.append(cmd)
+                    commands.append(cmd)
             else:
-                command_string = [row.__str__(compact=not full_text) for row in rows]
-        return command_string
+                commands = rows
+        return commands
 
     def _run(self):
         #args = self.args
         try:
             entry_ids = [i for i in self.args.entry_ids.split(',') if i.strip()]
         except AttributeError:
-            pass
+            entry_ids = None
 
         kwargs = dict(limit=self.args.limit,
                       since=self.args.since,
@@ -112,8 +109,11 @@ DATE FORMAT
         commands = self.search_history(sys.argv[0], **kwargs)
         if not commands:
             log.error("No results. Check query.")
-        for command in commands:
-            print(command)
+        if self.args.return_command:
+            result = ';'.join([pm.getCommandStringFromRow(cmd) for cmd in commands])
+        else:
+             result   = '\n'.join([row.__str__(compact=not self.args.full_text) for row in commands])
+        print(result)
 
 if __name__ == "__main__":
     Command().run()
