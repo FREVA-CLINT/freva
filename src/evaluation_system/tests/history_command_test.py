@@ -28,7 +28,7 @@ def test_history(stdout, dummy_history, dummy_user):
 
     # test history output
     cmd = Command()
-    output_str = run_command_with_capture(cmd, stdout, [])
+    output_str = run_command_with_capture(cmd, stdout, ['-d'])
     assert output_str.count('dummyplugin') == 10
     assert output_str.count('\n') == 10
 
@@ -36,6 +36,11 @@ def test_history(stdout, dummy_history, dummy_user):
     output_str = run_command_with_capture(cmd, stdout, ['--limit=3'])
     assert output_str.count('dummyplugin') == 3
     assert output_str.count('\n') == 3
+
+    # test no result
+    output_str = run_command_with_capture(cmd, stdout, ['--plugin=blabla'])
+    assert len(output_str) == 0
+
 
     # test return_command option
     output_str = run_command_with_capture(
