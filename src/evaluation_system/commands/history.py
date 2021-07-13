@@ -65,10 +65,6 @@ DATE FORMAT
         full_text = kwargs.pop('full_text', False)
         command_line = kwargs.pop('command_line', False)
         command_name = args[0]
-        try:
-            entry_ids = list(map(int, entry_ids.split(',')))
-        except AttributeError:
-            pass
         return_command = kwargs.pop('return_command', None)
         # this suspresses this debug info for generating commands
         if not return_command:
@@ -98,11 +94,16 @@ DATE FORMAT
 
     def _run(self):
         #args = self.args
+        try:
+            entry_ids = [i for i in self.args.entry_ids.split(',') if i.strip()]
+        except AttributeError:
+            pass
+
         kwargs = dict(limit=self.args.limit,
                       since=self.args.since,
                       until=self.args.until,
                       plugin=self.args.plugin,
-                      entry_ids=self.args.entry_ids,
+                      entry_ids=entry_ids,
                       return_command=self.args.return_command,
                       debug=self.DEBUG,
                       command_line=True,
