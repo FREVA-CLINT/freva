@@ -192,7 +192,7 @@ performed."""
                         SPECIAL_VARIABLES.substitute(dict(config_parser.items(plugin_section)))
                 sha = _get_public_key(config_parser[CONFIG_SECTION_NAME]['project_name'])
                 db_host = config_parser[CONFIG_SECTION_NAME]['db.host']
-                for secret in ('db.user', 'db.passwd', 'db.db'):
+                for secret in ('db.user', 'db.passwd', 'db.db', 'db.host'):
                     # Ask the vault for the secrets
                     value = _config.get(secret, None)
                     _config[secret] = _read_secrets(db_host, sha, secret) or value

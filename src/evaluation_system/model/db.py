@@ -13,6 +13,7 @@ from django.db import transaction
 from datetime import datetime
 import json
 import re
+import pandas as pd
 import logging
 from evaluation_system.misc import config
 from evaluation_system.model.history.models import Configuration
@@ -29,15 +30,13 @@ def timestamp_to_string(datetime_obj):
 
 
 def timestamp_from_string(date_string):
-    tmp_format = TIMESTAMP_FORMAT
-    while tmp_format:
-        try:
-            return datetime.strptime(date_string, tmp_format)
-        except:
-            pass
-        tmp_format = tmp_format[:-3]    #removing last entry and separator (one of ' :-')
-    raise ValueError("Can't parse a date out of '%s'" % date_string)
-
+    """Create a datetime object from a given datetime string."""
+    if date_string is None:
+        return
+    try:
+        return pd.Timestamp(date_string).to_pydatetime()
+    except:
+        raise ValueError("Can't parse a date from '%s'" % date_string)
 
 # class HistoryResultEntry(object):
 #     """
