@@ -813,10 +813,8 @@ def getCommandConfigFromRow(history_row, command_name, command_options):
     re_list = re.compile(re_list_pattern)
     for k, value in configuration.items():
         if value is not None:
-            # convert non-None values to string
-            value = str(value)
-            # remove brackets from list
-            if re_list.match(value):
+            # remove brackets from list if value is string
+            if re_list.match(str(value)) and isinstance(value, str):
                 value = value[1:-1]
             result['args'][k] = value
     return result
