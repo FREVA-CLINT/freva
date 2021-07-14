@@ -9,6 +9,6 @@ install:
 	python3 -m pip install -e .[test]
 test:
 	pytest -vv \
-	    --cov=$(PWD)/src/evaluation_system --cov-report=html:coverage_report --cov-report term-missing \
+	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
