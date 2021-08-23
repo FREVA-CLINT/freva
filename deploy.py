@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-import configparser
+from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import logging
 import hashlib
 from os import path as osp
@@ -129,7 +129,7 @@ def parse_args(argv=None):
             help='Additional packages that should be installed using pip')
     ap.add_argument('--develop', action='store_true', default=False,
             help='Use the develop flag when installing the evaluation_system package')
-    ap.add_argument('--no_conda', action='store_true', default=False,
+    ap.add_argument('--no_conda', '--no-conda', action='store_true', default=False,
             help='Do not create conda environment')
     ap.add_argument('--run_tests', action='store_true', default=False,
             help='Run unittests after installation')
@@ -249,6 +249,11 @@ class Installer:
                     target.parent.mkdir(exist_ok=True, parents=True)
                     logger.info(f'Copying auxilary file {source}')
                     shutil.copy(source, target)
+        config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+        for key in 'preview_path', 'project_data', 'base_dir_location', 'scheduler_output_dir':
+            with open(self.install_prefix/ 'etc' / 'evaluation_system.conf', 'r') as fp:
+                config_parser.read_file(fp)
+                Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
         with (self.install_prefix / 'share' / 'loadfreva.modules').open('w') as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
@@ -274,7 +279,7 @@ if __name__ == '__main__':
     if Inst.conda:
         Inst.create_conda()
     Inst.pip_install()
-    Inst.create_auxilary()
     Inst.create_config()
+    Inst.create_auxilary()
     if Inst.run_tests:
         Inst.unittests()
