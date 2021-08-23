@@ -23,7 +23,7 @@ def test_vault(dummy_key, requests_mock):
     url = f'http://{db_cfg["db.host"]}:5003/vault/data/{sha}'
     requests_mock.get(url, json=db_cfg)
     for key in ('db.passwd', 'db.user', 'db.db'):
-        assert config._read_secrets(db_cfg['db.host'], sha, key, port=5003,
+        assert config._read_secrets(sha, key, db_cfg['db.host'], port=5003,
                 protocol='http') == db_cfg[key]
 
 def test_get():
