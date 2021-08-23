@@ -253,7 +253,10 @@ class Installer:
         for key in 'preview_path', 'project_data', 'base_dir_location', 'scheduler_output_dir':
             with open(self.install_prefix/ 'etc' / 'evaluation_system.conf', 'r') as fp:
                 config_parser.read_file(fp)
-                Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
+                try:
+                    Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
+                except PermissionError:
+                    pass
         with (self.install_prefix / 'share' / 'loadfreva.modules').open('w') as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
