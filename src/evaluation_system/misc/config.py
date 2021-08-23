@@ -28,8 +28,9 @@ the future for the next project phase.'''
 
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_DEFAULT_CONFIG_FILE_LOCATION = Path(sys.prefix) / 'etc/evaluation_system.conf'
-_PUBLIC_KEY_DIR = Path(sys.prefix) / 'share'
+_DEFAULT_CONFIG_DIR = list(Path(__file__).parents)[5]
+_DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
+_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
