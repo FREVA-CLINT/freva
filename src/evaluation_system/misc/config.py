@@ -154,12 +154,16 @@ def _get_public_key(project_name):
 
 def _read_secrets(sha, key, *db_hosts, port=5002, protocol='http'):
     """Query the vault for data database secrets, of a given key."""
-    for db_host in db_hosts
+    for db_host in db_hosts:
         url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
         try:
             req = requests.get(url).json()
-            return req.get(key, None)
+            req['db.host'] = db_host
         except requests.exceptions.ConnectionError:
+            req = {}
+        try:
+            return req[key]
+        except KeyError:
             pass
 
 def reloadConfiguration():
