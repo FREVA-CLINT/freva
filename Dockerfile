@@ -43,11 +43,11 @@ RUN set -ex; \
   chown -R "${NB_USER}:${NB_USER}" ${HOME}/solr;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
   sudo -E -u ${NB_USER} mkdir -p /tmp/evaluation_system;\
-  if [ -z "${branch}" ];then\
+  if [[ -z "${branch}" ]];then\
     sudo -E -u ${NB_USER} /usr/bin/git clone $repository /tmp/evaluation_system ; \
   else\
     sudo -E -u ${NB_USER} /usr/bin/git clone -b $branch $repository /tmp/evaluation_system ; \
-  fi;
+  fi;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c latest -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
