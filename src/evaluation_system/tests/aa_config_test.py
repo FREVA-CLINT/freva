@@ -1,12 +1,22 @@
 
 import os
 import pytest
+import mock
 from pathlib import Path
 
+def mockenv(**envvars):
+    return mock.patch.dict(os.environ, envvars)
+
+
+
+@mockenv(PUBKEY='')
 def test_wrong_config():
     from evaluation_system.misc import config
+    #env = os.environ.copy()
+    #os.environ.pop('PUBKEY', None)
     with pytest.raises(FileNotFoundError):
          config._get_public_key('false.crt')
+    #os.environ = env.copy()
     config.reloadConfiguration()
     
 def test_vault(dummy_key, requests_mock):
