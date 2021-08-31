@@ -104,7 +104,7 @@ def dummy_env(dummy_key):
     test_conf = Path(__file__).absolute().parent / 'test.conf'
     env = os.environ.copy()
     os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(test_conf)
-    os.environ['PUBKEY'] = str(dummy_key)
+    os.environ.setdefault('PUBKEY', str(dummy_key))
     #from evaluation_system.misc import config
     #config.reloadConfiguration()
     yield os.environ
