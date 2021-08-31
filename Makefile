@@ -6,7 +6,7 @@ export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 all: install test
 
 install:
-	python3 -m pip install -e .[test]
+	python3 -m pip install .[test]
 test:
 	pytest -vv \
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \

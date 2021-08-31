@@ -5,7 +5,7 @@ LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
 ARG NB_USER="freva"
 ARG NB_UID="1000"
 ARG repository="https://gitlab.dkrz.de/freva/evaluation_system"
-ARG branch="add_xmpl_data"
+ARG branch="freva-dev"
 ARG binder="true"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
@@ -42,7 +42,12 @@ RUN set -ex; \
   cp -r /var/solr ${HOME}/ ;\
   chown -R "${NB_USER}:${NB_USER}" ${HOME}/solr;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
-  sudo -E -u ${NB_USER} /usr/bin/git clone -b $branch $repository /tmp/evaluation_system ; \
+  sudo -E -u ${NB_USER} mkdir -p /tmp/evaluation_system;\
+  if [ -z "${branch}" ];then\
+    sudo -E -u ${NB_USER} /usr/bin/git clone $repository /tmp/evaluation_system ; \
+  else\
+    sudo -E -u ${NB_USER} /usr/bin/git clone -b $branch $repository /tmp/evaluation_system ; \
+  fi;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c latest -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \

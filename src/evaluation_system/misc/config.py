@@ -28,8 +28,9 @@ the future for the next project phase.'''
 
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
-_DEFAULT_CONFIG_FILE_LOCATION = Path(sys.prefix) / 'etc/evaluation_system.conf'
-_PUBLIC_KEY_DIR = Path(sys.prefix) / 'share'
+_DEFAULT_CONFIG_DIR = Path(sys.prefix)
+_DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
+_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
@@ -151,14 +152,19 @@ def _get_public_key(project_name):
         raise FileNotFoundError(f'{key_file} not found. Secrets are stored in central vault and public key is needed to open the vault. Please deploy the backend again using the vault option.')
     return sha
 
-def _read_secrets(db_host, sha, key, port=5002, protocol='http'):
+def _read_secrets(sha, key, *db_hosts, port=5002, protocol='http'):
     """Query the vault for data database secrets, of a given key."""
-    url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
-    try:
-        req = requests.get(url).json()
-    except requests.exceptions.ConnectionError:
-        return None
-    return req.get(key, None)
+    for db_host in db_hosts:
+        url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
+        try:
+            req = requests.get(url).json()
+            req['db.host'] = db_host
+        except requests.exceptions.ConnectionError:
+            req = {}
+        try:
+            return req[key]
+        except KeyError:
+            pass
 
 def reloadConfiguration():
     """Reloads the configuration.
@@ -191,11 +197,12 @@ performed."""
                     _config[PLUGINS][plugin_section[len(PLUGINS):]] = \
                         SPECIAL_VARIABLES.substitute(dict(config_parser.items(plugin_section)))
                 sha = _get_public_key(config_parser[CONFIG_SECTION_NAME]['project_name'])
-                db_host = config_parser[CONFIG_SECTION_NAME]['db.host']
+                db_hosts = (config_parser[CONFIG_SECTION_NAME]['db.host'],
+                           config_parser[CONFIG_SECTION_NAME]['project_name']+'_vault')
                 for secret in ('db.user', 'db.passwd', 'db.db', 'db.host', 'db.port'):
                     # Ask the vault for the secrets
                     value = _config.get(secret, None)
-                    _config[secret] = _read_secrets(db_host, sha, secret) or value
+                    _config[secret] = _read_secrets(sha, secret, *db_hosts) or value
             log.debug('Configuration loaded from %s', config_file)
     else:
         log.debug('No configuration file found in %s. Using default values.',

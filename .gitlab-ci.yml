@@ -10,6 +10,7 @@ dev-obs:
         entrypoint: [""]
     script:
         - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo $CI_COMMIT_BRANCH
         - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - /kaniko/executor --context $CI_PROJECT_DIR
                        --cleanup
