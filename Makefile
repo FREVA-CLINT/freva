@@ -3,10 +3,11 @@
 #
 export PATH := $(FREVA_ENV)/bin:$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
 export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
+export PUBKEY := $(PUBKEY)
 all: install test
 
 install:
-	python3 -m pip install -e .[test]
+	python3 -m pip install .[test]
 test:
 	pytest -vv \
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
