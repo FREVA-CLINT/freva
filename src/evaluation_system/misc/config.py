@@ -158,7 +158,6 @@ def _read_secrets(sha, key, *db_hosts, port=5002, protocol='http'):
         url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
         try:
             req = requests.get(url).json()
-            req['db.host'] = db_host
         except requests.exceptions.ConnectionError:
             req = {}
         try:
