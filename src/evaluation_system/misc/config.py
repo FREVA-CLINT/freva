@@ -268,10 +268,10 @@ def keys():
     """Returns all the keys from the current configuration."""
     return _config.keys()
 
-def get_section(section_name):
+def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
-    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                 str(_DEFAULT_CONFIG_FILE_LOCATION))
+    config_file = config_file or os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                                       str(_DEFAULT_CONFIG_FILE_LOCATION))
     conf.read(config_file)
     try:
         section = dict(conf.items(section_name))
