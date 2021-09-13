@@ -30,7 +30,7 @@ the future for the next project phase.'''
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 _DEFAULT_CONFIG_DIR = Path(sys.prefix)
 _DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
-_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share'
+_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share' / 'freva'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
