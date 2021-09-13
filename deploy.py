@@ -257,7 +257,9 @@ class Installer:
                     Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
                 except PermissionError:
                     pass
-        with (self.install_prefix / 'share' / 'loadfreva.modules').open('w') as f:
+        freva_path = self.install_prefix / 'share' / 'freva'
+        freva_path.mkdir(parents=True, exist_ok=True)
+        with (freva_path / 'loadfreva.modules').open('w') as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
                           path=self.install_prefix / 'bin',
