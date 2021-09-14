@@ -37,5 +37,5 @@ from ._databrowser import *
 from ._plugin import *
 from ._esgf import *
 from ._history import *
-
+print("Hello Martin")
 __all__ = _databrowser.__all__ + _plugin.__all__ + _esgf.__all__ + _history.__all__
