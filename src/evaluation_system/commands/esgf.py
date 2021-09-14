@@ -114,7 +114,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 	    url_type = 'gridftp'
     	if args:
             raise ValueError(f"Invalid format for query: {args}")
-        show_facets = search_facets.pop('show_facet', False)
+        show_facets = search_facets.pop('show_facets', False)
         dataset = search_facets.pop('dataset', False)
         query = search_facets.pop('query', False)
         

@@ -2,6 +2,14 @@
 
 __all__ = ['esgf']
 
-def esgf(**kwargs):
+def esgf(*args,dataset=False
+	  query=False,show_facets=False):
 
-    return
+
+
+
+
+     return Command.search_esgf(*args, dataset=dataset,
+                               show_facets=show_facets,
+                               query=query,                    
+                               **search_facets)
