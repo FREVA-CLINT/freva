@@ -2,5 +2,7 @@
 
 __all__ = ['plugin']
 
-def plugin(plugin_name, **kwargs):
-    return
+def plugin(*args):
+
+
+    return Command.run_plugin(*args)

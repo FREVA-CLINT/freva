@@ -56,6 +56,7 @@ For Example:
         for key in pm.getPlugins():
             name_width = max(name_width, len(key))
         offset = name_width + 2
+        return sorted(pm.getPlugins().items())
         for key, plugin in sorted(pm.getPlugins().items()):
             lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
             if not lines:
@@ -78,8 +79,8 @@ For Example:
     def handle_pull_request(self, tool_name):
         tag = self.args.tag
         if not tag:
-            print('Missing required option "--tag"')
-            return
+            return 'Missing required option "--tag"'
+           
         # create new entry in
         freva_user = user.User()
         db_user = freva_user.getUserDB().getUserId(freva_user.getName())
@@ -94,30 +95,22 @@ For Example:
 
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
-            print('The pull request failed.\nPlease contact the admins.')
+            return 'The pull request failed.\nPlease contact the admins.'
         else:
-            print(f'{tool_name} plugin is now updated in the system.\nNew version: {tag}')
-
-    def _run(self):
-        # defaults
-        options = self.args
-        last_args = self.last_args
-        
-        # check if tool is specified
-        try:
+            return f'{tool_name} plugin is now updated in the system.\nNew version: {tag}'
+            
+    def run_plugin(*args):
+    	options=args
+    	 try:
             tool_name = last_args[0]
         except IndexError:
             return self.list_tools()
-
-        # here we handle the tool pull request
-        if options.pull_request:
-            self.handle_pull_request(tool_name)
-            return 0
-
-        if options.repos_version:
+    	 if options.pull_request:
+            return self.handle_pull_request(tool_name)
+    	 if options.repos_version:
             (repos, version) = pm.getPluginVersion(tool_name)
-            print(f'Repository and version of :{tool_name}\n{repos}\n{version}')
-            return 0
+            return(f'Repository and version of :{tool_name}\n{repos}\n{version}')
+           
         email = None
         unique_output = options.unique_output.lower() if options.unique_output else 'true'
         unique_output = unique_output not in ['false', '0', 'no']
@@ -125,7 +118,6 @@ For Example:
         batchmode = mode in ['true', '1', 'yes', 'on', 'web']
         if not batchmode and mode not in ['false', '0', 'no', 'off']:
             raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
-        # get the plugin
         if tool_name:
             caption = None
             if options.caption:
@@ -142,7 +134,7 @@ For Example:
                 scheduled_id = options.scheduled_id
                 logging.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
                 if not options.dry_run:
-                    pm.runTool(tool_name, scheduled_id=scheduled_id,
+                    result=pm.runTool(tool_name, scheduled_id=scheduled_id,
                                unique_output=unique_output)
             else:
                 # now run the tool
@@ -153,6 +145,7 @@ For Example:
                     
                 if error:
                     log.error(error)
+                    
 
                 tool_dict = pm.parseArguments(tool_name, self.last_args[1:])
                 
@@ -170,16 +163,14 @@ For Example:
                                                      caption=caption,
                                                      unique_output=unique_output)
 
-                        print('Scheduled job with history id', id)
-                        print('You can view the job\'s status with the command squeue')
-                        print('Your job\'s progress will be shown with the command')
-                        print('tail -f ', file)
+                        result= f 'Scheduled job with history id {id} \n You can view the job\'s status with the command squeue\n Your job\'s progress will be shown with the command\n tail -f' file)
+                        
                     else:
                         if self.DEBUG==True:
                             tool_dict['debug']=True
                         #else: 
                         #    tool_dict['debug']=False
-                        pm.runTool(tool_name, config_dict=tool_dict,
+                        result=pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
                         
                         # repeat the warning at the end of the run
@@ -190,3 +181,16 @@ For Example:
                 logging.debug("Arguments: %s", self.last_args)
                 import json
                 logging.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
+            return result
+
+    def _run(self):
+        # defaults
+        #options = self.args
+        #last_args = self.last_args
+        
+        Output=run_plugin(self.args)
+        print(Output)
+        # check if tool is specified
+        
+            
+
