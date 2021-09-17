@@ -34,6 +34,9 @@ _PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share' / 'freva'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
+#now check if we have a configuration file, and read the defaults from there
+CONFIG_FILE = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                             _DEFAULT_CONFIG_FILE_LOCATION)
 #: config options
 BASE_DIR = 'base_dir'
 'The name of the directory storing the evaluation system (output, configuration, etc)'
@@ -177,14 +180,11 @@ performed."""
                  DIRECTORY_STRUCTURE_TYPE: DIRECTORY_STRUCTURE.LOCAL,
                  PLUGINS: {}}
     
-    #now check if we have a configuration file, and read the defaults from there
-    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                 _DEFAULT_CONFIG_FILE_LOCATION)
 
-    log.debug("Loading configuration file from: %s"%config_file)
-    if config_file and os.path.isfile(config_file):
+    log.debug("Loading configuration file from: %s"%CONFIG_FILE)
+    if CONFIG_FILE and os.path.isfile(CONFIG_FILE):
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        with open(config_file, 'r') as fp:
+        with open(CONFIG_FILE, 'r') as fp:
             config_parser.read_file(fp)
             if not config_parser.has_section(CONFIG_SECTION_NAME):
                 raise ConfigurationException(("Configuration file is missing section %s.\n"
@@ -202,10 +202,10 @@ performed."""
                     # Ask the vault for the secrets
                     value = _config.get(secret, None)
                     _config[secret] = _read_secrets(sha, secret, *db_hosts) or value
-            log.debug('Configuration loaded from %s', config_file)
+            log.debug('Configuration loaded from %s', CONFIG_FILE)
     else:
         log.debug('No configuration file found in %s. Using default values.',
-                  config_file)
+                  CONFIG_FILE)
     
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
     #perform all special checks
@@ -270,8 +270,7 @@ def keys():
 
 def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
-    config_file = config_file or os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                       str(_DEFAULT_CONFIG_FILE_LOCATION))
+    config_file = config_file or CONFIG_FILE
     conf.read(config_file)
     try:
         section = dict(conf.items(section_name))
