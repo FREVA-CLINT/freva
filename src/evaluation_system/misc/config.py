@@ -181,10 +181,12 @@ performed."""
                  PLUGINS: {}}
     
 
-    log.debug("Loading configuration file from: %s"%CONFIG_FILE)
-    if CONFIG_FILE and os.path.isfile(CONFIG_FILE):
+    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                             _DEFAULT_CONFIG_FILE_LOCATION)
+    log.debug("Loading configuration file from: %s"%config_file)
+    if config_file and os.path.isfile(config_file):
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        with open(CONFIG_FILE, 'r') as fp:
+        with open(config_file, 'r') as fp:
             config_parser.read_file(fp)
             if not config_parser.has_section(CONFIG_SECTION_NAME):
                 raise ConfigurationException(("Configuration file is missing section %s.\n"
@@ -202,10 +204,10 @@ performed."""
                     # Ask the vault for the secrets
                     value = _config.get(secret, None)
                     _config[secret] = _read_secrets(sha, secret, *db_hosts) or value
-            log.debug('Configuration loaded from %s', CONFIG_FILE)
+            log.debug('Configuration loaded from %s', config_file)
     else:
         log.debug('No configuration file found in %s. Using default values.',
-                  CONFIG_FILE)
+                  config_file)
     
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
     #perform all special checks
@@ -270,7 +272,9 @@ def keys():
 
 def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
-    config_file = config_file or CONFIG_FILE
+    
+    config_file = config_file or os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                                                _DEFAULT_CONFIG_FILE_LOCATION)
     conf.read(config_file)
     try:
         section = dict(conf.items(section_name))
