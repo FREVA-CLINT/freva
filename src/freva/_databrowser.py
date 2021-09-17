@@ -6,7 +6,7 @@ import logging
 
 __all__ = ['databrowser']
 
-def databrowser(multiversion=False,
+def databrowser(*,multiversion=False,
                 relevant_only=False,
                 batch_size=10,
                 count_facet_values=False,
