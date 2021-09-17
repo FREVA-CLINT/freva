@@ -94,7 +94,7 @@ For Example:
         sys.stdout.flush()
 
     @staticmethod
-    def search_data(*,**search_facets):
+    def search_data(**search_facets):
         """Execute the solr search."""
         multiversion = search_facets.pop('multiversion', False)
         relevant_only = search_facets.pop('relevant_only', False)
