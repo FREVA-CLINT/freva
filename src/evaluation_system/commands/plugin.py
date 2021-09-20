@@ -101,24 +101,24 @@ For Example:
             
     def run_plugin(*args):
     	options=args
-    	 try:
+    	try:
             tool_name = last_args[0]
-        except IndexError:
+    	except IndexError:
             return self.list_tools()
-    	 if options.pull_request:
+    	if options.pull_request:
             return self.handle_pull_request(tool_name)
-    	 if options.repos_version:
+    	if options.repos_version:
             (repos, version) = pm.getPluginVersion(tool_name)
             return(f'Repository and version of :{tool_name}\n{repos}\n{version}')
            
-        email = None
-        unique_output = options.unique_output.lower() if options.unique_output else 'true'
-        unique_output = unique_output not in ['false', '0', 'no']
-        mode = options.batchmode.lower() if options.batchmode else 'false'
-        batchmode = mode in ['true', '1', 'yes', 'on', 'web']
-        if not batchmode and mode not in ['false', '0', 'no', 'off']:
+    	email = None
+    	unique_output = options.unique_output.lower() if options.unique_output else 'true'
+    	unique_output = unique_output not in ['false', '0', 'no']
+    	mode = options.batchmode.lower() if options.batchmode else 'false'
+    	batchmode = mode in ['true', '1', 'yes', 'on', 'web']
+    	if not batchmode and mode not in ['false', '0', 'no', 'off']:
             raise ValueError('batchmode should be set to one of those {1,0, true, false, yes, no, on, off}')
-        if tool_name:
+    	if tool_name:
             caption = None
             if options.caption:
                 caption = pm.generateCaption(options.caption, tool_name)
@@ -163,7 +163,7 @@ For Example:
                                                      caption=caption,
                                                      unique_output=unique_output)
 
-                        result= f 'Scheduled job with history id {id} \n You can view the job\'s status with the command squeue\n Your job\'s progress will be shown with the command\n tail -f' file)
+                        result= f'Scheduled job with history id {id} \n You can view the job\'s status with the command squeue\n Your job\'s progress will be shown with the command\n tail -f'
                         
                     else:
                         if self.DEBUG==True:

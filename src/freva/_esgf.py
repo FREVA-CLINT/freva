@@ -4,13 +4,13 @@ import logging
 
 __all__ = ['esgf']
 
-def esgf(*args,dataset=False,query=False,show_facets=False,opendap=False,gridftp=False,**search_facets):
+def esgf(dataset=False,query=False,show_facets=False,opendap=False,gridftp=False,download_script=False,**search_constraints):
 
 
 
 
 
-     return Command.search_esgf(*args, dataset=dataset,
+     return Command.search_esgf(dataset=dataset,
                                show_facets=show_facets,
-                               query=query,opendap=opendap,gridftp=gridftp,                    
-                               **search_facets)
+                               query=query,opendap=opendap,gridftp=gridftp, download_script=download_script,                   
+                               **search_constraints)

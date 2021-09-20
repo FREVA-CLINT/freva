@@ -41,6 +41,16 @@ def test_query(esgf_command, stdout, search_dict, dummy_config):
     res = [r for r in res.split('\n') if r.strip()]
     assert num_res == len(res) + 1
 
+def test_freva_esgf_method(dummy_config):
+from Freva import esgf
+	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
+	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
+	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
+	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
+	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
+	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
+	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
+	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
 
 
 def test_find_files(esgf_command, stdout, search_dict, dummy_config):

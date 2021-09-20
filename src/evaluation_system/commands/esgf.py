@@ -55,29 +55,30 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
   
 	
 	# defaults
-    	datasets = args.datasets
-    	if args.show_facet:
-	      	show_facets.append(args.show_facet)
-    	download_file = args.download_script
-    	query = args.query
+    	
+    	
     	kwargs = dict(show_facets=self.args.show_facet,
                       datasets=self.args.datasets,
                       download_file=self.args.download_script,
                       query=self.args.query
                       )
-
-    	for arg in lastargs:
-	     if '=' not in arg:
+    	for arg in self.last_args:
+            if '=' not in arg:
                 raise CommandError("Invalid format for query: %s" % arg)
-	     items = arg.split('=')
-	     key, value = items[0], ''.join(items[1:])
-	     if key not in kwargs:
+            items = arg.split('=')
+            key, value = items[0], ''.join(items[1:])
+            if key not in kwargs:
                 kwargs[key] = value
-	     else:
+            else:
                 if not isinstance(kwargs[key], list):
                     kwargs[key] = [kwargs[key]]
                 kwargs[key].append(value)
-    	if DEBUG:
+    	filtered = {k: v for k, v in kwargs.items() if v is not None}
+    	kwargs.clear()
+    	kwargs.update(filtered)
+         
+    	print(kwargs)
+    	if self.DEBUG:
 	     result=json.dump(kwargs)	
 	     sys.stderr.write("Searching string: %s\n" % kwargs)
 
@@ -85,34 +86,38 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	sys.stderr.flush()
 	                
     	out = self.search_esgf(**kwargs)
-    	if args.datasets:
+    	
+    	if self.args.datasets:
         	print('\n'.join(['%s - version: %s' % d for d in out]))	
-    	elif args.query:
+    	elif self.args.query:
         	print('\n'.join([str(d[query]) for d in out]))
-    	elif args.show_facets:
+    	elif self.args.show_facet:
         	for facet_key in sorted(out):
-	     	     if len(results[facet_key]) == 0:
+	     	     if len(out[facet_key]) == 0:
     		          values = "<No Results>"
 	     	     else:
-    		          values = '\n\t'.join(['%s: %s' % (k, results[facet_key][k]) for k in sorted(results[facet_key])])
+    		          values = '\n\t'.join(['%s: %s' % (k, out[facet_key][k]) for k in sorted(out[facet_key])])
 		 
 	     	     print('[%s]\n\t%s' % (facet_key, values))
     	else:
-        	print(out)
-       
-    def search_esgf(*args,**search_facets):
+        	print('\n'.join([str(d) for d in out]))
+        	
+    @staticmethod   
+    def search_esgf(**search_constraints):
     	facets = {}
-    	show_facets = []
+    	show_facet = []
     	result_query=[]
+    	result_url=[]
     	"""Command line options."""
     	
-    	if args:
-            raise ValueError(f"Invalid format for query: {args}")
-    	show_facets = search_facets.pop('show_facets', False)
-    	dataset = search_facets.pop('dataset', False)
-    	query = search_facets.pop('query', False)
-    	opendap = search_facets.pop('opendap', False)
-    	gridftp = search_facets.pop('gridftp', False)
+    	#if args:
+        #    raise ValueError(f"Invalid format for query: {args}")
+    	show_facets = search_constraints.pop('show_facets', False)
+    	dataset = search_constraints.pop('dataset', False)
+    	query = search_constraints.pop('query', False)
+    	download_script = search_constraints.pop('download_script', False)
+    	opendap = search_constraints.pop('opendap', False)
+    	gridftp = search_constraints.pop('gridftp', False)
         
     	url_type = 'http'
     	if opendap:
@@ -123,35 +128,41 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 		# find the files and display them
     	p2p = P2P()
     	
-    	if download_file:
-    	    download_file = Path(download_file)
-    	    download_file.touch(0o755)
-    	    with download_file.open('bw') as f:
-    	        f.write(p2p.get_wget(**facets))
-    	        return (f"Download script successfully saved to {download_file}")   # there's nothing more to be executed after this
+    	if download_script:
+    	    download_script = Path(download_script)
+    	    download_script.touch(0o755)
+    	    with download_script.open('bw') as f:
+    	        f.write(p2p.get_wget(**search_constraints))
+    	        return (f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
 	    
-    	if datasets: 
-    	    return sorted(p2p.get_datasets_names(**facets))
+    	if dataset: 
+    	    return sorted(p2p.get_datasets_names(**search_constraints))
     	if query: 
     	    if len(query.split(',')) > 1:
 		# we get multiple fields queried, return in a tructured fashion
-    	        return p2p.show(p2p.get_datasets(fields=query,**facets),return_str=True)
+    	        return p2p.show(p2p.get_datasets(fields=query,**search_constraints),return_str=True)
     	    else:
 		# if only one then return directly
-    	        return p2p.get_datasets(fields=query, **facets)
+    	        return p2p.get_datasets(fields=query, **search_constraints)
 	    		
   
 	 	   	 
     	if show_facets:
-    	    show_facets.append(args.show_facet)
-    	    results = p2p.get_facets(show_facets, **facets)
-	    # render them
-    	    return sorted(results[facet_key])  	
+    	    show_facet.append(show_facets)
+    	    
+    	    results = p2p.get_facets(show_facet, **search_constraints)
+    	    # render them
+    	    #print(results)
+    	    return results
 	           
 		  	
-    	if not (datasets or query or show_facets):
+    	if not (dataset or query or show_facets):
 	    # default
-    	    for result in p2p.files(fields='url', **facets):
+    	    print(search_constraints)
+    	    #for key in search_constraints
+    	    #	facets.append({key}+"="+search_constraints[key]+" ")
+    	    #print(facets)		
+    	    for result in p2p.files(fields='url', **search_constraints):
     	        for url_encoded in result['url']:
     	            url, _, access_type = url_encoded.split('|')
     	            if access_type.lower().startswith(url_type):
