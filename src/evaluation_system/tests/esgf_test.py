@@ -42,20 +42,21 @@ def test_query(esgf_command, stdout, search_dict, dummy_config):
     assert num_res == len(res) + 1
 
 def test_freva_esgf_method(dummy_config):
-from Freva import esgf
-	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
-	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
-	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
-	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
-	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
-	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
-	res = list(esgf(porject='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
-	assert res == [f'{dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2009/mon/atmos/Amon/r7i2p1/v20110819/ua/ua_Amon_HadCM3_decadal2009_r7i2p1_200911-201912.nc']
-
+    from Freva import esgf
+	
+    result_to_be = ['http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2001/day/atmos/day/r10i1p1/v20111122/tas/tas_day_MPI-ESM-LR_decadal2001_r10i1p1_20020101-20111231.nc',
+	             'http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2001/day/atmos/day/r10i1p1/v20111122/tas/tas_day_MPI-ESM-LR_decadal2001_r10i1p1_20020101-20111231.nc',
+	             'http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2001/day/atmos/day/r1i1p1/v20111122/tas/tas_day_MPI-ESM-LR_decadal2001_r1i1p1_20020101-20111231.nc',
+	             'http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2001/day/atmos/day/r1i1p1/v20111122/tas/tas_day_MPI-ESM-LR_decadal2001_r1i1p1_20020101-20111231.nc']
+    res = list(esgf(project='cmip5',experiment='historical',variable='tas',institute='MPI-M'))
+    for f in result_to_be:
+        assert f in res             
+    res = list(esgf(show-facets='project'))
+    assert dict(res)=dict(res['project'])
 
 def test_find_files(esgf_command, stdout, search_dict, dummy_config):
 
-
+    
     result_to_be = ['http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
                     #'http://aims3.llnl.gov/thredds/fileServer/cmip5_css02_data/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
                     'http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc']
