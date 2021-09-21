@@ -59,7 +59,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	
     	kwargs = dict(show_facets=self.args.show_facet,
                       datasets=self.args.datasets,
-                      download_file=self.args.download_script,
+                      download_script=self.args.download_script,
                       query=self.args.query
                       )
     	for arg in self.last_args:
@@ -99,6 +99,8 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     		          values = '\n\t'.join(['%s: %s' % (k, out[facet_key][k]) for k in sorted(out[facet_key])])
 		 
 	     	     print('[%s]\n\t%s' % (facet_key, values))
+    	elif self.args.download_script:
+    		print(out)
     	else:
         	print('\n'.join([str(d) for d in out]))
         	
@@ -127,13 +129,14 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 
 		# find the files and display them
     	p2p = P2P()
-    	
+    	print(search_constraints)
     	if download_script:
     	    download_script = Path(download_script)
     	    download_script.touch(0o755)
+    	    print(search_constraints)
     	    with download_script.open('bw') as f:
     	        f.write(p2p.get_wget(**search_constraints))
-    	        return (f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
+    	    return (f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
 	    
     	if dataset: 
     	    return sorted(p2p.get_datasets_names(**search_constraints))
