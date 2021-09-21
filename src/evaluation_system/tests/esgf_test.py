@@ -5,6 +5,7 @@ Created on 30.05.2016
 """
 
 import json
+import os
 from evaluation_system.tests import run_command_with_capture
 
 
@@ -55,9 +56,9 @@ def test_freva_esgf_method(dummy_config):
     #    assert f in res             
     res =esgf(show_facets='product')
     assert res =={'product': {'MRE2reanalysis': 6, 'MRE3reanalysis': 54, 'MREreanalysis': 5, 'ORAreanalysis': 9, 'Regional Reanalysis': 10, 'baseline0': 5568, 'bias-adjusted-output': 1593, 'bioclimatic': 2, 'climate-projection': 423, 'downscaled': 10, 'elev': 1, 'forcing_dataset': 6602, 'historical': 54, 'input': 1111, 'input_secondary': 85, 'insitu': 104, 'model-output': 11678490, 'observations': 209, 'output': 765924, 'output1': 245232, 'output2': 3562, 'output_secondary': 116, 'reanalysis': 76, 'season-forecast': 20, 'vicoutput': 48, 'vicoutput-pconst': 36}}
-    script_file = /tmp/ 'file_script.sh'
-    res=esgf(project='CMIP5',model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False,download_script=f'{script_file}')
-    assert script_file.is_file()
+    script_file = '/tmp/file_script.sh'
+    res=esgf(project='CMIP5',model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False,download_script=script_file)
+    assert os.path.isfile(script_file)
     assert res == f"Download script successfully saved to {fn}\n"
     assert oct(script_file.stat().st_mode)[-3:] == '755'
     
