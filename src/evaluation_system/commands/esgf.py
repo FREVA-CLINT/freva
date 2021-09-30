@@ -11,6 +11,7 @@ esgf - Command to access esgf data
 from pathlib import Path
 import sys
 import json
+import logging
 from evaluation_system.commands import FrevaBaseCommand
 from evaluation_system.model.esgf import P2P
 
@@ -77,7 +78,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	kwargs.clear()
     	kwargs.update(filtered)
          
-    	print(kwargs)
+    	
     	if self.DEBUG:
 	     result=json.dump(kwargs)	
 	     sys.stderr.write("Searching string: %s\n" % kwargs)
@@ -129,11 +130,11 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 
 		# find the files and display them
     	p2p = P2P()
-    	print(search_constraints)
+    	
     	if download_script:
     	    download_script = Path(download_script)
     	    download_script.touch(0o755)
-    	    print(search_constraints)
+    	    
     	    with download_script.open('bw') as f:
     	        f.write(p2p.get_wget(**search_constraints))
     	    return (f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
@@ -161,7 +162,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 		  	
     	if not (dataset or query or show_facets):
 	    # default
-    	    print(search_constraints)
+    	    
     	    #for key in search_constraints
     	    #	facets.append({key}+"="+search_constraints[key]+" ")
     	    #print(facets)		

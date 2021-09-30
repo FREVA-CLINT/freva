@@ -599,6 +599,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
         rowid = scheduled_id
     elif user:
         version_details = getVersion(plugin_name)
+        
         rowid = user.getUserDB().storeHistory(p,
                                               complete_conf,
                                               user.getName(),
@@ -607,15 +608,17 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
                                               caption=caption)
 
         # follow the notes
+        print(rowid)
         followHistoryTag(rowid, user.getName(), 'Owner')
 
     try:
         # we want that the rowid is visible to the tool
         p.rowid = rowid
+        print(complete_conf,unique_output)
         # In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf,
                             unique_output=unique_output)
-
+        print(result)
         # save results when existing
         if result is None:
             user.getUserDB().upgradeStatus(rowid,
@@ -958,11 +961,11 @@ def getPluginVersion(pluginname):
     import evaluation_system.model.repository as repository
 
     from inspect import getfile, currentframe
-
+    
     version = __version_cache.get(pluginname, None)
-
+    
     if version is None:
-
+       
         plugin = getPlugins().get(pluginname, None)
 
         srcfile = ''
