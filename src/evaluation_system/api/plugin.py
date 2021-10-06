@@ -173,6 +173,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
     def _runTool(self, config_dict = None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
+
         return result
     
     def append_unique_id(self, config_dict, unique_output):
@@ -259,6 +260,7 @@ Use it for the return call of runTool.
 :return: dictionary with the paths to the files that were created as key and a dictionary as value.
     """
         result = {}
+        
         if isinstance(output_files, str): output_files = [output_files]
         for file_path in output_files:
             metadata = {}
@@ -269,7 +271,9 @@ Use it for the return call of runTool.
                 if not isinstance(metadata, dict):
                     raise ValueError('Meta information must be of type dict')
 
+            
             if os.path.isfile(file_path):
+                print(file_path)
                 self._extend_output_metadata(file_path, metadata)
                 result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
@@ -285,6 +289,7 @@ Use it for the return call of runTool.
                     result[os.path.abspath(file_path)] = filemetadata
             else:
                 result[os.path.abspath(file_path)] = metadata
+        
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
@@ -684,6 +689,7 @@ It means, **never** start a plug-in comming from unknown sources.
 :type stderr: None
 :return return code: Return code of the process  
 """
+        
         log.debug("Calling: %s", cmd_string)
         # if you enter -x to the bash options the validation algorithm
         # after calling SLURM fails. Use -x temporary for debugging only
@@ -694,11 +700,16 @@ It means, **never** start a plug-in comming from unknown sources.
             
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
+            
 
-        res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
+        res = sub.run(['/bin/bash', bash_opt, cmd_string])
+        #res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
 
         # this is due to backward compatibility
-        return res.stdout.decode()
+        if res is None:
+            print("ko")
+        print(res)
+        return res
 
     
     def _splitPath(self, path):

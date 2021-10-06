@@ -15,7 +15,7 @@ from evaluation_system.misc import config
 from evaluation_system.model.plugins.models import ToolPullRequest
 import time
 import optparse
-
+log = logging.getLogger(__name__)
 
 class Command(FrevaBaseCommand):
     __short_description__ = '''Applies some analysis to the given data.'''
@@ -102,15 +102,14 @@ For Example:
 
     def _run(self):
         # defaults
-    	print(self.args)
-    	print(self.last_args)
+    	
     	options=self.args
     	args=[]
     	attrib=self.last_args
     	if attrib:
             args.append(attrib[0])
             attrib=self.last_args[1:]
-    	print(self.args)	    
+    	
     	kwargs = dict(caption=self.args.caption,
                       save=self.args.save,
                       save_config=self.args.save_config,
@@ -119,6 +118,7 @@ For Example:
                       dry_run=self.args.dry_run,
                       repo_version=self.args.repos_version,
                       unique_output=self.args.unique_output,
+                      debugs=bool(self.args.debug),
                       pull_request=self.args.pull_request)
     
         # contruct search_dict by looping over last_args
@@ -133,8 +133,9 @@ For Example:
                 if not isinstance(kwargs[key], list):
                     kwargs[key] = [kwargs[key]]
                 kwargs[key].append(value)
-    	print(kwargs)                
+    	
     	Output=self.run_plugin(*args,**kwargs)
+
     	if attrib:
     	    for key, plugin in Output:
                 lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
@@ -155,7 +156,7 @@ For Example:
     @staticmethod        
     def run_plugin(*args,**search_constraints):
   	
-    	print(args)
+    	
     	tool_name=''
     	if not args: 
     	  
@@ -175,6 +176,8 @@ For Example:
     	repo_version= search_constraints.pop('repo_version',False)
     	unique_output=search_constraints.pop('unique_output',False)
     	pull_request=search_constraints.pop('pull_request',False)
+    	debugs=search_constraints.pop('debugs',False)
+    	
     	if pull_request:
             output= self.handle_pull_request(tool_name)
             return output
@@ -195,21 +198,21 @@ For Example:
     	for k, v in search_constraints.items():
     	    tool_dict.append(f'{k}={v}')
     	      
-    	if args[0]:
+    	if tool_name:
     	   
     	    if caption:
     	        caption = pm.generateCaption(options.caption, tool_name)
     	    if save_config or save:
                 tool_dict = pm.parseArguments(tool_name, tool_dict)
-                cfg_file_save = options.save_config
+                cfg_file_save = save_config
                 save_in = pm.writeSetup(tool_name, tool_dict, config_file=cfg_file_save)
-                logging.info("Configuration file saved in %s", save_in)
+                log.info("Configuration file saved in %s", save_in)
     	    elif show_config:
                 tool_dict = pm.parseArguments(tool_name, tool_dict)
                 print(pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict))
     	    elif scheduled_id:
-                scheduled_id = options.scheduled_id
-                logging.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
+                scheduled_id = scheduled_id
+                log.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
                 if not dry_run:
                     pm.runTool(tool_name, scheduled_id=scheduled_id,
                                unique_output=unique_output)
@@ -222,11 +225,11 @@ For Example:
                     
                 if error:
                     log.error(error)
-                print(search_constraints)
+                #print(search_constraints)
                 tool_dict = pm.parseArguments(tool_name,tool_dict)
                 
-                logging.debug('Running %s with configuration: %s', tool_name, tool_dict)
-                if not dry_run and (not error or DEBUG):
+                log.debug('Running %s with configuration: %s', tool_name, tool_dict)
+                if not dry_run and (not error or debug):
                     # we check if the user is external and activate batchmode
                     django_user = User.objects.get(username=user.User().getName())
                     if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
@@ -239,24 +242,29 @@ For Example:
                                                      caption=caption,
                                                      unique_output=unique_output)
 
-                        logging.info('Scheduled job with history id', id)
-                        logging.info('You can view the job\'s status with the command squeue')
-                        logging.info('Your job\'s progress will be shown with the command')
-                        logging.info('tail -f ', file)
+                        log.info('Scheduled job with history id', id)
+                        log.info('You can view the job\'s status with the command squeue')
+                        log.info('Your job\'s progress will be shown with the command')
+                        log.info('tail -f ', file)
                     else:
-                        #if self.DEBUG==True:
-                        #    tool_dict['debug']=True
-                        #else: 
-                        #    tool_dict['debug']=False
-                        print("running..")
+                        if debugs:
+                            tool_dict['debug']=True
+                        else: 
+                            tool_dict['debug']=False
+                        log.info("running..")
                         pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
                         
                         # repeat the warning at the end of the run
                         # for readability don't show the warning in debug mode 
-                        if warning and not DEBUG:
+                        if warning and not debugs:
                             log.warning(warning)
-    	    if options.DEBUG:
-                logging.debug("Arguments: %s", self.last_args)
-                import json
-                logging.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))        
+
+
+    	    if debugs:
+    	        
+    	        log.debug("Arguments: %s", search_constraints)
+    	        import json
+    	        log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
+    	    return 
+

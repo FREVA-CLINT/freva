@@ -491,8 +491,10 @@ def _preview_create(plugin_name, result):
 
     todo_list = []
     result_list = []
+    
     for file_name in result:
         metadata = result[file_name]
+        
         todo = metadata.get('todo', '')
 
         if todo == 'copy':
@@ -571,6 +573,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
         user = User()
 
     p = getPluginInstance(plugin_name, user)
+
     complete_conf = None
 
     # check whether a scheduled id is given
@@ -587,8 +590,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
     if complete_conf is None:
         # at this stage we want to resolve or tokens and perform some kind of sanity check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-
-    log.debug('Running %s with %s', plugin_name, complete_conf)
+    	
+    log.info('Running %s with %s', plugin_name, complete_conf)
 
     rowid = 0
 
@@ -608,47 +611,55 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
                                               caption=caption)
 
         # follow the notes
-        print(rowid)
+        
         followHistoryTag(rowid, user.getName(), 'Owner')
 
     try:
         # we want that the rowid is visible to the tool
         p.rowid = rowid
-        print(complete_conf,unique_output)
+       
         # In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf,
                             unique_output=unique_output)
-        print(result)
+        
         # save results when existing
+
+        
         if result is None:
+            
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
                                            History.processStatus.finished_no_output)
 
         else:
             # create the preview
+            
             preview_path = config.get(config.PREVIEW_PATH, None)
 
+
             if preview_path:
-                logging.debug('Converting....')
+                logging.info('Converting....')
                 _preview_create(plugin_name, result)
-                logging.debug('finished')
+                logging.info('finished')
+               	
 
             # write the created files to the database
-            logging.debug('Storing results into data base....')
+            logging.info('Storing results into data base....')
             user.getUserDB().storeResults(rowid, result)
-            logging.debug('finished')
-
+            logging.info('finished')
+            
             # temporary set all processes to finished
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
                                            History.processStatus.finished)
     except:
+        
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
                                        History.processStatus.broken)
 
         raise
+
 
     return result
 
@@ -934,7 +945,8 @@ def followHistoryTag(history_id, user_name, info=''):
     tagType = HistoryTag.tagType.follow
     rows = HistoryTag.objects.filter(history_id_id=history_id,
                                      type=tagType,
-                                     uid_id=user_name)
+                                 uid_id=user_name)
+    
     if len(rows) == 0:
         user = User(user_name)
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
