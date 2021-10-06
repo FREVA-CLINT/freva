@@ -706,8 +706,7 @@ It means, **never** start a plug-in comming from unknown sources.
         #res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
 
         # this is due to backward compatibility
-        if res is None:
-            print("ko")
+        
         
         return res
 
