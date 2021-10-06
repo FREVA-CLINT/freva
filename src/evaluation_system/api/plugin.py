@@ -708,7 +708,7 @@ It means, **never** start a plug-in comming from unknown sources.
         # this is due to backward compatibility
         if res is None:
             print("ko")
-        print(res)
+        
         return res
 
     
