@@ -478,8 +478,9 @@ def test_prepare_output(dummy_plugin):
 def test_call(dummy_plugin):
     from evaluation_system.api.parameters import (ParameterDictionary,
                                                   Integer, String, Directory)
-    res = dummy_plugin.call('echo /bin/bash').strip('\n')
-    assert res == '/bin/bash'
+    from evaluation_system.api import runTool
+    res = runTool.Plugin('echo /bin/bash')#.strip('\n')
+    assert res.result.strip('\n') == '/bin/bash'
 
 def test_link_mydata(dummy_plugin, dummy_solr):
 
@@ -490,5 +491,7 @@ def test_link_mydata(dummy_plugin, dummy_solr):
             with f.open('w') as f:
                 f.write(' ')
         #dummy_plugin.linkmydata(outputdir=td)
+
+        
 
 

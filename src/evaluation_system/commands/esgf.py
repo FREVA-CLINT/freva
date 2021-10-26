@@ -80,18 +80,21 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
          
     	
     	if self.DEBUG:
-	     result=json.dump(kwargs)	
+	     result=json.dumps(kwargs)	
 	     sys.stderr.write("Searching string: %s\n" % kwargs)
 
 	# flush stderr in case we have something pending
     	sys.stderr.flush()
 	                
     	out = self.search_esgf(**kwargs)
-    	
+    	print(type(out))
     	if self.args.datasets:
         	print('\n'.join(['%s - version: %s' % d for d in out]))	
     	elif self.args.query:
-        	print('\n'.join([str(d[query]) for d in out]))
+    		if len(self.args.query.split(',')) > 1: 
+        		print('\n'.join([str(out)]))
+    		else:
+        		print('\n'.join([str(d[query]) for d in dict(out)])) # for d in out]))
     	elif self.args.show_facet:
         	for facet_key in sorted(out):
 	     	     if len(out[facet_key]) == 0:
@@ -156,23 +159,21 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	    
     	    results = p2p.get_facets(show_facet, **search_constraints)
     	    # render them
-    	    #print(results)
+    	    
     	    return results
 	           
 		  	
     	if not (dataset or query or show_facets):
 	    # default
     	    
-    	    #for key in search_constraints
-    	    #	facets.append({key}+"="+search_constraints[key]+" ")
-    	    #print(facets)		
+    	   
     	    for result in p2p.files(fields='url', **search_constraints):
     	        for url_encoded in result['url']:
     	            url, _, access_type = url_encoded.split('|')
     	            if access_type.lower().startswith(url_type):
 		    	        
     	                result_url.append(url)		     		
-			
+    	
     	return result_url
 	
 if __name__ == "__main__":  # pragma nocover

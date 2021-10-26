@@ -19,12 +19,11 @@ from configparser import ConfigParser, ExtendedInterpolation
 import logging
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
-
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config
 from evaluation_system.model.solr_core import SolrCore
-
+from evaluation_system.api import runTool as rt
 __version__ = (1,0,0)
 
 class ConfigurationError(Exception):
@@ -174,6 +173,7 @@ a list (or anything iterable) to :class:`prepareOutput` .
         config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
 
+        
         return result
     
     def append_unique_id(self, config_dict, unique_output):
@@ -702,13 +702,14 @@ It means, **never** start a plug-in comming from unknown sources.
             raise  Exception('stdin, stdout and stderr are no longer supported')
             
 
-        res = sub.run(['/bin/bash', bash_opt, cmd_string])
+        #call=rt.Plugin(cmd_string)
+        #res = sub.run(['/bin/bash', bash_opt, cmd_string])
         #res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
-
+        
         # this is due to backward compatibility
         
         
-        return res
+        return call
 
     
     def _splitPath(self, path):

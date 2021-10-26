@@ -155,9 +155,11 @@ For Example:
         
     @staticmethod        
     def run_plugin(*args,**search_constraints):
-  	
+  
+    	
     	
     	tool_name=''
+    	tools=''
     	if not args: 
     	  
     	   com=Command()
@@ -201,7 +203,7 @@ For Example:
     	if tool_name:
     	   
     	    if caption:
-    	        caption = pm.generateCaption(options.caption, tool_name)
+    	        caption = pm.generateCaption(caption, tool_name)
     	    if save_config or save:
                 tool_dict = pm.parseArguments(tool_name, tool_dict)
                 cfg_file_save = save_config
@@ -209,7 +211,7 @@ For Example:
                 log.info("Configuration file saved in %s", save_in)
     	    elif show_config:
                 tool_dict = pm.parseArguments(tool_name, tool_dict)
-                print(pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict))
+                return(pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict))
     	    elif scheduled_id:
                 scheduled_id = scheduled_id
                 log.debug('Running %s as scheduled in history with ID %i', tool_name, scheduled_id)
@@ -260,11 +262,10 @@ For Example:
                         if warning and not debugs:
                             log.warning(warning)
 
-
     	    if debugs:
     	        
     	        log.debug("Arguments: %s", search_constraints)
     	        import json
     	        log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
-    	    return 
+    	    return ''
 
