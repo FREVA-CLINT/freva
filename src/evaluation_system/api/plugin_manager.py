@@ -389,6 +389,7 @@ used. This will be completely skipped if ``use_user_defaults`` is ``False``.
     else:
         with open(config_file, 'w') as f:
             p.saveConfiguration(f, config_dict=complete_conf)
+            
 
     return config_file
 
@@ -659,6 +660,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
                                        History.processStatus.broken)
 
         raise
+
 
 
     return result

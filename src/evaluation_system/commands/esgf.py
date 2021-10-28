@@ -87,14 +87,15 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	sys.stderr.flush()
 	                
     	out = self.search_esgf(**kwargs)
-    	print(type(out))
+
     	if self.args.datasets:
         	print('\n'.join(['%s - version: %s' % d for d in out]))	
     	elif self.args.query:
     		if len(self.args.query.split(',')) > 1: 
         		print('\n'.join([str(out)]))
     		else:
-        		print('\n'.join([str(d[query]) for d in dict(out)])) # for d in out]))
+        		
+        		print('\n'.join([str(d) for d in list(out)])) # for d in out]))
     	elif self.args.show_facet:
         	for facet_key in sorted(out):
 	     	     if len(out[facet_key]) == 0:
@@ -104,6 +105,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 		 
 	     	     print('[%s]\n\t%s' % (facet_key, values))
     	elif self.args.download_script:
+    	       
     		print(out)
     	else:
         	print('\n'.join([str(d) for d in out]))
@@ -119,7 +121,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	#if args:
         #    raise ValueError(f"Invalid format for query: {args}")
     	show_facets = search_constraints.pop('show_facets', False)
-    	dataset = search_constraints.pop('dataset', False)
+    	datasets = search_constraints.pop('datasets', False)
     	query = search_constraints.pop('query', False)
     	download_script = search_constraints.pop('download_script', False)
     	opendap = search_constraints.pop('opendap', False)
@@ -140,9 +142,10 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	    
     	    with download_script.open('bw') as f:
     	        f.write(p2p.get_wget(**search_constraints))
-    	    return (f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
+    	    return str(f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
 	    
-    	if dataset: 
+    	if datasets: 
+    	    
     	    return sorted(p2p.get_datasets_names(**search_constraints))
     	if query: 
     	    if len(query.split(',')) > 1:
@@ -163,7 +166,7 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	    return results
 	           
 		  	
-    	if not (dataset or query or show_facets):
+    	if not (datasets or query or show_facets):
 	    # default
     	    
     	   

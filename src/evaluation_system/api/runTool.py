@@ -24,10 +24,9 @@ class Plugin:
 
 
     def runTool(self, config_dict=None):
-        
-        Plugin.result = self.call(f'{config_dict["cmd"]}')
-        #print(res)
-        return Plugin.result #print(res)
+       
+        self.call(f'{config_dict["cmd"]}')
+        #return self.result 
 
     def call(self, cmd, verbose=True, return_stdout=True):
 

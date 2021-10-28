@@ -77,8 +77,8 @@ For Example:
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
 
-    def handle_pull_request(self, tool_name):
-        tag = self.args.tag
+    def handle_pull_request(tag, tool_name):
+        
         if not tag:
             print('Missing required option "--tag"')
             return 'Missing required option "--tag"'
@@ -90,10 +90,12 @@ For Example:
         )
 
         print('Please wait while your pull request is processed')
+	
+        
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
             pull_request = ToolPullRequest.objects.get(id=pull_request.id)
-
+            
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
             print('The pull request failed.\nPlease contact the admins.')
@@ -119,6 +121,7 @@ For Example:
                       repo_version=self.args.repos_version,
                       unique_output=self.args.unique_output,
                       debugs=bool(self.args.debug),
+                      tag=self.args.tag,
                       pull_request=self.args.pull_request)
     
         # contruct search_dict by looping over last_args
@@ -134,22 +137,16 @@ For Example:
                     kwargs[key] = [kwargs[key]]
                 kwargs[key].append(value)
     	
+
     	Output=self.run_plugin(*args,**kwargs)
 
-    	if attrib:
-    	    for key, plugin in Output:
-                lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
-                if not lines:
-                    lines = ['No description.']
-                if len(lines) > 1:
-                # multi-line
-                    print('%s: %s' % (plugin['name'], lines[0] + '\n' + ' '*offset + ('\n' + ' '*offset).join(lines[1:])))
-                else:
-                    print('%s: %s' % (plugin['name'], lines[0]))
+       
+ 	
     	if self.args.repos_version:
     	    print(Output)
-    	else:
-    	    print(Output)	
+    	if self.args.show_config:
+    	    print(Output)    
+    	
         # check if tool is specified
         
         
@@ -160,6 +157,7 @@ For Example:
     	
     	tool_name=''
     	tools=''
+    	results=''
     	if not args: 
     	  
     	   com=Command()
@@ -170,7 +168,7 @@ For Example:
     	
     	caption = search_constraints.pop('caption', False)
     	save = search_constraints.pop('save', False)
-    	save_config = search_constraints.pop('save_config', False)
+    	save_config = search_constraints.pop('save_config',None)
     	show_config = search_constraints.pop('show_config', False)
     	scheduled_id = search_constraints.pop('scheduled_id', False)
     	dry_run = search_constraints.pop('dry_run', False)
@@ -178,16 +176,17 @@ For Example:
     	repo_version= search_constraints.pop('repo_version',False)
     	unique_output=search_constraints.pop('unique_output',False)
     	pull_request=search_constraints.pop('pull_request',False)
+    	tag=search_constraints.pop('tag',False)
     	debugs=search_constraints.pop('debugs',False)
     	
     	if pull_request:
-            output= self.handle_pull_request(tool_name)
+            output= Command.handle_pull_request(tag,tool_name)
             return output
     	if repo_version:
     	    
-    	    (repos, version) = pm.getPluginVersion(tools)
-    	    output= f'Repository and version of :{tool_name}\n{repos}\n{version}'
-    	    return output
+    	    (repos, version) = pm.getPluginVersion(tool_name)
+    	    return f'Repository and version of :{tool_name}\n{repos}\n{version}'
+    	    
     	email = None
     	unique_output = unique_output.lower() if unique_output else 'true'
     	unique_output = unique_output not in ['false', '0', 'no']
@@ -254,7 +253,7 @@ For Example:
                         else: 
                             tool_dict['debug']=False
                         log.info("running..")
-                        pm.runTool(tool_name, config_dict=tool_dict,
+                        results=pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
                         
                         # repeat the warning at the end of the run
@@ -267,5 +266,5 @@ For Example:
     	        log.debug("Arguments: %s", search_constraints)
     	        import json
     	        log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
-    	    return ''
-
+            
+    	    return results

@@ -96,15 +96,29 @@ input      (default: <undefined>)
 
 def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     import freva
-    res=freva.plugin("wetdry",input='/home/mahesh/Freva/pr_day_MPI-M-MPI-ESM-LR-MPI-CSC-REMO2009-v1_rcp26_r1i1p1_20210101-20251231.nc',outputdir='/home/mahesh/Freva/evaluation_system/output/WETDRY',cacheclear=False,cachedir='/home/mahesh/Freva/evaluation_system/cache/WETDRY',
-                     latlon='46,57,6,15', seldate='2021-09-01,2025-11-30', title='Wet-and-Dry-days-per-Time-Period', dryrun=False, link2database=False, caption="wetdry_results")
+    #res=freva.plugin("wetdry",input='/home/mahesh/Freva/pr_day_MPI-M-MPI-ESM-LR-MPI-CSC-REMO2009-v1_rcp26_r1i1p1_20210101-20251231.nc',outputdir='/home/mahesh/Freva/evaluation_system/output/WETDRY',cacheclear=False,cachedir='/home/mahesh/Freva/evaluation_system/cache/WETDRY',
+    #                 latlon='46,57,6,15', seldate='2021-09-01,2025-11-30', title='Wet-and-Dry-days-per-Time-Period', dryrun=False, link2database=False, caption="wetdry_results")
+    import configparser
+    cfg = configparser.ConfigParser()
+    cfg.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
+    res=freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
 
-    print(res)
+    assert isinstance(res,dict)
     
-        
+    res=freva.plugin('dummyplugin',the_number=32,show_config=True)                     
+    res = '\n'.join([l.strip() for l in res.split('\n') if l.strip()])
+    assert similar_string(res, '''    number: -the_number: 32 something: test other: 1.4 input: -''')
       
-
-
+    res=freva.plugin('dummyplugin',save=True,the_number=32,debugs=True) 
+    fn = Path(cfg['evaluation_system']['base_dir_location']) / 'config/dummyplugin/dummyplugin.conf'
+    assert not fn.is_file() 
+    
+    res=freva.plugin('dummyplugin',repo_version=True)
+    assert not [True for x in ['not','unknown'] if x in res]
+    
+    res=freva.plugin('dummyplugin',pull_request=True,tag=1.0)
+    assert not [True for x in ['not','unknown'] if x in res]
+   
 
 def test_run_plugin(stdout, plugin_command, dummy_history):
 
@@ -126,13 +140,19 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin',
                                                 'the_number=32',
                                                 '--caption="Some caption"'])
-    print(output_str)                                                
+                                                  
     #assert similar_string('Dummy tool was run with: {\'input\': None, \'other\': 1.4, \'number\': None, \'the_number\': 32, \'something\': \'test\'}',  output_str, 0.7)
     assert similar_string('Dummy tool was run with: {\'number\': None, \'the_number\': 32, \'something\': \'test\', \'other\': 1.4, \'input\': None,}',  output_str, 0.7)
     # test get version
-    
+   
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--repos-version'])
+    # test batch mode
+    sys.stdout = stdout
+    output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
+    # test save config
+    sys.stdout = stdout
+
     # test batch mode
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
@@ -148,37 +168,30 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     output_str = '\n'.join([l.strip() for l in output_str.split('\n') if l.strip()])
     assert similar_string(output_str, '''    number: -the_number: 42 something: test other: 1.4 input: -''')
 
-
-
-
-
-
 def test_handle_pull_request(plugin_command, stdout):
     from evaluation_system.model.plugins.models import ToolPullRequest
     ToolPullRequest.objects.all().delete()
     import time
 
     def sleep_mock(v):
-        t = ToolPullRequest.objects.get(tool='wetdry', tagged_version='')
+        t = ToolPullRequest.objects.get(tool='wetdry', tagged_version='1.0')
         t.status = 'failed'
         t.save()
     time.sleep = sleep_mock
 
     stdout.startCapturing()
     stdout.reset()
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['wetdry', '--pull-request'])
-    assert cmd_out == """Please wait while your pull request is processed
-The pull request failed.
-Please contact the admins.
-"""
+    cmd_out = run_command_with_capture(plugin_command, stdout, ['wetdry', '--pull-request', '--tag=1.0'])
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed\nThe pull request failed.\nPlease contact the admins.""",0.7)
 
     def sleep_mock_success(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='2.0')
+        t = ToolPullRequest.objects.get(tool='wetdry', tagged_version='2.0')
         t.status = 'success'
         t.save()
     time.sleep = sleep_mock_success
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=2.0'])
-    assert cmd_out == """Please wait while your pull request is processed
-murcss plugin is now updated in the system.
-New version: 2.0
-"""
+    cmd_out = run_command_with_capture(plugin_command, stdout, ['wetdry', '--pull-request', '--tag=2.0'])
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed murcss plugin is now updated in the system. New version: 2.0""",0.7)
+
+
+
+

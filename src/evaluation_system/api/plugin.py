@@ -14,6 +14,7 @@ import stat
 import shutil
 import re
 from time import time
+import shlex
 from datetime import datetime
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
@@ -169,6 +170,16 @@ a list (or anything iterable) to :class:`prepareOutput` .
 :return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
+    @staticmethod
+    def _execute(cmd):
+        res = sub.Popen(cmd, stdout=sub.PIPE, universal_newlines=True)
+        for stdout_line in iter(res.stdout.readline, ""):
+            yield stdout_line
+        res.stdout.close()
+        return_code = res.wait()
+        if return_code:
+            raise sub.CalledProcessError(return_code, cmd)
+
     def _runTool(self, config_dict = None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
@@ -509,7 +520,7 @@ if no configuration is provided the default one will be used.
             #a default incomplete one
             config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
         fp.write('[%s]\n' % self.__class__.__name__)
-
+        
         import textwrap
         wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,break_on_hyphens=False,expand_tabs=False)
         
@@ -547,6 +558,7 @@ if no configuration is provided the default one will be used.
                             help_lines[0] = '[mandatory] ' + help_lines[0]
                         fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
                         fp.write('\n')
+                
                 if value is None:
                     #means this is not setup
                     if isMandatory:
@@ -675,7 +687,7 @@ if no configuration is provided the default one will be used.
         return cmd_param
 
         
-    def call(self, cmd_string, stdin=None, stdout=None, stderr=None):
+    def call(self, cmd_string,verbose=True,stdin=None,stderr=None,stdout=None,return_stdout=True):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
 It means, **never** start a plug-in comming from unknown sources.
 
@@ -702,14 +714,21 @@ It means, **never** start a plug-in comming from unknown sources.
             raise  Exception('stdin, stdout and stderr are no longer supported')
             
 
-        #call=rt.Plugin(cmd_string)
-        #res = sub.run(['/bin/bash', bash_opt, cmd_string])
-        #res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
+        if isinstance(cmd_string, str):
+            cmd = shlex.split(cmd_string)
+        #cmd.append('&')
+        out = ''
+        for line in self._execute(cmd):
+            if verbose:
+                print(line, end='', flush=True)
+            out += line
         
-        # this is due to backward compatibility
+        if return_stdout:
+            return out
         
         
-        return call
+        
+        
 
     
     def _splitPath(self, path):
