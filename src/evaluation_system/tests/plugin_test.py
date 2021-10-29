@@ -478,9 +478,9 @@ def test_prepare_output(dummy_plugin):
 def test_call(dummy_plugin):
     from evaluation_system.api.parameters import (ParameterDictionary,
                                                   Integer, String, Directory)
-    from evaluation_system.api import runTool
-    res = runTool.Plugin('echo /bin/bash')#.strip('\n')
-    assert res.result.strip('\n') == '/bin/bash'
+
+    res = dummy_plugin.call('echo /bin/bash')#.strip('\n')
+    assert res.strip('\n') == '/bin/bash'
 
 def test_link_mydata(dummy_plugin, dummy_solr):
 
