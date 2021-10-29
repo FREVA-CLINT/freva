@@ -946,8 +946,7 @@ def followHistoryTag(history_id, user_name, info=''):
     """
     tagType = HistoryTag.tagType.follow
     rows = HistoryTag.objects.filter(history_id_id=history_id,
-                                     type=tagType,
-                                 uid_id=user_name)
+                                     type=tagType,uid_id=user_name)
     
     if len(rows) == 0:
         user = User(user_name)

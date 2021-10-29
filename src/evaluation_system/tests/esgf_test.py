@@ -29,7 +29,7 @@ def test_query(esgf_command, stdout, search_dict, dummy_config):
             esgf_command,
             stdout,
             ['--debug', 'project=TEST','limit=1', '--query=project', '--gridftp'])
-    print(type(res))
+    
     assert "['TEST']" in res 
     res = run_command_with_capture(
             esgf_command,

@@ -6,8 +6,7 @@ This module encapsulates the access to repositories.
 
 import os
 import logging
-from subprocess import Popen, PIPE
-
+from git import Repo
 from evaluation_system.misc import config
 
 log = logging.getLogger(__name__)
@@ -18,32 +17,17 @@ __version_cache = {}
 def getVersion(src_file):
    
     retval = __version_cache.get(src_file, None)
-    
     if retval is None:
         (dir_name, filename) = os.path.split(src_file)
-        command = ''#'module load git > /dev/null 2> /dev/null;'
-        if dir_name:
-            command += 'cd %s 2> /dev/null;' % dir_name
-        command += 'git config --get remote.origin.url;'
-        #command += 'git show-ref --heads --hash'
-        command += 'git log --pretty=format:"%H" -n 1'
-        options = config.get(config.GIT_BASH_STARTOPTIONS, '-lc')
-        bash = ['/bin/bash',  options,  command]
-        p = Popen(bash, stdout=PIPE, stderr=PIPE)
-        (stdout, stderr) = p.communicate()
- 
         try:
-            lines = stdout.decode('utf8').split('\n')
-            print(lines)
-            repository = lines[0]
-            version = lines[1]            
+            
+            repo = Repo(dir_name, search_parent_directories=True)
+            repository = next(repo.remote(name='origin').urls)
+            version = repo.head.object.hexsha
+       
         except Exception as e:
-            if not stderr:
-                stderr = str(e)
-               
             log.warning("Could not read git version")
-            log.info("Error while reading git version:\n%s", stderr)
-    
+            log.info("Error while reading git version:\n%s", str(e))
             repository = 'unknown'
             version = 'unknown'
             

@@ -112,7 +112,7 @@ For Example:
             args.append(attrib[0])
             attrib=self.last_args[1:]
     	
-    	kwargs = dict(caption=self.args.caption,
+    	kwargs=dict(caption=self.args.caption,
                       save=self.args.save,
                       save_config=self.args.save_config,
                       show_config=self.args.show_config,

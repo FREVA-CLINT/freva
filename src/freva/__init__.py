@@ -33,8 +33,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __version__ = "2021.5"
 import os
-import os
-os.environ['PYTHONASYNCIODEBUG'] = '1'
 from ._databrowser import *
 from ._plugin import *
 from ._esgf import *

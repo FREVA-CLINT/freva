@@ -24,7 +24,7 @@ from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config
 from evaluation_system.model.solr_core import SolrCore
-from evaluation_system.api import runTool as rt
+
 __version__ = (1,0,0)
 
 class ConfigurationError(Exception):
@@ -183,8 +183,6 @@ a list (or anything iterable) to :class:`prepareOutput` .
     def _runTool(self, config_dict = None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
-
-        
         return result
     
     def append_unique_id(self, config_dict, unique_output):
@@ -271,20 +269,16 @@ Use it for the return call of runTool.
 :return: dictionary with the paths to the files that were created as key and a dictionary as value.
     """
         result = {}
-        
         if isinstance(output_files, str): output_files = [output_files]
         for file_path in output_files:
             metadata = {}
-
             # we expect a meta data dictionary
             if isinstance(output_files, dict):
                 metadata = output_files[file_path]
                 if not isinstance(metadata, dict):
                     raise ValueError('Meta information must be of type dict')
-
-            
             if os.path.isfile(file_path):
-                print(file_path)
+                
                 self._extend_output_metadata(file_path, metadata)
                 result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
@@ -305,7 +299,6 @@ Use it for the return call of runTool.
 
     def _extend_output_metadata(self, file_path, metadata):
         fstat=os.stat(file_path)
-              
         if 'timestamp' not in metadata:
             metadata['timestamp'] = fstat[stat.ST_CTIME]
             # metadata['timestamp'] = os.path.getctime(file_path)
@@ -523,7 +516,6 @@ if no configuration is provided the default one will be used.
         
         import textwrap
         wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,break_on_hyphens=False,expand_tabs=False)
-        
         #preserve order
         for param_name in self.__parameters__:
             if include_defaults:
@@ -545,7 +537,6 @@ if no configuration is provided the default one will be used.
                         param_name='#'+ param_name
                 fp.write('%s=%s\n\n' % (param_name, value))
                 fp.flush()  #in case we want to stream this for a very awkward reason...
-                
             elif param_name in config_dict:
                 param = self.__parameters__.get_parameter(param_name)
                 value = config_dict[param_name]
@@ -558,7 +549,6 @@ if no configuration is provided the default one will be used.
                             help_lines[0] = '[mandatory] ' + help_lines[0]
                         fp.write('\n'.join([wrapper.fill(line) for line in help_lines]))
                         fp.write('\n')
-                
                 if value is None:
                     #means this is not setup
                     if isMandatory:
@@ -687,7 +677,8 @@ if no configuration is provided the default one will be used.
         return cmd_param
 
         
-    def call(self, cmd_string,verbose=True,stdin=None,stderr=None,stdout=None,return_stdout=True):
+    def call(self, cmd_string,verbose=True,stdin=None,
+             stderr=None,stdout=None,return_stdout=True):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
 It means, **never** start a plug-in comming from unknown sources.
 
@@ -712,11 +703,9 @@ It means, **never** start a plug-in comming from unknown sources.
             
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
-            
-
+           
         if isinstance(cmd_string, str):
             cmd = shlex.split(cmd_string)
-        #cmd.append('&')
         out = ''
         for line in self._execute(cmd):
             if verbose:
@@ -726,11 +715,7 @@ It means, **never** start a plug-in comming from unknown sources.
         if return_stdout:
             return out
         
-        
-        
-        
-
-    
+               
     def _splitPath(self, path):
         """Help function to split a path"""
         rest_path = os.path.normpath(path)
