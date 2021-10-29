@@ -116,8 +116,8 @@ def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     res=freva.plugin('dummyplugin',repo_version=True)
     assert not [True for x in ['not','unknown'] if x in res]
     
-    res=freva.plugin('dummyplugin',pull_request=True,tag=1.0)
-    assert not [True for x in ['not','unknown'] if x in res]
+    #res=freva.plugin('dummyplugin',pull_request=True,tag=1.0)
+    #assert not [True for x in ['not','unknown'] if x in res]
    
 
 def test_run_plugin(stdout, plugin_command, dummy_history):
