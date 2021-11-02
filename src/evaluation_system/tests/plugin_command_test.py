@@ -30,6 +30,7 @@ def test_tool_doc(stdout, plugin_doc, plugin_command):
     assert 'find' in out
     #out = run_command_with_capture(Command(), stdout, cmd)
 
+
 def test_list_tools(stdout, plugin_command):
     print(plugin_command)
     plugin_list = run_command_with_capture(plugin_command, stdout, [])
@@ -96,31 +97,22 @@ input      (default: <undefined>)
 
 def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     import freva
-    import configparser
-    cfg = configparser.ConfigParser()
-    cfg.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
+    from evaluation_system.misc import config
     res=freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
-
     assert isinstance(res,dict)
-    
     res=freva.plugin('dummyplugin',the_number=32,show_config=True)                     
     res = '\n'.join([l.strip() for l in res.split('\n') if l.strip()])
     assert similar_string(res, '''    number: -the_number: 32 something: test other: 1.4 input: -''')
-      
     res=freva.plugin('dummyplugin',save=True,the_number=32,debugs=True) 
-    fn = Path(cfg['evaluation_system']['base_dir_location']) / 'config/dummyplugin/dummyplugin.conf'
+    fn = Path( config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
     assert not fn.is_file() 
-    
     res=freva.plugin('dummyplugin',repo_version=True)
     assert not [True for x in ['not','unknown'] if x in res]
    
 
 def test_run_plugin(stdout, plugin_command, dummy_history):
-
+    from evaluation_system.misc import config	
     sys.stdout = stdout
-    import configparser
-    cfg = configparser.ConfigParser()
-    cfg.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
     stdout.startCapturing()
     stdout.reset()
     with pytest.raises(SystemExit):
@@ -128,19 +120,14 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     stdout.stopCapturing()
     help_str= stdout.getvalue()
     assert 'Error found when parsing parameters. Missing mandatory parameters: the_number' in help_str
-
     sys.stdout = stdout
     # test run tool
-    
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin',
                                                 'the_number=32',
                                                 '--caption="Some caption"'])
-                                                  
-  
     assert similar_string('Dummy tool was run with: {\'number\': None, \'the_number\': 32,\
                            \'something\': \'test\', \'other\': 1.4, \'input\': None,}',  output_str, 0.7)
     # test get version
-   
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--repos-version'])
     # test batch mode
@@ -148,17 +135,14 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
     # test save config
     sys.stdout = stdout
-
     # test batch mode
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
     # test save config
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=32', '--save', '--debug'])
-    
-    fn = Path(cfg['evaluation_system']['base_dir_location']) / 'config/dummyplugin/dummyplugin.conf'
+    fn = Path(config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
     assert not fn.is_file()
-  
     # test show config
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=42', '--show-config'])
     output_str = '\n'.join([l.strip() for l in output_str.split('\n') if l.strip()])
@@ -174,7 +158,6 @@ def test_handle_pull_request(plugin_command, stdout):
         t.status = 'failed'
         t.save()
     time.sleep = sleep_mock
-
     stdout.startCapturing()
     stdout.reset()
     cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=1.0'])
