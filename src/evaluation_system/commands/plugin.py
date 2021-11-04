@@ -85,26 +85,22 @@ For Example:
         # create new entry in
         freva_user = user.User()
         db_user = freva_user.getUserDB().getUserId(freva_user.getName())
-        pull_request = ToolPullRequest.objects.create(
-            user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting'
-        )
-
-        print('Please wait while your pull request is processed')
-	
         
+        pull_request = ToolPullRequest.objects.create(
+            user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting')
+        print('Please wait while your pull request is processed')
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
-            pull_request = ToolPullRequest.objects.get(id=pull_request.id)
-            
+            pull_requests = ToolPullRequest.objects.get(id=pull_request.id)
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
             print('The pull request failed.\nPlease contact the admins.')
         else:
             print(f'{tool_name} plugin is now updated in the system.\nNew version: {tag}')
 
+
     def _run(self):
         # defaults
-    	
     	options=self.args
     	args=[]
     	attrib=self.last_args
@@ -123,7 +119,6 @@ For Example:
                       debugs=bool(self.args.debug),
                       tag=self.args.tag,
                       pull_request=self.args.pull_request)
-    
         # contruct search_dict by looping over last_args
     	for arg in attrib:
             if '=' not in arg:
@@ -136,25 +131,16 @@ For Example:
                 if not isinstance(kwargs[key], list):
                     kwargs[key] = [kwargs[key]]
                 kwargs[key].append(value)
-    	
-
     	Output=self.run_plugin(*args,**kwargs)
-
-       
- 	
     	if self.args.repos_version:
     	    print(Output)
     	if self.args.show_config:
     	    print(Output)    
     	
-        # check if tool is specified
-        
-        
+
     @staticmethod        
     def run_plugin(*args,**search_constraints):
   
-    	
-    	
     	tool_name=''
     	tools=''
     	results=''
@@ -178,15 +164,12 @@ For Example:
     	pull_request=search_constraints.pop('pull_request',False)
     	tag=search_constraints.pop('tag',False)
     	debugs=search_constraints.pop('debugs',False)
-    	
     	if pull_request:
             output= Command.handle_pull_request(tag,tool_name)
             return output
     	if repo_version:
-    	    
     	    (repos, version) = pm.getPluginVersion(tool_name)
     	    return f'Repository and version of :{tool_name}\n{repos}\n{version}'
-    	    
     	email = None
     	unique_output = unique_output.lower() if unique_output else 'true'
     	unique_output = unique_output not in ['false', '0', 'no']
@@ -198,7 +181,6 @@ For Example:
     	tool_dict=[]
     	for k, v in search_constraints.items():
     	    tool_dict.append(f'{k}={v}')
-    	      
     	if tool_name:
     	   
     	    if caption:
