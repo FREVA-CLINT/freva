@@ -174,7 +174,7 @@ def test_handle_pull_request(plugin_command, stdout):
     import time
     ToolPullRequest.objects.all().delete()
     sys.stdout = stdout  
-    tool = 'wetdry'
+    tool = 'dummyplugin'
     cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request'])
     assert similar_string(cmd_out,"""'Missing required option "--tag"'""",0.7) 
     def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
