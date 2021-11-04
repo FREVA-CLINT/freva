@@ -5,6 +5,7 @@ Created on 18.05.2016
 """
 import os
 import sys
+from functools import partial
 from pathlib import Path
 import pytest
 from tempfile import TemporaryDirectory
@@ -98,9 +99,6 @@ input      (default: <undefined>)
 def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     import freva
     from evaluation_system.misc import config
-    from evaluation_system.model.plugins.models import ToolPullRequest
-    ToolPullRequest.objects.all().delete()
-    import time
     res = freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
     assert isinstance(res,dict)
     res = freva.plugin('dummyplugin',the_number=32,show_config=True)                     
@@ -153,24 +151,22 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
 
 def test_handle_pull_request(plugin_command, stdout):
     from evaluation_system.model.plugins.models import ToolPullRequest
-    ToolPullRequest.objects.all().delete()
     import time
-    def sleep_mock(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='1.0')
-        t.status = 'failed'
+    ToolPullRequest.objects.all().delete()
+    tool = 'foobal'
+    def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
+        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
+        t.status = status
         t.save()
-    time.sleep = sleep_mock
+
+    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
     stdout.startCapturing()
     stdout.reset()
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=1.0'])
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=1.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
-                          \nThe pull request failed.\nPlease contact the admins.""",0.7)                          
-    def sleep_mock_success(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='2.0')
-        t.status = 'success'
-        t.save()
-    time.sleep = sleep_mock_success
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=2.0'])
+                          \nThe pull request failed.\nPlease contact the admins.""",0.7)
+    
+    time.sleep = partial(pr_sleep, version='1.0', status='success', tool=tool)
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=2.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
-                          wetdrmurcssy plugin is now updated in the system. New version: 2.0""",0.7)
-
+                          murcss plugin is now updated in the system. New version: 2.0""",0.7)

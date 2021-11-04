@@ -76,8 +76,8 @@ For Example:
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
 
+    @staticmethod
     def handle_pull_request(tag, tool_name):
-
         if not tag:
             print('Missing required option "--tag"')
             return 'Missing required option "--tag"'
@@ -86,6 +86,7 @@ For Example:
         db_user = freva_user.getUserDB().getUserId(freva_user.getName())
         pull_request = ToolPullRequest.objects.create(
             user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting')
+        
         print('Please wait while your pull request is processed')
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
@@ -149,7 +150,6 @@ For Example:
     	   return tools
     	else:
     	   tool_name=args[0]     	         
-    	
     	caption = search_constraints.pop('caption', False)
     	save = search_constraints.pop('save', False)
     	save_config = search_constraints.pop('save_config',None)
@@ -163,7 +163,7 @@ For Example:
     	tag=search_constraints.pop('tag',False)
     	debugs=search_constraints.pop('debugs',False)
     	if pull_request:
-    	    output= Command.handle_pull_request(tag,tool_name)
+    	    output = Command.handle_pull_request(tag,tool_name)
     	    return output
     	if repo_version:
     	    (repos, version) = pm.getPluginVersion(tool_name)
