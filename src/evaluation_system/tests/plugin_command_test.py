@@ -99,17 +99,37 @@ input      (default: <undefined>)
 def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     import freva
     from evaluation_system.misc import config
-    res = freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
+    res = freva.plugin('dummyplugin', the_number=32, caption="Some caption")                     
     assert isinstance(res,dict)
-    res = freva.plugin('dummyplugin',the_number=32,show_config=True)                     
+    res = freva.plugin('dummyplugin', the_number=32, show_config=True)                     
     res = '\n'.join([l.strip() for l in res.split('\n') if l.strip()])
     assert similar_string(res, '''    number: -the_number: 32 something: test other: 1.4 input: -''')
-    res = freva.plugin('dummyplugin',save=True,the_number=32,debugs=True) 
+    res = freva.plugin('dummyplugin', save=True, the_number=32, debugs=True) 
     fn = Path( config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
     assert not fn.is_file() 
-    res=freva.plugin('dummyplugin',repo_version=True)
+    res=freva.plugin('dummyplugin', repo_version=True)
     assert not [True for x in ['not','unknown'] if x in res]
+    from evaluation_system.model.plugins.models import ToolPullRequest
+    import time
+    ToolPullRequest.objects.all().delete()
+    sys.stdout = stdout
     
+    tool = 'wetdry'
+    cmd_out = freva.plugin(tool, pull_request=True, tag='')
+    assert similar_string(cmd_out, """'Missing required option "--tag"'""", 0.7) 
+    def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
+        
+        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
+        t.status = status
+        t.save()
+    stdout.stopCapturing()
+    stdout.reset()
+    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
+    cmd_out = freva.plugin(tool, pull_request=True, tag='1.0')
+    assert similar_string(cmd_out,"""The pull request failed.\nPlease contact the admins.""",0.7) 
+    time.sleep = partial(pr_sleep, version='2.0', status='success', tool=tool)
+    cmd_out = freva.plugin(tool, pull_request=True, tag='2.0')
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed wetdry plugin is now updated in the system.\n New version: 2.0""",0.7)
        
 def test_run_plugin(stdout, plugin_command, dummy_history):
     from evaluation_system.misc import config	
@@ -153,9 +173,10 @@ def test_handle_pull_request(plugin_command, stdout):
     from evaluation_system.model.plugins.models import ToolPullRequest
     import time
     ToolPullRequest.objects.all().delete()
-    sys.stdout = stdout
-   
+    sys.stdout = stdout  
     tool = 'wetdry'
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request'])
+    assert similar_string(cmd_out,"""'Missing required option "--tag"'""",0.7) 
     def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
         
         t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)

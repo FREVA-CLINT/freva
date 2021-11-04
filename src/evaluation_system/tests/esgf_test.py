@@ -53,7 +53,7 @@ def test_freva_esgf_method(dummy_config):
                     'http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18500101-18591231.nc',
                     'http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc',
                     'http://esgf.nci.org.au/thredds/fileServer/replica/CMIP5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc'                    ]
-    res = esgf(project='CMIP5',experiment='historical',variable='tas',institute='MPI-M',time_frequency='day')
+    res = esgf(project='CMIP5', experiment='historical', variable='tas', institute='MPI-M', time_frequency='day')
     for f in result_to_be:
         assert f in res
     #for f in result_to_be:
@@ -62,7 +62,7 @@ def test_freva_esgf_method(dummy_config):
     res = res["product"]['MRE2reanalysis']
     assert res == 6
     script_file = '/tmp/file_script.sh'
-    res = esgf(project='CMIP5',model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False,download_script=script_file)
+    res = esgf(project='CMIP5', model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False, download_script=script_file)
     assert os.path.isfile(script_file)
     assert res == f"Download script successfully saved to {script_file}"
     assert oct(os.stat(script_file).st_mode)[-3:] == '755'
