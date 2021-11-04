@@ -156,21 +156,21 @@ def test_handle_pull_request(plugin_command, stdout):
     ToolPullRequest.objects.all().delete()
     import time
     def sleep_mock(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='7.0')
+        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='1.0')
         t.status = 'failed'
         t.save()
     time.sleep = sleep_mock
     stdout.startCapturing()
     stdout.reset()
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=7.0'])
+    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=1.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
                           \nThe pull request failed.\nPlease contact the admins.""",0.7)                          
     def sleep_mock_success(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='8.0')
+        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='2.0')
         t.status = 'success'
         t.save()
     time.sleep = sleep_mock_success
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=8.0'])
+    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=2.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
-                          murcss plugin is now updated in the system. New version: 8.0""",0.7)
+                          murcss plugin is now updated in the system. New version: 2.0""",0.7)
 
