@@ -101,12 +101,12 @@ def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     from evaluation_system.model.plugins.models import ToolPullRequest
     ToolPullRequest.objects.all().delete()
     import time
-    res=freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
+    res = freva.plugin('dummyplugin',the_number=32,caption="Some caption")                     
     assert isinstance(res,dict)
-    res=freva.plugin('dummyplugin',the_number=32,show_config=True)                     
+    res = freva.plugin('dummyplugin',the_number=32,show_config=True)                     
     res = '\n'.join([l.strip() for l in res.split('\n') if l.strip()])
     assert similar_string(res, '''    number: -the_number: 32 something: test other: 1.4 input: -''')
-    res=freva.plugin('dummyplugin',save=True,the_number=32,debugs=True) 
+    res = freva.plugin('dummyplugin',save=True,the_number=32,debugs=True) 
     fn = Path( config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
     assert not fn.is_file() 
     res=freva.plugin('dummyplugin',repo_version=True)
