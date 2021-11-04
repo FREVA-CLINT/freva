@@ -86,11 +86,10 @@ For Example:
         db_user = freva_user.getUserDB().getUserId(freva_user.getName())
         pull_request = ToolPullRequest.objects.create(
             user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting')
-        
-        print('Please wait while your pull request is processed')
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
-            pull_requests = ToolPullRequest.objects.get(id=pull_request.id)
+            pull_request = ToolPullRequest.objects.get(id=pull_request.id)
+            print(pull_request.status)
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
             print('The pull request failed.\nPlease contact the admins.')

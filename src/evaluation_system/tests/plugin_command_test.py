@@ -153,20 +153,22 @@ def test_handle_pull_request(plugin_command, stdout):
     from evaluation_system.model.plugins.models import ToolPullRequest
     import time
     ToolPullRequest.objects.all().delete()
-    tool = 'foobal'
+    sys.stdout = stdout
+   
+    tool = 'wetdry'
     def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
+        
         t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
         t.status = status
         t.save()
-
-    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
-    stdout.startCapturing()
+    stdout.stopCapturing()
     stdout.reset()
+    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
     cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=1.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
-                          \nThe pull request failed.\nPlease contact the admins.""",0.7)
-    
-    time.sleep = partial(pr_sleep, version='1.0', status='success', tool=tool)
+                          \nThe pull request failed.\nPlease contact the admins.""",0.7) 
+    time.sleep = partial(pr_sleep, version='2.0', status='success', tool=tool)
     cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=2.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
                           murcss plugin is now updated in the system. New version: 2.0""",0.7)
+
