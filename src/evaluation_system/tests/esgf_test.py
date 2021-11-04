@@ -63,11 +63,11 @@ def test_freva_esgf_method(dummy_config):
         assert f in res
     #for f in result_to_be:
     #    assert f in res             
-    res =esgf(show_facets='product')
-    res=res["product"]['MRE2reanalysis']
+    res = esgf(show_facets='product')
+    res = res["product"]['MRE2reanalysis']
     assert res == 6
     script_file = '/tmp/file_script.sh'
-    res=esgf(project='CMIP5',model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False,download_script=script_file)
+    res = esgf(project='CMIP5',model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib=False,download_script=script_file)
     assert os.path.isfile(script_file)
     assert res == f"Download script successfully saved to {script_file}"
     assert oct(os.stat(script_file).st_mode)[-3:] == '755'

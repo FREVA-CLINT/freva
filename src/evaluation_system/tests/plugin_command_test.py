@@ -119,7 +119,7 @@ def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
     time.sleep = sleep_mock
     stdout.startCapturing()
     stdout.reset()
-    cmd_out =freva.plugin('murcss', pull_request=True,tag=, '--tag=1.0'])
+    cmd_out = freva.plugin('murcss',pull_request=True,tag='1.0')
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
                           \nThe pull request failed.\nPlease contact the admins.""",0.7)                          
     def sleep_mock_success(v):
@@ -127,7 +127,7 @@ def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
         t.status = 'success'
         t.save()
     time.sleep = sleep_mock_success
-    cmd_out = freva.plugin('murcss', pull_request=True,tag=, '--tag=2.0'])
+    cmd_out = freva.plugin('murcss',pull_request=True,tag='2.0')
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
                           murcss plugin is now updated in the system. New version: 8.0""",0.7)
 
