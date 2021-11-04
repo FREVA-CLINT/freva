@@ -57,7 +57,6 @@ For Example:
         for key in pm.getPlugins():
             name_width = max(name_width, len(key))
         offset = name_width + 2
-       
         for key, plugin in sorted(pm.getPlugins().items()):
             lines = textwrap.wrap('%s' % plugin['description'], env['columns'] - offset)
             if not lines:
@@ -78,14 +77,13 @@ For Example:
             FrevaBaseCommand.auto_doc(self, message=message)
 
     def handle_pull_request(tag, tool_name):
-        
+
         if not tag:
             print('Missing required option "--tag"')
             return 'Missing required option "--tag"'
         # create new entry in
         freva_user = user.User()
         db_user = freva_user.getUserDB().getUserId(freva_user.getName())
-        
         pull_request = ToolPullRequest.objects.create(
             user_id=db_user, tool=tool_name, tagged_version=tag, status='waiting')
         print('Please wait while your pull request is processed')
@@ -165,8 +163,8 @@ For Example:
     	tag=search_constraints.pop('tag',False)
     	debugs=search_constraints.pop('debugs',False)
     	if pull_request:
-            output= Command.handle_pull_request(tag,tool_name)
-            return output
+    	    output= Command.handle_pull_request(tag,tool_name)
+    	    return output
     	if repo_version:
     	    (repos, version) = pm.getPluginVersion(tool_name)
     	    return f'Repository and version of :{tool_name}\n{repos}\n{version}'

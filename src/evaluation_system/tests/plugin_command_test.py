@@ -172,5 +172,5 @@ def test_handle_pull_request(plugin_command, stdout):
     time.sleep = sleep_mock_success
     cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=2.0'])
     assert similar_string(cmd_out,"""Please wait while your pull request is processed
-                          murcss plugin is now updated in the system. New version: 2.0""",0.7)
+                          wetdrmurcssy plugin is now updated in the system. New version: 2.0""",0.7)
 
