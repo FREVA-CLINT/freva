@@ -18,6 +18,7 @@ import optparse
 log = logging.getLogger(__name__)
 
 class Command(FrevaBaseCommand):
+
     __short_description__ = '''Applies some analysis to the given data.'''
     __description__ = """Applies some analysis to the given data.
 See https://code.zmaw.de/projects/miklip-d-integration/wiki/Analyze for more information.
@@ -49,6 +50,7 @@ For Example:
              {'name': '--tag', 'help': 'The git tag to pull', 'metavar': 'TAG'}
              ]
 
+
     def list_tools(self):
         import textwrap
         env = self.getEnvironment()
@@ -68,6 +70,7 @@ For Example:
                 print('%s: %s' % (plugin['name'], lines[0]))
         return 0
 
+
     def auto_doc(self, message=None):
         if len(self.last_args) > 0:
             plugin = pm.getPluginInstance(self.last_args[0])
@@ -75,6 +78,7 @@ For Example:
             exit(0)
         else:
             FrevaBaseCommand.auto_doc(self, message=message)
+
 
     @staticmethod
     def handle_pull_request(tag, tool_name):
@@ -89,7 +93,6 @@ For Example:
         while pull_request.status in ['waiting', 'processing']:
             time.sleep(5)
             pull_request = ToolPullRequest.objects.get(id=pull_request.id)
-            
         if pull_request.status == 'failed':
             # TODO: Better error messages, like tag not valid or other
             return('The pull request failed.\nPlease contact the admins.')
@@ -105,7 +108,6 @@ For Example:
     	if attrib:
             args.append(attrib[0])
             attrib=self.last_args[1:]
-    	
     	kwargs=dict(caption=self.args.caption,
                       save=self.args.save,
                       save_config=self.args.save_config,
@@ -137,6 +139,7 @@ For Example:
     	if self.args.pull_request:
     	    print(Output)   
 
+
     @staticmethod        
     def run_plugin(*args,**search_constraints):
   
@@ -144,7 +147,6 @@ For Example:
     	tools=''
     	results=''
     	if not args: 
-    	  
     	   com=Command()
     	   tools=Command.list_tools(com)    	
     	   return tools
@@ -180,7 +182,6 @@ For Example:
     	for k, v in search_constraints.items():
     	    tool_dict.append(f'{k}={v}')
     	if tool_name:
-    	   
     	    if caption:
     	        caption = pm.generateCaption(caption, tool_name)
     	    if save_config or save:
@@ -200,29 +201,24 @@ For Example:
     	    else:
                 # now run the tool
                 (error, warning) = pm.getErrorWarning(tool_name)
-                
                 if warning:
                     log.warning(warning)
-                    
                 if error:
                     log.error(error)
                 #print(search_constraints)
                 tool_dict = pm.parseArguments(tool_name,tool_dict)
-                
                 log.debug('Running %s with configuration: %s', tool_name, tool_dict)
                 if not dry_run and (not error or debug):
                     # we check if the user is external and activate batchmode
                     django_user = User.objects.get(username=user.User().getName())
                     if django_user.groups.filter(name=config.get('external_group', 'noexternalgroupset')).exists():
                         batchmode = True
-                    
                     if batchmode:
                         [id, file] = pm.scheduleTool(tool_name,
                                                      config_dict=tool_dict,
                                                      user=user.User(email=email),
                                                      caption=caption,
                                                      unique_output=unique_output)
-
                         log.info('Scheduled job with history id', id)
                         log.info('You can view the job\'s status with the command squeue')
                         log.info('Your job\'s progress will be shown with the command')
@@ -235,16 +231,12 @@ For Example:
                         log.info("running..")
                         results=pm.runTool(tool_name, config_dict=tool_dict,
                                    caption=caption, unique_output=unique_output)
-                        
                         # repeat the warning at the end of the run
                         # for readability don't show the warning in debug mode 
                         if warning and not debugs:
                             log.warning(warning)
-
     	    if debugs:
-    	        
     	        log.debug("Arguments: %s", search_constraints)
     	        import json
     	        log.debug('Current configuration:\n%s', json.dumps(tool_dict, indent=4))
-            
     	    return results
