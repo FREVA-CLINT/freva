@@ -1,15 +1,13 @@
 from evaluation_system.commands.esgf import Command
 import logging
-
-
 __all__ = ['esgf']
 
-def esgf(datasets=False,query=False,show_facets=False,opendap=False,gridftp=False,download_script=False,**search_constraint):
+
+def esgf(datasets=False, query=False, show_facets=False, opendap=False, gridftp=False, download_script=False, **search_constraint):
 
 	"""Find data in the ESGF.
 	import freva
 	files = freva.esgf(model='MPI-ESM-LR', experiment='decadal2001', variable='tas', distrib='False')
-
 	Parameters:
 	-----------
 	**search_constraint: str
@@ -34,7 +32,6 @@ def esgf(datasets=False,query=False,show_facets=False,opendap=False,gridftp=Fals
 	Returns:
 	--------
 	collection : List, Dict of files, facets or attributes
-
 	"""
-	return Command.search_esgf(datasets=datasets,show_facets=show_facets,query=query,
-	                           opendap=opendap,gridftp=gridftp,download_script=download_script,**search_constraint)
+	return Command.search_esgf(datasets=datasets, show_facets=show_facets, query=query,
+	                           opendap=opendap, gridftp=gridftp, download_script=download_script, **search_constraint)

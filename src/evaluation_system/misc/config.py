@@ -13,7 +13,6 @@ import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
 log = logging.getLogger(__name__)
-
 from evaluation_system.misc.utils import Struct, TemplateDict
 
 DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central', SCRATCH='scratch')
@@ -25,11 +24,9 @@ DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central', SCRATCH='scratch'
 
 We only use local at this time, but we'll be migrating to central in 
 the future for the next project phase.'''
-
 # Some defaults in case nothing is defined
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 _DEFAULT_CONFIG_DIR = Path(sys.prefix)
-
 _DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
 _PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])

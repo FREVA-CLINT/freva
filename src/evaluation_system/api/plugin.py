@@ -692,7 +692,6 @@ It means, **never** start a plug-in comming from unknown sources.
 :type stderr: None
 :return return code: Return code of the process  
 """
-        
         log.debug("Calling: %s", cmd_string)
         # if you enter -x to the bash options the validation algorithm
         # after calling SLURM fails. Use -x temporary for debugging only
@@ -703,15 +702,13 @@ It means, **never** start a plug-in comming from unknown sources.
             
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
-           
         if isinstance(cmd_string, str):
             cmd = shlex.split(cmd_string)
         out = ''
         for line in self._execute(cmd):
             if verbose:
                 print(line, end='', flush=True)
-            out += line
-        
+            out += line        
         if return_stdout:
             return out
         
@@ -732,21 +729,16 @@ It means, **never** start a plug-in comming from unknown sources.
     
     # TODO: Is this used somewhere?
     def getVersion():
+ 
         import evaluation_system.model.repository as repository
-    
         from inspect import getfile
-        
         version = __version_cache.get(pluginname, None)
-        
         if version is None:
-    
             plugin = getPlugins().get(pluginname, None)
-            
             srcfile = getfile(self.__class__.__name__)
-        
             version = repository.getVersion(srcfile) 
-            
         return version
+
 
     def __module_interaction(self, command, module_name):
         """

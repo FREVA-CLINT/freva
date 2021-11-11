@@ -51,13 +51,11 @@ distrib: (*true*, false) search globally or only at DKRZ (MPI data and replicas)
 latest : (true, false, *unset*) search for the latest version, older ones or all.
 replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
 """
+   
     
     def _run(self):
-  
-	
-	# defaults
-    	
-    	
+
+  	# defaults
     	kwargs = dict(show_facets=self.args.show_facet,
                       datasets=self.args.datasets,
                       download_script=self.args.download_script,
@@ -77,38 +75,30 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	filtered = {k: v for k, v in kwargs.items() if v is not None}
     	kwargs.clear()
     	kwargs.update(filtered)
-         
-    	
     	if self.DEBUG:
 	     result=json.dumps(kwargs)	
 	     sys.stderr.write("Searching string: %s\n" % kwargs)
-
 	# flush stderr in case we have something pending
     	sys.stderr.flush()
-	                
     	out = self.search_esgf(**kwargs)
-
     	if self.args.datasets:
-        	print('\n'.join(['%s - version: %s' % d for d in out]))	
+            print('\n'.join(['%s - version: %s' % d for d in out]))	
     	elif self.args.query:
-    		if len(self.args.query.split(',')) > 1: 
-        		print('\n'.join([str(out)]))
-    		else:
-        		
-        		print('\n'.join([str(d) for d in list(out)])) # for d in out]))
+    	    if len(self.args.query.split(',')) > 1: 
+                print('\n'.join([str(out)]))
+    	    else:
+                print('\n'.join([str(d) for d in list(out)])) 
     	elif self.args.show_facet:
-        	for facet_key in sorted(out):
-	     	     if len(out[facet_key]) == 0:
-    		          values = "<No Results>"
-	     	     else:
-    		          values = '\n\t'.join(['%s: %s' % (k, out[facet_key][k]) for k in sorted(out[facet_key])])
-		 
-	     	     print('[%s]\n\t%s' % (facet_key, values))
+            for facet_key in sorted(out):
+    	        if len(out[facet_key]) == 0:
+    	            values = "<No Results>"
+    	        else:
+    	            values = '\n\t'.join(['%s: %s' % (k, out[facet_key][k]) for k in sorted(out[facet_key])])
+    	            print('[%s]\n\t%s' % (facet_key, values))
     	elif self.args.download_script:
-    	       
-    		print(out)
+    	    print(out)
     	else:
-        	print('\n'.join([str(d) for d in out]))
+            print('\n'.join([str(d) for d in out]))
         	
     @staticmethod   
     def search_esgf(**search_constraints):
@@ -117,35 +107,26 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	result_query=[]
     	result_url=[]
     	"""Command line options."""
-    	
-    	#if args:
-        #    raise ValueError(f"Invalid format for query: {args}")
     	show_facets = search_constraints.pop('show_facets', False)
     	datasets = search_constraints.pop('datasets', False)
     	query = search_constraints.pop('query', False)
     	download_script = search_constraints.pop('download_script', False)
     	opendap = search_constraints.pop('opendap', False)
     	gridftp = search_constraints.pop('gridftp', False)
-        
     	url_type = 'http'
     	if opendap:
     	    url_type = 'opendap'
     	if gridftp:
     	    url_type = 'gridftp'
-
 		# find the files and display them
     	p2p = P2P()
-    	
     	if download_script:
     	    download_script = Path(download_script)
     	    download_script.touch(0o755)
-    	    
     	    with download_script.open('bw') as f:
     	        f.write(p2p.get_wget(**search_constraints))
     	    return str(f"Download script successfully saved to {download_script}")   # there's nothing more to be executed after this
-	    
     	if datasets: 
-    	    
     	    return sorted(p2p.get_datasets_names(**search_constraints))
     	if query: 
     	    if len(query.split(',')) > 1:
@@ -154,30 +135,20 @@ replica: (true, false, *unset*) search only for replicas, non-replicas, or all.
     	    else:
 		# if only one then return directly
     	        return p2p.get_datasets(fields=query, **search_constraints)
-	    		
-  
-	 	   	 
     	if show_facets:
     	    show_facet.append(show_facets)
-    	    
     	    results = p2p.get_facets(show_facet, **search_constraints)
     	    # render them
-    	    
     	    return results
-	           
-		  	
     	if not (datasets or query or show_facets):
 	    # default
-    	    
-    	   
     	    for result in p2p.files(fields='url', **search_constraints):
     	        for url_encoded in result['url']:
     	            url, _, access_type = url_encoded.split('|')
     	            if access_type.lower().startswith(url_type):
 		    	        
     	                result_url.append(url)		     		
-    	
     	return result_url
-	
+
 if __name__ == "__main__":  # pragma nocover
     Command().run()

@@ -74,7 +74,6 @@ Options:
                     only!)
 --tag=TAG             The git tag to pull
 ''' % (os.path.basename(sys.argv[0]), sys.argv[1]))
-
     sys.stdout = stdout
     stdout.startCapturing()
     stdout.reset()

@@ -3,7 +3,6 @@ Created on 30.05.2016
 
 @author: Sebastian Illing
 """
-
 import json
 import os
 from evaluation_system.tests import run_command_with_capture
@@ -17,6 +16,7 @@ def test_show_facet(esgf_command, stdout, dummy_config):
             ['--show-facet=project,product', '-d'])
     assert '[product]' in res
     assert '[project]' in res
+
 
 def test_query(esgf_command, stdout, search_dict, dummy_config):
 
@@ -70,7 +70,6 @@ def test_freva_esgf_method(dummy_config):
     
 def test_find_files(esgf_command, stdout, search_dict, dummy_config):
 
-    
     result_to_be = ['http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
                     'http://aims3.llnl.gov/thredds/fileServer/cmip5_css02_data/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc',
                     'http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc']
