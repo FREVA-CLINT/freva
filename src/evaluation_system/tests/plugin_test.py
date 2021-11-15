@@ -276,7 +276,6 @@ def test_help(dummy_plugin):
 
     descriptions = [('__short_description__', 'A short Description'),
                     ('__long_description__', 'A long Description')]
-
     for desc in descriptions:
         setattr(dummy, desc[0], desc[1])
         resource = """DummyPlugin (v1.2.3): %s
@@ -307,7 +306,6 @@ def test_show_config(dummy_plugin):
     res = dummy.getCurrentConfig(config_dict=dict(a='/tmp$USER_PLOTS_DIR'))
     cmp_str = "    a: /tmp$USER_PLOTS_DIR [/tmp" +\
                       user.getUserPlotsDir('DummyPlugin') + "]\n    b: - (default: test)\nother: - (default: 1.4)"
-
     assert similar_string(cmp_str, res)
     user.cleanRandomHome()
 
@@ -478,11 +476,10 @@ def test_prepare_output(dummy_plugin):
 def test_call(dummy_plugin):
     from evaluation_system.api.parameters import (ParameterDictionary,
                                                   Integer, String, Directory)
-    res = dummy_plugin.call('echo /bin/bash').strip('\n')
-    assert res == '/bin/bash'
+    res = dummy_plugin.call('echo /bin/bash')#.strip('\n')
+    assert res.strip('\n') == '/bin/bash'
 
 def test_link_mydata(dummy_plugin, dummy_solr):
-
     with TemporaryDirectory() as td:
         for file in dummy_solr.files:
             f = Path(td) / file
@@ -490,5 +487,3 @@ def test_link_mydata(dummy_plugin, dummy_solr):
             with f.open('w') as f:
                 f.write(' ')
         #dummy_plugin.linkmydata(outputdir=td)
-
-

@@ -45,8 +45,6 @@ DATE FORMAT
    These are all valid: "2012-02-01 10:08:32.1233431", "2012-02-01 10:08:32",
    "2012-02-01 10:08", "2012-02-01 10", "2012-02-01", "2012-02", "2012".
    
-   These are *NOT*: "01/01/2010", "10:34", "2012-20-01"
-   
    Missing values are assumed to be the minimal allowed value. For example:
    "2012" == "2012-01-01 00:00:00.0"
    
@@ -54,46 +52,68 @@ DATE FORMAT
    All these are valid examples (at least for the bash shell):    
    freva --history --since=2012-10-1\\ 10:35
    freva --history --since=2012-10-1" "10:35'"""
-    
-    def _run(self):
-        args = self.args
-        limit = args.limit
-        since = timestamp_from_string(args.since) if args.since else None
-        until = timestamp_from_string(args.until) if args.until else None
-        tool_name = args.plugin
-        entry_ids = list(map(int, args.entry_ids.split(','))) if args.entry_ids else None
-        return_command = args.return_command
-        # parse arguments *!!!*
-        for args in self.last_args:
-            tmp = args.split('=')
-            flag = tmp[0]
-            arg = '='.join(tmp[1:]) if len(tmp) > 1 else None
-                
+
+    @staticmethod
+    def search_history(*args, **kwargs):
+
+        limit = int(kwargs.pop('limit', 10))
+        since = timestamp_from_string(kwargs.pop('since', None))
+        until = timestamp_from_string(kwargs.pop('until', None))
+        tool_name = kwargs.pop('plugin', None)
+        entry_ids = kwargs.pop('entry_ids', None)
+        debug = kwargs.pop('debug', False)
+        full_text = kwargs.pop('full_text', False)
+        command_line = kwargs.pop('command_line', False)
+        command_name = args[0]
+        return_command = kwargs.pop('return_command', None)
         # this suspresses this debug info for generating commands
-        if not args.return_command:
-            log.debug('history of %s, limit=%s, since=%s, until=%s, entry_ids=%s', tool_name, limit, since, until, entry_ids)
-        rows = pm.getHistory(user=None, plugin_name=tool_name, limit=limit, since=since,
+        if not return_command:
+            log.debug(f'history of {tool_name}, limit={limit}, since={since},'
+                      f' until={until}, entry_ids={entry_ids}')
+        rows = pm.getHistory(user=None, plugin_name=tool_name,
+                             limit=limit, since=since,
                              until=until, entry_ids=entry_ids)
+        commands = []
         if rows:
             # pass some option for generating the command string
             if return_command:
                 for row in rows:
-                    command_name = sys.argv[0]
                     command_options = '--plugin'
-                    if self.DEBUG:
-                        command_options = "-d %s" % command_options
-
-                    command_string = pm.getCommandStringFromRow(row, command_name, command_options)
-
-                    if len(rows) > 1:
-                        print(command_string + ';')
-
-                    else:
-                        print(command_string)
+                    if debug:
+                        command_options = f"-d {command_options}"
+                    cmd = pm.getCommandConfigFromRow(row,
+                                                     command_name,
+                                                     command_options)
+                    commands.append(cmd)
             else:
-                print('\n'.join([row.__str__(compact=not args.full_text) for row in rows]))
-        else:
+                commands = rows
+        return commands
+
+    def _run(self):
+        #args = self.args
+        try:
+            entry_ids = [i for i in self.args.entry_ids.split(',') if i.strip()]
+        except AttributeError:
+            entry_ids = None
+
+        kwargs = dict(limit=self.args.limit,
+                      since=self.args.since,
+                      until=self.args.until,
+                      plugin=self.args.plugin,
+                      entry_ids=entry_ids,
+                      return_command=self.args.return_command,
+                      debug=self.DEBUG,
+                      command_line=True,
+                      )
+        # parse arguments *!!!*
+        commands = self.search_history(sys.argv[0], **kwargs)
+        if not commands:
             log.error("No results. Check query.")
+        if self.args.return_command:
+            result = ';'.join([pm.getCommandStringFromRow(cmd) for cmd in commands])
+        else:
+             result   = '\n'.join([row.__str__(compact=not self.args.full_text) for row in commands])
+        print(result)
 
 if __name__ == "__main__":
     Command().run()

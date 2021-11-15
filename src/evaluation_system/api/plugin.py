@@ -14,12 +14,12 @@ import stat
 import shutil
 import re
 from time import time
+import shlex
 from datetime import datetime
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
-
 from evaluation_system.model.user import User
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config
@@ -170,6 +170,16 @@ a list (or anything iterable) to :class:`prepareOutput` .
 :return: see and use self.prepareOutput([<list_of_created_files>])"""
         raise NotImplementedError("This method must be implemented")
     
+    @staticmethod
+    def _execute(cmd):
+        res = sub.Popen(cmd, stdout=sub.PIPE, universal_newlines=True)
+        for stdout_line in iter(res.stdout.readline, ""):
+            yield stdout_line
+        res.stdout.close()
+        return_code = res.wait()
+        if return_code:
+            raise sub.CalledProcessError(return_code, cmd)
+
     def _runTool(self, config_dict = None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
         result = self.runTool(config_dict=config_dict)
@@ -262,14 +272,13 @@ Use it for the return call of runTool.
         if isinstance(output_files, str): output_files = [output_files]
         for file_path in output_files:
             metadata = {}
-
             # we expect a meta data dictionary
             if isinstance(output_files, dict):
                 metadata = output_files[file_path]
                 if not isinstance(metadata, dict):
                     raise ValueError('Meta information must be of type dict')
-
             if os.path.isfile(file_path):
+                
                 self._extend_output_metadata(file_path, metadata)
                 result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
@@ -285,11 +294,11 @@ Use it for the return call of runTool.
                     result[os.path.abspath(file_path)] = filemetadata
             else:
                 result[os.path.abspath(file_path)] = metadata
+        
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
         fstat=os.stat(file_path)
-              
         if 'timestamp' not in metadata:
             metadata['timestamp'] = fstat[stat.ST_CTIME]
             # metadata['timestamp'] = os.path.getctime(file_path)
@@ -504,10 +513,9 @@ if no configuration is provided the default one will be used.
             #a default incomplete one
             config_dict = self.setupConfiguration(check_cfg = False, substitute=False)
         fp.write('[%s]\n' % self.__class__.__name__)
-
+        
         import textwrap
         wrapper = textwrap.TextWrapper(width=80, initial_indent='#: ', subsequent_indent='#:  ', replace_whitespace=False,break_on_hyphens=False,expand_tabs=False)
-        
         #preserve order
         for param_name in self.__parameters__:
             if include_defaults:
@@ -529,7 +537,6 @@ if no configuration is provided the default one will be used.
                         param_name='#'+ param_name
                 fp.write('%s=%s\n\n' % (param_name, value))
                 fp.flush()  #in case we want to stream this for a very awkward reason...
-                
             elif param_name in config_dict:
                 param = self.__parameters__.get_parameter(param_name)
                 value = config_dict[param_name]
@@ -670,7 +677,8 @@ if no configuration is provided the default one will be used.
         return cmd_param
 
         
-    def call(self, cmd_string, stdin=None, stdout=None, stderr=None):
+    def call(self, cmd_string,verbose=True,stdin=None,
+             stderr=None,stdout=None,return_stdout=True):
         """Simplify the interaction with the shell. It calls a bash shell so it's **not** secure. 
 It means, **never** start a plug-in comming from unknown sources.
 
@@ -694,13 +702,17 @@ It means, **never** start a plug-in comming from unknown sources.
             
         if stdin or stdout or stderr:
             raise  Exception('stdin, stdout and stderr are no longer supported')
-
-        res = sub.run(['/bin/bash', bash_opt, cmd_string], stderr=sub.PIPE, stdout=sub.PIPE)
-
-        # this is due to backward compatibility
-        return res.stdout.decode()
-
-    
+        if isinstance(cmd_string, str):
+            cmd = shlex.split(cmd_string)
+        out = ''
+        for line in self._execute(cmd):
+            if verbose:
+                print(line, end='', flush=True)
+            out += line        
+        if return_stdout:
+            return out
+        
+               
     def _splitPath(self, path):
         """Help function to split a path"""
         rest_path = os.path.normpath(path)
@@ -717,21 +729,16 @@ It means, **never** start a plug-in comming from unknown sources.
     
     # TODO: Is this used somewhere?
     def getVersion():
+ 
         import evaluation_system.model.repository as repository
-    
         from inspect import getfile
-        
         version = __version_cache.get(pluginname, None)
-        
         if version is None:
-    
             plugin = getPlugins().get(pluginname, None)
-            
             srcfile = getfile(self.__class__.__name__)
-        
             version = repository.getVersion(srcfile) 
-            
         return version
+
 
     def __module_interaction(self, command, module_name):
         """
