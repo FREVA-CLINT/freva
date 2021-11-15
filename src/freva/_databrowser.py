@@ -6,7 +6,7 @@ import logging
 
 __all__ = ['databrowser']
 
-def databrowser(*args, multiversion=False,
+def databrowser(*,multiversion=False,
                 relevant_only=False,
                 batch_size=10,
                 count_facet_values=False,
@@ -54,7 +54,7 @@ def databrowser(*args, multiversion=False,
         collection : List, Dict of files, facets or attributes
 
     """
-    return Command.search_data(*args, multiversion=multiversion,
+    return Command.search_data(multiversion=multiversion,
                                relevant_only=relevant_only,
                                batch_size=batch_size,
                                count_facet_values=count_facet_values,

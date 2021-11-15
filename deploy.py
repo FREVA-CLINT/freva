@@ -14,8 +14,8 @@ import urllib.request
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 
-SHASUM='1314b90489f154602fd794accfc90446111514a5a72fe1f71ab83e07de9504a7'
-CONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-{arch}.sh"
+SHASUM='2751ab3d678ff0277ae80f9e8a74f218cfc70fe9a9cdc7bb1c137d7e47e33d53'
+CONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh"
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -121,8 +121,6 @@ def parse_args(argv=None):
     ap.add_argument('--channel', type=str, default='conda-forge', help='Conda channel to be used')
     ap.add_argument('--shell', type=str, default='bash',
                     help='Shell type')
-    ap.add_argument('--arch', type=str, default='Linux-x86_64',
-                   help='The architecture for the current system')
     ap.add_argument('--python', type=str, default='3.9',
             help='Python Version')
     ap.add_argument('--pip', type=str, nargs='*', default=Installer.pip_pkgs,
@@ -166,17 +164,17 @@ class Installer:
         """Create the conda environment."""
 
         with TemporaryDirectory(prefix='conda') as td:
-            conda_script = Path(td) /'miniconda.sh'
+            conda_script = Path(td) /'anaconda.sh'
             tmp_env = Path(td) / 'env'
-            logger.info('Downloading miniconda script')
-            urllib.request.urlretrieve(CONDA_URL.format(arch=self.arch),
+            logger.info('Downloading anaconda script')
+            urllib.request.urlretrieve(CONDA_URL,
                                       filename=str(conda_script),
                                       reporthook=reporthook)
             print()
             # self.check_hash(conda_script)
             conda_script.touch(0o755)
             cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
-            logger.info(f'Installing miniconda:\n\t{cmd}')
+            logger.info(f'Installing anaconda:\n\t{cmd}')
             self.run_cmd(cmd)
             cmd = f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} -q -p {self.install_prefix} python={self.python} {' '.join(self.packages)} -y"
             logger.info(f'Creating conda environment:\n\t {cmd}')
@@ -257,7 +255,9 @@ class Installer:
                     Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
                 except PermissionError:
                     pass
-        with (self.install_prefix / 'share' / 'loadfreva.modules').open('w') as f:
+        freva_path = self.install_prefix / 'share' / 'freva'
+        freva_path.mkdir(parents=True, exist_ok=True)
+        with (freva_path / 'loadfreva.modules').open('w') as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
                           path=self.install_prefix / 'bin',

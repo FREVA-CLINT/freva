@@ -28,10 +28,13 @@ the future for the next project phase.'''
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 _DEFAULT_CONFIG_DIR = Path(sys.prefix)
 _DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
-_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share'
+_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share' / 'freva'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
+#now check if we have a configuration file, and read the defaults from there
+CONFIG_FILE = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                             _DEFAULT_CONFIG_FILE_LOCATION)
 #: config options
 BASE_DIR = 'base_dir'
 'The name of the directory storing the evaluation system (output, configuration, etc)'
@@ -175,10 +178,9 @@ performed."""
                  DIRECTORY_STRUCTURE_TYPE: DIRECTORY_STRUCTURE.LOCAL,
                  PLUGINS: {}}
     
-    #now check if we have a configuration file, and read the defaults from there
-    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                 _DEFAULT_CONFIG_FILE_LOCATION)
 
+    config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
+                             _DEFAULT_CONFIG_FILE_LOCATION)
     log.debug("Loading configuration file from: %s"%config_file)
     if config_file and os.path.isfile(config_file):
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
@@ -268,8 +270,9 @@ def keys():
 
 def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
+    
     config_file = config_file or os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
-                                       str(_DEFAULT_CONFIG_FILE_LOCATION))
+                                                _DEFAULT_CONFIG_FILE_LOCATION)
     conf.read(config_file)
     try:
         section = dict(conf.items(section_name))

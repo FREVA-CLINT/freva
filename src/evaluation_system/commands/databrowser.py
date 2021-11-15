@@ -94,10 +94,8 @@ For Example:
         sys.stdout.flush()
 
     @staticmethod
-    def search_data(*args, **search_facets):
+    def search_data(**search_facets):
         """Execute the solr search."""
-        if args:
-            raise ValueError(f"Invalid format for query: {args}")
         multiversion = search_facets.pop('multiversion', False)
         relevant_only = search_facets.pop('relevant_only', False)
         batch_size = search_facets.pop('batch_size', 10)

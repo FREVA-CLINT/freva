@@ -25,7 +25,7 @@ def test_freva_databrowser_method(dummy_solr):
     v = 'v20110419'
     res = sorted(databrowser(variable='ua', version=v))
     assert v in res[0]
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         databrowser('badoption')
     res = databrowser(all_facets=True)
     assert isinstance(res, dict)
