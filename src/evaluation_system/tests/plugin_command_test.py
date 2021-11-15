@@ -5,6 +5,7 @@ Created on 18.05.2016
 """
 import os
 import sys
+from functools import partial
 from pathlib import Path
 import pytest
 from tempfile import TemporaryDirectory
@@ -30,7 +31,9 @@ def test_tool_doc(stdout, plugin_doc, plugin_command):
     assert 'find' in out
     #out = run_command_with_capture(Command(), stdout, cmd)
 
+
 def test_list_tools(stdout, plugin_command):
+    print(plugin_command)
     plugin_list = run_command_with_capture(plugin_command, stdout, [])
     assert 'DummyPlugin: A dummy plugin\n' in plugin_list
 
@@ -71,7 +74,6 @@ Options:
                     only!)
 --tag=TAG             The git tag to pull
 ''' % (os.path.basename(sys.argv[0]), sys.argv[1]))
-
     sys.stdout = stdout
     stdout.startCapturing()
     stdout.reset()
@@ -93,12 +95,44 @@ input      (default: <undefined>)
        No help available.
 ''')
 
-def test_run_plugin(stdout, plugin_command, dummy_history):
-
+def test_run_pyclientplugin(stdout, plugin_command, dummy_history):
+    import freva
+    from evaluation_system.misc import config
+    res = freva.plugin('dummyplugin', the_number=32, caption="Some caption")                     
+    assert isinstance(res,dict)
+    res = freva.plugin('dummyplugin', the_number=32, show_config=True)                     
+    res = '\n'.join([l.strip() for l in res.split('\n') if l.strip()])
+    assert similar_string(res, '''    number: -the_number: 32 something: test other: 1.4 input: -''')
+    res = freva.plugin('dummyplugin', save=True, the_number=32, debugs=True) 
+    fn = Path( config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
+    assert not fn.is_file() 
+    res=freva.plugin('dummyplugin', repo_version=True)
+    assert not [True for x in ['not','unknown'] if x in res]
+    from evaluation_system.model.plugins.models import ToolPullRequest
+    import time
+    ToolPullRequest.objects.all().delete()
     sys.stdout = stdout
-    import configparser
-    cfg = configparser.ConfigParser()
-    cfg.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
+    
+    tool = 'wetdry'
+    cmd_out = freva.plugin(tool, pull_request=True, tag='')
+    assert similar_string(cmd_out, """'Missing required option "--tag"'""", 0.7) 
+    def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
+        
+        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
+        t.status = status
+        t.save()
+    stdout.stopCapturing()
+    stdout.reset()
+    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
+    cmd_out = freva.plugin(tool, pull_request=True, tag='1.0')
+    assert similar_string(cmd_out,"""The pull request failed.\nPlease contact the admins.""",0.7) 
+    time.sleep = partial(pr_sleep, version='2.0', status='success', tool=tool)
+    cmd_out = freva.plugin(tool, pull_request=True, tag='2.0')
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed wetdry plugin is now updated in the system.\n New version: 2.0""",0.7)
+       
+def test_run_plugin(stdout, plugin_command, dummy_history):
+    from evaluation_system.misc import config	
+    sys.stdout = stdout
     stdout.startCapturing()
     stdout.reset()
     with pytest.raises(SystemExit):
@@ -106,15 +140,14 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     stdout.stopCapturing()
     help_str= stdout.getvalue()
     assert 'Error found when parsing parameters. Missing mandatory parameters: the_number' in help_str
-
     sys.stdout = stdout
     # test run tool
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin',
                                                 'the_number=32',
                                                 '--caption="Some caption"'])
-    assert similar_string('Dummy tool was run with: {\'input\': None, \'other\': 1.4, \'number\': None, \'the_number\': 32, \'something\': \'test\'}',  output_str, 0.7)
+    assert similar_string('Dummy tool was run with: {\'number\': None, \'the_number\': 32,\
+                           \'something\': \'test\', \'other\': 1.4, \'input\': None,}',  output_str, 0.7)
     # test get version
-    
     sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--repos-version'])
     # test batch mode
@@ -122,47 +155,40 @@ def test_run_plugin(stdout, plugin_command, dummy_history):
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
     # test save config
     sys.stdout = stdout
+    # test batch mode
+    sys.stdout = stdout
+    output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', '--batchmode=True', 'the_number=32'])
+    # test save config
+    sys.stdout = stdout
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=32', '--save', '--debug'])
-    
-    fn = Path(cfg['evaluation_system']['base_dir_location']) / 'config/dummyplugin/dummyplugin.conf'
+    fn = Path(config.get(config.BASE_DIR_LOCATION)) / 'config/dummyplugin/dummyplugin.conf'
     assert not fn.is_file()
-    #fn.unlink()
     # test show config
     output_str = run_command_with_capture(plugin_command, stdout, ['dummyplugin', 'the_number=42', '--show-config'])
     output_str = '\n'.join([l.strip() for l in output_str.split('\n') if l.strip()])
-    assert similar_string(output_str, '''    number: -
-the_number: 42
-something: test
- other: 1.4
- input: -
-''')
+    assert similar_string(output_str, '''    number: -the_number: 42 something: test other: 1.4 input: -''')
 
 def test_handle_pull_request(plugin_command, stdout):
     from evaluation_system.model.plugins.models import ToolPullRequest
-    ToolPullRequest.objects.all().delete()
     import time
-
-    def sleep_mock(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='1.0')
-        t.status = 'failed'
+    ToolPullRequest.objects.all().delete()
+    sys.stdout = stdout  
+    tool = 'dummyplugin'
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request'])
+    assert similar_string(cmd_out,"""'Missing required option "--tag"'""",0.7) 
+    def pr_sleep(t, version=None, status=None, tool='dummyplugin'):
+        
+        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
+        t.status = status
         t.save()
-    time.sleep = sleep_mock
-
-    stdout.startCapturing()
+    stdout.stopCapturing()
     stdout.reset()
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=1.0'])
-    assert cmd_out == """Please wait while your pull request is processed
-The pull request failed.
-Please contact the admins.
-"""
+    time.sleep = partial(pr_sleep, version='1.0', status='failed', tool=tool)
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=1.0'])
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed
+                          \nThe pull request failed.\nPlease contact the admins.""",0.7) 
+    time.sleep = partial(pr_sleep, version='2.0', status='success', tool=tool)
+    cmd_out = run_command_with_capture(plugin_command, stdout, [tool, '--pull-request', '--tag=2.0'])
+    assert similar_string(cmd_out,"""Please wait while your pull request is processed
+                          murcss plugin is now updated in the system. New version: 2.0""",0.7)
 
-    def sleep_mock_success(v):
-        t = ToolPullRequest.objects.get(tool='murcss', tagged_version='2.0')
-        t.status = 'success'
-        t.save()
-    time.sleep = sleep_mock_success
-    cmd_out = run_command_with_capture(plugin_command, stdout, ['murcss', '--pull-request', '--tag=2.0'])
-    assert cmd_out == """Please wait while your pull request is processed
-murcss plugin is now updated in the system.
-New version: 2.0
-"""

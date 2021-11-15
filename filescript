@@ -1,0 +1,31 @@
+[WETDRY]
+#: [mandatory] NetCDF file to be plotted E.g. -> /path/2/datafile.nc
+input=/home/mahesh/Freva/pr_day_MPI-M-MPI-ESM-LR-MPI-CSC-REMO2009-v1_rcp26_r1i1p1_20210101-20251231.nc
+
+#: [mandatory] The default output directory of XCES
+outputdir=/home/mahesh/Freva/evaluation_system/output/WETDRY
+
+#: Option switch to NOT clear the cache
+cacheclear=False
+
+#: Temporal directory for internal calculations
+cachedir=/home/mahesh/Freva/evaluation_system/cache/WETDRY
+
+#: Option to choose a title for the plot
+title=Wet-and-Dry-days-per-Time-Period
+
+#: [mandatory] Option to choose timerange start,end via YYYY-MM-DD,YYYY-MM-DD.
+seldate=2021-09-01,2025-11-30
+
+#: [mandatory] Option to choose an area in file. Usage:
+#:  startlat,endlat,startlon,endlon -> For Europe 30,80,-20,30
+latlon=46,57,6,15
+
+#: Set "True" for just showing the result of pre-processing. Set "False" to
+#:  process data.
+dryrun=False
+
+#: Set "True" if you want to link the output of the statistics to the database.
+#:  ONLY for data (cordex/cmip/rea/obs) from the datapool
+link2database=False
+

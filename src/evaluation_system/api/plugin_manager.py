@@ -31,7 +31,6 @@ import subprocess as sub
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.api.parameters import ParameterNotFoundError
-
 from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
@@ -43,7 +42,6 @@ log = logging.getLogger(__name__)
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
     pass
-
 
 PLUGIN_ENV = 'EVALUATION_SYSTEM_PLUGINS'
 """Defines the environmental variable name for pointing to the plug-ins"""
@@ -64,8 +62,6 @@ plugin_name=>{
     plugin_class=>class,
     version=>(0,0,0)
     description=>"string"}"""
-
-
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
 __version_cache = {}
@@ -74,7 +70,6 @@ __version_cache = {}
 def munge(seq):
     """Generator to remove duplicates from a list without changing it's order.
 It's used to keep sys.path tidy.
-
 :param seq: any sequence
 :returns: a generator returning the same objects in the same sequence but skipping duplicates."""
     seen = set()
@@ -103,7 +98,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
     __plugin_modules_user__[user_name] = dict()
     __plugins_user__[user_name] = dict()
     __plugins_meta_user[user_name] = dict()
-
     extra_plugins = list()
     if PLUGIN_ENV in os.environ:
         # now get all modules loaded from the environment
@@ -120,7 +114,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 extra_plugins.append(module_name)
             else:
                 log.warning("Cannot load %s, directory missing: %s", module_name, path)
-
     # the same for user specific env variable
     if user_name:
         if PLUGIN_ENV+'_'+user_name in os.environ:
@@ -138,7 +131,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                     extra_plugins.append(module_name)
                 else:
                     log.warn("Cannot load %s, directory missing: %s", module_name, path)
-
     # get the tools directory from the current one
     # get all modules from the tool directory
     plugins = list(config.get(config.PLUGINS))
@@ -155,7 +147,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 __plugin_modules__[plugin_name] = os.path.join(py_dir, py_mod)
         else:
             log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
-
     # new way of loading plugins
     import re
     reg = re.compile(r'__short_description__\s*=(.*)')
@@ -173,7 +164,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         class_name = None
         category = None
         tags = None
-
         class_name_str = ''
         for line in f:
             description = re.search(reg, line)
@@ -193,7 +183,6 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
             if tags_search:
                 tags = re.search(r_list, tags_search.groups()[0])
                 tags = list(eval(tags.groups()[0]))
-
             # search for classname
             class_name = re.search(reg_class_name, line)
             if class_name is not None:
@@ -214,11 +203,9 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
             log.warn("Default plugin %s is being overwritten by: %s",
                      class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
     sys.path = [p for p in munge(sys.path)]
-
     __plugin_modules_user__[user_name] = __plugin_modules__
     __plugins_user__[user_name] = __plugins__
     __plugins_meta_user[user_name] = __plugins_meta
-
 
 # This only runs once after start. To load new plugins on the fly we have 2 possibilities
 # 1) Watch the tool directory
@@ -272,7 +259,6 @@ description
                 mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
             mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
             raise PluginManagerException(mesg + ' %s' % user_name)
-
     return getPlugins(user_name)[plugin_name]
 
 
@@ -320,10 +306,8 @@ user default, tool default
     plugin_name = plugin_name.lower()
     if user is None:
         user = User()
-
     p = getPluginInstance(plugin_name, user)
     complete_conf = p.__parameters__.parseArguments(arguments, use_defaults=True, check_errors=False)
-
     # if we are using user defaults then load them first
     if use_user_defaults:
         user_config_file = user.getUserToolConfig(plugin_name)
@@ -331,19 +315,16 @@ user default, tool default
             with open(user_config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
     # now if we still have a config file update what the configuration with it
-
     if isinstance(config_file, str):
         if config_file == '-':
             # reading from stdin
             complete_conf.update(p.readConfiguration(sys.stdin))
-
         elif config_file is not None:
             with open(config_file, 'r') as f:
                 complete_conf.update(p.readConfiguration(f))
     elif config_file is not None:
         # if it's not a string and is something, we assume is something that can be read from
         complete_conf.update(p.readConfiguration(config_file))
-
     # update with user defaults if desired
     complete_conf.update(p.__parameters__.parseArguments(arguments, check_errors=False))
     # we haven't check for errors because we might have a half implemented configuration
@@ -351,7 +332,6 @@ user default, tool default
     # but better if we check them
     if check_errors:
         p.__parameters__.validate_errors(complete_conf, raise_exception=True)
-
     return complete_conf
 
 
@@ -389,7 +369,6 @@ used. This will be completely skipped if ``use_user_defaults`` is ``False``.
     else:
         with open(config_file, 'w') as f:
             p.saveConfiguration(f, config_dict=complete_conf)
-
     return config_file
 
 
@@ -441,13 +420,10 @@ def _preview_generate_name(plugin_name, file_name, metadata):
     :param metadata: the meta-data for the file, to access timestamp
     """
     random_suffix = ''.join(random.choice(string.ascii_letters) for i in range(8))
-
     ctime = metadata.get('timestamp', '')
-
     if ctime:
         time_string = datetime.datetime.fromtimestamp(ctime).strftime('%Y%m%d_%H%M%S')
         ctime = '%s_' % time_string
-
     return plugin_name + '_' + ctime + random_suffix
 
 
@@ -469,13 +445,10 @@ def _preview_unique_file(plugin_name, file_name, ext, metadata):
     name += ext
     full_path = os.path.join(path, subdir)
     full_name = os.path.join(full_path, name)
-
     if path.strip() and not os.path.isdir(full_path):
         utils.supermakedirs(full_path, 0o0777)
-
     if os.path.isfile(full_name):
         return _preview_unique_file(plugin_name, file_name, ext, metadata)
-
     return full_name
 
 
@@ -488,13 +461,11 @@ def _preview_create(plugin_name, result):
     :type result: meta_dict
     :param result: a meta dictionary describing the result files
     """
-
     todo_list = []
     result_list = []
     for file_name in result:
         metadata = result[file_name]
         todo = metadata.get('todo', '')
-
         if todo == 'copy':
             ext = os.path.splitext(file_name)[-1]
             target_name = _preview_unique_file(plugin_name, file_name, ext, metadata)
@@ -507,9 +478,7 @@ def _preview_create(plugin_name, result):
             metadata['preview_path'] = target_name
             result_list.append(target_name)
         result[file_name] = metadata
-
     preview_path = config.get(config.PREVIEW_PATH)
-
     if preview_path.strip() and todo_list:
         p = Pool(config.NUMBER_OF_PROCESSES)
         p.map(utils.mp_wrap_fn, todo_list)
@@ -526,12 +495,9 @@ def generateCaption(caption, toolname):
     :return: String containing the standardized caption
     """
     import re
-
     caption = caption.strip()
     toolname = toolname.strip().upper()
-
     retval = toolname
-
     if caption.lower() != toolname.lower():
         pattern = r"^\*"
         if re.search(pattern, caption, re.IGNORECASE):
@@ -545,7 +511,6 @@ def generateCaption(caption, toolname):
     else:
         # this assures that the toolname appears in the user preferred case
         retval = caption
-
     return retval
 
 
@@ -565,14 +530,11 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
 :type caption: str
 :param caption: the caption to set.
 """
-
     plugin_name = plugin_name.lower()
     if user is None:
         user = User()
-
     p = getPluginInstance(plugin_name, user)
     complete_conf = None
-
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = loadScheduledConf(plugin_name, scheduled_id, user)
@@ -587,11 +549,8 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
     if complete_conf is None:
         # at this stage we want to resolve or tokens and perform some kind of sanity check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-
-    log.debug('Running %s with %s', plugin_name, complete_conf)
-
+    log.info('Running %s with %s', plugin_name, complete_conf)
     rowid = 0
-
     if scheduled_id:
         user.getUserDB().upgradeStatus(scheduled_id,
                                        user.getName(),
@@ -605,37 +564,31 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
                                               History.processStatus.running,
                                               version_details=version_details,
                                               caption=caption)
-
         # follow the notes
         followHistoryTag(rowid, user.getName(), 'Owner')
-
     try:
         # we want that the rowid is visible to the tool
         p.rowid = rowid
         # In any case we have now a complete setup in complete_conf
         result = p._runTool(config_dict=complete_conf,
                             unique_output=unique_output)
-
         # save results when existing
         if result is None:
+            
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
                                            History.processStatus.finished_no_output)
-
         else:
             # create the preview
             preview_path = config.get(config.PREVIEW_PATH, None)
-
             if preview_path:
-                logging.debug('Converting....')
+                logging.info('Converting....')
                 _preview_create(plugin_name, result)
-                logging.debug('finished')
-
+                logging.info('finished')
             # write the created files to the database
-            logging.debug('Storing results into data base....')
+            logging.info('Storing results into data base....')
             user.getUserDB().storeResults(rowid, result)
-            logging.debug('finished')
-
+            logging.info('finished')
             # temporary set all processes to finished
             user.getUserDB().upgradeStatus(rowid,
                                            user.getName(),
@@ -644,9 +597,7 @@ def runTool(plugin_name, config_dict=None, user=None, scheduled_id=None,
         user.getUserDB().upgradeStatus(rowid,
                                        user.getName(),
                                        History.processStatus.broken)
-
         raise
-
     return result
 
 
@@ -668,14 +619,11 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 :type caption: str
 :param caption: the caption to set.
 """
-
     plugin_name = plugin_name.lower()
     if user is None:
         user = User()
-
     p = getPluginInstance(plugin_name, user)
     complete_conf = None
-
     # check whether a scheduled id is given
     if config_dict is None:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -688,13 +636,10 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
     if complete_conf is None:
         # at this stage we want to resolve or tokens and perform some kind of sanity check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-
     log.debug('Schedule %s with %s', plugin_name, complete_conf)
-
     slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
     if not os.path.exists(slurmindir):
         utils.supermakedirs(slurmindir, 0o0777)
-
     version_details = getVersion(plugin_name)
     rowid = user.getUserDB().storeHistory(p,
                                           complete_conf,
@@ -702,10 +647,8 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
                                           History.processStatus.not_scheduled,
                                           version_details=version_details,
                                           caption=caption)
-
     # follow the notes
     followHistoryTag(rowid, user.getName(), 'Owner')
-
     # set the SLURM output directory
     if not slurmoutdir:
         slurmoutdir = user.getUserSchedulerOutputDir()
@@ -713,7 +656,6 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 
     if not os.path.exists(slurmoutdir):
         utils.supermakedirs(slurmoutdir, 0o0777)
-
     # write the SLURM file
     p.rowid = rowid
     full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
@@ -731,14 +673,12 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
                                         config.SCHEDULER_OPTIONS,
                                         #user.getName(),
                                         full_path)]
-
     # run this
     logging.debug("Command: " + str(command))
     res = run(command, stdout=PIPE, stderr=PIPE)
     stdout, stderr = res.stdout.decode(), res.stderr.decode()
     logging.debug("scheduler call output:\n" + str(stdout))
     logging.debug("scheduler call error:\n" + str(stderr))
-
     # get the very first line only
     out_first_line = stdout.split('\n')[0]
 
@@ -751,17 +691,14 @@ def scheduleTool(plugin_name, slurmoutdir=None, config_dict=None, user=None,
 
     slurm_out = os.path.join(slurmoutdir,
                              'slurm-%i.out' % slurm_id)
-
     # create a standard slurm file to view with less
     with open(slurm_out, 'w') as the_file:
         the_file.write('Certainly, your job is pending with id %i.\n' % slurm_id)
         the_file.write('You can get further information using the command squeue.\n')
         the_file.write('\nThis file was automatically created by the evaluation system.\n')
         the_file.write('It will be overwritten by the output of %s.\n' % plugin_name)
-
     # set the slurm output file
     user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
-
     return rowid, slurm_out
 
 
@@ -773,7 +710,6 @@ See :class:`evaluation_system.model.db.UserDB.getHistory` for more information o
         plugin_name = plugin_name.lower()
     if user is None:
         user = User()
-
     return user.getUserDB().getHistory(plugin_name, limit, since=since, until=until,
                                        entry_ids=entry_ids, uid = user.getName())
 
@@ -797,9 +733,7 @@ def getCommandString(entry_id, user=None, command_name='freva', command_options=
     """
     if user is None:
         user = User()
-
     h = user.getUserDB().getHistory(entry_ids=int(entry_id))
-
     return getCommandStringFromRow(h[0], command_name, command_options)
 
 def getCommandConfigFromRow(history_row, command_name, command_options):
@@ -846,11 +780,9 @@ def loadScheduledConf(plugin_name, entry_id, user):
     h = getHistory(plugin_name=plugin_name, entry_ids=entry_id, user=user)
     # only one row should be selected
     row = h[0]
-
     # scheduled jobs only
     if row.status != History.processStatus.scheduled:
         raise Exception("This is not a scheduled job (status %i)!" % row.status)
-
     return row.config_dict()
 
 
@@ -860,19 +792,14 @@ def getConfigName(pluginname):
     This is especially useful when accessing the configuration.
     """
     from inspect import getmodule
-
     try:
         plugin = getPluginInstance(pluginname.lower())
-
         modulename = getmodule(plugin)
-
         for name, module in __plugin_modules__[User().getName()].items():
             if modulename == getmodule(module):
                 return name
-
     except Exception as e:
         log.debug('[getConfigName] ' + str(e))
-
     return None
 
 
@@ -882,22 +809,17 @@ def getErrorWarning(tool_name):
     read from the config file
     """
     plugin_name = getConfigName(tool_name)
-
     error_file = ''
     error_message = ''
-
     warning_file = ''
     warning_message = ''
-
     try:
         error_file = config.get_plugin(plugin_name, "error_file", '')
         error_message = config.get_plugin(plugin_name, "error_message", '')
-
         warning_file = config.get_plugin(plugin_name, "warning_file", '')
         warning_message = config.get_plugin(plugin_name, "warning_message", '')
     except Exception as e:
         log.debug(str(e))
-
     if error_file:
         try:
             f = open(error_file, 'r')
@@ -907,7 +829,6 @@ def getErrorWarning(tool_name):
             if not error_message:
                 log.warn('Could not read error description\n%s' % str(e))
                 error_message = ''
-
     if warning_file:
         try:
             f = open(warning_file, 'r')
@@ -917,10 +838,8 @@ def getErrorWarning(tool_name):
             if not warning_message:
                 log.warn('Could not read warning\n%s' % str(e))
                 warning_message = ''
-
     error_message = error_message.strip()
     warning_message = warning_message.strip()
-
     return error_message, warning_message
 
 
@@ -930,8 +849,7 @@ def followHistoryTag(history_id, user_name, info=''):
     """
     tagType = HistoryTag.tagType.follow
     rows = HistoryTag.objects.filter(history_id_id=history_id,
-                                     type=tagType,
-                                     uid_id=user_name)
+                                     type=tagType,uid_id=user_name)
     if len(rows) == 0:
         user = User(user_name)
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
@@ -946,7 +864,6 @@ def unfollowHistoryTag(history_id, user_name):
     rows = HistoryTag.objects.filter(history_id_id=history_id,
                                      type = tagType,
                                      uid_id = user_name)
-
     user = User(user_name)
     for row in rows:
         user.getUserDB().updateHistoryTag(row.id,
@@ -956,17 +873,11 @@ def unfollowHistoryTag(history_id, user_name):
 
 def getPluginVersion(pluginname):
     import evaluation_system.model.repository as repository
-
     from inspect import getfile, currentframe
-
     version = __version_cache.get(pluginname, None)
-
     if version is None:
-
         plugin = getPlugins().get(pluginname, None)
-
         srcfile = ''
-
         if plugin is not None:
             srcfile = plugin['plugin_module']
         elif pluginname == 'self':
@@ -974,10 +885,8 @@ def getPluginVersion(pluginname):
         else:
             mesg = 'Plugin <%s> not found' % pluginname
             raise PluginManagerException(mesg)
-
         version = repository.getVersion(srcfile)
         __version_cache[pluginname] = version
-
     return version
 
 
@@ -991,14 +900,12 @@ def getVersion(pluginname):
     version = repr(p.__version__)
     (repos_tool, version_tool) = getPluginVersion(pluginname)
     (repos_api, version_api) = getPluginVersion('self')
-
     version_id = User().getUserDB().getVersionId(tool_name,
                                                  version,
                                                  repos_api,
                                                  version_api,
                                                  repos_tool,
                                                  version_tool)
-
     if version_id is None:
         version_id = User().getUserDB().newVersion(tool_name,
                                                    version,
@@ -1006,7 +913,6 @@ def getVersion(pluginname):
                                                    version_api,
                                                    repos_tool,
                                                    version_tool)
-
     return version_id
 
 
@@ -1018,16 +924,11 @@ def dict2conf(toolname, conf_dict, user_name=User().getName()):
     This routine returns a list of configuration model objects.
     A useful routine to get similar results.
     """
-
     conf = []
-
     paramstring = []
-
     tool = getPluginInstance(toolname, user_name=user_name)
-
     for key, value in conf_dict.items():
         o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by('-id')
-
         if len(o) == 0:
             string = 'Parameter <%s> not found' % key
             raise ParameterNotFoundError(string)
@@ -1039,5 +940,4 @@ def dict2conf(toolname, conf_dict, user_name=User().getName()):
             conf_object.parameter_id_id = o[0].id
             conf_object.value = json.dumps(realvalue)
             conf.append(conf_object)
-
     return conf
