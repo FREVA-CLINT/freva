@@ -14,8 +14,8 @@ import urllib.request
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 
-SHASUM='2751ab3d678ff0277ae80f9e8a74f218cfc70fe9a9cdc7bb1c137d7e47e33d53'
-CONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh"
+CONDA_URL="https://repo.anaconda.com/archive/"
+CONDA_VERSION="Anaconda3-2021.05-{arch}.sh"
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__file__)
@@ -121,6 +121,10 @@ def parse_args(argv=None):
     ap.add_argument('--channel', type=str, default='conda-forge', help='Conda channel to be used')
     ap.add_argument('--shell', type=str, default='bash',
                     help='Shell type')
+    ap.add_argument('--arch', type=str, default='Linux-x86_64',
+                   choices=['Linux-aarch64', 'Linux-ppc64le', 'Linux-s390x',
+                            'Linux-x86_64', 'MacOSX-x86_64'],
+                   help='Choose the architecture according to the system')
     ap.add_argument('--python', type=str, default='3.9',
             help='Python Version')
     ap.add_argument('--pip', type=str, nargs='*', default=Installer.pip_pkgs,
@@ -167,11 +171,13 @@ class Installer:
             conda_script = Path(td) /'anaconda.sh'
             tmp_env = Path(td) / 'env'
             logger.info('Downloading anaconda script')
-            urllib.request.urlretrieve(CONDA_URL,
-                                      filename=str(conda_script),
-                                      reporthook=reporthook)
+            urllib.request.urlretrieve(
+                    CONDA_URL+CONDA_VERSION.format(arch=self.arch),
+                    filename=str(conda_script),
+                    reporthook=reporthook
+            )
             print()
-            # self.check_hash(conda_script)
+            self.check_hash(conda_script)
             conda_script.touch(0o755)
             cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
             logger.info(f'Installing anaconda:\n\t{cmd}')
@@ -180,14 +186,18 @@ class Installer:
             logger.info(f'Creating conda environment:\n\t {cmd}')
             self.run_cmd(cmd)
 
-    @staticmethod
-    def check_hash(filename):
-        sha256_hash = hashlib.sha256()
+    def check_hash(self, filename):
+        archive = urllib.request.urlopen(CONDA_URL).read().decode()
+        md5sum = ''
+        for line in archive.split('</tr>'):
+            if CONDA_VERSION.format(arch=self.arch) in line:
+                md5sum = line.split('<td>')[-1].strip().strip('</td>')
+        md5_hash = hashlib.md5()
         with filename.open('rb') as f:
             for byte_block in iter(lambda: f.read(4096),b""):
-                sha256_hash.update(byte_block)
-        if sha256_hash.hexdigest() != SHASUM:
-            raise ValueError('Download failed, shasum mismatch')
+                md5_hash.update(byte_block)
+        if md5_hash.hexdigest() != md5sum:
+            raise ValueError('Download failed, md5sum mismatch: {md5sum} ')
 
     def pip_install(self):
         """Install additional packages using pip."""
@@ -205,9 +215,8 @@ class Installer:
     def __init__(self, args):
 
         for arg in vars(args):
-            setattr(self, arg, getattr(args,arg))
+            setattr(self, arg, getattr(args, arg))
         self.install_prefix = self.install_prefix.expanduser().absolute()
-        #self.install_prefix.mkdir(exist_ok=True, parents=True)
         self.conda = self.no_conda == False
 
     def create_config(self):
