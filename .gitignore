@@ -9,6 +9,7 @@
 !.git*
 !.coveragerc
 !.docker/
+!.envrc
 coverage_report/*
 public/
 test_results/
