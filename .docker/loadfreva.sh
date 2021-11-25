@@ -15,7 +15,7 @@ if [ -z "$(ps aux|grep solr|grep -v grep|grep java)" ];then
     export SOLR_PID_DIR=${HOME}/solr
     export SOLR_LOGS_DIR=${HOME}/solr/logs
     export LOG4J_PROPS=${HOME}/solr/log4j2.xml
-    exec solr-fg -s ${HOME}/solr/data &
+    exec solr-fg -s ${HOME}/solr/data  1> /dev/null &
 fi
 wait
 

@@ -37,24 +37,27 @@ This Programm installs the evaluation_system package.
 
 positional arguments:
   install_prefix        Install prefix for the environment.
-
 optional arguments:
   -h, --help            show this help message and exit
-  --packages [PACKAGES [PACKAGES ...]]
-                        Pacakges that are installed (default: ['cdo', 'conda', 'configparser',
-                        'django', 'ffmpeg', 'git', 'gitpython', 'imagemagick',
-                        'ipython', 'libnetcdf', 'mysqlclient', 'nco', 'netcdf4',
-                        'numpy', 'pip', 'pymysql', 'pypdf2', 'pytest',
-                        'pytest-cov', 'pytest-env', 'pytest-html',
-                        'python-cdo', 'xarray'])
+  --packages [PACKAGES ...]
+                        Pacakges that are installed (default: ['cartopy', 'cdo', 'conda',
+                        'configparser', 'dask', 'distributed', 'django', 'ffmpeg', 'git', 'gitpython',
+                        'humanize', 'imagemagick', 'ipython', 'libnetcdf', 'mysqlclient', 'nco',
+                        'netcdf4', 'numpy', 'pandas', 'pandoc', 'pillow', 'pip', 'pymysql', 'pypdf2',
+                        'pytest', 'pytest-cov', 'pytest-env', 'pytest-html', 'python-cdo', 'xarray'])
   --channel CHANNEL     Conda channel to be used (default: conda-forge)
   --shell SHELL         Shell type (default: bash)
+  --arch {Linux-aarch64,Linux-ppc64le,Linux-s390x,Linux-x86_64,MacOSX-x86_64}
+                        Choose the architecture according to the system (default: Linux-x86_64)
   --python PYTHON       Python Version (default: 3.9)
-  --pip [PIP [PIP ...]]
-                        Additional packages that should be installed using pip
-                        (default: ['pytest-html', 'python-git', 'python-swiftclient'])
-  --develop             Use the develop flag when installing the evaluation_system package (default: False)
-  --no_conda            Do not create conda environment (default: False)
+  --pip [PIP ...]       Additional packages that should be installed using pip (default: ['pytest-
+                        html', 'python-git', 'python-swiftclient'])
+  --develop             Use the develop flag when installing the evaluation_system package (default:
+                        False)
+  --no_conda, --no-conda
+                        Do not create conda environment (default: False)
+  --run_tests           Run unittests after installation (default: False)
+  --silent, -s          Minimize writing to stdout (default: False)
 ```
 
 ### Central configuration
@@ -103,7 +106,7 @@ This command will install the `evaluation_system` code into whatever python envi
 The system can be tested with `Makefile`. To run the tests and upload the coverage files simply use the make command:
 
 ```bash
-$:  FREVA_ENV=install_prefix make all
+$:  make all
 ```
 
 If the `$FREVA_ENV` variable is not set `make` will take the current python environment.
