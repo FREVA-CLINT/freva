@@ -10,6 +10,7 @@ dependencies:
   - libnetcdf
   - dask
   - pip
+  - gcc
   - pip:
       - allure-pytest
       - requests_mock
