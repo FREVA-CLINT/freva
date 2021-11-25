@@ -12,8 +12,10 @@ ENV HOME /home/${NB_USER}
 
 USER root
 RUN set -ex; \
-  apt-get update; apt-get -y upgrade ; \
-  apt-get -y install acl dirmngr gpg lsof procps wget netcat gosu tini mariadb-server git make sudo vim python3 zsh;\
+  apt-get update; apt-get -y upgrade && \
+  apt-get -y install acl dirmngr gpg lsof procps wget netcat gosu tini \
+             mariadb-server default-libmysqlclient-dev build-essential\
+             git make sudo vim python3 zsh ffmpeg imagemagick &&\
   rm -rf /var/lib/apt/lists/*
 
 ENV NB_USER=${NB_USER} \

@@ -12,5 +12,5 @@ export SOLR_PID_DIR=${HOME}/solr
 export SOLR_LOGS_DIR=${HOME}/solr/logs
 export LOG4J_PROPS=${HOME}/solr/log4j2.xml
 sleep 0.5
-/opt/solr/bin/solr start
+/opt/solr/bin/solr start 1> /dev/null
 exec /opt/docker-solr/scripts/docker-entrypoint.sh "$@"

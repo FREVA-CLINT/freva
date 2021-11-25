@@ -1,19 +1,49 @@
 from collections import namedtuple
+from configparser import ConfigParser, ExtendedInterpolation
 from datetime import datetime
-from django.conf import settings
-import django
 from getpass import getuser
-from io import StringIO
 import importlib
+from io import StringIO
 import json
 import os
-import pytest
 from pathlib import Path
 import shutil
 import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
 
+import django
+from django.conf import settings
+import pytest
+import mock
+
+from evaluation_system.misc import config
+
+
+def get_config():
+    from .mocks import TEST_EVAL
+    test_cfg = ConfigParser(interpolation=ExtendedInterpolation())
+    test_cfg.read_string(TEST_EVAL)
+    cfg_p = ConfigParser(interpolation=ExtendedInterpolation())
+    items_to_overwrite = [
+            'db.host',
+            'db.user',
+            'db.passwd',
+            'db.db',
+            'db.port',
+            'solr.host',
+            'solr.port',
+            'solr.core'
+    ]
+    try:
+        cfg_p.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
+        cfg = dict(cfg_p['evaluation_system'].items())
+    except (FileNotFoundError, KeyError):
+        return test_cfg
+    for key in items_to_overwrite:
+        value = test_cfg['evaluation_system'].get(key)
+        test_cfg.set('evaluation_system', key, cfg.get(key, value))
+    return test_cfg
 
 # The following is a recipe by 'Ciro Santilli TRUMP BAN IS BAD'
 # which was taken from stackoverflow 
@@ -84,33 +114,35 @@ def plugin_doc():
         dummy_doc = Path(td) / 'dummy_plugin_doc.tex'
         dummy_bib = Path(td) / 'dummy_plugin.bib'
         with (dummy_doc).open('w') as f:
-            f.write('''\documentclass[12pt]{article}
+            f.write('''\\documentclass[12pt]{article}
 \\usepackage[utf8]{inputenc}
 \\begin{document}
 This is a dummy doc
-\end{document}''')
+\\end{document}''')
         with (dummy_doc).open('w') as f:
             f.write('''% This file was created with JabRef 2.9.2.
 % Encoding: UTF-8''')
         yield dummy_doc
 
 
-
 @pytest.fixture(scope='session')
 def dummy_env(dummy_key):
-
-    test_conf = Path(__file__).absolute().parent / 'test.conf'
-    env = os.environ.copy()
-    os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = str(test_conf)
-    os.environ['PUBKEY'] = str(dummy_key)
-    #from evaluation_system.misc import config
-    #config.reloadConfiguration()
-    yield os.environ
+    config = get_config()
+    with NamedTemporaryFile(suffix='.conf') as tf:
+        PATH = (Path(__file__).parent / 'mocks' / 'bin').absolute()
+        env = dict(
+                EVALUATION_SYSTEM_CONFIG_FILE=tf.name,
+                PUBKEY=str(dummy_key),
+                PATH=str(PATH)+ ':' + os.environ['PATH']
+        )
+        with open(tf.name, 'w') as f:
+            config.write(f)
+        with mock.patch.dict(os.environ, env, clear=True):
+            yield config
     try:
         shutil.rmtree(config.get('base_dir_location'))
     except:
         pass
-    os.environ = env
 
 @pytest.fixture(scope='session')
 def git_config():
@@ -366,15 +398,15 @@ def dummy_settings_single(dummy_env):
     # Application definition
     import evaluation_system.settings.database
     from evaluation_system.misc import config
-    yield config
     config.reloadConfiguration()
+    yield config
 
 @pytest.fixture(scope='session')
 def dummy_settings(dummy_env):
     from evaluation_system.misc import config
+    config.reloadConfiguration()
     import evaluation_system.settings.database
     yield config
-    config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
 def broken_run(dummy_settings):
@@ -412,7 +444,11 @@ def freva_lib(dummy_env, dummy_settings):
 
 @pytest.fixture(scope='module')
 def prog_name():
-    return Path(' '.join(sys.argv[:])).name
+    try:
+        arg = f' {sys.argv[1]}'
+    except IndexError:
+        arg = ' '
+    return Path(sys.argv[0]).name + arg
 
 @pytest.fixture(scope='module')
 def stderr():

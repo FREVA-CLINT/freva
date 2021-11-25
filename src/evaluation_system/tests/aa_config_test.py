@@ -3,40 +3,57 @@ import os
 import pytest
 import mock
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 def mockenv(**envvars):
     return mock.patch.dict(os.environ, envvars)
 
 
+class MockConfigFile:
+
+    def __init__(self, env_vars):
+
+        self._tf = NamedTemporaryFile(suffix='.conf')
+        self.name = self._tf.name
+        env_vars['EVALUATION_SYSTEM_CONFIG_FILE'] = self.name
+        self.mock_env = mockenv(**env_vars)
+        self.mock_env.start()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._tf.close()
+        self.mock_env.stop()
+
+def mock_config_file(env_vars):
+
+    with NamedTemporaryFile(suffix='.conf') as tf:
+        env_vars['EVALUATION_SYSTEM_CONFIG_FILE'] = tf.name
+        with mockenv(**env_vars):
+            return tf
 
 @mockenv(PUBKEY='')
 def test_wrong_config():
     from evaluation_system.misc import config
-    #env = os.environ.copy()
-    #os.environ.pop('PUBKEY', None)
     with pytest.raises(FileNotFoundError):
-         config._get_public_key('false.crt')
-    #os.environ = env.copy()
-    config.reloadConfiguration()
-    
-def test_vault(dummy_key, requests_mock):
+         config._get_public_key('no_such_project')
+
+def test_vault(dummy_key, requests_mock, dummy_env):
     from configparser import ConfigParser, ExtendedInterpolation
     from evaluation_system.misc import config
-    os.environ['PUBKEY'] = dummy_key
-    cfg = ConfigParser(interpolation=ExtendedInterpolation())
-    with (Path(__file__).parent / 'test.conf').open() as f:
-        cfg.read_file(f)
-        db_cfg = {}
-        for key in ('host', 'user', 'passwd', 'db'):
-            db_cfg[f'db.{key}'] = cfg['evaluation_system'][f'db.{key}']
-    sha = config._get_public_key('false.crt')
+    mockenv(PUBKEY=dummy_key)
+    db_cfg = {}
+    for key in ('host', 'user', 'passwd', 'db'):
+        db_cfg[f'db.{key}'] = dummy_env['evaluation_system'][f'db.{key}']
+    sha = config._get_public_key('test_system')
     url = f'http://{db_cfg["db.host"]}:5003/vault/data/{sha}'
     requests_mock.get(url, json=db_cfg)
     for key in ('db.passwd', 'db.user', 'db.db'):
         assert config._read_secrets(sha, key, db_cfg['db.host'], port=5003,
                 protocol='http') == db_cfg[key]
 
-def test_get():
+def test_get(dummy_env):
     from evaluation_system.misc import config
     config.reloadConfiguration()
     base_dir = config.get(config.BASE_DIR)
@@ -45,17 +62,16 @@ def test_get():
         config.get('non-existing-key')
     assert config.get('non-existing-key', 'default-answer') == 'default-answer'
 
-def test_keys():
+def test_keys(dummy_env):
     from evaluation_system.misc import config
     keys = config.keys()
     assert len(keys) >= 2
     assert config.BASE_DIR in keys
 
-def test_reload():
+def test_reload(dummy_env):
     """Test we can reload the configuration"""
     from evaluation_system.misc import config
     try:
-
         config._config[config.BASE_DIR_LOCATION] = 'TEST'
         c1 = config.get(config.BASE_DIR_LOCATION)
         assert c1 == 'TEST'
@@ -73,62 +89,46 @@ def test_DIRECTORY_STRUCTURE():
 def test_config_file(dummy_key):
     """If a config file is provided it should be read"""
     from evaluation_system.misc import config
-    import tempfile
-    os.environ['PUBKEY'] = dummy_key
-    fd, name = tempfile.mkstemp(__name__, text=True)
-    with os.fdopen(fd, 'w') as f:
-        f.write('[evaluation_system]\n%s=nowhere\nproject_name=test_system\ndb.host=localhost' % config.BASE_DIR)
     assert config.get(config.BASE_DIR) == 'evaluation_system'
-    try:
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
+            f.write('[evaluation_system]\n%s=nowhere\nproject_name=test_system\ndb.host=localhost' % config.BASE_DIR)
         config.reloadConfiguration()
         assert config.get(config.BASE_DIR) == 'nowhere'
-        os.unlink(name)
         # check wrong section
-        fd, name = tempfile.mkstemp(__name__, text=True)
-        with os.fdopen(fd, 'w') as f:
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
             f.write('[wrong_section]\n%s=nowhere\n' % config.BASE_DIR)
-
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
         with pytest.raises(config.ConfigurationException):
             config.reloadConfiguration()
-
-        os.unlink(name)
-
-        # check directory structure value
-        fd, name = tempfile.mkstemp(__name__, text=True)
-        with os.fdopen(fd, 'w') as f:
-            f.write('[evaluation_system]\n%s=wrong_value\nproject_name=test_system\ndb.host=localhost' % config.DIRECTORY_STRUCTURE_TYPE)
-
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
+            f.write(
+                    f'''[evaluation_system]
+{config.DIRECTORY_STRUCTURE_TYPE}=wrong_value
+project_name=test_system
+db.host=localhost'''
+            )
         with pytest.raises(config.ConfigurationException):
             config.reloadConfiguration()
-
-        os.unlink(name)
-
-        # check $EVALUATION_SYSTEM_HOME get's resolved properly
-        fd, name = tempfile.mkstemp(__name__, text=True)
-        with os.fdopen(fd, 'w') as f:
-            f.write('[evaluation_system]\n%s=$$EVALUATION_SYSTEM_HOME\nproject_name=test_system\ndb.host=localhost' % config.BASE_DIR)
-
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
+            f.write(
+                    f'''[evaluation_system]
+{config.BASE_DIR}=$$EVALUATION_SYSTEM_HOME
+project_name=test_system
+db.host=localhost'''
+            )
         assert config.get(config.BASE_DIR) == 'evaluation_system'
-        os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
         config.reloadConfiguration()
         assert config.get(config.BASE_DIR) == \
                           '/'.join(__file__.split('/')[:-4])
 
-    finally:
-        os.environ['EVALUATION_SYSTEM_CONFIG_FILE'] = os.path.dirname(__file__) + '/test.conf'
-        os.environ['PUBKEY'] = dummy_key
-        os.unlink(name)
-
 def test_plugin_conf(dummy_key):
-    import tempfile
     from evaluation_system.misc import config
-    os.environ['PUBKEY'] = dummy_key
-    fd, name = tempfile.mkstemp(__name__, text=True)
-    with os.fdopen(fd, 'w') as f:
-        f.write("""
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
+            f.write("""
 [evaluation_system]
 base_dir=~
 project_name=test_system
@@ -143,37 +143,32 @@ module=pca.api
 plugin_path=$$EVALUATION_SYSTEM_HOME/tool/climval
 python_path=$$EVALUATION_SYSTEM_HOME/tool/climval/src
 module=climval.tool
+"""
+)
 
-""")
+        config.reloadConfiguration()
+        plugins_dict = config.get(config.PLUGINS)
+        assert set(plugins_dict) == set(['pca', 'climval'])
+        es_home = '/'.join(__file__.split('/')[:-4])
+        assert config.get_plugin('pca', config.PLUGIN_PATH) == \
+                          es_home + '/tool/pca'
+        assert config.get_plugin('pca', config.PLUGIN_PYTHON_PATH) == \
+                          es_home + '/tool/pca/integration'
+        assert config.get_plugin('pca', config.PLUGIN_MODULE) == \
+                          'pca.api'
+        assert config.get_plugin('pca', 'not_existing', 'some_default') == \
+                          'some_default'
 
-    os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
-    config.reloadConfiguration()
-    plugins_dict = config.get(config.PLUGINS)
-    assert set(plugins_dict) == set(['pca', 'climval'])
-    es_home = '/'.join(__file__.split('/')[:-4])
-    assert config.get_plugin('pca', config.PLUGIN_PATH) == \
-                      es_home + '/tool/pca'
-    assert config.get_plugin('pca', config.PLUGIN_PYTHON_PATH) == \
-                      es_home + '/tool/pca/integration'
-    assert config.get_plugin('pca', config.PLUGIN_MODULE) == \
-                      'pca.api'
-    assert config.get_plugin('pca', 'not_existing', 'some_default') == \
-                      'some_default'
-
-    assert config.get_plugin('climval', config.PLUGIN_MODULE) == \
-                      'climval.tool'
-    with pytest.raises(config.ConfigurationException):
-        config.get_plugin('climval', 'missing_modules')
-    os.unlink(name)
+        assert config.get_plugin('climval', config.PLUGIN_MODULE) == \
+                          'climval.tool'
+        with pytest.raises(config.ConfigurationException):
+            config.get_plugin('climval', 'missing_modules')
 
 def test_get_section(dummy_key):
-    import tempfile
     from evaluation_system.misc import config
-    os.environ['PUBKEY'] = dummy_key
-    fd, name = tempfile.mkstemp(__name__, text=True)
-    with os.fdopen(fd, 'w') as f:
-        f.write("""
-[evaluation_system]
+    with MockConfigFile({'PUBKEY': dummy_key}) as tf:
+        with open(tf.name, 'w') as f:
+            f.write("""[evaluation_system]
 base_dir=/home/lala
 project_name=test_proj
 db.host=localhost
@@ -182,16 +177,15 @@ db.host=localhost
 param=value
 some=val
 
-""")
-    os.environ[config._DEFAULT_ENV_CONFIG_FILE] = name
-    config.reloadConfiguration()
-    eval = config.get_section('evaluation_system')
-    assert eval == {'base_dir': '/home/lala', 'project_name': 'test_proj',
-                    'db.host': 'localhost'}
-    other = config.get_section('some_other_section')
-    assert other == {'param': 'value', 'some': 'val'}
-
-    # no valid section
-    # config.get_section('safasfas')
-    with pytest.raises(config.NoSectionError):
-        config.get_section('novalid_section')
+"""
+)
+        config.reloadConfiguration()
+        eval_sect = config.get_section('evaluation_system')
+        assert eval_sect == {
+                'base_dir': '/home/lala', 'project_name': 'test_proj',
+                'db.host': 'localhost'
+        }
+        other = config.get_section('some_other_section')
+        assert other == {'param': 'value', 'some': 'val'}
+        with pytest.raises(config.NoSectionError):
+            config.get_section('novalid_section')

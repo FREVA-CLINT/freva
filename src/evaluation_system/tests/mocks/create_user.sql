@@ -1,4 +1,4 @@
-CREATE USER IF NOT EXISTS test_user IDENTIFIED BY 'T3st';
-CREATE DATABASE IF NOT EXISTS freva_dev;
-GRANT ALL PRIVILEGES ON freva_dev.* TO 'test_user'@'%' IDENTIFIED BY 'T3st';
+CREATE USER IF NOT EXISTS test_user IDENTIFIED BY 'test_password_please_ignore';
+CREATE DATABASE IF NOT EXISTS freva;
+GRANT ALL PRIVILEGES ON freva.* TO 'test_user'@'%' IDENTIFIED BY 'test_password_please_ignore';
 FLUSH PRIVILEGES;
