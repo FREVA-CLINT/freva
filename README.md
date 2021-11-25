@@ -8,7 +8,7 @@ You can play with a test version on binder [![Binder](https://mybinder.org/badge
 
 ### What is Freva?
 
-Freva is an all-in-one solution to efficiently handle evaluation and validation systems of research projects, institutes or universities in the Earth system and climate modeling community. It is a hybrid scientific software framework for high performance computing, including all features present in the shell and web environment. The main system design features the common and standardized model database, programming interface, and history of evaluations. The database interface satisfies the international data standards provided by the Earth System Grid Federation and the World Climate Research Programme. Freva indexes different data projects into one common search environment by storing the meta data information of the model, reanalysis and observational data sets in a database. This implemented meta data system with its advanced but easy-to-handle search tool supports at different stages: users, developers and their plugins to retrieve the required information of the database. A generic application programming interface allows scientific developers to connect their analysis tools with the evaluation system independently of the programming language used. Users of the evaluation techniques benefit from the common interface of the evaluation system without any need to understand the different scripting languages. The history and configuration sub-system stores every analysis performed with the evaluation system in a database. Configurations and results of the tools can be shared among scientists via shell or web system. Results of plugged-in tools benefit from scientific transparency and reproducibility within the research group. Furthermore, if saved configurations match while starting an evaluation plugin, the system suggests to use results already produced by other users – saving CPU/h, I/O, disk space and time. The efficient interaction between different technologies improves the Earth system modeling science.
+Freva is an all-in-one solution to efficiently handle evaluation and validation systems of research projects, institutes or universities in the Earth system and climate modeling community. It is a hybrid scientific software framework for high performance computing, including all features present in the shell and web environment. The main system design features the common and standardized model database, programming interface, and history of evaluations. The database interface satisfies the international data standards provided by the Earth System Grid Federation and the World Climate Research Programm. Freva indexes different data projects into one common search environment by storing the meta data information of the model, reanalysis and observational data sets in a database. This implemented meta data system with its advanced but easy-to-handle search tool supports at different stages: users, developers and their plugins to retrieve the required information of the database. A generic application programming interface allows scientific developers to connect their analysis tools with the evaluation system independently of the programming language used. Users of the evaluation techniques benefit from the common interface of the evaluation system without any need to understand the different scripting languages. The history and configuration sub-system stores every analysis performed with the evaluation system in a database. Configurations and results of the tools can be shared among scientists via shell or web system. Results of plugged-in tools benefit from scientific transparency and reproducibility within the research group. Furthermore, if saved configurations match while starting an evaluation plugin, the system suggests to use results already produced by other users – saving CPU/h, I/O, disk space and time. The efficient interaction between different technologies improves the Earth system modeling science.
 
 ## Guides:
 
@@ -46,7 +46,7 @@ docker-compose down
 ### Creating a dedicated anaconda dev environment
 We recommend using anaconda to install all packages that are needed for
 development of both backend and web frontend. Here we assume that you have a
-working anaconda version pre-installed on your local computer. To install the
+working anaconda version per-installed on your local computer. To install the
 the dev environment simply use the following command:
 
 ```
@@ -71,7 +71,7 @@ The conda environment can be deactivated using the following command:
 conda deactivate
 ```
 _Note_: The conda install command can be slow. If you want to speed up the installation
-        of the environment we recommend to install the `mamba` package in the 
+        of the environment we recommend to install the `mamba` package in the
         anaconda `base` environment and use the `mamba` command to create the environment:
 ```
 conda install mamba
@@ -80,7 +80,7 @@ mamba env create -f dev-environment.yml
 
 ### Installing the python package
 
-Use the `pip install` command to install the actual python core packages into your activated anvironment:
+Use the `pip install` command to install the actual python core packages into your activated environment:
 
 ```bash
 $: pip install -e .
@@ -103,10 +103,9 @@ If the `$FREVA_ENV` variable is not set `make` will take the current python envi
 The default configuration is located in `install_prefx/etc/evaluation_system.conf`.
 Here you should set the entries pointing to the mysql database and the apache solr server.
 
-> **_Note:_** Since version 2021.5 the config files can take variables that can be reused within the configfile, see https://docs.python.org/3/library/configparser.html#configparser.ExtendedInterpolation for details. Configurations containing the '$' charatcter must be escaped by '$$' (additional $) to avoid conflicts.
+> **_Note:_** Since version 2021.5 the config files can take variables that can be reused within the config file, see https://docs.python.org/3/library/configparser.html#configparser.ExtendedInterpolation for details.
+Configurations containing the '$' character must be escaped by '$$' (additional $) to avoid conflicts.
 
 ### The module file
 
 The deployment process will create a module file, which is located in `install_prefix/share/loadfreva.modules`. Copy this file to the appropriate location of your central modules system to make use of it.
-
-
