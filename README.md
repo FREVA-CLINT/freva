@@ -109,6 +109,8 @@ You can also save the above environment variables stored in `.envrc` upon activa
 source .envrc
 conda env config vars set EVALUATION_SYSTEM_CONFIG_FILE=$EVALUATION_SYSTEM_CONFIG_FILE
 conda env config vars set PUBKEY=$EVALUATION_SYSTEM_CONFIG_FILE
+conda deactivate
+conda activate freva-dev
 ```
 This will automatically set the above environment variables.
 
