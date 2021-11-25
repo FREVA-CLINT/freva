@@ -71,7 +71,7 @@ Here you should set the entries pointing to the mysql database and the apache so
 
 The deployment process will create a module file, which is located in `install_prefix/share/loadfreva.modules`. Copy this file to the appropriate location of your central modules system to make use of it.
 
-## Test system
+## Test/Development system
 
 A basic local development setup can be created using [Docker](https://docs.docker.com/engine/install/) and
 [`docker-compose`](https://docs.docker.com/compose/install/) (Linux users need to install it separately). This also
@@ -91,7 +91,33 @@ When finished, tear down the environment with
 docker-compose down
 ```
 
-## Installing the python package, without deployment.
+### Creating a dedicated anaconda dev environment
+We recommend using anaconda to install all packages that are needed for
+development of both backend and web frontend. Here we assume that you have a
+working anaconda version pre-installed on your local computer. To install the
+the dev environment simply use the following command:
+
+```
+conda env create -f dev-environment.yml
+```
+The freshly installed environment can be activated:
+```
+conda activate freva-dev
+```
+You can also save the above environment variables stored in `.envrc` upon activation of the conda environment:
+```
+source .envrc
+conda env config vars set EVALUATION_SYSTEM_CONFIG_FILE=$EVALUATION_SYSTEM_CONFIG_FILE
+conda env config vars set PUBKEY=$EVALUATION_SYSTEM_CONFIG_FILE
+```
+This will automatically set the above environment variables.
+
+The conda environment can be deactivated using the following command:
+```
+conda deactivate
+```
+
+### Installing the python package
 
 It is also possible to only install the python core packages. For example when installing the packe as part of a submodule. This can simply be done by the following command:
 
