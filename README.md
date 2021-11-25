@@ -70,6 +70,13 @@ The conda environment can be deactivated using the following command:
 ```
 conda deactivate
 ```
+_Note_: The conda install command can be slow. If you want to speed up the installation
+        of the environment we recommend to install the `mamba` package in the 
+        anaconda `base` environment and use the `mamba` command to create the environment:
+```
+conda install mamba
+mamba env create -f dev-environment.yml
+```
 
 ### Installing the python package
 
@@ -91,7 +98,7 @@ $:  python3 -m pytest -c pytest.ini src/evaluation_system/tests
 
 If the `$FREVA_ENV` variable is not set `make` will take the current python environment.
 
-### Central configuration
+## Central configuration
 
 The default configuration is located in `install_prefx/etc/evaluation_system.conf`.
 Here you should set the entries pointing to the mysql database and the apache solr server.
