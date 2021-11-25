@@ -19,6 +19,7 @@ dependencies:
       - django_compressor
       - django-debug-toolbar-user-panel
       - django-discover-runner
+      - django-bootstrap3
       - pep257
   - sphinx
   - pymysql
@@ -67,7 +68,6 @@ dependencies:
   - fabric
   - pylint
   - django-webpack-loader
-  - django-bootstrap3
   - django-model-utils
   - django-debug-toolbar
   - pep8
