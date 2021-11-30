@@ -300,8 +300,8 @@ class Installer:
         """Run unittests."""
         logger.info('Running unittests:')
         env = os.environ.copy()
-        env['PATH'] = f'{Path(self.install_prefix) / "bin"}:{env["PATH"]}'
-        env['FREVA_ENV'] = str(self.install_prefix)
+        env['PATH'] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
+        env['FREVA_ENV'] = str(self.install_prefix / "bin")
         self.run_cmd(f'make test', verbose=True, env=env)
 
     @property
