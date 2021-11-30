@@ -5,6 +5,7 @@ dependencies:
   - python=3.9
   - django
   - pytest-env
+  - pandas
   - mysqlclient
   - pip
   - gcc
