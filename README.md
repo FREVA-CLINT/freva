@@ -61,6 +61,7 @@ You can also save the above environment variables stored in `.envrc` upon activa
 source .envrc
 conda env config vars set EVALUATION_SYSTEM_CONFIG_FILE=$EVALUATION_SYSTEM_CONFIG_FILE
 conda env config vars set PUBKEY=$EVALUATION_SYSTEM_CONFIG_FILE
+conda env config vars set DEV_MODE=1
 conda deactivate
 conda activate freva-dev
 ```
@@ -88,15 +89,13 @@ $: pip install -e .
 
 The `-e` flag will link the source code into your python environment, which can be useful for development purpose.
 
-### Running tests and uploading test coverage files
+### Running tests and creating a test coverage report
 
-The system can be tested with `Makefile`. To run the tests and upload the coverage files simply use the make command:
+The system can be tested with a `Makefile`. To run the tests and generate a simple test coverage report simply use the make command:
 
 ```bash
-$:  python3 -m pytest -c pytest.ini src/evaluation_system/tests
+$:  make test
 ```
-
-If the `$FREVA_ENV` variable is not set `make` will take the current python environment.
 
 ## Central configuration
 
