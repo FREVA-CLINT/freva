@@ -32,7 +32,7 @@ test_latest:
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     variables:
-      CONDA_PREFIX: 'Miniconda3-latest'
+      CONDA: 'Miniconda3-latest'
     tags:
       - docker, specific
     before_script:
