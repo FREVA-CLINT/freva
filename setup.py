@@ -53,7 +53,7 @@ setup(name="evaluation_system",
           ]
         },
       entry_points={'console_scripts': ['freva = evaluation_system.commands._main:_run']},
-      python_requires='>=3.7',
+      python_requires='>=3.8',
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',

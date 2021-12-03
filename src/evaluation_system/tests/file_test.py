@@ -48,7 +48,7 @@ def test_find_structure_in_path(dummy_solr):
     assert s == 'cmip5'
     s = dummy_solr.DRSFile.find_structure_in_path(search_path, allow_multiples=True)
     assert s == ['cmip5']
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         dummy_solr.DRSFile.find_structure_in_path('/no/valid/path')
 
 def test_structure_from_path(dummy_solr):
@@ -58,8 +58,8 @@ def test_structure_from_path(dummy_solr):
     s = dummy_solr.DRSFile.find_structure_from_path(dummy_solr.fn,
                                                     allow_multiples=True)
     assert s == ['cmip5']
-    with pytest.raises(Exception):
-        dummy_sorl.DRSFile.find_structure_from_path('/no/valid/file_path')
+    with pytest.raises(ValueError):
+        dummy_solr.DRSFile.find_structure_from_path('/no/valid/file_path')
 
 def test_from_dict(dummy_solr):
     d = dummy_solr.drs.dict

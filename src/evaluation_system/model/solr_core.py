@@ -352,16 +352,16 @@ be used, using the configuration from the config file).
     
                         batch.append(metadata)
                         
-                        if drs_file.is_versioned():
+                        if drs_file.versioned:
                             version = latest_versions.get(drs_file.to_dataset(versioned=False), None)
-                            if version is None or drs_file.get_version() > version:
+                            if version is None or drs_file.version > version:
                                 # unknown or new version, update
-                                version = drs_file.get_version()
+                                version = drs_file.version
                                 latest_versions[drs_file.to_dataset(versioned=False)] = version
                                 batch_latest_new[drs_file.to_dataset(versioned=False)] = metadata
                                 #batch_latest = batch_latest_new.values()
                 
-                            if not drs_file.get_version() < version:
+                            if not drs_file.version < version:
                                 batch_latest.append(metadata)
                         else:
                             # if not version always add to latest
