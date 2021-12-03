@@ -12,6 +12,7 @@ import logging
 import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
+import json
 log = logging.getLogger(__name__)
 from evaluation_system.misc.utils import Struct, TemplateDict
 
@@ -28,6 +29,8 @@ the future for the next project phase.'''
 _DEFAULT_ENV_CONFIG_FILE = 'EVALUATION_SYSTEM_CONFIG_FILE'
 _DEFAULT_CONFIG_DIR = Path(sys.prefix)
 _DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / 'etc' / 'evaluation_system.conf'
+_DRS_CONFIG_FILE_ENVVAR = 'EVALUATION_SYSTEM_DRS_CONFIG_FILE'
+_DEFAULT_DRS_CONFIG_FILE = _DEFAULT_CONFIG_DIR / 'etc' / 'drs_config.json'
 _PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / 'share' / 'freva'
 EVALUATION_SYSTEM_HOME=(os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES =  TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
@@ -141,6 +144,7 @@ class ConfigurationException(Exception):
         super().__init__(message)
 
 _config = None
+_drs_config = None
 
 def _get_public_key(project_name):
 
@@ -178,7 +182,6 @@ performed."""
                  DIRECTORY_STRUCTURE_TYPE: DIRECTORY_STRUCTURE.LOCAL,
                  PLUGINS: {}}
     
-
     config_file = os.environ.get(_DEFAULT_ENV_CONFIG_FILE,
                              _DEFAULT_CONFIG_FILE_LOCATION)
     log.debug("Loading configuration file from: %s"%config_file)
@@ -213,8 +216,7 @@ performed."""
         raise ConfigurationException("value (%s) of %s is not valid. Should be one of: %s" \
                      % (_config[DIRECTORY_STRUCTURE_TYPE], DIRECTORY_STRUCTURE_TYPE, 
                         ', '.join(DIRECTORY_STRUCTURE.toDict().values())))
-#load the configuration for the first time
-#reloadConfiguration()
+
 
 _nothing = object()
 def get(config_prop, default=_nothing):
@@ -280,3 +282,10 @@ def get_section(section_name, config_file=None):
         raise NoSectionError(f'There is no "{section_name}" section in config file')
     return SPECIAL_VARIABLES.substitute(section)
 
+def get_drs_config():
+    global _drs_config
+    if _drs_config is None:
+        drs_config = os.environ.get(_DRS_CONFIG_FILE_ENVVAR, str(_DEFAULT_DRS_CONFIG_FILE))
+        with open(drs_config, 'r') as drs_file:
+            _drs_config = json.load(drs_file)
+    return _drs_config

@@ -132,6 +132,7 @@ def dummy_env(dummy_key):
         PATH = (Path(__file__).parent / 'mocks' / 'bin').absolute()
         env = dict(
                 EVALUATION_SYSTEM_CONFIG_FILE=tf.name,
+                EVALUATION_SYSTEM_DRS_CONFIG_FILE=os.environ["EVALUATION_SYSTEM_DRS_CONFIG_FILE"],
                 PUBKEY=str(dummy_key),
                 PATH=str(PATH)+ ':' + os.environ['PATH']
         )
@@ -199,7 +200,7 @@ def dummy_solr(dummy_env, dummy_settings):
     server.solr_host = dummy_settings.get('solr.host')
     from evaluation_system.model.solr_core import SolrCore
     from evaluation_system.model.solr import SolrFindFiles
-    from evaluation_system.model.file import DRSFile, CMIP5
+    from evaluation_system.model.file import DRSFile
     from evaluation_system.misc.utils import supermakedirs
     server.all_files = SolrCore(core='files', host=server.solr_host, port=server.solr_port)
     server.latest = SolrCore(core='latest', host=server.solr_host, port=server.solr_port)
@@ -208,8 +209,10 @@ def dummy_solr(dummy_env, dummy_settings):
     with TemporaryDirectory(prefix='solr') as td:
         supermakedirs(str(Path(td) / 'solr_core'), 0o0777)
         server.tmpdir = str(Path(td) / 'solr_core')
-        orig_dir = DRSFile.DRS_STRUCTURE[CMIP5]['root_dir']
-        DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = server.tmpdir
+        DRSFile._load_structure_definitions()
+        orig_dir = DRSFile.DRS_STRUCTURE['cmip5'].root_dir
+        DRSFile.DRS_STRUCTURE['cmip5'].root_dir = server.tmpdir
+        DRSFile.DRS_STRUCTURE_PATH_TYPE[server.tmpdir] = 'cmip5'
         server.files = [
             'cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc',
             'cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc',
@@ -238,7 +241,7 @@ def dummy_solr(dummy_env, dummy_settings):
         server.latest.delete('*')
     except:
         pass
-    DRSFile.DRS_STRUCTURE[CMIP5]['root_dir'] = orig_dir
+    DRSFile.DRS_STRUCTURE['cmip5'].root_dir = orig_dir
 
 
 @pytest.fixture(scope='module')

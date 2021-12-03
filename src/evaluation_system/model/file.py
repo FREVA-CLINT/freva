@@ -5,222 +5,340 @@
 The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
+from __future__ import annotations
+from typing import Optional, Generator, Union, List, Any, ClassVar, Literal, overload
+from dataclasses import dataclass, field
+
 import json
-import glob
 from pathlib import Path
 import os
 import logging
-from evaluation_system.misc.utils import find_similar_words
+from evaluation_system.misc import config
+
 log = logging.getLogger(__name__)
 
+Activity = str
+"""Represents a type of data collection activity for DRS (see Activity from the DRS spec).
 
-CMIP5 = 'cmip5'
-"""DRS structure for CMIP5 Data"""
-BASELINE0 = 'baseline0'
-"""DRS structure for Baseline 0 Data (it's a subset of CMIP5 data)"""
-OBSERVATIONS = 'observations'
-"""DRS structure for observational data."""
-REANALYSIS = 'reanalysis'
-"""CMOR structure for reanalysis data."""
-CRAWLMYDATA = 'crawl_my_data'
-"""CMOR structure for user data."""
+    This doesn't prevent typing issues beyond what you'd get with `str` but  I think
+    it makes the functions that deal with Activities more clear than simply using `str`
+"""
 
-class DRSFile(object):
+ACTIVITY_BASELINE0: Activity = "baseline0"
+
+
+@dataclass
+class DRSStructure:
+    root_dir: str
+    """Directory from where this files are to be found. Put through `expanduser` to
+        expand `~` then `absolute`.
+    """
+    parts_dir: List[str]
+    """List of subdirectory category names the values they refer to
+        (e.g. ['model', 'experiment']).
+    """
+    parts_dataset: List[str]
+    """The components of a dataset name (this data should also be found in parts_dir)."""
+    parts_file_name: List[str]
+    """Elements composing the file name (no ".nc" though)."""
+    parts_time: str
+    """Describes how the time part of the filename is formed."""
+    data_type: Activity
+    """same value as this key structure (for reverse traverse)"""
+    defaults: dict[str, str] = field(default_factory=dict)
+    """list with values that "shouldn't" be required to be changed (e.g. for
+        observations, project=obs4MIPS)
+    """
+    parts_versioned_dataset: Optional[List[str]] = None
+    """If this datasets are versioned then define the version structure of them
+        (i.e. include the version number in the dataset name).
+    """
+
+    def __post_init__(self):
+        self.root_dir = str(Path(self.root_dir).expanduser().absolute())
+
+    @classmethod
+    def from_dict(cls, drs_dict: dict[str, Any]) -> DRSStructure:
+        """Creates a DRSStructure from the given dict
+
+        Parameters
+        ----------
+        drs_dict
+            Dictionary containing all DRSStructure fields
+
+        Returns
+        -------
+        DRSStructure
+            DRSStructure created from dict
+        """
+        d = cls(
+            root_dir=drs_dict["root_dir"],
+            parts_dir=drs_dict["parts_dir"],
+            parts_dataset=drs_dict["parts_dataset"],
+            parts_file_name=drs_dict["parts_file_name"],
+            parts_time=drs_dict["parts_time"],
+            data_type=drs_dict["data_type"],
+        )
+        if "parts_versioned_dataset" in drs_dict:
+            d.parts_versioned_dataset = drs_dict["parts_versioned_dataset"]
+        if "defaults" in drs_dict:
+            d.defaults = drs_dict["defaults"]
+
+        return d
+
+
+class DRSFile:
     """Represents a file that follows the
-    DRS <http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf> standard."""
+    `DRS standard <https://pcmdi.llnl.gov/mips/cmip5/docs/cmip5_data_reference_syntax.pdf>`_.
+    """
+
     # Lazy initialized in find_structure_from_path
-    DRS_STRUCTURE_PATH_TYPE = None
-    DRS_STRUCTURE = {
-        # cmip5 data
-        CMIP5: {
-         "root_dir": "/mnt/data4freva/model/global",
-         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
-         "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
-         "parts_file_name": "variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time": "start_time-end_time",
-         "data_type": CMIP5,
-         "defaults": {"project": "cmip5" }
-         },
-        # observations
-         OBSERVATIONS: {
-         "root_dir": "/mnt/data4freva",
-         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable/file_name".split('/'),
-         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble//variable".split('/'),
-         "parts_versioned_dataset": "project/product/institute/model/experiment/time_frequency/realm/cmor_table/ensemble/version/variable".split('/'),
-         "parts_file_name": "variable-experiment-level-version-time".split('-'),
-         "parts_time": "start_time-end_time",
-         "data_type": OBSERVATIONS,
-         "defaults": {"project": "observations"}
-         },
-         REANALYSIS : {
-         "root_dir": "/mnt/data4freva",
-         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset": "project/product/institute/model/experiment/time_frequency/realm/variable".split('/'),
-         "parts_file_name": "variable-cmor_table-project-experiment-ensemble-time".split('-'),
-         "parts_time": "start_time-end_time",
-         "data_type": REANALYSIS,
-         "defaults": {"project": "reanalysis", "product": "reanalysis"}
-        },
-         CRAWLMYDATA : {
-         "root_dir": str(Path('~/data4freva').expanduser()),
-         "parts_dir": "project/product/institute/model/experiment/time_frequency/realm/variable/ensemble/file_name".split('/'),
-         "parts_dataset": "project.product.institute.model.experiment.time_frequency.realm.variable.ensemble".split('.'),
-         "parts_file_name": "variable-cmor_table-model-experiment-ensemble-time".split('-'),
-         "parts_time": "start_time-end_time",
-         "data_type": CRAWLMYDATA,
-         "defaults": {}
-         },
-         # ADDMORE
- 
-             }   
-    """Describes the DRS structure of different types of data. The key values of this dictionary are:
+    DRS_STRUCTURE_PATH_TYPE: ClassVar[Optional[dict[str, Activity]]] = None
+    DRS_STRUCTURE: ClassVar[Optional[dict[Activity, DRSStructure]]] = None
 
-root_dir
-    Directory from where this files are to be found
+    def __init__(
+        self,
+        file_dict: Optional[dict] = None,
+        drs_structure: Activity = ACTIVITY_BASELINE0,
+    ):
+        """Creates a DRSfile out of the dictionary containing information
+            about the file or from scratch.
 
-parts_dir
-    list of subdirectory category names the values they refer to (e.g. ['model', 'experiment'])
-
-parts_dataset
-    The components of a dataset name (this data should also be found in parts_dir)
-
-parts_versioned_dataset (optional)
-    If this datasets are versioned then define the version structure of them (i.e. include the version number in the dataset name)
-
-parts_file_name
-    elements composing the file name (no ".nc" though)
-
-data_type
-    same value as this key structure (for reverse traverse)
-
-defaults
-    list with values that "shouldn't" be required to be changed (e.g. for observations, project=obs4MIPS)
-"""
-    def __init__(self, file_dict=None, drs_structure=BASELINE0):
-        """Creates a DRSfile out of the dictionary containing information about the file or from scratch.
-
-:param file_dict: dictionary with the DRS component values and keys from which this file will be initialized. 
-:param drs_structure: Which structure is going to be used with this file.
-:type drs_structure: key value of :class:`DRSFile.DRS_STRUCTURE` 
-"""
+        Parameters
+        ----------
+        file_dict
+            dictionary with the DRS component values and keys from which
+            this file will be initialized.
+        drs_structure
+            Which structure is going to be used with this file. Expected
+            to be a key value from `DRSFile.DRS_STRUCTURE`
+        """
         self.drs_structure = drs_structure
         if not file_dict:
             file_dict = {}
         self.dict = file_dict
         # trim the last slash if present in root_dir
-        if 'root_dir' in self.dict and self.dict['root_dir'][-1] == '/':
-            self.dict['root_dir'] = self.dict['root_dir'][:-1]
+        if "root_dir" in self.dict and self.dict["root_dir"][-1] == "/":
+            self.dict["root_dir"] = self.dict["root_dir"][:-1]
 
-    def __repr__(self):  # pragma nocover
-        """returns the json representation of this object that can be use to create a copy."""
+    def __repr__(self) -> str:  # pragma nocover
+        """Get the JSON representation.
+
+        This can be used for creating a copy via `from_json`.
+
+        Returns
+        -------
+        str
+            json representation of this object
+        """
         return self.to_json()
 
-    def __str__(self):  # pragma nocover
-        """The string representation is the absolute path to the file."""
+    def __str__(self) -> str:  # pragma nocover
+        """Return the path of the file.
+
+        See `to_path` for more info.
+
+        Returns
+        -------
+        str
+            path of the file
+        """
         return self.to_path()
 
-    def __cmp__(self, other):
-        if isinstance(other, DRSFile):
-            return cmp(self.to_path(), other.to_path())
-        return -1
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, DRSFile):
+            return NotImplemented
+        return self.to_path() < other.to_path()
 
-    def to_json(self):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, DRSFile):
+            return False
+        return self.to_path() == other.to_path()
+
+    def to_json(self) -> str:
         """:returns: (str) the json representation of the dictionary encapsulating the DRS components of this file."""
         return json.dumps(self.dict)
 
-    def to_path(self):
-        """:returns: (str) the path to the file as described by the DRS components. The file is not required to exist.
-:raises: KeyError if can't construct the path because there's information missing in the DRS components."""
+    def to_path(self) -> str:
+        """Return the path of the file.
+
+        This returns the full path to the file as described by the DRS
+        components. The file is not required to exist.
+
+        Returns
+        -------
+        str
+            The path to the file
+
+        Raises
+        ------
+        KeyError
+            If it can't construct the path because information is missing
+            in the DRS components.
+        """
         # TODO: check if construction is complete and therefore can succeed
-        result = self.dict['root_dir']
-        for key in self.getDrsStructure()['parts_dir']:
-            if key not in self.dict['parts']:
+        result = self.dict["root_dir"]
+        for key in self.get_drs_structure().parts_dir:
+            if key not in self.dict["parts"]:
                 raise KeyError("Can't construct path as key %s is missing." % key)
-            result = os.path.join(result, self.dict['parts'][key])
+            result = os.path.join(result, self.dict["parts"][key])
         return result
 
-    def to_dataset(self, versioned=False, to_path=False):
-        """creates the dataset to which this file is part of out of the DRS information.
+    def to_dataset(self, versioned: bool = False, to_path: bool = False) -> str:
+        """Returns dataset information.
 
-:param versioned: If the dataset should contain information about the version. Note that not
-                  all DRS structures are versioned, so in those cases where there is just no
-                  version information this makes no difference.
-:type versioned: bool
-:param to_path: if true return the path to the dataset, otherwise returns the dataset identifier."""
+        This will return either the dataset's identifier or the path to
+        the dataset depending on the value of `to_path`.
+
+        Parameters
+        ----------
+        versioned
+            If the dataset should contain information about the version.
+            Note that not all DRS structures are versioned, so in those
+            cases where there is just no version information this makes
+            no difference.
+        to_path
+            If true return the path to the dataset, otherwise returns the
+            dataset identifier.
+
+        Returns
+        -------
+        str
+            Either the path to the dataset or the dataset identifier
+
+        Raises
+        ------
+        ValueError
+            If `versioned` is True but the structure is not versioned.
+        """
         result = []
+        structure = self.get_drs_structure()
         if versioned:
-            if not self.is_versioned():
-                raise Exception('%s is not versioned!' % self.drs_structure)
-            iter_parts = self.getDrsStructure()['parts_versioned_dataset']
+            iter_parts = structure.parts_versioned_dataset
+            # checking this way as opposed to `if self.is_versioned()` appeases
+            # mypy's null check
+            if iter_parts is None:
+                raise ValueError(f"{self.drs_structure} is not versioned!")
         else:
-            iter_parts = self.getDrsStructure()['parts_dataset']
+            iter_parts = structure.parts_dataset
 
         for key in iter_parts:
-            if key in self.dict['parts']:
-                result.append(self.dict['parts'][key])
-            elif key in self.getDrsStructure()['defaults']:
-                result.append(self.getDrsStructure()['defaults'][key])
+            if key in self.dict["parts"]:
+                result.append(self.dict["parts"][key])
+            elif key in structure.defaults:
+                result.append(structure.defaults[key])
         if to_path:
-            return self.getDrsStructure()['root_dir'] + '/' + '/'.join(result)
+            return os.path.join(structure.root_dir, os.sep.join(result))
         else:
-            return '.'.join(result)
+            return ".".join(result)
 
-    def to_dataset_path(self, versioned=False):
-        """returns the path to the current dataset. Commodity method for to_dataset.
-We are assuming the dataset is a sub-path of all files in it.
+    def to_dataset_path(self, versioned: bool = False) -> str:
+        """Returns the path to the current dataset.
 
-:param versioned: If the dataset should contain information about the version. Note that not
-                  all DRS structures are versioned, so in those cases where there is just no
-                  version information this makes no difference.
-:type versioned: bool"""
+        We are assuming the dataset is a sub-path of all files in it.
+
+        See `to_dataset` for more information.
+
+        Parameters
+        ----------
+        versioned
+            If the dataset should contain information about the version.
+
+        Returns
+        -------
+        str
+            The path to the dataset
+        """
         return self.to_dataset(versioned=versioned, to_path=True)
 
-    def is_versioned(self):
-        """If this file is from a DRS structure that is versioned."""
-        return 'parts_versioned_dataset' in self.getDrsStructure()
+    @property
+    def versioned(self) -> bool:
+        """If this file is from a DRS structure that is versioned.
 
-    def get_version(self):
+        Returns
+        -------
+        bool
+            True is the dataset is versioned, False otherwise
         """
-:returns: the *dataset* version from which this file is part of or None if the dataset is not versioned.
-          Note that this is the version of the dataset and not of the file, since the DRS does not version
-          files but datasets.
-:rtype: int"""
-        if 'version' in self.dict['parts']:
-            return self.dict['parts']['version']
+        return self.get_drs_structure().parts_versioned_dataset is not None
+
+    @property
+    def version(self) -> Optional[int]:
+        """Returns the dataset version of this file
+
+        This returns the version which this file is a part of or None if
+        the dataset is not versioned. Note that this is the version of the
+        dataset and not of the file since the DRS does not have file
+        versions.
+
+        Returns
+        -------
+        Optional[int]
+            The version of the dataset or None if not versioned
+        """
+        if "version" in self.dict["parts"]:
+            return self.dict["parts"]["version"]
         else:
             return None
 
     @staticmethod
-    def _get_structure_prefix_map():
-        """:returns: reversed map root_path->drs_struct_name (lazy initialized)."""
+    def _get_structure_prefix_map() -> dict[str, Activity]:
+        """Returns reversed map of root_dir to Activity name.
+
+        This will lazily initialize the map if it doesn't already exist.
+
+        Returns
+        -------
+        dict[str, Activity]
+            Map of root_dir to Activity name
+        """
 
         if DRSFile.DRS_STRUCTURE_PATH_TYPE is None:
-            DRSFile.DRS_STRUCTURE_PATH_TYPE = {}
-            for st_type in DRSFile.DRS_STRUCTURE:
-                path_prefix = DRSFile.DRS_STRUCTURE[st_type]['root_dir']
-                for part in DRSFile.DRS_STRUCTURE[st_type]['parts_dir']:
-                    # if we have more info use it to generate a unique root path
-                    # (e.g. cmip5 and baseline0 or baseline1 share the same root path!)
-                    if part in DRSFile.DRS_STRUCTURE[st_type]['defaults'] and \
-                            all([char not in DRSFile.DRS_STRUCTURE[st_type]['defaults'][part] for char in '*?']):
-                        # but only use it if it's a plain string, no globing.
-                        path_prefix += '/' + DRSFile.DRS_STRUCTURE[st_type]['defaults'][part]
-                    else:
-                        break
-                DRSFile.DRS_STRUCTURE_PATH_TYPE[path_prefix] = st_type
-        return DRSFile.DRS_STRUCTURE_PATH_TYPE
+            DRSFile._load_structure_definitions()
+        # ignored due to lazy initialization issue
+        return DRSFile.DRS_STRUCTURE_PATH_TYPE  # type: ignore [return-value]
+
+    @overload
+    @staticmethod
+    def find_structure_from_path(
+        file_path: str, allow_multiples: Literal[True, False]
+    ) -> List[Activity]:
+        ...
+
+    @overload
+    @staticmethod
+    def find_structure_from_path(file_path: str) -> Activity:
+        ...
 
     @staticmethod
-    def find_structure_from_path(file_path, allow_multiples=False):
-        """Return all DRS structures that might be applicable to the given path.
-This is resolved by checking if the prefix of any structure paths matches that
-of the given file path.
+    def find_structure_from_path(
+        file_path: str, allow_multiples: bool = False
+    ) -> Union[Activity, List[Activity]]:
+        """Return all DRS structures that might be applicable.
 
-:param file_path: full path to a file, whose drs structure is being searched for.
-:param allow_multiples: if true returns a list with all possible structures, otherwise returns the first match found.
-:returns: the name of the drs struct(s) that can be used to parse this path. The parsing is not done, so
- it might still fail. It just guarantees that if any, only the structures returned here *might* work."""
+        This is resolved by checking if the prefix of any structure paths
+        matches that of the given file path. Parsing is not done, so it
+        might still fail. This just guarantees that only the structures
+        returned here *might* work.
+
+        Parameters
+        ----------
+        file_path
+            Full path to a file, whose drs structure is being searched for.
+        allow_multiples
+            If true returns a list with all possible structures, otherwise
+            returns the first match found.
+
+        Returns
+        -------
+        Union[Activity, List[Activity]]
+            The name of the drs struct(s) that can be used to parse this path.
+
+        Raises
+        ------
+        ValueError
+            If `file_path` does not correspond with any DRS structure.
+        """
         structures = []
         for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
             if file_path.startswith(path_prefix):
@@ -229,133 +347,273 @@ of the given file path.
                 else:
                     return st_type
         if not structures:
-            raise Exception("Unrecognized DRS structure in path %s" % file_path)
+            raise ValueError(f"Unrecognized DRS structure in path {file_path}")
         else:
             return structures
 
     @staticmethod
-    def find_structure_in_path(dir_path, allow_multiples=False):
-        """Return all DRS structures that might be applicable to the given directory path.
-This is resolved by checking if the given path is contained within any drs structure. It's used while crawling.
+    def find_structure_in_path(
+        dir_path: str, allow_multiples=False
+    ) -> Union[Activity, List[Activity]]:
+        """Return all DRS structures that might be applicable.
 
-:param dir_path: path a directory, who might contain drs conform files.
-:param allow_multiples: if true returns a list with all possible structures, otherwise returns the first match found.
-:returns: the name of the drs struct(s) that can be used to find files within the given dir_path."""
+        See `find_structure_in_path` for more information
+
+        Parameters
+        ----------
+        file_path
+            Path to a directory which might contain DRS files.
+        allow_multiples
+            If true returns a list with all possible structures, otherwise
+            returns the first match found.
+
+        Returns
+        -------
+        Union[Activity, List[Activity]]
+            The name of the drs struct(s) that can be used to parse this path.
+
+        Raises
+        ------
+        ValueError
+            If `dir_path` does not correspond with any DRS structure.
+        """
         structures = []
         for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
-            if path_prefix.startswith(dir_path):
+            if dir_path.startswith(path_prefix):
                 if allow_multiples:
                     structures.append(st_type)
                 else:
                     return st_type
         if not structures:
-            raise Exception("No DRS structure found in %s." % dir_path)
+            raise ValueError(f"No DRS structure found in {dir_path}.")
         else:
             return structures
 
     @staticmethod
-    def from_path(path, drs_structure=None):
+    def from_path(path: str, activity: Optional[Activity] = None) -> DRSFile:
         """Extract a DRSFile object out of a path.
-:param path: path to a file that is part of the ``drs_structure``.
-:type param: str
-:param drs_structure: Which structure is going to be used with this file.
-:type drs_structure: key value of :class:`DRSFile.DRS_STRUCTURE`
-"""
-        if drs_structure is None:
-            drs_structure = DRSFile.find_structure_from_path(path)
+
+        Parameters
+        ----------
+        path
+            Path to a file that is part of the ``drs_structure``.
+        drs_structure
+            Which structure is going to be used with this file.
+
+        Returns
+        -------
+        DRSFile
+            File extracted from path
+
+        Raises
+        ------
+        ValueError
+            If the given path cannot be used in the given DRS Structure
+            or any configured structure if `activity` is None.
+        """
+        if activity is None:
+            activity = DRSFile.find_structure_from_path(path)
         path = os.path.abspath(path)
-        bl = DRSFile._getDrsStructure(drs_structure)
+        structure = DRSFile._get_drs_structure(activity)
 
         # trim root_dir
-        if not path.startswith(bl['root_dir'] + '/'):
-            raise Exception("File %s does not correspond to %s" % (path, drs_structure))
+        if not path.startswith(structure.root_dir + os.sep):
+            raise ValueError(f"File {path} does not correspond to {activity}")
 
-        parts = path[len(bl['root_dir'])+1:].split('/')
+        parts = path[len(structure.root_dir) + 1 :].split(os.sep)
 
         # check the number of parts
-        if len(parts) != len(bl['parts_dir']):
-            raise Exception("Can't parse this path. Expected %d elements but got %d." % (len(bl['parts_dir']), len(parts)))
+        if len(parts) != len(structure.parts_dir):
+            raise ValueError(
+                (
+                    f"Can't parse this path. Expected {len(structure.parts_dir)} "
+                    f"elements but got {len(parts)}."
+                )
+            )
 
         # first the dir
-        result = {}
-        result['root_dir'] = bl['root_dir']
-        result['parts'] = {}
-        for i in range(len(bl['parts_dir'])):
-            result['parts'][bl['parts_dir'][i]] = parts[i]
+        result: dict[str, Any] = {}
+        result["root_dir"] = structure.root_dir
+        result["parts"] = {}
+        for i in range(len(structure.parts_dir)):
+            result["parts"][structure.parts_dir[i]] = parts[i]
 
         # split file name
         # (extract .nc before splitting)
-        parts = result['parts']['file_name'][:-3].split('_')
-        if len(parts) == len(bl['parts_file_name']) - 1 \
-            and 'fx' in parts:
+        # this type is technically incorrect. `split` would return a List[str] which is
+        # not compatible with List[Optional[str]] but works here because mypy thinks
+        # this returns Any anyway so it accepts whatever
+        file_name_parts: List[Optional[str]] = result["parts"]["file_name"][:-3].split(
+            "_"
+        )
+        if (
+            len(file_name_parts) == len(structure.parts_file_name) - 1
+            and "fx" in file_name_parts
+        ):
             # no time
-            parts.append(None)
+            file_name_parts.append(None)
 
         try:
-            for i in range(len(bl['parts_file_name'])):
-                if bl['parts_file_name'][i] not in result['parts']:
-                    result['parts'][bl['parts_file_name'][i]] = parts[i]
+            for i in range(len(structure.parts_file_name)):
+                if structure.parts_file_name[i] not in result["parts"]:
+                    result["parts"][structure.parts_file_name[i]] = file_name_parts[i]
 
         except IndexError:
-            raise Exception("File %s does not follow the expected naming scheme for %s" % (path, drs_structure))
+            raise ValueError(
+                f"File {path} does not follow the expected naming scheme for {activity}"
+            )
 
-        bl_file = DRSFile(result, drs_structure=drs_structure)
+        bl_file = DRSFile(result, drs_structure=activity)
 
         return bl_file
 
-    def getDrsStructure(self):
-        """:returns: the :class:`DRSFile.DRS_STRUCTURE` used by this file."""
-        return DRSFile._getDrsStructure(self.drs_structure)
+    def get_drs_structure(self) -> DRSStructure:
+        """Returns the DRS structure used by this file.
+
+        Returns
+        -------
+        DRSStructure
+            The `DRS_STRUCTURE` used by this file."""
+        return DRSFile._get_drs_structure(self.drs_structure)
 
     @staticmethod
-    def _getDrsStructure(drs_structure=BASELINE0):
+    def _get_drs_structure(
+        drs_structure: Activity = ACTIVITY_BASELINE0,
+    ) -> DRSStructure:
+        """Gets the DRSStructure associated with the given Activity
+
+        Parameters
+        ----------
+        drs_structure
+            Name of a DRS structure
+
+        Returns
+        -------
+        DRSStructure
+            The DRS structure of the requested type.
+
+        Raises
+        ------
+        ValueError
+            If there's no such DRS structure.
         """
-:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
-:type drs_structure: str
-:returns: (dict) the dictionary of the DRS structure of the requested type.
-:raises: Exception if there's no such DRS structure.
-"""
-        if drs_structure not in DRSFile.DRS_STRUCTURE:
-            raise Exception("Unknown DRS structure %s" % drs_structure)
-        return DRSFile.DRS_STRUCTURE[drs_structure]
+        if DRSFile.DRS_STRUCTURE is None:
+            DRSFile._load_structure_definitions()
+        # these ignores are because mypy doesn't go into `_load_structure_definitions`
+        # to see that DRS_STRUCTURE is initialized before being used and there isn't a
+        # way to force that that wouldn't make the code much worse
+        if drs_structure not in DRSFile.DRS_STRUCTURE:  # type: ignore [operator]
+            raise ValueError(f"Unknown DRS structure {drs_structure}")
+        return DRSFile.DRS_STRUCTURE[drs_structure]  # type: ignore [index]
 
     @staticmethod
-    def from_dict(file_dict, drs_structure=BASELINE0):
-        """:param file_dict: dictionary with the DRS components.
-:type file_dict: dict
-:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
-:type drs_structure: str
-:returns: (:class:`DRSFile`) generated from the given dictionary and DRS structure name"""
+    def from_dict(
+        file_dict: dict, drs_structure: Activity = ACTIVITY_BASELINE0
+    ) -> DRSFile:
+        """Creates a DRSFile based off given dict
+
+        Parameters
+        ----------
+        file_dict
+            Dictionary with the DRS components.
+        drs_structure
+            Name of a DRS structure
+
+        Returns
+        -------
+        DRSFile
+            The DRSFile generated from the given dictionary and DRS
+            structure name
+        """
         return DRSFile(file_dict, drs_structure=drs_structure)
 
     @staticmethod
-    def from_json(json_str, drs_structure=BASELINE0):
-        """:param json_str: string with a json representation of the DRS components. Like the result from calling :class:`DRSFile.to_json`.
-:type json_str: str
-:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`)
-:type drs_structure: str
-:returns: (:class:`DRSFile`) generated from the given dictionary and DRS structure name"""
+    def from_json(
+        json_str: str, drs_structure: Activity = ACTIVITY_BASELINE0
+    ) -> DRSFile:
+        """Creates a DRSFile based off the given JSON string.
+
+        Parameters
+        ----------
+        json_str
+            JSON representation of the DRS components. Like the result
+            from calling :class:`DRSFile.to_json`.
+        drs_structure
+            Name of a DRS structure
+
+        Returns
+        -------
+        DRSFile
+            The DRSFile generated from the given dictionary and DRS
+            structure name
+        """
         return DRSFile.from_dict(json.loads(json_str), drs_structure=drs_structure)
 
     @staticmethod
-    def solr_search(drs_structure=None, latest_version=True, path_only=False, batch_size=10000, **partial_dict):
+    def solr_search(
+        drs_structure: Optional[str] = None,
+        latest_version: bool = True,
+        path_only: bool = False,
+        batch_size: int = 10000,
+        **partial_dict,
+    ) -> Generator[Union[Any, DRSFile], None, None]:
         """Search for files by relying on a Solr Index.*'.
 
-:param drs_structure: name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`). This isn't mandatory anymore.
-:type drs_structure: str
-:param latest_version: if this should be only the latest version available.
-:type latest_version: bool
-:param path_only: If true returns a string with the path only, otherwise a complete DRSFile object.
-:param batch_size: The size of the number of results that will be returned by each Solr call. 
-:type batch_size: int
-:param partial_dict: a dictionary with some DRS components representing the query. 
-:returns: Generator returning matching files"""
+        Parameters
+        ----------
+        drs_structure
+            Name of a DRS structure (key of :class:`DRSFile.DRS_STRUCTURE`). This isn't mandatory anymore.
+        latest_version
+            If this should be only the latest version available.
+        path_only
+            If true returns a string with the path only, otherwise a complete DRSFile object.
+        batch_size
+            The size of the number of results that will be returned by each Solr call.
+        partial_dict
+            A dictionary with some DRS components representing the query.
+
+        Returns
+        -------
+        Generator[Union[Any, DRSFile], None, None]
+            Generator returning matching files
+        """
         from evaluation_system.model.solr import SolrFindFiles
+
         if drs_structure is not None:
-            partial_dict['data_type'] = drs_structure
+            partial_dict["data_type"] = drs_structure
         if path_only:
             for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
                 yield path
         else:
             for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
                 yield DRSFile.from_path(path)
+
+    @staticmethod
+    def _load_structure_definitions():
+        """Loads DRSStructure definitions from the config.
+
+        This handles the initialization of `DRS_STRUCTURE_PATH_TYPE` and
+        `DRS_STRUCTURE`.
+        """
+        DRSFile.DRS_STRUCTURE_PATH_TYPE = {}
+        DRSFile.DRS_STRUCTURE = {}
+
+        conf = config.get_drs_config()
+
+        for a, structure in conf.items():
+            activity = Activity(a)
+            ds = DRSStructure.from_dict(structure)
+            DRSFile.DRS_STRUCTURE[activity] = ds
+
+            path_prefix = ds.root_dir
+            for part in ds.parts_dir:
+                # if we have more info use it to generate a unique root path
+                # (e.g. cmip5 and baseline0 or baseline1 share the same root path!)
+                if part in ds.defaults and all(
+                    [char not in ds.defaults[part] for char in "*?"]
+                ):
+                    # but only use it if it's a plain string, no globing.
+                    path_prefix += "/" + ds.defaults[part]
+                else:
+                    break
+            DRSFile.DRS_STRUCTURE_PATH_TYPE[path_prefix] = activity
