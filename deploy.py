@@ -17,7 +17,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
-CONDA_PREFIX = os.environ.get("CONDA_PREFIX", "Anaconda3-2021.05")
+CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2021.11")
 CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -184,6 +184,9 @@ class Installer:
             tmp_env = Path(td) / 'env'
             logger.info(f'Downloading {CONDA_PREFIX} script')
             kwargs = {'filename': str(conda_script)}
+            print(self.arch)
+            print(self.conda_url+CONDA_VERSION.format(arch=self.arch,
+                                                      conda_prefix=CONDA_PREFIX))
             if  self.silent is False:
                 kwargs['reporthook'] = reporthook
             urllib.request.urlretrieve(
@@ -300,8 +303,8 @@ class Installer:
         """Run unittests."""
         logger.info('Running unittests:')
         env = os.environ.copy()
-        env['PATH'] = f'{Path(self.install_prefix) / "bin"}:{env["PATH"]}'
-        env['FREVA_ENV'] = str(self.install_prefix)
+        env['PATH'] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
+        env['FREVA_ENV'] = str(self.install_prefix / "bin")
         self.run_cmd(f'make test', verbose=True, env=env)
 
     @property
