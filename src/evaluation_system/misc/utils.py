@@ -1,7 +1,4 @@
-'''
-.. moduleauthor:: Sebastian Illing / estani
-
-This module provides different utilities that does not depend on any other 
+'''Provide different utilities that does not depend on any other 
 internal package.
 '''
 import copy
@@ -12,8 +9,29 @@ from difflib import get_close_matches
 import errno
 import os
 from re import split
+import shlex
+from subprocess import run, PIPE
 from string import Template
 import sys
+from typing import Dict, List, Optional, Union, Tuple
+
+
+def run_cmd(cmd: str, **kwargs: Optional) -> str:
+    """Run a command via subprocess.run"""
+    kwargs.setdefault('check', False)
+    kwargs['stdout'] = kwargs['stderr'] = PIPE
+    res = run(shlex.split(cmd), **kwargs)
+    return res.stdout.decode()
+
+def get_console_size() -> Dict[str, int]:
+    """Try getting the size of the current tty."""
+    console_size = run_cmd('stty size')
+    rows, columns = 25, 80
+    try:
+        rows, columns = tuple(map(int, console_size.strip().split()))
+    except ValueError:
+        pass
+    return dict(rows=rows, columns=columns)
 
 
 class Data(object):
@@ -274,20 +292,29 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
                             "last state: %s" % ['%s=%s,'%(k,v) for k,v in final_dict.items()])
         
         return result
-                
-def find_similar_words(word, list_of_valid_words):
-    """This function implements a "Did you mean? xxx" algorith for finding similar words.
-It's used for helping the user find the right word.
 
-:param word: the word the user selected.
-:param list_of_valid_words: a list of valid words.
-:returns: a list of words that are close to the word given"""
+
+def find_similar_words(word: str,
+                       list_of_valid_words: Union[List[str], Tuple[str]]
+                       ) -> List[str]:
+    """This function implements a "Did you mean? xxx" search algorith.
+
+    It is used for helping the user find the right word.
+
+    Parameters:
+    -----------
+    word:
+        the word the user selected.
+    list_of_valid_words:
+        a list of valid words.
+    Returns:
+    --------
+    list : a list of words that are close to the word given"""
     expand_list = {}
     for w in list_of_valid_words:
         for w_part in split('[ _\-:/]', w): 
             if w_part not in expand_list: expand_list[w_part] = set([w])
             else: expand_list[w_part].add(w) 
-        
     result =  get_close_matches(word, expand_list)
     return [w for parts in result for w in expand_list[parts]]
 
