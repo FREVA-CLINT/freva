@@ -6,7 +6,7 @@ The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
 from __future__ import annotations
-from typing import Optional, Generator, Union, List, Any, ClassVar, Literal, overload
+from typing import Optional, Generator, Union, Any, ClassVar, Literal, overload
 from dataclasses import dataclass, field
 
 import json
@@ -33,13 +33,13 @@ class DRSStructure:
     """Directory from where this files are to be found. Put through `expanduser` to
         expand `~` then `absolute`.
     """
-    parts_dir: List[str]
+    parts_dir: list[str]
     """List of subdirectory category names the values they refer to
         (e.g. ['model', 'experiment']).
     """
-    parts_dataset: List[str]
+    parts_dataset: list[str]
     """The components of a dataset name (this data should also be found in parts_dir)."""
-    parts_file_name: List[str]
+    parts_file_name: list[str]
     """Elements composing the file name (no ".nc" though)."""
     parts_time: str
     """Describes how the time part of the filename is formed."""
@@ -49,12 +49,12 @@ class DRSStructure:
     """list with values that "shouldn't" be required to be changed (e.g. for
         observations, project=obs4MIPS)
     """
-    parts_versioned_dataset: Optional[List[str]] = None
+    parts_versioned_dataset: Optional[list[str]] = None
     """If this datasets are versioned then define the version structure of them
         (i.e. include the version number in the dataset name).
     """
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.root_dir = str(Path(self.root_dir).expanduser().absolute())
 
     @classmethod
@@ -301,8 +301,15 @@ class DRSFile:
     @overload
     @staticmethod
     def find_structure_from_path(
-        file_path: str, allow_multiples: Literal[True, False]
-    ) -> List[Activity]:
+        file_path: str, allow_multiples: Literal[True]
+    ) -> list[Activity]:
+        ...
+
+    @overload
+    @staticmethod
+    def find_structure_from_path(
+        file_path: str, allow_multiples: Literal[False]
+    ) -> list[Activity]:
         ...
 
     @overload
@@ -313,7 +320,7 @@ class DRSFile:
     @staticmethod
     def find_structure_from_path(
         file_path: str, allow_multiples: bool = False
-    ) -> Union[Activity, List[Activity]]:
+    ) -> Union[Activity, list[Activity]]:
         """Return all DRS structures that might be applicable.
 
         This is resolved by checking if the prefix of any structure paths
@@ -327,7 +334,11 @@ class DRSFile:
             Full path to a file, whose drs structure is being searched for.
         allow_multiples
             If true returns a list with all possible structures, otherwise
-            returns the first match found.
+            returns the first match found. *Note*: the type annotations
+            are unable to convey cases where this is not called with a
+            literal `True` or `False` (as in when called with a boolean
+            variable). Explicit type checking by the caller or ignoring
+            the error is the only way to handle this scenario.
 
         Returns
         -------
@@ -354,7 +365,7 @@ class DRSFile:
     @staticmethod
     def find_structure_in_path(
         dir_path: str, allow_multiples=False
-    ) -> Union[Activity, List[Activity]]:
+    ) -> Union[Activity, list[Activity]]:
         """Return all DRS structures that might be applicable.
 
         See `find_structure_in_path` for more information
@@ -443,7 +454,7 @@ class DRSFile:
         # this type is technically incorrect. `split` would return a List[str] which is
         # not compatible with List[Optional[str]] but works here because mypy thinks
         # this returns Any anyway so it accepts whatever
-        file_name_parts: List[Optional[str]] = result["parts"]["file_name"][:-3].split(
+        file_name_parts: list[Optional[str]] = result["parts"]["file_name"][:-3].split(
             "_"
         )
         if (
