@@ -54,7 +54,7 @@
     "defaults": { "project": "cmip5" }
   },
   "observations": {
-    "root_dir": "/mnt/data4freva",
+    "root_dir": ".docker/data",
     "parts_dir": [
       "project",
       "product",
@@ -141,12 +141,13 @@
       "project",
       "product",
       "institute",
+      "institute",
       "model",
+      "time_frequency",
       "experiment",
       "time_frequency",
-      "realm",
+      "version",
       "variable",
-      "ensemble",
       "file_name"
     ],
     "parts_dataset": [
