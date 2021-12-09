@@ -1,22 +1,27 @@
-from warnings import warn
+"""Module to access the apache solr databrowser."""
 
-from evaluation_system.commands.databrowser import Command
+from evaluation_system.misc import logger
 from evaluation_system.model.solr import SolrFindFiles
-import logging
 
-__all__ = ['databrowser']
+from typing import Optional, Union, Dict, Iterator
 
-def databrowser(*,multiversion=False,
-                relevant_only=False,
-                batch_size=10,
-                count_facet_values=False,
-                attributes=False,
-                all_facets=False,
-                facet=None,
-                **search_facets):
+__all__ = ["databrowser"]
+
+
+def databrowser(
+    *,
+    multiversion: bool = False,
+    relevant_only: bool = False,
+    batch_size: int = 10,
+    count_facet_values: bool = False,
+    attributes: bool = False,
+    all_facets: bool = False,
+    facet: Optional[str] = None,
+    **search_facets: Dict[str, str],
+) -> Union[Dict[str, str], Iterator[str]]:
     """Find data in the system.
 
-    The query is of the form key=value. <value> might use *, ? as wildcards or 
+    The query is of the form key=value. <value> might use *, ? as wildcards or
     any regular expression.
 
     ::
@@ -54,11 +59,45 @@ def databrowser(*,multiversion=False,
         collection : List, Dict of files, facets or attributes
 
     """
-    return Command.search_data(multiversion=multiversion,
-                               relevant_only=relevant_only,
-                               batch_size=batch_size,
-                               count_facet_values=count_facet_values,
-                               attributes=attributes,
-                               all_facets=all_facets,
-                               facet=facet,
-                               **search_facets)
+    facets = []
+    if isinstance(facet, str):
+        facet = [facet]
+    if all_facets:
+        facets = None
+    elif facet:
+        facets += [f for f in facet if f]
+    latest = not multiversion
+    if "version" in search_facets and latest:
+        # it makes no sense to look for a specific version just among the latest
+        # the speedup is marginal and it might not be what the user expects
+        logger.warn("Turning latest off when searching for a specific version.")
+        latest = False
+    logger.debug("Searching dictionary: %s\n", search_facets)
+    if facets != [] and not attributes:
+        out = {}
+        search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
+        for att, values in SolrFindFiles.facets(
+            facets=facets, latest_version=latest, **search_facets
+        ).items():
+            # values come in pairs: (value, count)
+            value_count = len(values) // 2
+            if relevant_only and value_count < 2:
+                continue
+            if count_facet_values:
+                out[att] = {v: c for v, c in zip(*[iter(values)] * 2)}
+            else:
+                out[att] = values[::2]
+        return out
+    if attributes:
+        out = []
+        # select all is none defined but this flag was set
+        facets = facets or None
+        results = SolrFindFiles.facets(
+            facets=facets, latest_version=latest, **search_facets
+        )
+        if relevant_only:
+            return [k for k in results if len(results[k]) > 2]
+        return [k for k in results]
+    return SolrFindFiles.search(
+        batch_size=batch_size, latest_version=latest, **search_facets
+    )
