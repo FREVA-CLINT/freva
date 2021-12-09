@@ -34,6 +34,9 @@ source .envrc
 docker-compose up -d
 ```
 
+Dummy data can be injected into a running `docker-compose` environment with `make dummy-data`. This will add some DRS
+files into Solr and run an example plugin a few times to add some history data.
+
 _Note_: MariaDB and Solr will listen on ports 10000 and 10001 respectively to avoid collisions if these are already
 running on the machine.
 
