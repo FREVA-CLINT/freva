@@ -9,19 +9,11 @@ metadata about them.
 
 from evaluation_system.misc.utils import (find_similar_words, PrintableList,
                                           initOrder)
+from evaluation_system.misc.exceptions import (ValidationError,
+                                               ParameterNotFoundError)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.history.models import Configuration
 import json
-
-
-class ValidationError(Exception):
-    "Thrown if some variable contains an improper value."
-    pass
-
-
-class ParameterNotFoundError(Exception):
-    "Thrown if some parameter is not in the database."
-    pass
 
 
 class ParameterDictionary(dict):
