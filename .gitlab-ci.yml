@@ -3,6 +3,17 @@ stages:
     - test
     - report
 
+variables:
+  CONDA_ENV: "freva-dev"
+
+mypy:
+  image: continuumio/anaconda3
+  stage: build
+  before_script:
+    - conda env create -f dev-environment.yml
+  script:
+    - conda run -n $CONDA_ENV mypy
+
 dev-obs:
     stage: build
     image: 

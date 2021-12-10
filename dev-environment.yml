@@ -20,6 +20,7 @@ dependencies:
       - django-discover-runner
       - django-bootstrap3
       - pep257
+      - types-requests
   - sphinx
   - pymysql
   - imagemagick
@@ -62,3 +63,4 @@ dependencies:
   - pep8
   - coverage
   - bleach
+  - mypy
