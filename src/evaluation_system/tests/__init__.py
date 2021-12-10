@@ -4,12 +4,11 @@ from subprocess import run, PIPE
 from difflib import SequenceMatcher
 
 
-def runCmd(cmd):
-
+def run_cli(cmd):
+    from freva.cli import main as main_cli
     if isinstance(cmd, str):
         cmd = shlex.split(cmd)
-    res = run(cmd, stdout=PIPE, stdin=PIPE)
-    return res.stdout.decode()
+    return main_cli(cmd)
 
 def run_command_with_capture(cmd, stdout, args_list=[], stderr=None, attr='run'):
     sys.stdout = stdout

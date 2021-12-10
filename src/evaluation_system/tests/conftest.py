@@ -237,8 +237,9 @@ def dummy_solr(dummy_env, dummy_settings):
         server.drs = server.DRSFile.from_path(server.fn)
         yield server
     try:
-        server.all_files.delete('*')
-        server.latest.delete('*')
+        pass
+        #server.all_files.delete('*')
+        #server.latest.delete('*')
     except:
         pass
     DRSFile.DRS_STRUCTURE['cmip5'].root_dir = orig_dir
