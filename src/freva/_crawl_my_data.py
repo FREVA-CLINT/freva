@@ -38,8 +38,9 @@ def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") ->
         The data path(s) that needs to be crawled
     dtype:
         The data type currently only files on the file system are supported.
-
     """
+    if dtype not in ('fs', ):
+        raise NotImplementedError('Only data on POSIX file system is supported')
     print(f"Status: crawling ...", end="")
     for crawl_dir in _validate_user_dirs(*crawl_dirs):
         continue

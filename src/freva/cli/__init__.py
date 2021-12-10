@@ -6,6 +6,7 @@ import sys
 import argcomplete
 import freva
 from .utils import BaseCompleter, BaseParser
+from typing import Optional, List
 
 COMMAND = "freva"
 from evaluation_system.misc import logger
@@ -14,7 +15,7 @@ from evaluation_system.misc import logger
 class ArgParser(BaseParser):
     """Cmd argument parser class for main entry-point."""
 
-    def __init__(self, args=None):
+    def __init__(self, argv=None):
 
         sub_commands = (
             "databrowser",
@@ -26,12 +27,9 @@ class ArgParser(BaseParser):
         epilog = f"""To get help for the individual commands use:
         {COMMAND} <command> --help
 """
-        self.args = args or sys.argv
-        try:
-            if self.args[1] in sub_commands:
-                self.args[1] = self.args[1].strip("-")
-        except IndexError:
-            self.args.append("-h")
+        argv = argv or sys.argv[1:]
+        if argv[0] in sub_commands:
+            argv[0] = argv[0].strip("-")
         self.parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
@@ -42,7 +40,7 @@ class ArgParser(BaseParser):
         self.subparsers = self.parser.add_subparsers(help="Available commands:")
         for command in sub_commands:
             getattr(self, f"parse_{command.replace('-','_')}")()
-        args = self.parse_args()
+        args = self.parse_args(argv)
         argcomplete.autocomplete(self.parser)
         try:
             args.apply_func(args, **self.kwargs)
@@ -120,10 +118,10 @@ class ArgParser(BaseParser):
         _cli = DataBrowserCli(COMMAND, self.call_parsers[-1])
 
 
-def main():
+def main(argv: Optional[List[str]]= None) -> None:
     """Wrapper for entrypoint script."""
-    ArgParser(sys.argv)
+    ArgParser(argv or sys.argv[1:])
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma nocover
     main()

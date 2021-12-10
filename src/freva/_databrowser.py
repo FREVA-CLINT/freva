@@ -1,5 +1,7 @@
 """Module to access the apache solr databrowser."""
 
+from pathlib import Path
+
 from evaluation_system.misc import logger
 from evaluation_system.model.solr import SolrFindFiles
 
@@ -60,6 +62,11 @@ def databrowser(
 
     """
     facets = []
+    try:
+        f = Path(search_facets["file"])
+        search_facets['file'] = f'"\\{f.parent}/\\{f.name}"'
+    except KeyError:
+        pass
     if isinstance(facet, str):
         facet = [facet]
     if all_facets:

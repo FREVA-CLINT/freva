@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import argcomplete
 
@@ -110,10 +110,8 @@ class DataBrowserCli(BaseParser):
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Call the databrowser command and print the results."""
         _ = kwargs.pop("facets", None)
-        facets = ChoicesCompleter.arg_to_dict(args.facets)
+        facets = ChoicesCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
-        print(facets)
-        return
         out = databrowser(**kwargs, **facets)
         # flush stderr in case we have something pending
         sys.stderr.flush()
@@ -141,10 +139,10 @@ class DataBrowserCli(BaseParser):
         for key in out:
             print(str(key), flush=True)
 
-def main():
+def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = DataBrowserCli('freva')
-    args = cli.parse_args()
+    args = cli.parse_args(argv or sys.argv[1:])
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)

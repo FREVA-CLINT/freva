@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Optional, List
 
 import argcomplete
 
@@ -122,10 +122,10 @@ class EsgfCli(BaseParser):
             print("\n".join([str(d) for d in out]))
 
 
-def main():
+def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = EsgfCli("freva")
-    args = cli.parse_args()
+    args = cli.parse_args(argv or sys.argv[1:])
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)

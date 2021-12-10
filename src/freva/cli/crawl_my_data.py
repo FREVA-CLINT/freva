@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Optional, List
 
 import argcomplete
 
@@ -62,10 +62,10 @@ class CrawlDataCli(BaseParser):
             sys.exit(1)
 
 
-def main():
+def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = CrawlDataCli("freva")
-    args = cli.parse_args()
+    args = cli.parse_args(argv or sys.argv[1:])
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)

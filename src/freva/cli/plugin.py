@@ -1,14 +1,15 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Optional, List
 
 import argcomplete
 
 from .utils import BaseCompleter, BaseParser, parse_type
 from evaluation_system.misc.exceptions import (PluginNotFoundError,
                                                ParameterNotFoundError,
-                                               ValidationError)
+                                               ValidationError,
+                                               hide_exception)
 from freva._plugin import get_tools_list, run_plugin, plugin_doc
 
 
@@ -147,22 +148,17 @@ class PluginCli(BaseParser):
         except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
             if args.debug:
                 raise e
-            print(
-                  f'{e.__module__}: '
-                  f'{e.__str__()}',
-                  flush=True,
-                  file=sys.stderr
-            )
-            sys.exit(1)
+            with hide_exception():
+                raise e
         if value != 0:
             logger.warning('Tool failed to run')
         if out:
             print(out)
 
-def main() -> None:
+def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
-    args = cli.parse_args()
+    args = cli.parse_args(argv or sys.argv[1:])
     options = BaseCompleter.arg_to_dict(args.options)
     argcomplete.autocomplete(cli.parser)
     try:
