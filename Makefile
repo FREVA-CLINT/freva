@@ -14,3 +14,7 @@ test:
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
+
+dummy-data:
+	compose/solr/ingest_dummy_data.sh
+	compose/dummy_plugin_runs.sh
