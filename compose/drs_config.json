@@ -141,12 +141,9 @@
       "project",
       "product",
       "institute",
-      "institute",
       "model",
-      "time_frequency",
       "experiment",
       "time_frequency",
-      "version",
       "variable",
       "file_name"
     ],
