@@ -287,7 +287,7 @@ class DRSFile:
 
         Returns
         -------
-        Optional[int]
+        Optional[str]
             The version of the dataset or None if not versioned
         """
         if "version" in self.dict["parts"]:
