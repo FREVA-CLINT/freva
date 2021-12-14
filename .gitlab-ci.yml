@@ -9,6 +9,8 @@ variables:
 mypy:
   image: continuumio/anaconda3
   stage: build
+  tags:
+    - docker, specific
   before_script:
     - conda env create -f dev-environment.yml
   script:
