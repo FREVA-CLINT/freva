@@ -13,8 +13,6 @@ import pytest
 
 DUMMY_USER = {'pw_name':'someone'}
 
-from evaluation_system.tests import runCmd
-
 
 def test_dummy_user(temp_user, dummy_settings, dummy_env):
     """Be sure the dummy user is created as expected"""
@@ -58,7 +56,7 @@ def test_getters(dummy_settings, dummy_env):
         with DummyUser(random_home=True, pw_name='someone') as temp_user:
             assert DUMMY_USER['pw_name'] == temp_user.getName()
             assert temp_user.getUserHome().startswith(tempfile.gettempdir())
-            assert int(runCmd('id -u')) == temp_user.getUserID()
+            assert os.getuid() == temp_user.getUserID()
             print(config.get('directory_structure_type'))
             db = temp_user.getUserDB()
             assert db is not None

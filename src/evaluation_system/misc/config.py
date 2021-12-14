@@ -13,8 +13,9 @@ import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
 import json
-log = logging.getLogger(__name__)
 from evaluation_system.misc.utils import Struct, TemplateDict
+from evaluation_system.misc import logger as log
+from evaluation_system.misc.exceptions import ConfigurationException
 
 DIRECTORY_STRUCTURE = Struct(LOCAL='local', CENTRAL='central', SCRATCH='scratch')
 '''Type of directory structure that will be used to maintain state::
@@ -137,11 +138,6 @@ SOLR_CORE = 'solr.core'
 '''Core name of the Solr instance.'''
 
 
-
-class ConfigurationException(Exception):
-    """Mark exceptions thrown in this package"""
-    def __init__(self, message):
-        super().__init__(message)
 
 _config = None
 _drs_config = None

@@ -12,9 +12,9 @@ import shutil
 
 from git import Repo, Tag
 
-from evaluation_system.tests import run_command_with_capture
+from evaluation_system.tests import run_cli
 
-def test_command_fail(dummy_pr, stdout):
+def test_command_fail(dummy_pr, capsys, dummy_env):
     from evaluation_system.model.plugins.models import ToolPullRequest
     from django.contrib.auth.models import User
     # add an entry to pull-requests
@@ -24,18 +24,14 @@ def test_command_fail(dummy_pr, stdout):
         user=User.objects.first(),
         status='waiting'
     )
-    sys.stdout = stdout
-    stdout.startCapturing()
-    stdout.reset()
     with pytest.raises(SystemExit):
         dummy_pr.run([])
-    stdout.stopCapturing()
-    cmd_out = stdout.getvalue()
+    cmd_out = capsys.readouterr().out
     new_pr = ToolPullRequest.objects.get(id=pr.id)
     assert new_pr.status == 'failed'
-    assert 'ERROR:   Plugin murcss does not exist' in cmd_out
+    assert 'Plugin murcss does not exist' in cmd_out
 
-def test_command_success(dummy_pr, stdout, dummy_git_path, git_config):
+def test_command_success(dummy_pr, capsys, dummy_git_path, git_config, dummy_env):
 
     from evaluation_system.api import plugin_manager as pm
     from evaluation_system.model.plugins.models import ToolPullRequest
@@ -44,7 +40,6 @@ def test_command_success(dummy_pr, stdout, dummy_git_path, git_config):
     this_dir = Path(__file__).parent
     shutil.copy(this_dir / 'mocks' / 'result_tags.py', repo_path)
     # prepare git repo
-
     os.system((f'cd {repo_path}; git init; git config user.name tmp_user; '
                f'git config user.email test@testing.com; {git_config}'))
     os.system('cd %s; git add *; git commit -m "first commit" ' % (repo_path))
@@ -68,15 +63,15 @@ def test_command_success(dummy_pr, stdout, dummy_git_path, git_config):
             status='waiting'
         )
         # finally run the command
-        cmd_out = run_command_with_capture(dummy_pr, stdout,)
-
+        dummy_pr.run([])
+        cmd_out = capsys.readouterr().out
         assert 'Processing pull request for resulttagtest by' in cmd_out
         new_pr = ToolPullRequest.objects.get(id=pr.id)
         assert new_pr.status == 'success'
         assert repository.tags[0].name == 'v2.0'
         assert len(repository.tags) == 1
 
-def test_get_version():
+def test_get_version(dummy_env):
     from evaluation_system.model.repository import getVersion
     # self version test
     version = getVersion('.')

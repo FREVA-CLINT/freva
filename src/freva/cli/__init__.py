@@ -89,6 +89,10 @@ class ArgParser(BaseParser):
         )
         _cli = PluginCli(COMMAND, self.call_parsers[-1])
 
+    def solr_index(self):
+        """Parse the solr index command."""
+        from .admin import SolrIndex
+
     def parse_esgf(self):
         """Parse the esgf command."""
         from .esgf import EsgfCli

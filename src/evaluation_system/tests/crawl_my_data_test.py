@@ -6,7 +6,7 @@ Created on 18.05.2016
 import pytest
 
 
-def test_crawl_my_data(dummy_settings, capsys):
+def test_crawl_my_data(dummy_settings, capsys, dummy_env):
     from freva import crawl_my_data
     from evaluation_system.misc.exceptions import ValidationError
 

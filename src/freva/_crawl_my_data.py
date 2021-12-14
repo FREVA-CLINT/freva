@@ -6,14 +6,18 @@ from typing import Optional, Union, Tuple
 
 from evaluation_system.model.user import User
 from evaluation_system.misc import config
-from evaluation_system.misc.exceptions import ValidationError
+from evaluation_system.misc.exceptions import ValidationError, ConfigurationException
 
 __all__ = ["crawl_my_data"]
 
 
 def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> Tuple[Path]:
     project = config.get("project_name")
-    root_path = Path(config.get("project_data")).absolute()
+    try:
+        root_path = Path(config.get("project_data")).absolute()
+    except ConfigurationException:
+        config.reloadConfiguration()
+        root_path = Path(config.get("project_data")).absolute()
     user_root_path = root_path / f"user-{User().getName()}"
     user_paths = ()
     if not isinstance(crawl_dirs, tuple):

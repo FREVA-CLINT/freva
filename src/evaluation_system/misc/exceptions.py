@@ -3,6 +3,11 @@
 from contextlib import contextmanager
 import sys
 
+class ConfigurationException(Exception):
+    """Mark exceptions thrown in this package"""
+    pass
+
+
 class PluginNotFoundError(Exception):
     """Exeption Definition for missing Plugins."""
     pass

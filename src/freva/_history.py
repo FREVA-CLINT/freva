@@ -1,6 +1,7 @@
 """Module to query the database for plugin history entries."""
 __all__ = ["history"]
 
+import json
 from typing import Dict, List, Optional, Union
 
 import evaluation_system.api.plugin_manager as pm
@@ -17,6 +18,7 @@ def history(
     entry_ids: Union[int, List[int]] = None,
     full_text: bool = True,
     return_command: bool = False,
+    _return_dict: bool = True,
 ) -> Union[List[str], Dict[str, str]]:
     """Get access to the configuration history.
 
@@ -40,11 +42,12 @@ def history(
       Retrieve entries younger than date, see DATE FORMAT.
     entry_ids: list (default None)
        Select entries whose ids are in "ids",
-    full_text: bool (defult False)
+    full_text: bool (default False)
       Show the complete configuration.
-    return_command: bool (defult False)
+    return_command: bool (default False)
       Return the commands instead of history objects
-
+    _return_dict: bool (default True)
+      Return a dictionary representation, this is only for internal use
     Returns:
     --------
       list: collection of freva plugin commands
@@ -85,5 +88,14 @@ def history(
                 cmd = pm.getCommandConfigFromRow(row, command_name, command_options)
                 commands.append(pm.getCommandStringFromRow(cmd))
         else:
-            commands = rows
+            if _return_dict:
+                commands = [row.__dict__ for row in rows]
+                for nn, cmd in enumerate(commands):
+                    for key, value in cmd.items():
+                        try:
+                            commands[nn][key] = json.loads(value)
+                        except (json.JSONDecodeError, TypeError):
+                            pass
+            else:
+                commands = [row for row in rows]
     return commands

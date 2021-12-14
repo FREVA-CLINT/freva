@@ -10,6 +10,7 @@ from evaluation_system.misc.exceptions import (PluginNotFoundError,
                                                ParameterNotFoundError,
                                                ValidationError,
                                                hide_exception)
+from evaluation_system.misc import logger
 from freva._plugin import get_tools_list, run_plugin, plugin_doc
 
 

@@ -88,7 +88,7 @@ class HistoryCli(BaseParser):
                 kwargs['entry_ids'] = kwargs['entry_ids'][0].split(',')
         except TypeError:
             pass
-        commands = freva.history(**kwargs)
+        commands = freva.history(_return_dict=False, **kwargs)
         if not commands:
             logger.error("No results. Check query.")
             return

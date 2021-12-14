@@ -5,6 +5,7 @@ import textwrap
 from typing import Any, Union, Dict, Optional, Tuple
 import time
 
+
 from django.contrib.auth.models import User
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
@@ -12,8 +13,8 @@ from evaluation_system.misc import config, utils, logger
 from evaluation_system.misc.exceptions import PluginNotFoundError
 from evaluation_system.model.plugins.models import ToolPullRequest
 
-__all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
+__all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
 def plugin_doc(tool_name: Optional[str]) -> str:
     """Display the documentation of a given plugin."""
@@ -164,7 +165,7 @@ def run_plugin(
         caption = pm.generateCaption(caption, tool_name)
     if save_config or save:
         save_in = pm.writeSetup(tool_name, tool_dict, config_file=save_config)
-        log.info("Configuration file saved in %s", save_in)
+        logger.info("Configuration file saved in %s", save_in)
     elif show_config:
         return _return_value(
             0, pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict)
@@ -199,10 +200,10 @@ def run_plugin(
                 caption=caption,
                 unique_output=unique_output,
             )
-            logger.info("Scheduled job with history id", id)
+            logger.info(f"Scheduled job with history id: {id}")
             logger.info("You can view the job's status with the command squeue")
             logger.info("Your job's progress will be shown with the command")
-            logger.info("tail -f ", file)
+            logger.info(f"tail -f {file}")
             return 0, ""
         results = pm.runTool(
             tool_name,
