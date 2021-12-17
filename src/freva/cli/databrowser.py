@@ -7,13 +7,14 @@ import argcomplete
 from .utils import BaseCompleter, BaseParser, parse_type
 from freva import databrowser
 
+
 class ChoicesCompleter(BaseCompleter):
     """Extent the BaseCompleter by a databrowser specific __call__method ."""
 
-    def __call__(self, **kwargs): # pragma: no cover
+    def __call__(self, **kwargs):  # pragma: no cover
         choices = []
-        facets = self._to_dict(kwargs['parsed_args'])
-        prefix = kwargs['prefix']
+        facets = self._to_dict(kwargs["parsed_args"])
+        prefix = kwargs["prefix"]
         search = databrowser(all_facets=True, **facets)
         for key, values in search.items():
             if key not in facets:
@@ -21,20 +22,22 @@ class ChoicesCompleter(BaseCompleter):
                     choices.append(f"{key}={value}")
         return choices
 
+
 class DataBrowserCli(BaseParser):
     """Class that constructs the Databrowser Argument Parser."""
 
     desc = "Find data in the system."
 
-    def __init__(self,
-                 command: str = "freva",
-                 parser: Optional[parse_type] = None,
-                 ):
+    def __init__(
+        self,
+        command: str = "freva",
+        parser: Optional[parse_type] = None,
+    ):
         """Construct the databrwoser sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-                prog=f"{command}-databrowser",
-                description=self.desc,
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            prog=f"{command}-databrowser",
+            description=self.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         subparser.add_argument(
             "--multiversion",
@@ -97,14 +100,11 @@ class DataBrowserCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-            "facets", nargs="*",
-            help="Search facet(s)",
-            type=str,
-            metavar="facets"
+            "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
         ).completer = ChoicesCompleter("facets")
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
-        #argcomplete.autocomplete(self.parser)
+        # argcomplete.autocomplete(self.parser)
 
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs):
@@ -128,7 +128,9 @@ class DataBrowserCli(BaseParser):
                         ]
                     )
                 except AttributeError:
-                    keys = ",".join([v for n, v in enumerate(values) if n < facet_limit])
+                    keys = ",".join(
+                        [v for n, v in enumerate(values) if n < facet_limit]
+                    )
                 if facet_limit < len(values):
                     keys += ",..."
                 print(f"{att}: {keys}", flush=True)
@@ -139,12 +141,13 @@ class DataBrowserCli(BaseParser):
         for key in out:
             print(str(key), flush=True)
 
+
 def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = DataBrowserCli('freva')
+    cli = DataBrowserCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt: # pragma: no cover
+    except KeyboardInterrupt:  # pragma: no cover
         sys.exit(257)

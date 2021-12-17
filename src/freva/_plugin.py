@@ -16,6 +16,7 @@ from evaluation_system.model.plugins.models import ToolPullRequest
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
+
 def plugin_doc(tool_name: Optional[str]) -> str:
     """Display the documentation of a given plugin."""
     _check_if_plugin_exists(tool_name or "")

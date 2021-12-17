@@ -6,10 +6,12 @@ from typing import Optional, List
 import argcomplete
 
 from .utils import BaseCompleter, BaseParser, parse_type
-from evaluation_system.misc.exceptions import (PluginNotFoundError,
-                                               ParameterNotFoundError,
-                                               ValidationError,
-                                               hide_exception)
+from evaluation_system.misc.exceptions import (
+    PluginNotFoundError,
+    ParameterNotFoundError,
+    ValidationError,
+    hide_exception,
+)
 from evaluation_system.misc import logger
 from freva._plugin import get_tools_list, run_plugin, plugin_doc
 
@@ -31,17 +33,17 @@ class PluginCli(BaseParser):
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         subparser.add_argument(
-                "tool-name",
-                nargs="?",
-                metavar="plugin_name",
-                help='Plugin name',
-                default=None
+            "tool-name",
+            nargs="?",
+            metavar="plugin_name",
+            help="Plugin name",
+            default=None,
         )
         subparser.add_argument(
             "--repo-version",
             default=False,
             action="store_true",
-            help="Show the version number from the repository"
+            help="Show the version number from the repository",
         )
         subparser.add_argument(
             "--caption",
@@ -61,22 +63,22 @@ class PluginCli(BaseParser):
             help="Save the plugin configuration.",
         )
         subparser.add_argument(
-                "--show-config",
-                help="Show the resulting configuration (implies dry-run).",
-                action="store_true",
-                default=False
+            "--show-config",
+            help="Show the resulting configuration (implies dry-run).",
+            action="store_true",
+            default=False,
         )
         subparser.add_argument(
             "--scheduled-id",
             default=None,
             type=int,
-            help="Run a scheduled job from database"
+            help="Run a scheduled job from database",
         )
         subparser.add_argument(
             "--dry-run",
             default=False,
             action="store_true",
-            help="Perform no computation. Useful for development."
+            help="Perform no computation. Useful for development.",
         )
         subparser.add_argument(
             "--batchmode",
@@ -85,22 +87,19 @@ class PluginCli(BaseParser):
             action="store_true",
         )
         subparser.add_argument(
-             "--unique_output",
-             help="Append a freva run id to every output folder",
-             default=True,
-             type=bool
+            "--unique_output",
+            help="Append a freva run id to every output folder",
+            default=True,
+            type=bool,
         )
         subparser.add_argument(
-                "--pull-request",
-                help="Issue a new pull request for the tool",
-                default=False,
-                action="store_true"
+            "--pull-request",
+            help="Issue a new pull request for the tool",
+            default=False,
+            action="store_true",
         )
         subparser.add_argument(
-             "--tag",
-             help="Use git commit hash",
-             type=str,
-             default=None
+            "--tag", help="Use git commit hash", type=str, default=None
         )
         subparser.add_argument(
             "--debug",
@@ -112,23 +111,26 @@ class PluginCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-                "--list-tools", "--list", "-l",
-                default=False,
-                action="store_true",
-                help="Only list the available tools."
+            "--list-tools",
+            "--list",
+            "-l",
+            default=False,
+            action="store_true",
+            help="Only list the available tools.",
         )
         subparser.add_argument(
-                "--doc", "--plugin-doc",
-                default=False,
-                action="store_true",
-                help="Display plugin documentation"
+            "--doc",
+            "--plugin-doc",
+            default=False,
+            action="store_true",
+            help="Display plugin documentation",
         )
         subparser.add_argument(
             "options",
             nargs="*",
             help="Plugin configuration",
             type=str,
-            metavar="options"
+            metavar="options",
         )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
@@ -137,13 +139,13 @@ class PluginCli(BaseParser):
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Call the databrowser command and print the results."""
         options = BaseCompleter.arg_to_dict(args.options)
-        if kwargs.pop('list_tools'):
+        if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        _ = kwargs.pop('options', None)
-        tool_name = kwargs.pop('tool-name')
+        _ = kwargs.pop("options", None)
+        tool_name = kwargs.pop("tool-name")
         try:
-            if kwargs.pop('doc'):
+            if kwargs.pop("doc"):
                 print(plugin_doc(tool_name))
                 return
             value, out = run_plugin(tool_name, **kwargs, **options)
@@ -153,9 +155,10 @@ class PluginCli(BaseParser):
             with hide_exception():
                 raise e
         if value != 0:
-            logger.warning('Tool failed to run')
+            logger.warning("Tool failed to run")
         if out:
             print(out)
+
 
 def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""

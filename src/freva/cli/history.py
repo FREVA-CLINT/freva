@@ -9,6 +9,7 @@ from .utils import BaseCompleter, BaseParser, parse_type
 import freva
 from evaluation_system.misc import logger
 
+
 class HistoryCli(BaseParser):
     """Class that constructs the History Query Parser."""
 
@@ -29,7 +30,7 @@ class HistoryCli(BaseParser):
             "--full-text",
             default=False,
             action="store_true",
-            help="Show the complete configuration."
+            help="Show the complete configuration.",
         )
         subparser.add_argument(
             "--return-command",
@@ -47,7 +48,7 @@ class HistoryCli(BaseParser):
             "--plugin",
             default=None,
             type=str,
-            help="Display only entries of selected plugin."
+            help="Display only entries of selected plugin.",
         )
         subparser.add_argument(
             "--since",
@@ -65,7 +66,7 @@ class HistoryCli(BaseParser):
             "--entry-ids",
             default=None,
             type=str,
-            nargs='+',
+            nargs="+",
             help="Select entry id(s) (e.g. entry_ids=1,2 or entry_ids=5)",
         )
         subparser.add_argument(
@@ -84,8 +85,8 @@ class HistoryCli(BaseParser):
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Call the databrowser command and print the results."""
         try:
-            if len(kwargs['entry_ids']) == 1:
-                kwargs['entry_ids'] = kwargs['entry_ids'][0].split(',')
+            if len(kwargs["entry_ids"]) == 1:
+                kwargs["entry_ids"] = kwargs["entry_ids"][0].split(",")
         except TypeError:
             pass
         commands = freva.history(_return_dict=False, **kwargs)
@@ -93,10 +94,13 @@ class HistoryCli(BaseParser):
             logger.error("No results. Check query.")
             return
         if args.return_command:
-            result = '\n'.join(commands)
+            result = "\n".join(commands)
         else:
-            result = '\n'.join([c.__str__(compact=not args.full_text) for c in commands])
+            result = "\n".join(
+                [c.__str__(compact=not args.full_text) for c in commands]
+            )
         print(result)
+
 
 def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
@@ -105,5 +109,5 @@ def main(argv: Optional[List[str]] = None) -> None:
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt: # pragma: no cover
+    except KeyboardInterrupt:  # pragma: no cover
         sys.exit(257)

@@ -16,12 +16,14 @@ from evaluation_system.misc import config, logger
 from evaluation_system.model.solr_core import SolrCore
 
 
-def re_index(input_dir: Path, *,
-             abort_on_errors: bool = False,
-             chunk_size: int = 200,
-             host: Optional[str] = None,
-             port: Optional[int] = None,
-             ) -> None:
+def re_index(
+    input_dir: Path,
+    *,
+    abort_on_errors: bool = False,
+    chunk_size: int = 200,
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+) -> None:
     """(Re)-Index data files on posix file system on the apache solr server.
 
     Parameters:
@@ -39,18 +41,20 @@ def re_index(input_dir: Path, *,
     """
     is_admin(raise_error=True)
     SolrCore.load_fs(
-            Path(input_dir).expanduser().absolute(),
-            chunk_size=max(1, int(chunk_size)),
-            abort_on_errors=abort_on_errors,
-            host=host,
-            port=port,
+        Path(input_dir).expanduser().absolute(),
+        chunk_size=max(1, int(chunk_size)),
+        abort_on_errors=abort_on_errors,
+        host=host,
+        port=port,
     )
 
 
-def del_index(file_pattern: Path,
-              host: Optional[str] = None,
-              port: Optional[int] = None,
-              **kwargs: Optional[Any]) -> None:
+def del_index(
+    file_pattern: Path,
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+    **kwargs: Optional[Any],
+) -> None:
     """Delete entries from solr server.
 
     Parameters:
@@ -64,10 +68,8 @@ def del_index(file_pattern: Path,
         The host port number the apache solr server is listinig to.
     """
     is_admin(raise_error=True)
-    SolrCore.delete_entries(file_pattern,
-                            host=host,
-                            port=port,
-                            prefix='file')
+    SolrCore.delete_entries(file_pattern, host=host, port=port, prefix="file")
+
 
 class SolrIndex(BaseParser):
     """Parser for indexing solr server data."""
@@ -77,32 +79,30 @@ class SolrIndex(BaseParser):
     def __init__(self, parser: parse_type):
         """Construct the parser for indexing data."""
         parser.add_argument(
-                "input_dir",
-                help="The input directory/file that needs to be (re)-indexed.",
-                type=Path
+            "input_dir",
+            help="The input directory/file that needs to be (re)-indexed.",
+            type=Path,
         )
         parser.add_argument(
             "--chunk-size",
             help="Request size that is submitted to solr server",
             default=200,
-            type=int
+            type=int,
         )
-        parser.add_argument(
-            "--abort-on-errors",
-            action="store_true",
-            default=False
-        )
+        parser.add_argument("--abort-on-errors", action="store_true", default=False)
         parser.add_argument(
             "--delete",
             action="store_true",
             default=False,
-            help="Delete entries instead of adding them"
+            help="Delete entries instead of adding them",
         )
         parser.add_argument(
-            "--debug", "-d", "-v",
+            "--debug",
+            "-d",
+            "-v",
             help="Use verbose output.",
             action="store_true",
-            default=False
+            default=False,
         )
         parser.add_argument(
             "--host",
@@ -122,8 +122,8 @@ class SolrIndex(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Reindex the data."""
-        input_dir = kwargs.pop('input_dir')
-        if kwargs.pop('delete'):
+        input_dir = kwargs.pop("input_dir")
+        if kwargs.pop("delete"):
             return del_index(input_dir, **kwargs)
         re_index(input_dir, **kwargs)
 
@@ -136,7 +136,7 @@ class SolrCli(BaseParser):
     def __init__(self, parser: parse_type) -> None:
         """Construct the sub arg. parser."""
 
-        self.sub_commands = ("index", )
+        self.sub_commands = ("index",)
         self.parser = parser
         super().__init__(self.sub_commands)
         # This parser doesn't do anything without a sub-commands
@@ -145,9 +145,9 @@ class SolrCli(BaseParser):
 
     def parse_index(self) -> None:
         sub_parser = self.subparsers.add_parser(
-                "index",
-                description=SolrIndex.desc,
-                help=SolrIndex.desc,
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter
+            "index",
+            description=SolrIndex.desc,
+            help=SolrIndex.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         _cli = SolrIndex(sub_parser)

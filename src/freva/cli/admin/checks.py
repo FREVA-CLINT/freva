@@ -16,57 +16,61 @@ from evaluation_system.model.history.models import History
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
 
+
 def check4pull_request():
     """Check for pending pull requests."""
 
     is_admin(raise_error=True)
-    pull_requests = ToolPullRequest.objects.filter(status='waiting')
+    pull_requests = ToolPullRequest.objects.filter(status="waiting")
     tools = pm.getPlugins()
     for request in pull_requests:
-        print(f'Processing pull request for {request.tool} by {request.user}')
-        request.status = 'processing'
+        print(f"Processing pull request for {request.tool} by {request.user}")
+        request.status = "processing"
         request.save()
         tool_name = request.tool.lower()
         if tool_name not in tools.keys():
-            request.status = 'failed'
+            request.status = "failed"
             request.save()
-            logger.error(f'Plugin {request.tool} does not exist')
+            logger.error(f"Plugin {request.tool} does not exist")
             return
         # get repo path
-        path = '/'.join(tools[tool_name]['plugin_module'].split('/')[:-1])
+        path = "/".join(tools[tool_name]["plugin_module"].split("/")[:-1])
         exit_code = os.system(
-            'cd %s; git pull; git checkout -b version_%s %s' % (path, request.tagged_version,
-                                                                request.tagged_version)
+            "cd %s; git pull; git checkout -b version_%s %s"
+            % (path, request.tagged_version, request.tagged_version)
         )
         if exit_code > 1:
             # Probably branch exists already
             # Try to checkout old branch
             exit_code = os.system(
-                'cd %s; git checkout version_%s ' % (path, request.tagged_version)
+                "cd %s; git checkout version_%s " % (path, request.tagged_version)
             )
             if exit_code > 1:
-                raise CommandError('Something went wrong, please contact the admins')
+                raise CommandError("Something went wrong, please contact the admins")
 
-        request.status = 'success'
+        request.status = "success"
         request.save()
+
 
 def check4broken_runs():
     """Check for broken runs in SLURM"""
 
     is_admin(raise_error=True)
-    running_jobs = History.objects.filter(
-            status=History.processStatus.running
-    ).exclude(slurm_output=0)
+    running_jobs = History.objects.filter(status=History.processStatus.running).exclude(
+        slurm_output=0
+    )
     for job in running_jobs:
         slurm_status = job.get_slurm_status()
-        if ('cancelled' in slurm_status.lower()\
-                or 'timeout' in slurm_status.lower()\
-                or 'fail' in slurm_status.lower()):
+        if (
+            "cancelled" in slurm_status.lower()
+            or "timeout" in slurm_status.lower()
+            or "fail" in slurm_status.lower()
+        ):
             print(slurm_status, job.tool)
-            print(f'Setting job {job.id} to broken')
+            print(f"Setting job {job.id} to broken")
             job.status = job.processStatus.broken
             job.save()
-        elif 'completed' in slurm_status.lower():
+        elif "completed" in slurm_status.lower():
             job.status = job.processStatus.finished
             job.save()
 
@@ -88,19 +92,19 @@ class CheckCli(BaseParser):
 
     def parse_pull_request(self) -> None:
         sub_parser = self.subparsers.add_parser(
-                "pull-request",
-                description=PullRequest.desc,
-                help=PullRequest.desc,
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter
+            "pull-request",
+            description=PullRequest.desc,
+            help=PullRequest.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         _cli = PullRequest(sub_parser)
 
     def parse_broken_runs(self) -> None:
         sub_parser = self.subparsers.add_parser(
-                "broken-runs",
-                description=BrokenRun.desc,
-                help=BrokenRun.desc,
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter
+            "broken-runs",
+            description=BrokenRun.desc,
+            help=BrokenRun.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         _cli = BrokenRun(sub_parser)
 
@@ -114,16 +118,14 @@ class PullRequest(BaseParser):
         """Construct the sub arg. parser."""
 
         parser.add_argument(
-            "--debug", "-v",
+            "--debug",
+            "-v",
             help="use verbose output.",
             action="store_true",
-            default=False
+            default=False,
         )
         parser.add_argument(
-            "--deamon",
-            help="Spawn in daemon mode",
-            action="store_true",
-            default=False
+            "--deamon", help="Spawn in daemon mode", action="store_true", default=False
         )
         self.parser = parser
         self.parser.set_defaults(apply_func=self.run_cmd)
@@ -144,10 +146,12 @@ class BrokenRun(BaseParser):
         """Construct the sub arg. parser."""
 
         parser.add_argument(
-            "--debug", "-d", "-v",
+            "--debug",
+            "-d",
+            "-v",
             help="use verbose output.",
             action="store_true",
-            default=False
+            default=False,
         )
         self.parser = parser
         self.parser.set_defaults(apply_func=self.run_cmd)

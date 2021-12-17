@@ -129,5 +129,5 @@ def main(argv: Optional[List[str]] = None) -> None:
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt: # pragma: no cover
+    except KeyboardInterrupt:  # pragma: no cover
         sys.exit(257)

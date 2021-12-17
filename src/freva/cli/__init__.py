@@ -35,7 +35,7 @@ class ArgParser(BaseParser):
             if argv[0] in sub_commands:
                 argv[0] = argv[0].strip("-")
         except IndexError:
-            argv.append('-h')
+            argv.append("-h")
         self.parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
@@ -96,6 +96,7 @@ class ArgParser(BaseParser):
     def parse_check(self):
         """Parse the check command."""
         from .admin.checks import CheckCli
+
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "check",
@@ -109,6 +110,7 @@ class ArgParser(BaseParser):
     def parse_solr(self):
         """Parse the solr index command."""
         from .admin.solr import SolrCli
+
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "solr",
@@ -122,6 +124,7 @@ class ArgParser(BaseParser):
     def parse_doc(self):
         """Parse the docu update command."""
         from .admin.doc import DocCli
+
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "doc",
@@ -161,10 +164,10 @@ class ArgParser(BaseParser):
         _cli = DataBrowserCli(COMMAND, self.call_parsers[-1])
 
 
-def main(argv: Optional[List[str]]= None) -> None:
+def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entrypoint script."""
     ArgParser(argv or sys.argv[1:])
 
 
-if __name__ == "__main__": # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     main()

@@ -12,7 +12,8 @@ parse_type = argparse._SubParsersAction
 arg_type = argparse.Namespace
 """Argparses Namespace type (after parsing the cmd arguments)"""
 
-def is_admin(raise_error: bool =False) -> bool:
+
+def is_admin(raise_error: bool = False) -> bool:
     """Check if the user at runtime is one of the admins.
 
     Parameters:
@@ -21,23 +22,20 @@ def is_admin(raise_error: bool =False) -> bool:
         Raise a RuntimeError if user is not admin
     """
     config.reloadConfiguration()
-    admin = config.get('admins', [])
+    admin = config.get("admins", [])
     user = getuser()
     if isinstance(admin, str):
         admin = [admin]
     is_admin = user in admin
     if not is_admin and raise_error:
-        raise RuntimeError(f'{user} is not in admin list')
+        raise RuntimeError(f"{user} is not in admin list")
     return is_admin
 
 
 class BaseCompleter:
     """Base class for command line argument completers."""
 
-    def __init__(self,
-                 metavar: Optional[str] = None,
-                 choices: Optional[str] = None
-                 ):
+    def __init__(self, metavar: Optional[str] = None, choices: Optional[str] = None):
         self.metavar = metavar
         self.choices = choices
 
@@ -61,10 +59,10 @@ class BaseCompleter:
         out_dict = {}
         for arg in args:
             try:
-                key, value = arg.split('=')
+                key, value = arg.split("=")
             except ValueError:
                 with hide_exception():
-                    raise CommandError(f'Bad Option: {arg}')
+                    raise CommandError(f"Bad Option: {arg}")
             if append and key in out_dict:
                 if isinstance(out_dict[key], str):
                     out_dict[key] = [out_dict[key]]
@@ -79,6 +77,7 @@ class BaseCompleter:
 
     def __call__(self, **kwargs: Optional[str]) -> List[str]:
         return self.choices
+
 
 class BaseParser:
     """Base class for common command line argument parsers."""
@@ -98,13 +97,13 @@ class BaseParser:
     def parse_args(self, argv: Optional[List[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
         args = self.parser.parse_args(argv or None)
-        self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != 'apply_func'}
-        self.set_debug(self.kwargs.pop('debug', False))
+        self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
+        self.set_debug(self.kwargs.pop("debug", False))
         return args
 
     def _usage(self, *args: Optional[Any], **kwargs: Optional[Any]) -> None:
         """Exit with usage message."""
         self.parser.error(
-                "the following sub-commands are "
-                f"required: {', '.join(self.sub_commands)}"
+            "the following sub-commands are "
+            f"required: {', '.join(self.sub_commands)}"
         )
