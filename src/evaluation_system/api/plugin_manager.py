@@ -257,8 +257,7 @@ description
             similar_words = utils.find_similar_words(plugin_name, getPlugins(user_name))
             if similar_words:
                 mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-            mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
-            raise PluginManagerException(mesg + ' %s' % user_name)
+            raise PluginManagerException(mesg + "\n")
     return getPlugins(user_name)[plugin_name]
 
 
