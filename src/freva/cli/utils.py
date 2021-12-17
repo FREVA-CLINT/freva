@@ -1,15 +1,35 @@
 """Collection of utilities of the freva command line argument parser."""
 
 import argparse
+from getpass import getuser
 import logging
-from typing import Dict, List, Optional
-from evaluation_system.misc import logger
+from typing import Any, Dict, List, Optional, Tuple
+from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
 
 parse_type = argparse._SubParsersAction
 """Argparses supaparser type"""
 arg_type = argparse.Namespace
 """Argparses Namespace type (after parsing the cmd arguments)"""
+
+def is_admin(raise_error: bool =False) -> bool:
+    """Check if the user at runtime is one of the admins.
+
+    Parameters:
+    -----------
+    raise_error:
+        Raise a RuntimeError if user is not admin
+    """
+    config.reloadConfiguration()
+    admin = config.get('admins', [])
+    user = getuser()
+    if isinstance(admin, str):
+        admin = [admin]
+    is_admin = user in admin
+    if not is_admin and raise_error:
+        raise RuntimeError(f'{user} is not in admin list')
+    return is_admin
+
 
 class BaseCompleter:
     """Base class for command line argument completers."""
@@ -61,6 +81,14 @@ class BaseCompleter:
         return self.choices
 
 class BaseParser:
+    """Base class for common command line argument parsers."""
+
+    def __init__(self, sub_commands: Tuple[str]) -> None:
+        """Create the sub-command parsers."""
+
+        self.subparsers = self.parser.add_subparsers(help="Available sub-commands:")
+        for command in sub_commands:
+            getattr(self, f"parse_{command.replace('-','_')}")()
 
     def set_debug(self, debug: bool):
         """Set the logger level to DEBUG."""
@@ -69,7 +97,14 @@ class BaseParser:
 
     def parse_args(self, argv: Optional[List[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
-        args = self.parser.parse_args(argv)
+        args = self.parser.parse_args(argv or None)
         self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != 'apply_func'}
         self.set_debug(self.kwargs.pop('debug', False))
         return args
+
+    def _usage(self, *args: Optional[Any], **kwargs: Optional[Any]) -> None:
+        """Exit with usage message."""
+        self.parser.error(
+                "the following sub-commands are "
+                f"required: {', '.join(self.sub_commands)}"
+        )
