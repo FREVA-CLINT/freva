@@ -101,7 +101,7 @@ class History(models.Model):
         
         super(History, self).__init__(*args, **kwargs)
         
-    def __str__(self, compact=True):
+    def __str__(self, compact=True): # pragma: no cover
         conf_str = ''
         
         if compact:

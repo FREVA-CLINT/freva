@@ -413,13 +413,13 @@ class PrintableList(list):
             self.seperator = ','
         super(PrintableList,self).__init__(*args,**kwargs)
     
-    def __str__(self):
+    def __str__(self): # pragma: no cover
         '''
         :returns: String with comma separated list entries
         '''
         return self.seperator.join(map(str,self))
 
-    def __unicode__(self):
+    def __unicode__(self): # pragma: no cover
         return self.__str__()
 
 

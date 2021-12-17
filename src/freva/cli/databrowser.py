@@ -10,7 +10,7 @@ from freva import databrowser
 class ChoicesCompleter(BaseCompleter):
     """Extent the BaseCompleter by a databrowser specific __call__method ."""
 
-    def __call__(self, **kwargs):
+    def __call__(self, **kwargs): # pragma: no cover
         choices = []
         facets = self._to_dict(kwargs['parsed_args'])
         prefix = kwargs['prefix']
@@ -146,5 +146,5 @@ def main(argv: Optional[List[str]] = None) -> None:
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt: # pragma: no cover
         sys.exit(257)

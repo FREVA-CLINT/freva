@@ -31,8 +31,9 @@ class PluginCli(BaseParser):
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         subparser.add_argument(
-                'tool-name',
-                nargs='?',
+                "tool-name",
+                nargs="?",
+                metavar="plugin_name",
                 help='Plugin name',
                 default=None
         )

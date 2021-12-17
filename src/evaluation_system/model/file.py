@@ -135,7 +135,7 @@ class DRSFile:
         if "root_dir" in self.dict and self.dict["root_dir"][-1] == "/":
             self.dict["root_dir"] = self.dict["root_dir"][:-1]
 
-    def __repr__(self) -> str:  # pragma nocover
+    def __repr__(self) -> str:  # pragma: no cover
         """Get the JSON representation.
 
         This can be used for creating a copy via `from_json`.
@@ -147,7 +147,7 @@ class DRSFile:
         """
         return self.to_json()
 
-    def __str__(self) -> str:  # pragma nocover
+    def __str__(self) -> str:  # pragma: no cover
         """Return the path of the file.
 
         See `to_path` for more info.

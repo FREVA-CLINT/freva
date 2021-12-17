@@ -40,10 +40,10 @@ class P2P(object):
         self.api = api
         self.wget_api = wget_api
         self.defaults = (defaults or {})
-        
-    def __str__(self):
+
+    def __str__(self): # pragma: no cover
         return 'P2P Search API connected to %s' % self.node
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return 'Search API: %s - defaults:%s' % (self.__get_url(), self.defaults)
 
     def set_defaults(self, defaults):
