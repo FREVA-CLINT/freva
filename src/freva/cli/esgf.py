@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional, List
+from typing import Optional, List, Any, cast
 
 import argcomplete
 
@@ -94,7 +94,8 @@ class EsgfCli(BaseParser):
         """Call the esgf command and print the results."""
         facets = BaseCompleter.arg_to_dict(args.facets)
         _ = kwargs.pop("facets", None)
-        out = freva.esgf(**kwargs, **facets)
+        merged_args = cast(Any, {**kwargs, **facets})
+        out = freva.esgf(**kwargs, **merged_args)
         if not out:
             return
         if args.datasets:

@@ -162,7 +162,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
         return answer
             
     @staticmethod
-    def facets(latest_version=True, facets=None, **partial_dict):
+    def facets(latest_version=True, facets=None, facet_limit=-1, **partial_dict):
         # use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')

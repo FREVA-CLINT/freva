@@ -16,7 +16,7 @@ def esgf(
     opendap: bool = False,
     gridftp: bool = False,
     download_script: Optional[Union[str, Path]] = None,
-    **search_constraints: Dict[str, str],
+    **search_constraints: Dict[str, str]
 ) -> Union[List[str], Dict[str, str]]:
     """Find data in the ESGF.
 
@@ -56,24 +56,21 @@ def esgf(
     Collection of files, facets or attributes
 
     """
-    try:
-        return _query_esgf(
-            datasets=datasets,
-            query=query,
-            show_facet=show_facet,
-            opendap=opendap,
-            gridftp=gridftp,
-            download_script=download_script,
-            **search_constraints,
-        )
-    except HTTPError:
-        logger.error("No results, check query")
+    return _query_esgf(
+        datasets=datasets,
+        query=query,
+        show_facet=show_facet,
+        opendap=opendap,
+        gridftp=gridftp,
+        download_script=download_script,
+        **search_constraints,
+    )
 
 
 def _query_esgf(
     datasets: bool = False,
     query: Optional[str] = None,
-    show_facet: Optional[str] = None,
+    show_facet: Optional[Union[str, List[str]]] = None,
     opendap: bool = False,
     gridftp: bool = False,
     download_script: Optional[Union[str, Path]] = None,

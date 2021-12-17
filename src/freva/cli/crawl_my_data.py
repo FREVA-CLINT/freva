@@ -53,10 +53,10 @@ class CrawlDataCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
         """Call the crawl my data command and print the results."""
         try:
-            out = freva.crawl_my_data(*args.crawl_dir, dtype=args.data_type)
+            freva.crawl_my_data(*args.crawl_dir, dtype=args.data_type)
         except (ValidationError, ValueError) as e:
             if args.debug:
                 raise e

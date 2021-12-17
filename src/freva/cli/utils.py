@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
 
-parse_type = argparse._SubParsersAction
+parse_type = argparse.ArgumentParser
 """Argparses supaparser type"""
 arg_type = argparse.Namespace
 """Argparses Namespace type (after parsing the cmd arguments)"""

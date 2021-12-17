@@ -5,7 +5,7 @@ from pathlib import Path
 from evaluation_system.misc import logger
 from evaluation_system.model.solr import SolrFindFiles
 
-from typing import Optional, Union, Dict, Iterator
+from typing import Any, Optional, Union, Dict, Iterator, List
 
 __all__ = ["databrowser"]
 
@@ -18,9 +18,9 @@ def databrowser(
     count_facet_values: bool = False,
     attributes: bool = False,
     all_facets: bool = False,
-    facet: Optional[str] = None,
-    **search_facets: Dict[str, str],
-) -> Union[Dict[str, str], Iterator[str]]:
+    facet: Optional[Union[str, List[str]]] = None,
+    **search_facets: Union[str, Path, int],
+) -> Union[Dict[Any, Dict[Any, Any]], Iterator[str]]:
     """Find data in the system.
 
     The query is of the form key=value. <value> might use *, ? as wildcards or
@@ -61,18 +61,18 @@ def databrowser(
         collection : List, Dict of files, facets or attributes
 
     """
-    facets = []
+    facets : Optional[List[str]] = []
     try:
-        f = Path(search_facets["file"])
+        # If we don't convert a str to a str mypy will complain.
+        f = Path(str(search_facets["file"]))
         search_facets["file"] = f'"\\{f.parent}/\\{f.name}"'
     except KeyError:
         pass
     if isinstance(facet, str):
         facet = [facet]
-    if all_facets:
-        facets = None
-    elif facet:
-        facets += [f for f in facet if f]
+    facets = facets or []
+    facet = facet or []
+    facets += [f for f in facet if f]
     latest = not multiversion
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
@@ -80,11 +80,11 @@ def databrowser(
         logger.warning("Turning latest off when searching for a specific version.")
         latest = False
     logger.debug("Searching dictionary: %s\n", search_facets)
-    if facets != [] and not attributes:
+    if (facets or all_facets) and not attributes:
         out = {}
         search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
         for att, values in SolrFindFiles.facets(
-            facets=facets, latest_version=latest, **search_facets
+            facets=facets or None, latest_version=latest, **search_facets
         ).items():
             # values come in pairs: (value, count)
             value_count = len(values) // 2
@@ -96,15 +96,15 @@ def databrowser(
                 out[att] = values[::2]
         return out
     if attributes:
-        out = []
         # select all is none defined but this flag was set
         facets = facets or None
+        facet = facet or None
         results = SolrFindFiles.facets(
             facets=facets, latest_version=latest, **search_facets
         )
         if relevant_only:
-            return [k for k in results if len(results[k]) > 2]
-        return [k for k in results]
+            return (k for k in results if len(results[k]) > 2)
+        return (k for k in results)
     return SolrFindFiles.search(
         batch_size=batch_size, latest_version=latest, **search_facets
     )

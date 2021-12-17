@@ -209,4 +209,5 @@ ensemble: r9i3p1
         )
         if f
     ]
+    print(list(res))
     assert dict(res) == dict(target)

@@ -12,14 +12,14 @@ from evaluation_system.model.solr_core import SolrCore
 __all__ = ["crawl_my_data"]
 
 
-def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> Tuple[Path]:
+def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> Tuple[Path, ...]:
     try:
         root_path = Path(config.get("project_data")).absolute()
     except ConfigurationException:
         config.reloadConfiguration()
         root_path = Path(config.get("project_data")).absolute()
     user_root_path = root_path / f"user-{User().getName()}"
-    user_paths = ()
+    user_paths: Tuple[Path, ...] = ()
     for crawl_dir in crawl_dirs or (user_root_path,):
         crawl_dir = Path(crawl_dir or user_root_path).expanduser().absolute()
         if not crawl_dir.is_relative_to(root_path):

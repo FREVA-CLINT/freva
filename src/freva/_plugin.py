@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Union, Dict, Optional, Tuple
+from typing import Any, Union, Dict, Optional, List, Tuple
 import time
 
 
@@ -23,9 +23,9 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     return pm.getPluginInstance(tool_name).getHelp()
 
 
-def list_plugins() -> Tuple[str]:
+def list_plugins() -> List[str]:
     """Get the plugins that are available on the system."""
-    return tuple(pm.getPlugins().keys())
+    return list(pm.getPlugins().keys())
 
 
 def get_tools_list() -> str:
@@ -47,7 +47,7 @@ def get_tools_list() -> str:
             result.append(f"{plugin['name']}: {lines[0]}\n{' '*offset}\n{' '*offset}")
         else:
             result.append(f"{plugin['name']}: {lines[0]}")
-        return "\n".join(result)
+    return "\n".join(result)
 
 
 def handle_pull_request(tag, tool_name):
@@ -156,10 +156,10 @@ def run_plugin(
             0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
         )
     email = None
-    tool_dict = []
+    options_str = []
     for k, v in options.items():
-        tool_dict.append(f"{k}={v}")
-    tool_dict = pm.parseArguments(tool_name, tool_dict)
+        options_str.append(f"{k}={v}")
+    tool_dict = pm.parseArguments(tool_name, options_str)
     if logger.level == logging.DEBUG:
         tool_dict["debug"] = True
     if caption:
@@ -186,7 +186,7 @@ def run_plugin(
     if error:
         logger.error(error)
     logger.debug("Running %s with configuration: %s", tool_name, tool_dict)
-    if not dry_run and (not error or debug):
+    if not dry_run and not error:
         # we check if the user is external and activate batchmode
         django_user = User.objects.get(username=user.User().getName())
         if django_user.groups.filter(

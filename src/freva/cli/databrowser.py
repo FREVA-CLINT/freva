@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Optional, Union, List
+from typing import Any, Optional, Union, List, cast
 
 import argcomplete
 
@@ -104,15 +104,17 @@ class DataBrowserCli(BaseParser):
         ).completer = ChoicesCompleter("facets")
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
-        # argcomplete.autocomplete(self.parser)
+        argcomplete.autocomplete(self.parser)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace,
+                **kwargs: Optional[Any]) -> None :
         """Call the databrowser command and print the results."""
         _ = kwargs.pop("facets", None)
         facets = ChoicesCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
-        out = databrowser(**kwargs, **facets)
+        merged_args = cast(Any, {**kwargs, **facets})
+        out = databrowser(**merged_args)
         # flush stderr in case we have something pending
         sys.stderr.flush()
         if isinstance(out, dict):
