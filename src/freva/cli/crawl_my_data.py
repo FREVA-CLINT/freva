@@ -57,8 +57,13 @@ class CrawlDataCli(BaseParser):
         """Call the crawl my data command and print the results."""
         try:
             out = freva.crawl_my_data(*args.crawl_dir, dtype=args.data_type)
-        except ValidationError as e:
-            print(f"{e.__module__}: " f"{e.__str__()}", flush=True, file=sys.stderr)
+        except (ValidationError, ValueError) as e:
+            if args.debug:
+                raise e
+            try:
+                print(f"{e.__module__}: " f"{e.__str__()}", flush=True, file=sys.stderr)
+            except AttributeError:
+                print(f"{e.__repr__()}", flush=True, file=sys.stderr)
             sys.exit(1)
 
 
@@ -69,5 +74,5 @@ def main(argv: Optional[List[str]] = None) -> None:
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt: # pragma: no cover
         sys.exit(257)
