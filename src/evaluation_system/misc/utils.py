@@ -295,7 +295,7 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
 
 
 def find_similar_words(word: str,
-                       list_of_valid_words: Union[List[str], Tuple[str]]
+                       list_of_valid_words: List[str]
                        ) -> List[str]:
     """This function implements a "Did you mean? xxx" search algorith.
 
@@ -312,7 +312,7 @@ def find_similar_words(word: str,
     list : a list of words that are close to the word given"""
     expand_list = {}
     for w in list_of_valid_words:
-        for w_part in split('[ _\-:/]', w): 
+        for w_part in split(r'[ _\-:/]', w):
             if w_part not in expand_list: expand_list[w_part] = set([w])
             else: expand_list[w_part].add(w) 
     result =  get_close_matches(word, expand_list)
