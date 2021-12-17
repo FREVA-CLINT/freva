@@ -144,6 +144,10 @@
       "model",
       "experiment",
       "time_frequency",
+      "realm",
+      "cmor_table",
+      "ensemble",
+      "version",
       "variable",
       "file_name"
     ],
@@ -155,8 +159,10 @@
       "experiment",
       "time_frequency",
       "realm",
-      "variable",
-      "ensemble"
+      "cmor_table",
+      "ensemble",
+      "version",
+      "variable"
     ],
     "parts_file_name": [
       "variable",
