@@ -1,15 +1,15 @@
 """General Freva commandline argument parser."""
 
+import argcomplete
 import argparse
 import sys
 
-import argcomplete
 import freva
-from .utils import BaseCompleter, BaseParser
+from .utils import BaseCompleter, BaseParser, is_admin
 from typing import Optional, List
 
 COMMAND = "freva"
-from evaluation_system.misc import logger
+from evaluation_system.misc import config, logger
 
 
 class ArgParser(BaseParser):
@@ -24,12 +24,18 @@ class ArgParser(BaseParser):
             "crawl-my-data",
             "esgf",
         )
-        epilog = f"""To get help for the individual commands use:
-        {COMMAND} <command> --help
+        epilog = f"""To get help for the individual sub-commands use:
+        {COMMAND} <sub-command> --help
 """
         argv = argv or sys.argv[1:]
-        if argv[0] in sub_commands:
-            argv[0] = argv[0].strip("-")
+        admin_commands = ("solr", "check", "doc")
+        if is_admin():
+            sub_commands += admin_commands
+        try:
+            if argv[0] in sub_commands:
+                argv[0] = argv[0].strip("-")
+        except IndexError:
+            argv.append('-h')
         self.parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
@@ -37,9 +43,7 @@ class ArgParser(BaseParser):
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         self.call_parsers = []
-        self.subparsers = self.parser.add_subparsers(help="Available commands:")
-        for command in sub_commands:
-            getattr(self, f"parse_{command.replace('-','_')}")()
+        super().__init__(sub_commands)
         args = self.parse_args(argv)
         argcomplete.autocomplete(self.parser)
         try:
@@ -89,9 +93,44 @@ class ArgParser(BaseParser):
         )
         _cli = PluginCli(COMMAND, self.call_parsers[-1])
 
-    def solr_index(self):
+    def parse_check(self):
+        """Parse the check command."""
+        from .admin.checks import CheckCli
+        self.call_parsers.append(
+            self.subparsers.add_parser(
+                "check",
+                description=CheckCli.desc,
+                help=CheckCli.desc,
+                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            )
+        )
+        _cli = CheckCli(self.call_parsers[-1])
+
+    def parse_solr(self):
         """Parse the solr index command."""
-        from .admin import SolrIndex
+        from .admin.solr import SolrCli
+        self.call_parsers.append(
+            self.subparsers.add_parser(
+                "solr",
+                description=SolrCli.desc,
+                help=SolrCli.desc,
+                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            )
+        )
+        _cli = SolrCli(self.call_parsers[-1])
+
+    def parse_doc(self):
+        """Parse the docu update command."""
+        from .admin.doc import DocCli
+        self.call_parsers.append(
+            self.subparsers.add_parser(
+                "doc",
+                description=DocCli.desc,
+                help=DocCli.desc,
+                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            )
+        )
+        _cli = DocCli(self.call_parsers[-1])
 
     def parse_esgf(self):
         """Parse the esgf command."""
@@ -127,5 +166,5 @@ def main(argv: Optional[List[str]]= None) -> None:
     ArgParser(argv or sys.argv[1:])
 
 
-if __name__ == "__main__": #pragma nocover
+if __name__ == "__main__": # pragma: no cover
     main()
