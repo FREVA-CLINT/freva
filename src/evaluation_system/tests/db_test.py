@@ -8,10 +8,7 @@ from datetime import datetime, timedelta
 import os
 import tempfile
 import shutil
-import logging
 from getpass import getuser
-if not logging.getLogger().handlers:
-    logging.basicConfig(level=logging.DEBUG)
 
 import pytest
 

@@ -65,8 +65,7 @@ class DummyUser(User):
         # copy the current data
         user_data = list(self._userdata[:])
         for key, value in override.items():
-            if key in DummyUserData._NAMES:
-                user_data[DummyUserData._NAMES.index(key)] = value
+            user_data[DummyUserData._NAMES.index(key)] = value
         self._userdata = DummyUserData(user_data)
         self._db = UserDB(self)
 

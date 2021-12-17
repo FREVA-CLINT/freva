@@ -5,6 +5,7 @@ Created on 30.05.2016
 """
 import json
 from pathlib import Path
+import shlex
 
 from evaluation_system.tests import run_cli
 
@@ -18,7 +19,7 @@ def test_show_facet(capsys, dummy_config):
 
 
 def test_query(capsys, search_dict, dummy_config):
-
+    from freva.cli.esgf import main as run
     run_cli("esgf --debug project=TEST --query=project,product --opendap")
     res = capsys.readouterr().out
     res = json.loads(res)[0]
@@ -26,7 +27,7 @@ def test_query(capsys, search_dict, dummy_config):
     run_cli("esgf -d project=TEST limit=1 --query=project --gridftp")
     res = capsys.readouterr().out
     assert "['TEST']" in res
-    run_cli("esgf project=TEST --query=project --gridftp")
+    run(shlex.split("project=TEST --query=project --gridftp"))
     res = capsys.readouterr().out
     res = [r for r in res.split("\n") if r.strip()]
     num_res = len(res)
@@ -34,12 +35,15 @@ def test_query(capsys, search_dict, dummy_config):
     res = capsys.readouterr().out
     res = [r for r in res.split("\n") if r.strip()]
     assert num_res == len(res) + 1
-
+    run(["project=TESTs"])
+    assert not capsys.readouterr().out
+    run(shlex.split("project=TEST --datasets"))
+    assert '- version:' in capsys.readouterr().out
+    run(["--show-facet=blabla"])
+    assert not capsys.readouterr().out
 
 def test_freva_esgf_method(dummy_config):
-
     from freva import esgf
-
     result_to_be = [
         "http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/\
 cmip5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18500101-18591231.nc",
@@ -80,7 +84,7 @@ output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_M
 
 
 def test_find_files(capsys, search_dict, dummy_config):
-
+    
     result_to_be = [
         "http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/\
 MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
@@ -89,6 +93,8 @@ cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_
         "http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/\
 cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
     ]
+    run_cli("esgf --show-facet=blabla")
+    assert not capsys.readouterr().out
     run_cli(["esgf"] + [f"{key}={val}" for key, val in search_dict.items()])
     res = capsys.readouterr().out
     for f in result_to_be:

@@ -38,7 +38,7 @@ def test_freva_databrowser_method(dummy_solr):
     assert v in res[0]
     with pytest.raises(TypeError):
         databrowser("badoption")
-    res = databrowser(all_facets=True)
+    res = databrowser(all_facets=True, ralevant_only=True)
     assert isinstance(res, dict)
     target = sorted(
         [
@@ -55,12 +55,16 @@ def test_freva_databrowser_method(dummy_solr):
             "ensemble",
         ]
     )
+    relevant = ["cmor_table", "ensemble", "experiment", "realm", "variable"]
     res = sorted(databrowser(attributes=True))
     assert sorted(target) == res
+    res = sorted(databrowser(attributes=True, relevant_only=True))
+    assert relevant == res
 
 
 def test_search_files_cmd(dummy_solr, capsys):
     from evaluation_system.misc.exceptions import CommandError
+    from freva.cli.databrowser import main as run
 
     cmd = shlex.split("databrowser")
     all_files_output = sorted(
@@ -74,7 +78,7 @@ def test_search_files_cmd(dummy_solr, capsys):
     res = sorted([f for f in capsys.readouterr().out.split("\n") if f])
     assert len(res) == len(all_files_output)
     assert res == all_files_output
-    run_cli(cmd + ["variable=ua"])
+    run(["variable=ua"])
     res = capsys.readouterr().out
     assert (
         res

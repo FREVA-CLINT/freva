@@ -5,13 +5,32 @@ Created on 18.05.2016
 """
 import sys
 from functools import partial
+import os
 from pathlib import Path
 import pytest
+import mock
 from tempfile import TemporaryDirectory
 import time
 from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
+
+def test_tool_doc(capsys, plugin_doc, admin_env):
+    cmd = ["doc", "DummyPlugin", f"--file-name", str(plugin_doc)]
+    with mock.patch.dict(os.environ, admin_env, clear=True):
+        run_cli(cmd)
+        out = capsys.readouterr().out
+        assert 'dummyplugin' in out.lower()
+        assert 'created' in out.lower()
+        with pytest.raises(FileNotFoundError):
+            run_cli(cmd[:-2])
+
+def test_forbidden_tool_doc(dummy_env):
+     from freva.cli.admin import update_tool_doc
+     with pytest.raises(RuntimeError):
+         update_tool_doc("dummyplugin")
+     with pytest.raises(SystemExit):
+         run_cli(["solr", "doc" "--help"])
 
 def test_list_tools(capsys, dummy_env):
     with pytest.raises(PluginNotFoundError):

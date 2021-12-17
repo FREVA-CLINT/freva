@@ -4,10 +4,7 @@ import pytest
 import mock
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-
-def mockenv(**envvars):
-    return mock.patch.dict(os.environ, envvars)
-
+from evaluation_system.tests import mockenv
 
 class MockConfigFile:
 
@@ -25,13 +22,6 @@ class MockConfigFile:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._tf.close()
         self.mock_env.stop()
-
-def mock_config_file(env_vars):
-
-    with NamedTemporaryFile(suffix='.conf') as tf:
-        env_vars['EVALUATION_SYSTEM_CONFIG_FILE'] = tf.name
-        with mockenv(**env_vars):
-            return tf
 
 @mockenv(PUBKEY='')
 def test_wrong_config():

@@ -48,6 +48,7 @@ def test_freva_history_method(dummy_history, dummy_user):
 
 def test_history_cmd(capsys, dummy_history, dummy_user):
 
+    from freva.cli.history import main as run
     hist_ids = []
     uid = os.getuid()
     udata = pwd.getpwuid(uid)
@@ -67,7 +68,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
             )
         ]
     # test history output
-    run_cli(["history", "-d"])
+    run(["-d"])
     output_str = capsys.readouterr().out
     assert output_str.count("dummyplugin") == 10
     assert output_str.count("\n") == 10
