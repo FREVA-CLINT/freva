@@ -6,7 +6,17 @@ The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
 from __future__ import annotations
-from typing import Optional, Generator, Union, List, Any, ClassVar, Literal, overload
+from typing import (
+    Optional,
+    Generator,
+    TypedDict,
+    Union,
+    Any,
+    ClassVar,
+    Literal,
+    cast,
+    overload,
+)
 from dataclasses import dataclass, field
 
 import json
@@ -33,13 +43,13 @@ class DRSStructure:
     """Directory from where this files are to be found. Put through `expanduser` to
         expand `~` then `absolute`.
     """
-    parts_dir: List[str]
+    parts_dir: list[str]
     """List of subdirectory category names the values they refer to
         (e.g. ['model', 'experiment']).
     """
-    parts_dataset: List[str]
+    parts_dataset: list[str]
     """The components of a dataset name (this data should also be found in parts_dir)."""
-    parts_file_name: List[str]
+    parts_file_name: list[str]
     """Elements composing the file name (no ".nc" though)."""
     parts_time: str
     """Describes how the time part of the filename is formed."""
@@ -49,12 +59,12 @@ class DRSStructure:
     """list with values that "shouldn't" be required to be changed (e.g. for
         observations, project=obs4MIPS)
     """
-    parts_versioned_dataset: Optional[List[str]] = None
+    parts_versioned_dataset: Optional[list[str]] = None
     """If this datasets are versioned then define the version structure of them
         (i.e. include the version number in the dataset name).
     """
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.root_dir = str(Path(self.root_dir).expanduser().absolute())
 
     @classmethod
@@ -87,6 +97,20 @@ class DRSStructure:
         return d
 
 
+class FileComponents(TypedDict):
+    root_dir: str
+    # This is incorrect, parts is actually `dict[str, Optional[str]]` due to a check in
+    # from_path where it will insert a None under certain conditions.
+    # Fixing this would require changing a lot of code that currently seems to be
+    # working since Python's types are nullable by default so I guess it's fine until we
+    # want to start cleaning up ignores.
+    # The code also makes assumptions about the contents of parts like assuming the
+    # presence of a file_name key. I'm not sure this is worth capturing right now since
+    # I think it relates heavily to the DRS structure and thus the DRSStructure type
+    # which similarly doesn't have much encoded into its type.
+    parts: dict[str, str]
+
+
 class DRSFile:
     """Represents a file that follows the
     `DRS standard <https://pcmdi.llnl.gov/mips/cmip5/docs/cmip5_data_reference_syntax.pdf>`_.
@@ -98,7 +122,7 @@ class DRSFile:
 
     def __init__(
         self,
-        file_dict: Optional[dict] = None,
+        file_dict: Optional[FileComponents] = None,
         drs_structure: Activity = ACTIVITY_BASELINE0,
     ):
         """Creates a DRSfile out of the dictionary containing information
@@ -115,7 +139,10 @@ class DRSFile:
         """
         self.drs_structure = drs_structure
         if not file_dict:
-            file_dict = {}
+            file_dict = {
+                "root_dir": "",
+                "parts": {},
+            }
         self.dict = file_dict
         # trim the last slash if present in root_dir
         if "root_dir" in self.dict and self.dict["root_dir"][-1] == "/":
@@ -263,7 +290,7 @@ class DRSFile:
         return self.get_drs_structure().parts_versioned_dataset is not None
 
     @property
-    def version(self) -> Optional[int]:
+    def version(self) -> Optional[str]:
         """Returns the dataset version of this file
 
         This returns the version which this file is a part of or None if
@@ -273,7 +300,7 @@ class DRSFile:
 
         Returns
         -------
-        Optional[int]
+        Optional[str]
             The version of the dataset or None if not versioned
         """
         if "version" in self.dict["parts"]:
@@ -298,22 +325,10 @@ class DRSFile:
         # ignored due to lazy initialization issue
         return DRSFile.DRS_STRUCTURE_PATH_TYPE  # type: ignore [return-value]
 
-    @overload
-    @staticmethod
-    def find_structure_from_path(
-        file_path: str, allow_multiples: Literal[True, False]
-    ) -> List[Activity]:
-        ...
-
-    @overload
-    @staticmethod
-    def find_structure_from_path(file_path: str) -> Activity:
-        ...
-
     @staticmethod
     def find_structure_from_path(
         file_path: str, allow_multiples: bool = False
-    ) -> Union[Activity, List[Activity]]:
+    ) -> list[Activity]:
         """Return all DRS structures that might be applicable.
 
         This is resolved by checking if the prefix of any structure paths
@@ -328,7 +343,6 @@ class DRSFile:
         allow_multiples
             If true returns a list with all possible structures, otherwise
             returns the first match found.
-
         Returns
         -------
         Union[Activity, List[Activity]]
@@ -345,7 +359,7 @@ class DRSFile:
                 if allow_multiples:
                     structures.append(st_type)
                 else:
-                    return st_type
+                    return [st_type]
         if not structures:
             raise ValueError(f"Unrecognized DRS structure in path {file_path}")
         else:
@@ -353,8 +367,8 @@ class DRSFile:
 
     @staticmethod
     def find_structure_in_path(
-        dir_path: str, allow_multiples=False
-    ) -> Union[Activity, List[Activity]]:
+        dir_path: str, allow_multiples: bool = False
+    ) -> Union[Activity, list[Activity]]:
         """Return all DRS structures that might be applicable.
 
         See `find_structure_in_path` for more information
@@ -412,7 +426,7 @@ class DRSFile:
             or any configured structure if `activity` is None.
         """
         if activity is None:
-            activity = DRSFile.find_structure_from_path(path)
+            activity = DRSFile.find_structure_from_path(path)[0]
         path = os.path.abspath(path)
         structure = DRSFile._get_drs_structure(activity)
 
@@ -432,19 +446,17 @@ class DRSFile:
             )
 
         # first the dir
-        result: dict[str, Any] = {}
-        result["root_dir"] = structure.root_dir
-        result["parts"] = {}
+        result: FileComponents = {
+            "root_dir": structure.root_dir,
+            "parts": {},
+        }
         for i in range(len(structure.parts_dir)):
             result["parts"][structure.parts_dir[i]] = parts[i]
 
         # split file name
         # (extract .nc before splitting)
-        # this type is technically incorrect. `split` would return a List[str] which is
-        # not compatible with List[Optional[str]] but works here because mypy thinks
-        # this returns Any anyway so it accepts whatever
-        file_name_parts: List[Optional[str]] = result["parts"]["file_name"][:-3].split(
-            "_"
+        file_name_parts = cast(
+            list[Optional[str]], result["parts"]["file_name"][:-3].split("_")
         )
         if (
             len(file_name_parts) == len(structure.parts_file_name) - 1
@@ -456,7 +468,7 @@ class DRSFile:
         try:
             for i in range(len(structure.parts_file_name)):
                 if structure.parts_file_name[i] not in result["parts"]:
-                    result["parts"][structure.parts_file_name[i]] = file_name_parts[i]
+                    result["parts"][structure.parts_file_name[i]] = file_name_parts[i]  # type: ignore [assignment]
 
         except IndexError:
             raise ValueError(
@@ -508,7 +520,7 @@ class DRSFile:
 
     @staticmethod
     def from_dict(
-        file_dict: dict, drs_structure: Activity = ACTIVITY_BASELINE0
+        file_dict: FileComponents, drs_structure: Activity = ACTIVITY_BASELINE0
     ) -> DRSFile:
         """Creates a DRSFile based off given dict
 
@@ -555,7 +567,7 @@ class DRSFile:
         latest_version: bool = True,
         path_only: bool = False,
         batch_size: int = 10000,
-        **partial_dict,
+        **partial_dict: Any,
     ) -> Generator[Union[Any, DRSFile], None, None]:
         """Search for files by relying on a Solr Index.*'.
 
@@ -589,7 +601,7 @@ class DRSFile:
                 yield DRSFile.from_path(path)
 
     @staticmethod
-    def _load_structure_definitions():
+    def _load_structure_definitions() -> None:
         """Loads DRSStructure definitions from the config.
 
         This handles the initialization of `DRS_STRUCTURE_PATH_TYPE` and
