@@ -4,8 +4,6 @@ LABEL maintainer="DRKZ-CLINT"
 LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
 ARG NB_USER="freva"
 ARG NB_UID="1000"
-ARG repository="https://gitlab.dkrz.de/freva/evaluation_system"
-ARG branch="freva-dev"
 ARG binder="true"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
@@ -28,6 +26,9 @@ ENV NB_USER=${NB_USER} \
     SOLR_LOGS_DIR=${HOME}/solr/logs \
     LOG4J_PROPS=${HOME}/solr/log4j2.xml \
     PATH="/opt/evaluation_system/bin:/opt/solr/bin:/opt/docker-solr/scripts:$PATH"
+
+COPY . /tmp/evaluation_system
+
 RUN set -ex; \
   groupadd -r --gid "$NB_GID" "$NB_GROUP"; \
   adduser --uid "$NB_UID" --gid "$NB_GID" --gecos "Default user" \
@@ -44,12 +45,6 @@ RUN set -ex; \
   cp -r /var/solr ${HOME}/ ;\
   chown -R "${NB_USER}:${NB_USER}" ${HOME}/solr;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
-  sudo -E -u ${NB_USER} mkdir -p /tmp/evaluation_system;\
-  if [ -z "${branch}" ];then\
-    sudo -E -u ${NB_USER} /usr/bin/git clone $repository /tmp/evaluation_system ; \
-  else\
-    sudo -E -u ${NB_USER} /usr/bin/git clone -b $branch $repository /tmp/evaluation_system ; \
-  fi;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c latest -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
@@ -74,41 +69,48 @@ RUN set -ex; \
   chown -R ${NB_USER}:${NB_GROUP} /var/solr;\
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \
   find ${HOME}/solr -type f -print0 | xargs -0 chmod 0661
+
 RUN \
-  if [ "$binder" = "true" ];then\
-  cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
-  cd /tmp/evaluation_system/;\
-  /usr/bin/python3 deploy.py /opt/evaluation_system ; \
-  /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
-  /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
-  /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
-  cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva;\
-  mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva; mkdir -p /opt/evaluation_system/etc/jupyter;\
-  mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
-  chmod -R 777 /opt/freva-work;\
-  mysqld_safe;\
-  /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump2.gz;\
-  /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz;\
-  rm /tmp/dump.gz;\
-  cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
-  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
-  cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /opt/evaluation_system/etc/jupyter;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME; \
-  sudo -E -u ${NB_USER} /opt/solr/bin/solr  stop -all;\
-  sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
-  echo "sudo -E -u ${NB_USER} mysqld_safe &" > /tmp/config ; \
-  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
-  bash /tmp/config && rm -r /tmp/config ; \
-  sudo -E -u ${NB_USER} /opt/evaluation_system/bin/python3 /opt/evaluation_system/sbin/solr_ingest --crawl /mnt/data4freva/observations --output /tmp/dump.gz -d;\
-  sudo -E -u ${NB_USER} /opt/evaluation_system/bin/python3 /opt/evaluation_system/sbin/solr_ingest --ingest /tmp/dump.gz -d;\
-  rm /tmp/dump.gz;\
-  cd / && rm -r /tmp/evaluation_system;\
-  git clone https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
-  git clone https://gitlab.dkrz.de/freva/plugins4freva/mapfactory.git /mnt/plugin4freva/animator/mapfactory;\
-  mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview;\
-  chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
-  chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;fi
+  if [ "$binder" = "true" ]; then\
+    set -ex; \
+    cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
+    cd /tmp/evaluation_system/;\
+    /usr/bin/python3 deploy.py /opt/evaluation_system ; \
+    /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
+    /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
+    /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
+    cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva;\
+    mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva; mkdir -p /opt/evaluation_system/etc/jupyter;\
+    mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
+    chmod -R 777 /opt/freva-work;\
+    mysqld_safe;\
+    cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
+    cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
+    cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /opt/evaluation_system/etc/jupyter;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME; \
+    sudo -E -u ${NB_USER} /opt/solr/bin/solr stop -all;\
+    sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
+    echo "sudo -E -u ${NB_USER} mysqld_safe &" > /tmp/config ; \
+    echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
+    bash /tmp/config && rm -r /tmp/config ; \
+    /opt/evaluation_system/sbin/solr_ingest \
+      --debug \
+      --crawl /mnt/data4freva/observations \
+      --output /tmp/dump.gz \
+      --solr-url localhost:8983;\
+    /opt/evaluation_system/sbin/solr_ingest \
+      --debug \
+      --ingest /tmp/dump.gz \
+      --solr-url localhost:8983; \
+    rm /tmp/dump.gz;\
+    cd / && rm -r /tmp/evaluation_system;\
+    git clone https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
+    git clone https://gitlab.dkrz.de/freva/plugins4freva/mapfactory.git /mnt/plugin4freva/animator/mapfactory;\
+    mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview;\
+    chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;\
+  fi
 
 COPY .docker/docker-entrypoint.sh /opt/evaluation_system/bin/
 COPY .docker/loadfreva.sh /opt/evaluation_system/bin/

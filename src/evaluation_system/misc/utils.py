@@ -14,6 +14,7 @@ import os
 from re import split
 from string import Template
 import sys
+from typing import Any
 
 
 class Data(object):
@@ -188,7 +189,7 @@ in the background when retrieving the values."""
         return type('dict_wrapper', (object,), {'__getitem__':f, 'items':i})()
             
         
-    def substitute(self, substitute_dict, recursive = True):
+    def substitute(self, substitute_dict: dict[str, Any], recursive: bool = True) -> dict[str, Any]:
         """Substitute the values from substitute dictionary. Values in 
         ``substitute_dict`` take precedence from those in 
         :class:`TemplateDict.translation_dict`.

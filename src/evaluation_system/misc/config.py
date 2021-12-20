@@ -3,6 +3,8 @@
 
 This module manages the central configuration of the system.
 '''
+from typing import Any, Optional, Sequence
+
 import os
 import os.path as osp
 from pathlib import Path
@@ -143,11 +145,10 @@ class ConfigurationException(Exception):
     def __init__(self, message):
         super().__init__(message)
 
-_config = None
+_config: Optional[dict[str, Any]] = None
 _drs_config = None
 
-def _get_public_key(project_name):
-
+def _get_public_key(project_name: str) -> str:
     key_file = os.environ.get('PUBKEY', None) or _PUBLIC_KEY_DIR / f'{project_name}.crt'
     try:
         with Path(key_file).open() as f:
@@ -157,7 +158,7 @@ def _get_public_key(project_name):
         raise FileNotFoundError(f'{key_file} not found. Secrets are stored in central vault and public key is needed to open the vault. Please deploy the backend again using the vault option.')
     return sha
 
-def _read_secrets(sha, key, *db_hosts, port=5002, protocol='http'):
+def _read_secrets(sha: str, key: str, *db_hosts: Sequence[str], port: int=5002, protocol: str = 'http') -> Optional[str]:
     """Query the vault for data database secrets, of a given key."""
     for db_host in db_hosts:
         url = f'{protocol}://{db_host}:{port}/vault/data/{sha}'
@@ -169,8 +170,9 @@ def _read_secrets(sha, key, *db_hosts, port=5002, protocol='http'):
             return req[key]
         except KeyError:
             pass
+    return None
 
-def reloadConfiguration():
+def reloadConfiguration() -> None:
     """Reloads the configuration.
 This can be used for reloading a new configuration from disk. 
 At the present time it has no use other than setting different configurations 
@@ -198,13 +200,24 @@ performed."""
                 for plugin_section in [s for s in config_parser.sections() if s.startswith(PLUGINS)]:
                     _config[PLUGINS][plugin_section[len(PLUGINS):]] = \
                         SPECIAL_VARIABLES.substitute(dict(config_parser.items(plugin_section)))
-                sha = _get_public_key(config_parser[CONFIG_SECTION_NAME]['project_name'])
+
                 db_hosts = (config_parser[CONFIG_SECTION_NAME]['db.host'],
                            config_parser[CONFIG_SECTION_NAME]['project_name']+'_vault')
+                # This will look first for secrets set in the config file. It will only
+                # load the public key for the vault if any are missing and it will only
+                # look for the missing keys in the vault. Any keys set in the config
+                # will take priority
+                secret_store_keys: list[str] = []
                 for secret in ('db.user', 'db.passwd', 'db.db', 'db.host', 'db.port'):
-                    # Ask the vault for the secrets
                     value = _config.get(secret, None)
-                    _config[secret] = _read_secrets(sha, secret, *db_hosts) or value
+                    if value:
+                        _config[secret] = value
+                    else:
+                        secret_store_keys.append(secret)
+                if len(secret_store_keys) > 0:
+                    sha: str = _get_public_key(config_parser[CONFIG_SECTION_NAME]['project_name'])
+                    for secret in secret_store_keys:
+                        _config[secret] = _read_secrets(sha, secret, *db_hosts)
             log.debug('Configuration loaded from %s', config_file)
     else:
         log.debug('No configuration file found in %s. Using default values.',
