@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Any, Optional, Union, List, cast
+from typing import Any, Dict, Optional, List, cast
 
 import argcomplete
 
@@ -14,7 +14,6 @@ class ChoicesCompleter(BaseCompleter):
     def __call__(self, **kwargs):  # pragma: no cover
         choices = []
         facets = self._to_dict(kwargs["parsed_args"])
-        prefix = kwargs["prefix"]
         search = databrowser(all_facets=True, **facets)
         for key, values in search.items():
             if key not in facets:
@@ -99,7 +98,7 @@ class DataBrowserCli(BaseParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
+        subparser.add_argument(  # type: ignore
             "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
         ).completer = ChoicesCompleter("facets")
         self.parser = subparser
@@ -108,11 +107,15 @@ class DataBrowserCli(BaseParser):
 
     @staticmethod
     def run_cmd(args: argparse.Namespace,
-                **kwargs: Optional[Any]) -> None :
+                **kwargs: Optional[Any]) -> None:
         """Call the databrowser command and print the results."""
-        _ = kwargs.pop("facets", None)
-        facets = ChoicesCompleter.arg_to_dict(args.facets, append=True)
+        facets: Dict[str, Any] = ChoicesCompleter.arg_to_dict(
+                args.facets, append=True
+        )
         facet_limit = kwargs.pop("facet_limit")
+        for key, values in facets.items():
+            if len(values) == 1:
+                facets[key] = values[0]
         merged_args = cast(Any, {**kwargs, **facets})
         out = databrowser(**merged_args)
         # flush stderr in case we have something pending

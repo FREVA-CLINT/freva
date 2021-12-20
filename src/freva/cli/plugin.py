@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional, List
+from typing import Any, Dict, Optional, List
 
 import argcomplete
 
@@ -138,17 +138,22 @@ class PluginCli(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Call the databrowser command and print the results."""
-        options = BaseCompleter.arg_to_dict(args.options)
         if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        _ = kwargs.pop("options", None)
+        options: Dict[str, Any] = BaseCompleter.arg_to_dict(
+                kwargs.pop("options", {})
+        )
+        for key, val in options.items():
+            if len(val) == 1:
+                options[key] = val[0]
         tool_name = kwargs.pop("tool-name")
+        tool_args = {**kwargs, **options}
         try:
-            if kwargs.pop("doc"):
+            if tool_args.pop("doc"):
                 print(plugin_doc(tool_name))
                 return
-            value, out = run_plugin(tool_name, **kwargs, **options)
+            value, out = run_plugin(tool_name, **tool_args)
         except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
             if args.debug:
                 raise e
@@ -164,7 +169,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    options = BaseCompleter.arg_to_dict(args.options)
+    _ = BaseCompleter.arg_to_dict(args.options)
     argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)

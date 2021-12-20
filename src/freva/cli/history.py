@@ -1,11 +1,10 @@
 import argparse
-from pathlib import Path
 import sys
 from typing import Optional, List
 
 import argcomplete
 
-from .utils import BaseCompleter, BaseParser, parse_type
+from .utils import BaseParser, parse_type
 import freva
 from evaluation_system.misc import logger
 
@@ -36,7 +35,8 @@ class HistoryCli(BaseParser):
             "--return-command",
             default=False,
             action="store_true",
-            help="Show freva commands belonging to the history entries instead of the entries themself.",
+            help=("Show freva commands belonging to the history entries "
+                  "instead of the entries themself."),
         )
         subparser.add_argument(
             "--limit",
@@ -97,7 +97,7 @@ class HistoryCli(BaseParser):
             result = "\n".join(commands)
         else:
             result = "\n".join(
-                [c.__str__(compact=not args.full_text) for c in commands]
+                [c.__str__(compact=not args.full_text) for c in commands]  # type: ignore
             )
         print(result)
 

@@ -36,14 +36,14 @@ class ArgParser(BaseParser):
                 argv[0] = argv[0].strip("-")
         except IndexError:
             argv.append("-h")
-        self.parser = argparse.ArgumentParser(
+        parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
             description=f"Free EVAluation sysystem framework (freva)",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         self.call_parsers = []
-        super().__init__(sub_commands)
+        super().__init__(sub_commands, parser)
         args = self.parse_args(argv)
         argcomplete.autocomplete(self.parser)
         try:

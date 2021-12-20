@@ -35,12 +35,12 @@ def is_admin(raise_error: bool = False) -> bool:
 class BaseCompleter:
     """Base class for command line argument completers."""
 
-    def __init__(self, metavar: Optional[str] = None, choices: Optional[str] = None):
+    def __init__(self, metavar: str, choices: Optional[List[str]] = None):
         self.metavar = metavar
         self.choices = choices
 
     @staticmethod
-    def arg_to_dict(args: str, append: bool = False) -> Dict[str, str]:
+    def arg_to_dict(args: str, append: bool = False) -> Dict[str, List[str]]:
         """Convert a parsed arguments with key=value pairs to a dictionary.
 
         Parameters:
@@ -56,7 +56,7 @@ class BaseCompleter:
         --------
         dict: Dictionariy representation of key=value pairs
         """
-        out_dict = {}
+        out_dict: Dict[str, List[str]] = {}
         for arg in args:
             try:
                 key, value = arg.split("=")
@@ -64,28 +64,28 @@ class BaseCompleter:
                 with hide_exception():
                     raise CommandError(f"Bad Option: {arg}")
             if append and key in out_dict:
-                if isinstance(out_dict[key], str):
-                    out_dict[key] = [out_dict[key]]
                 out_dict[key].append(value)
             else:
-                out_dict[key] = value
+                out_dict[key] = [value]
         return out_dict
 
-    def _to_dict(self, parsed_args: arg_type) -> Dict[str, str]:
+    def _to_dict(self, parsed_args: arg_type) -> Dict[str, List[str]]:
         args = getattr(parsed_args, self.metavar)
         return self.arg_to_dict(args)
 
-    def __call__(self, **kwargs: Optional[str]) -> List[str]:
+    def __call__(self, **kwargs: Optional[str]) -> Optional[List[str]]:
         return self.choices
 
 
 class BaseParser:
     """Base class for common command line argument parsers."""
 
-    def __init__(self, sub_commands: Tuple[str]) -> None:
+    def __init__(self, sub_commands: Tuple[str, ...], parser: parse_type) -> None:
         """Create the sub-command parsers."""
 
-        self.subparsers = self.parser.add_subparsers(help="Available sub-commands:")
+        self.parser = parser
+        self.subparsers = parser.add_subparsers(help="Available sub-commands:")
+        self.sub_commands = sub_commands
         for command in sub_commands:
             getattr(self, f"parse_{command.replace('-','_')}")()
 

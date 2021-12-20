@@ -1,23 +1,31 @@
 """Module to access the esgf data catalogue."""
 from pathlib import Path
 from evaluation_system.model.esgf import P2P
-from urllib.error import HTTPError
-from typing import Dict, Union, Optional, List
-from evaluation_system.misc import logger
+from typing import Dict, Union, Optional, List, overload, Literal, Tuple
 
 
 __all__ = ["esgf"]
 
 
+@overload
+def esgf(datasets: Literal[True]) -> List[Tuple[str, str]]:
+    ...
+
+
+@overload
+def esgf(datasets: Literal[False], show_facet: str) -> Dict[str, List[str]]:
+    ...
+
+
 def esgf(
     datasets: bool = False,
-    query: Optional[str] = None,
     show_facet: Optional[str] = None,
+    download_script: Optional[Union[str, Path]] = None,
+    query: Optional[str] = None,
     opendap: bool = False,
     gridftp: bool = False,
-    download_script: Optional[Union[str, Path]] = None,
     **search_constraints: Dict[str, str]
-) -> Union[List[str], Dict[str, str]]:
+) -> Union[str, List[Tuple[str, str]], Dict[str, List[str]]]:
     """Find data in the ESGF.
 
     ::
@@ -75,7 +83,7 @@ def _query_esgf(
     gridftp: bool = False,
     download_script: Optional[Union[str, Path]] = None,
     **search_constraints: Dict[str, str],
-):
+) -> Union[str, List[Tuple[str, str]], Dict[str, List[str]]]:
     """Apply the actual esgf data catalogue query."""
     result_url = []
     show_facet = show_facet or []

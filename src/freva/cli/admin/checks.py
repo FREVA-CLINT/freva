@@ -3,21 +3,19 @@
 __all__ = ["check4broken_runs", "check4pull_request"]
 
 import argparse
-import datetime
 import os
-from typing import Any, List, Optional
 
-import argcomplete
 
-from ..utils import BaseCompleter, BaseParser, parse_type, is_admin
+from ..utils import BaseParser, parse_type, is_admin
 
-from evaluation_system.misc import config, logger
+from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import CommandError
 from evaluation_system.model.history.models import History
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
 
 
-def check4pull_request():
+def check4pull_request() -> None:
     """Check for pending pull requests."""
 
     is_admin(raise_error=True)
@@ -47,12 +45,11 @@ def check4pull_request():
             )
             if exit_code > 1:
                 raise CommandError("Something went wrong, please contact the admins")
-
         request.status = "success"
         request.save()
 
 
-def check4broken_runs():
+def check4broken_runs() -> None:
     """Check for broken runs in SLURM"""
 
     is_admin(raise_error=True)
@@ -83,9 +80,8 @@ class CheckCli(BaseParser):
     def __init__(self, parser: parse_type) -> None:
         """Construct the sub arg. parser."""
 
-        self.sub_commands = ("broken-runs", "pull-request")
-        self.parser = parser
-        super().__init__(self.sub_commands)
+        sub_commands = ("broken-runs", "pull-request")
+        super().__init__(sub_commands, parser)
         # This parser doesn't do anything without a sub-commands
         # hence the default function should just print the usage
         self.parser.set_defaults(apply_func=self._usage)
@@ -97,7 +93,7 @@ class CheckCli(BaseParser):
             help=PullRequest.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        _cli = PullRequest(sub_parser)
+        PullRequest(sub_parser)
 
     def parse_broken_runs(self) -> None:
         sub_parser = self.subparsers.add_parser(
@@ -106,7 +102,7 @@ class CheckCli(BaseParser):
             help=BrokenRun.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        _cli = BrokenRun(sub_parser)
+        BrokenRun(sub_parser)
 
 
 class PullRequest(BaseParser):
@@ -131,7 +127,7 @@ class PullRequest(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
         """Apply the check4broken_runs method"""
 
         check4pull_request()
@@ -157,7 +153,7 @@ class BrokenRun(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
         """Apply the check4broken_runs method"""
 
         check4broken_runs()

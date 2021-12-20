@@ -1,8 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional, List, Any, cast
-
+from typing import Optional, List, Any, cast, Dict, Union
 import argcomplete
 
 from .utils import BaseCompleter, BaseParser, parse_type
@@ -92,14 +91,20 @@ class EsgfCli(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs):
         """Call the esgf command and print the results."""
-        facets = BaseCompleter.arg_to_dict(args.facets)
+        facets: Dict[str, Union[List[str], str]] = {}
+        _facets = BaseCompleter.arg_to_dict(args.facets)
         _ = kwargs.pop("facets", None)
+        for key, val in _facets.items():
+            if len(val) == 1:
+                facets[key] = val[0]
+            else:
+                facets[key] = val
         merged_args = cast(Any, {**kwargs, **facets})
-        out = freva.esgf(**kwargs, **merged_args)
+        out = freva.esgf(**merged_args)
         if not out:
             return
         if args.datasets:
-            print("\n".join(["%s - version: %s" % d for d in out]))
+            print("\n".join([f"{d[0]} - version: {d[1]}" for d in out]))
         elif args.query:
             if len(args.query.split(",")) > 1:
                 print("\n".join([str(out)]))
