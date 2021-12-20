@@ -16,7 +16,7 @@ import sys
 from typing import Any, Dict, List, Optional, Union, Tuple
 
 
-def run_cmd(cmd: str, **kwargs: Optional) -> str:
+def run_cmd(cmd: str, **kwargs: Any) -> str:
     """Run a command via subprocess.run"""
     kwargs.setdefault('check', False)
     kwargs['stdout'] = kwargs['stderr'] = PIPE
