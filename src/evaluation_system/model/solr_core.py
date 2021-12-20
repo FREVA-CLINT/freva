@@ -18,14 +18,13 @@ import urllib.request
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterator, Optional, Tuple, TypeVar, Generic
+from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Generic
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
 
-SolrType = TypeVar('core')
 
-class SolrCore(Generic[SolrType]):
+class SolrCore:
     """Encapsulate access to a Solr instance"""
     
     def __init__(self, core=None, host=None, port=None, instance_dir=None, data_dir=None, get_status=True):
@@ -203,9 +202,9 @@ unloading the original code))"""
     @staticmethod
     def _get_metadata_from_path(in_dir: Path,
                                 abort_on_errors: bool,
-                                allowed_suffixes: Tuple[str],
+                                allowed_suffixes: Tuple[str, ...],
                                 drs_type: Optional[str] = None
-                                ) -> Iterator[Dict[str, str]]:
+                                ) -> Iterator[Tuple[DRSFile, Dict[str, str]]]:
         if in_dir.is_file():
             iterator = [in_dir]
         else:
@@ -263,10 +262,10 @@ unloading the original code))"""
     def load_fs(input_dir: Path,
                 drs_type: Optional[str] = None,
                 chunk_size: int = 10000,
-                suffix: Tuple[str] = ('.nc', '.grb', '.zarr', '.grib', '.nc4'),
+                suffix: Tuple[str, ...] = ('.nc', '.grb', '.zarr', '.grib', '.nc4'),
                 core: Optional[str] = None,
-                core_latest: Optional[str] = None,
-                core_all_files: Optional[str] = None,
+                core_latest: Optional[Any] = None,
+                core_all_files: Optional[Any] = None,
                 abort_on_errors: bool = False,
                 host: Optional[str] = None,
                 port: Optional[int] = None,
@@ -307,20 +306,21 @@ unloading the original code))"""
         core_all_files._del_file_pattern(input_dir)
         chunk, chunk_latest = [], []
         chunk_count = 0
-        chunk_latest_new, latest_versions = {}, {}
+        chunk_latest_new: Dict[str, Dict[str, str]] = {}
+        latest_versions: Dict[str, str] = {}
         for (drs_file, metadata) in SolrCore._get_metadata_from_path(
                 input_dir, abort_on_errors, suffix, drs_type=drs_type):
             chunk.append(metadata)
             if drs_file.versioned:
                 # TODO: We need a proper data set versioning.
-                version = latest_versions.get(drs_file.to_dataset(versioned=False), None)
+                version = latest_versions.get(drs_file.to_dataset(versioned=False), "-1")
                 idx = drs_file.to_dataset(versioned=False)
-                if version is None or drs_file.version > version:
+                if (drs_file.version or "0") > version:
                     # unknown or new version, update
-                    version = drs_file.version
+                    version = drs_file.version or "0"
                     latest_versions[idx] = version
                     chunk_latest_new[idx] = metadata
-                if  drs_file.version >= version:
+                if  (drs_file.version or "0") >= version:
                     chunk_latest.append(metadata)
             else:
                 # if not version always add to latest

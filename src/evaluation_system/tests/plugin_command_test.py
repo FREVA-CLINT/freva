@@ -3,20 +3,18 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
-import sys
 from functools import partial
 import os
 from pathlib import Path
 import pytest
 import mock
-from tempfile import TemporaryDirectory
 import time
 from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
 
 def test_tool_doc(capsys, plugin_doc, admin_env):
-    cmd = ["doc", "DummyPlugin", f"--file-name", str(plugin_doc)]
+    cmd = ["doc", "DummyPlugin", "--file-name", str(plugin_doc)]
     with mock.patch.dict(os.environ, admin_env, clear=True):
         run_cli(cmd)
         out = capsys.readouterr().out
@@ -33,9 +31,10 @@ def test_forbidden_tool_doc(dummy_env):
          run_cli(["solr", "doc" "--help"])
 
 def test_list_tools(capsys, dummy_env):
+    from freva.cli.plugin import main as run
     with pytest.raises(PluginNotFoundError):
-        run_cli("plugin --doc")
-    run_cli("plugin --list-tools")
+        run_cli("plugin --doc -d")
+    run(["--list-tools"])
     plugin_list = capsys.readouterr().out
     assert "DummyPlugin" in plugin_list
     run_cli(["plugin", "dummyplugin", "--doc"])

@@ -61,7 +61,7 @@ def databrowser(
         collection : List, Dict of files, facets or attributes
 
     """
-    facets : Optional[List[str]] = []
+    facets: Optional[List[str]] = []
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"]))

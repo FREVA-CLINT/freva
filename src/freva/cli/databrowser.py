@@ -113,6 +113,7 @@ class DataBrowserCli(BaseParser):
                 args.facets, append=True
         )
         facet_limit = kwargs.pop("facet_limit")
+        _ = kwargs.pop("facets")
         for key, values in facets.items():
             if len(values) == 1:
                 facets[key] = values[0]
