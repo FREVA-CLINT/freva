@@ -331,7 +331,7 @@ def root_path_with_empty_config(dummy_env):
     config.reloadConfiguration()
 
 @pytest.fixture(scope='module')
-def hist_obj(dummy_env):
+def hist_obj(django_user):
 
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
