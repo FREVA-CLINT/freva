@@ -28,10 +28,10 @@ import logging
 import json
 import importlib.machinery
 import subprocess as sub
+from typing import Dict, Optional, Tuple
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.api.parameters import ParameterNotFoundError
-from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
 from evaluation_system.misc import config, utils
 from subprocess import PIPE, run
@@ -64,7 +64,7 @@ plugin_name=>{
     description=>"string"}"""
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
-__version_cache = {}
+__version_cache: Dict[str, Optional[Tuple[int, ...]]] = {}
 
 
 def munge(seq):
