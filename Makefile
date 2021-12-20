@@ -16,5 +16,4 @@ test:
 		$(PWD)/src/evaluation_system/tests
 
 dummy-data:
-	compose/solr/ingest_dummy_data.sh
-	compose/dummy_plugin_runs.sh
+	python3 compose/solr/ingest_dummy_data.py
