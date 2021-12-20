@@ -13,7 +13,7 @@ import shlex
 from subprocess import run, PIPE
 from string import Template
 import sys
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 
 def run_cmd(cmd: str, **kwargs: Optional) -> str:
@@ -32,7 +32,6 @@ def get_console_size() -> Dict[str, int]:
     except ValueError:
         pass
     return dict(rows=rows, columns=columns)
-
 
 class Data(object):
     pass
@@ -206,7 +205,7 @@ in the background when retrieving the values."""
         return type('dict_wrapper', (object,), {'__getitem__':f, 'items':i})()
             
         
-    def substitute(self, substitute_dict, recursive = True):
+    def substitute(self, substitute_dict: dict[str, Any], recursive: bool = True) -> dict[str, Any]:
         """Substitute the values from substitute dictionary. Values in 
         ``substitute_dict`` take precedence from those in 
         :class:`TemplateDict.translation_dict`.

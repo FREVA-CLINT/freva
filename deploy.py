@@ -153,7 +153,8 @@ class Installer:
                     'ipython', 'imagemagick', 'libnetcdf', 'humanize', 'mamba',
                     'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pandas', 'pip',
                     'pillow', 'pymysql', 'pypdf2', 'pytest', 'pytest-env', 'cartopy',
-                    'pytest-cov', 'pytest-html', 'python-cdo', 'xarray', 'pandoc'])
+                    'pytest-cov', 'pytest-html', 'python-cdo', 'xarray', 'pandoc',
+                    'pint'])
     pip_pkgs = sorted(['pytest-html', 'python-git', 'python-swiftclient'])
 
     @property
