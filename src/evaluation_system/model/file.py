@@ -14,6 +14,7 @@ from typing import (
     Any,
     ClassVar,
     Literal,
+    cast,
     overload,
 )
 from dataclasses import dataclass, field
@@ -96,8 +97,17 @@ class DRSStructure:
         return d
 
 
-class FileComponents(TypedDict, total=False):
+class FileComponents(TypedDict):
     root_dir: str
+    # This is incorrect, parts is actually `dict[str, Optional[str]]` due to a check in
+    # from_path where it will insert a None under certain conditions.
+    # Fixing this would require changing a lot of code that currently seems to be
+    # working since Python's types are nullable by default so I guess it's fine until we
+    # want to start cleaning up ignores.
+    # The code also makes assumptions about the contents of parts like assuming the
+    # presence of a file_name key. I'm not sure this is worth capturing right now since
+    # I think it relates heavily to the DRS structure and thus the DRSStructure type
+    # which similarly doesn't have much encoded into its type.
     parts: dict[str, str]
 
 
@@ -129,7 +139,10 @@ class DRSFile:
         """
         self.drs_structure = drs_structure
         if not file_dict:
-            file_dict = {}
+            file_dict = {
+                "root_dir": "",
+                "parts": {},
+            }
         self.dict = file_dict
         # trim the last slash if present in root_dir
         if "root_dir" in self.dict and self.dict["root_dir"][-1] == "/":
@@ -312,29 +325,10 @@ class DRSFile:
         # ignored due to lazy initialization issue
         return DRSFile.DRS_STRUCTURE_PATH_TYPE  # type: ignore [return-value]
 
-    @overload
-    @staticmethod
-    def find_structure_from_path(
-        file_path: str, allow_multiples: Literal[True]
-    ) -> list[Activity]:
-        ...
-
-    @overload
-    @staticmethod
-    def find_structure_from_path(
-        file_path: str, allow_multiples: Literal[False]
-    ) -> list[Activity]:
-        ...
-
-    @overload
-    @staticmethod
-    def find_structure_from_path(file_path: str) -> Activity:
-        ...
-
     @staticmethod
     def find_structure_from_path(
         file_path: str, allow_multiples: bool = False
-    ) -> Union[Activity, list[Activity]]:
+    ) -> list[Activity]:
         """Return all DRS structures that might be applicable.
 
         This is resolved by checking if the prefix of any structure paths
@@ -348,12 +342,7 @@ class DRSFile:
             Full path to a file, whose drs structure is being searched for.
         allow_multiples
             If true returns a list with all possible structures, otherwise
-            returns the first match found. *Note*: the type annotations
-            are unable to convey cases where this is not called with a
-            literal `True` or `False` (as in when called with a boolean
-            variable). Explicit type checking by the caller or ignoring
-            the error is the only way to handle this scenario.
-
+            returns the first match found.
         Returns
         -------
         Union[Activity, List[Activity]]
@@ -370,7 +359,7 @@ class DRSFile:
                 if allow_multiples:
                     structures.append(st_type)
                 else:
-                    return st_type
+                    return [st_type]
         if not structures:
             raise ValueError(f"Unrecognized DRS structure in path {file_path}")
         else:
@@ -437,7 +426,7 @@ class DRSFile:
             or any configured structure if `activity` is None.
         """
         if activity is None:
-            activity = DRSFile.find_structure_from_path(path)
+            activity = DRSFile.find_structure_from_path(path)[0]
         path = os.path.abspath(path)
         structure = DRSFile._get_drs_structure(activity)
 
@@ -457,20 +446,18 @@ class DRSFile:
             )
 
         # first the dir
-        result: FileComponents = {}
-        result["root_dir"] = structure.root_dir
-        result["parts"] = {}
+        result: FileComponents = {
+            "root_dir": structure.root_dir,
+            "parts": {},
+        }
         for i in range(len(structure.parts_dir)):
             result["parts"][structure.parts_dir[i]] = parts[i]
 
         # split file name
         # (extract .nc before splitting)
-        # this type is technically incorrect. `split` would return a List[str] which is
-        # not compatible with List[Optional[str]] but works here because mypy thinks
-        # this returns Any anyway so it accepts whatever
-        file_name_parts: list[Optional[str]] = result["parts"]["file_name"][:-3].split(
-            "_"
-        )  # type: ignore[assignment]
+        file_name_parts = cast(
+            list[Optional[str]], result["parts"]["file_name"][:-3].split("_")
+        )
         if (
             len(file_name_parts) == len(structure.parts_file_name) - 1
             and "fx" in file_name_parts
