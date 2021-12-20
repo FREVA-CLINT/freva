@@ -74,7 +74,7 @@ def dummy_key():
     with NamedTemporaryFile(suffix='.crt') as tf:
         with Path(tf.name).open('w') as f:
             f.write('------ PUBLIC KEY ----\n12345\n---- END PUBLIC KEY ----')
-        yield os.environ.get('PUBKEY', tf.name)
+        yield tf.name
 
 
 @pytest.fixture(scope='session')

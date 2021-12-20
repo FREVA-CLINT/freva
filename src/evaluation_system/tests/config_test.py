@@ -32,16 +32,16 @@ def test_wrong_config():
 def test_vault(dummy_key, requests_mock, dummy_env):
     from configparser import ConfigParser, ExtendedInterpolation
     from evaluation_system.misc import config
-    mockenv(PUBKEY=dummy_key)
-    db_cfg = {}
-    for key in ('host', 'user', 'passwd', 'db'):
-        db_cfg[f'db.{key}'] = dummy_env['evaluation_system'][f'db.{key}']
-    sha = config._get_public_key('test_system')
-    url = f'http://{db_cfg["db.host"]}:5003/vault/data/{sha}'
-    requests_mock.get(url, json=db_cfg)
-    for key in ('db.passwd', 'db.user', 'db.db'):
-        assert config._read_secrets(sha, key, db_cfg['db.host'], port=5003,
-                protocol='http') == db_cfg[key]
+    with mockenv(PUBKEY=dummy_key):
+        db_cfg = {}
+        for key in ('host', 'user', 'passwd', 'db'):
+            db_cfg[f'db.{key}'] = dummy_env['evaluation_system'][f'db.{key}']
+        sha = config._get_public_key('test_system')
+        url = f'http://{db_cfg["db.host"]}:5003/vault/data/{sha}'
+        requests_mock.get(url, json=db_cfg)
+        for key in ('db.passwd', 'db.user', 'db.db'):
+            assert config._read_secrets(sha, key, db_cfg['db.host'], port=5003,
+                    protocol='http') == db_cfg[key]
 
 def test_get(dummy_env):
     from evaluation_system.misc import config
