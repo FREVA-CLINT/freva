@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional, List
 
 import argcomplete
 
-from .utils import BaseCompleter, BaseParser, parse_type
+from .utils import BaseCompleter, BaseParser
 from evaluation_system.misc.exceptions import (
     PluginNotFoundError,
     ParameterNotFoundError,
@@ -24,7 +24,7 @@ class PluginCli(BaseParser):
     def __init__(
         self,
         command: str = "freva",
-        parser: Optional[parse_type] = None,
+        parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the plugin sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(

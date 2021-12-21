@@ -15,7 +15,7 @@ from typing import Any, List, Optional
 import argcomplete
 from django.contrib.flatpages.models import FlatPage
 
-from ..utils import BaseCompleter, BaseParser, parse_type, is_admin
+from ..utils import BaseCompleter, BaseParser, is_admin
 
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.misc import config, logger
@@ -91,7 +91,7 @@ def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None):
         preview_path = Path(config.get("preview_path"))
         dest_dir = preview_path / f"doc/{tool}"
         dest_dir.mkdir(parents=True, exist_ok=True)
-        print(f"Flat pages for {tool_name} has been created")
+        logger.info(f"Flat pages for {tool_name} has been created")
 
 
 class DocCli(BaseParser):
@@ -99,7 +99,7 @@ class DocCli(BaseParser):
 
     desc = "Update the plugin documentation."
 
-    def __init__(self, parser: parse_type) -> None:
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
         parser.add_argument("tool", help="Plugin name", type=str)
@@ -112,15 +112,15 @@ class DocCli(BaseParser):
             default=None,
             type=Path,
         )
+        self.parser = parser
         parser.add_argument(
             "--debug",
-            "-d",
-            "-v",
+            "--verbose",
             help="Use verbose output.",
             action="store_true",
             default=False,
         )
-        self.parser = parser
+        self.logger.setLevel(20) #Set log level to info
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod

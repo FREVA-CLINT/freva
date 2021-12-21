@@ -50,7 +50,7 @@ def get_tools_list() -> str:
     return "\n".join(result)
 
 
-def handle_pull_request(tag, tool_name):
+def handle_pull_request(tag, tool_name: Optional[str]) -> Tuple[int, str]:
     if not tag:
         return 1, 'Missing required option "--tag"'
     # create new entry in
@@ -68,7 +68,7 @@ def handle_pull_request(tag, tool_name):
         return 1, "The pull request failed.\nPlease contact the admins."
     else:
         return 0, (
-            f"{tool_name} plugin is now updated in the system." f"\nNew version: {tag}"
+            f"{tool_name} plugin is now updated in the system.\nNew version: {tag}"
         )
 
 
@@ -92,7 +92,7 @@ def _return_value(value: int, result: Any, return_result: bool = True) -> Any:
 
 
 def run_plugin(
-    tool_name: Optional[str] = None,
+    tool_name: str,
     *,
     save: bool = False,
     save_config: Optional[Union[str, Path]] = None,
@@ -143,11 +143,10 @@ def run_plugin(
     ========
 
     """
+    _check_if_plugin_exists(tool_name)
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
-    tools = ""
     results = ""
-    _check_if_plugin_exists(tool_name or "")
     if pull_request:
         return _return_value(*handle_pull_request(tag, tool_name))
     if repo_version:
@@ -214,7 +213,7 @@ def run_plugin(
         )
         # repeat the warning at the end of the run
         # for readability don't show the warning in debug mode
-        if logger.level > logging.DEBUG:
+        if warning:
             logger.warning(warning)
     logger.debug("Arguments: %s", options)
     logger.debug("Current configuration:\n%s", json.dumps(tool_dict, indent=4))

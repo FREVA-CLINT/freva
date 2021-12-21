@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 from typing import Any, Optional
 
-from ..utils import BaseParser, parse_type, is_admin
+from ..utils import BaseParser, is_admin
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import config
@@ -49,7 +49,6 @@ def del_index(
     file_pattern: Path,
     host: Optional[str] = None,
     port: Optional[int] = None,
-    **kwargs: Optional[Any],
 ) -> None:
     """Delete entries from solr server.
 
@@ -72,7 +71,7 @@ class SolrIndex(BaseParser):
 
     desc = "(Re)-Index data on the apache solr server."
 
-    def __init__(self, parser: parse_type):
+    def __init__(self, parser: argparse.ArgumentParser):
         """Construct the parser for indexing data."""
         parser.add_argument(
             "input_dir",
@@ -93,14 +92,6 @@ class SolrIndex(BaseParser):
             help="Delete entries instead of adding them",
         )
         parser.add_argument(
-            "--debug",
-            "-d",
-            "-v",
-            help="Use verbose output.",
-            action="store_true",
-            default=False,
-        )
-        parser.add_argument(
             "--host",
             type=str,
             default=config.get("solr.host"),
@@ -113,6 +104,14 @@ class SolrIndex(BaseParser):
             help="Host port the solr server is listning to",
         )
         self.parser = parser
+        parser.add_argument(
+            "--debug",
+            "--verbose",
+            help="Use verbose output.",
+            action="store_true",
+            default=False,
+        )
+        self.logger.setLevel(20) #Set log level to info
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
@@ -120,7 +119,7 @@ class SolrIndex(BaseParser):
         """Reindex the data."""
         input_dir = kwargs.pop("input_dir")
         if kwargs.pop("delete"):
-            return del_index(input_dir, **kwargs)
+            return del_index(input_dir, port=kwargs["port"], host=kwargs["host"])
         re_index(input_dir, **kwargs)
 
 
@@ -129,7 +128,7 @@ class SolrCli(BaseParser):
 
     desc = "Apache solr server related sub-commands."
 
-    def __init__(self, parser: parse_type) -> None:
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
         self.sub_commands = ("index",)

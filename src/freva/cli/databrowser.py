@@ -1,10 +1,10 @@
 import argparse
 import sys
-from typing import Any, Dict, Optional, List, cast
+from typing import Any, Dict, Optional, List
 
 import argcomplete
 
-from .utils import BaseCompleter, BaseParser, parse_type
+from .utils import BaseCompleter, BaseParser
 from freva import databrowser
 
 
@@ -30,7 +30,7 @@ class DataBrowserCli(BaseParser):
     def __init__(
         self,
         command: str = "freva",
-        parser: Optional[parse_type] = None,
+        parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the databrwoser sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
@@ -117,7 +117,7 @@ class DataBrowserCli(BaseParser):
         for key, values in facets.items():
             if len(values) == 1:
                 facets[key] = values[0]
-        merged_args = cast(Any, {**kwargs, **facets})
+        merged_args: Dict[str, Any] = {**kwargs, **facets}
         out = databrowser(**merged_args)
         # flush stderr in case we have something pending
         sys.stderr.flush()
@@ -156,4 +156,4 @@ def main(argv: Optional[List[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        sys.exit(257)
+        sys.exit(130)

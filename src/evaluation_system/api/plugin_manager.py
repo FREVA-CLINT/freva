@@ -33,10 +33,9 @@ from evaluation_system.model.history.models import History, HistoryTag, Configur
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.api.parameters import ParameterNotFoundError
 from evaluation_system.model.user import User
-from evaluation_system.misc import config, utils
+from evaluation_system.misc import config, utils, logger as log
 from subprocess import PIPE, run
 from multiprocessing import Pool
-log = logging.getLogger(__name__)
 
 
 class PluginManagerException(Exception):
@@ -64,7 +63,7 @@ plugin_name=>{
     description=>"string"}"""
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
-__version_cache: Dict[str, Optional[Tuple[int, ...]]] = {}
+__version_cache: Dict[str, Optional[Tuple[str, ...]]] = {}
 
 
 def munge(seq):

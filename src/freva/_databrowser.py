@@ -36,23 +36,23 @@ def databrowser(
 
     Parameters:
     -----------
-    **search_facets: str
-        The search facets to be applied in the data search. If not given
+    **search_facets:
+        The searchfacets to be applied in the data search. If not given
         the whole dataset will be queried.
-    multiversion: bool (default False)
+    multiversion:
         Select all versions and not just the latest version (default).
-    relevant_only: bool (default False)
+    relevant_only:
         Show only facets that filter more than one result.
-    batch_size: int (default 10)
+    batch_size:
         Size of the search querey.
-    count_facet_values: bool (default False)
+    count_facet_values:
         Show the number of files for each values in each facet.
-    attributes: bool (default False)
+    attributes:
         Retrieve all possible attributes for the current search
         instead of the files.
-    all_facets: bool (default False)
+    all_facets:
         Retrieve all facets (attributes & values) instead of the files.
-    facet: str (default None)
+    facet:
         Retrieve these facets (attributes & values) instead of the files.
 
 
@@ -61,7 +61,7 @@ def databrowser(
         collection : List, Dict of files, facets or attributes
 
     """
-    facets: Optional[List[str]] = []
+    facets: List[str] = []
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"]))
@@ -70,7 +70,6 @@ def databrowser(
         pass
     if isinstance(facet, str):
         facet = [facet]
-    facets = facets or []
     facet = facet or []
     facets += [f for f in facet if f]
     latest = not multiversion
@@ -97,10 +96,8 @@ def databrowser(
         return out
     if attributes:
         # select all is none defined but this flag was set
-        facets = facets or None
-        facet = facet or None
         results = SolrFindFiles.facets(
-            facets=facets, latest_version=latest, **search_facets
+            facets=facets or None, latest_version=latest, **search_facets
         )
         if relevant_only:
             return (k for k in results if len(results[k]) > 2)

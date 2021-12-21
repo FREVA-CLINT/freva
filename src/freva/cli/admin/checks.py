@@ -6,7 +6,7 @@ import argparse
 import os
 
 
-from ..utils import BaseParser, parse_type, is_admin
+from ..utils import BaseParser, is_admin
 
 from evaluation_system.misc import logger
 from evaluation_system.misc.exceptions import CommandError
@@ -77,7 +77,7 @@ class CheckCli(BaseParser):
 
     desc = "Perform various checks."
 
-    def __init__(self, parser: parse_type) -> None:
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
         sub_commands = ("broken-runs", "pull-request")
@@ -110,20 +110,21 @@ class PullRequest(BaseParser):
 
     desc = "Check for incoming pull requests."
 
-    def __init__(self, parser: parse_type) -> None:
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
-        parser.add_argument(
-            "--debug",
-            "-v",
-            help="use verbose output.",
-            action="store_true",
-            default=False,
-        )
         parser.add_argument(
             "--deamon", help="Spawn in daemon mode", action="store_true", default=False
         )
         self.parser = parser
+        parser.add_argument(
+            "--debug",
+            "--verbose",
+            help="Use verbose output.",
+            action="store_true",
+            default=False,
+        )
+        self.logger.setLevel(20) #Set log level to info
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
@@ -138,18 +139,18 @@ class BrokenRun(BaseParser):
 
     desc = "Check for broken runs and report them."
 
-    def __init__(self, parser: parse_type) -> None:
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
+        self.parser = parser
         parser.add_argument(
             "--debug",
-            "-d",
-            "-v",
-            help="use verbose output.",
+            "--verbose",
+            help="Use verbose output.",
             action="store_true",
             default=False,
         )
-        self.parser = parser
+        self.logger.setLevel(20) #Set log level to info
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod

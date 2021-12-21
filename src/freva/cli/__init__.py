@@ -15,7 +15,7 @@ from evaluation_system.misc import config, logger
 class ArgParser(BaseParser):
     """Cmd argument parser class for main entry-point."""
 
-    def __init__(self, argv=None):
+    def __init__(self, argv):
 
         sub_commands = (
             "databrowser",
@@ -49,7 +49,7 @@ class ArgParser(BaseParser):
         try:
             args.apply_func(args, **self.kwargs)
         except KeyboardInterrupt:
-            sys.exit(257)
+            sys.exit(130)
 
     def parse_crawl_my_data(self):
         """Parse the user data crawl."""

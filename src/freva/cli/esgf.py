@@ -4,7 +4,7 @@ import sys
 from typing import Optional, List, Any, cast, Dict, Union
 import argcomplete
 
-from .utils import BaseCompleter, BaseParser, parse_type
+from .utils import BaseCompleter, BaseParser
 import freva
 
 
@@ -16,7 +16,7 @@ class EsgfCli(BaseParser):
     def __init__(
         self,
         command: str = "freva",
-        parser: Optional[parse_type] = None,
+        parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the esgf sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
@@ -136,4 +136,4 @@ def main(argv: Optional[List[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        sys.exit(257)
+        sys.exit(130)

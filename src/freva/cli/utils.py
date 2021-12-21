@@ -7,11 +7,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
 
-parse_type = argparse.ArgumentParser
-"""Argparses supaparser type"""
-arg_type = argparse.Namespace
-"""Argparses Namespace type (after parsing the cmd arguments)"""
-
 
 def is_admin(raise_error: bool = False) -> bool:
     """Check if the user at runtime is one of the admins.
@@ -69,7 +64,7 @@ class BaseCompleter:
                 out_dict[key] = [value]
         return out_dict
 
-    def _to_dict(self, parsed_args: arg_type) -> Dict[str, List[str]]:
+    def _to_dict(self, parsed_args: argparse.ArgumentParser) -> Dict[str, List[str]]:
         args = getattr(parsed_args, self.metavar)
         return self.arg_to_dict(args)
 
@@ -80,7 +75,10 @@ class BaseCompleter:
 class BaseParser:
     """Base class for common command line argument parsers."""
 
-    def __init__(self, sub_commands: Tuple[str, ...], parser: parse_type) -> None:
+    def __init__(self,
+                 sub_commands: Tuple[str, ...],
+                 parser: argparse.ArgumentParser,
+                ) -> None:
         """Create the sub-command parsers."""
 
         self.parser = parser
@@ -89,10 +87,15 @@ class BaseParser:
         for command in sub_commands:
             getattr(self, f"parse_{command.replace('-','_')}")()
 
+    @property
+    def logger(self):
+        """Use evaluation_system logger in all classes using ths class."""
+        return logger
+
     def set_debug(self, debug: bool):
         """Set the logger level to DEBUG."""
         if debug is True:
-            logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
 
     def parse_args(self, argv: Optional[List[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""

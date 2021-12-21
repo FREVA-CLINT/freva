@@ -10,7 +10,7 @@ We define two cores::
 * latest: only those files from the latest dataset version - id is file_no_version (full file path *wothout* version information)
 
 """
-
+from __future__ import annotations
 import os
 import shutil
 import urllib
@@ -18,7 +18,7 @@ import urllib.request
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Tuple, TypeVar, Generic
+from typing import Dict, Iterator, Optional, Tuple
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
@@ -264,8 +264,8 @@ unloading the original code))"""
                 chunk_size: int = 10000,
                 suffix: Tuple[str, ...] = ('.nc', '.grb', '.zarr', '.grib', '.nc4'),
                 core: Optional[str] = None,
-                core_latest: Optional[Any] = None,
-                core_all_files: Optional[Any] = None,
+                core_latest: Optional[SolrCore] = None,
+                core_all_files: Optional[SolrCore] = None,
                 abort_on_errors: bool = False,
                 host: Optional[str] = None,
                 port: Optional[int] = None,
@@ -327,8 +327,8 @@ unloading the original code))"""
                 chunk_latest_new[drs_file.to_dataset(versioned=False)] = metadata
                 chunk_latest.append(metadata)
             if len(chunk) >= chunk_size:
-                print("Sending entries %s-%s" % (chunk_count * chunk_size,
-                                                 (chunk_count+1) * chunk_size))
+                log.info("Sending entries %s-%s" % (chunk_count * chunk_size,
+                                                   (chunk_count+1) * chunk_size))
                 core_all_files.post(chunk)
                 chunk = []
                 chunk_count += 1
@@ -337,7 +337,7 @@ unloading the original code))"""
                     chunk_latest, chunk_latest_new = [], {}
         # flush
         if len(chunk) > 0:
-            print("Sending last %s entries" % (len(chunk)))
+            log.info("Sending last %s entries" % (len(chunk)))
             core_all_files.post(chunk)
             if chunk_latest:
                 core_latest.post(chunk_latest)

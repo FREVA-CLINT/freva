@@ -3,6 +3,7 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
+import logging
 from functools import partial
 import os
 from pathlib import Path
@@ -13,13 +14,15 @@ from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
 
-def test_tool_doc(capsys, plugin_doc, admin_env):
+def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
     cmd = ["doc", "DummyPlugin", "--file-name", str(plugin_doc)]
     with mock.patch.dict(os.environ, admin_env, clear=True):
         run_cli(cmd)
         out = capsys.readouterr().out
-        assert 'dummyplugin' in out.lower()
-        assert 'created' in out.lower()
+        _, loglevel, message = caplog.record_tuples[-1]
+        assert loglevel == logging.INFO
+        assert 'dummyplugin' in message.lower()
+        assert 'created' in message.lower()
         with pytest.raises(FileNotFoundError):
             run_cli(cmd[:-2])
 
