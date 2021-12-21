@@ -8,7 +8,7 @@ from evaluation_system.misc import config, logger
 
 
 if __name__ == "__main__":
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     config.reloadConfiguration()
     SolrCore.load_fs(
         Path(".").absolute() / ".docker" / "data",
