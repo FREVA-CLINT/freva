@@ -38,7 +38,7 @@ def test_freva_databrowser_method(dummy_solr):
     assert v in res[0]
     with pytest.raises(TypeError):
         databrowser("badoption")
-    res = databrowser(all_facets=True, ralevant_only=True)
+    res = databrowser(all_facets=True, relevant_only=True)
     assert isinstance(res, dict)
     target = sorted(
         [
