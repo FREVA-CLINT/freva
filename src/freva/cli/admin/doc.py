@@ -74,7 +74,7 @@ def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None):
     plugin_path = Path(pm.getPluginInstance(tool_name).getClassBaseDir())
     doc_file = Path(master_doc or plugin_path / "doc" / "{tool_name}.tex")
     if not doc_file.is_file():
-        raise FileNotFoundError(f"No ducumentation found in {doc_file.parent}")
+        raise FileNotFoundError(f"No documentation found in {doc_file.parent}")
     tool = tool_name.lower()
     # copy folder to /tmp for processing
     config.reloadConfiguration()
