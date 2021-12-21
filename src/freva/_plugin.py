@@ -29,7 +29,7 @@ def list_plugins() -> List[str]:
 
 
 def get_tools_list() -> str:
-    """Get a list of plugins with thier describtion."""
+    """Get a list of plugins with their description."""
     env = utils.get_console_size()
     # we just have to show the list and stop processing
     name_width = 0
