@@ -3,7 +3,7 @@
 import argparse
 from getpass import getuser
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
 
@@ -76,9 +76,8 @@ class BaseParser:
     """Base class for common command line argument parsers."""
 
     def __init__(self,
-                 sub_commands: Tuple[str, ...],
-                 parser: argparse.ArgumentParser,
-                ) -> None:
+                 sub_commands: List[str],
+                 parser: argparse.ArgumentParser) -> None:
         """Create the sub-command parsers."""
 
         self.parser = parser

@@ -4,31 +4,29 @@ import argcomplete
 import argparse
 import sys
 
-import freva
-from .utils import BaseCompleter, BaseParser, is_admin
+from .utils import BaseParser, is_admin
 from typing import Optional, List
 
 COMMAND = "freva"
-from evaluation_system.misc import config, logger
 
 
 class ArgParser(BaseParser):
     """Cmd argument parser class for main entry-point."""
 
-    def __init__(self, argv):
+    def __init__(self, argv: List[str]):
 
-        sub_commands = (
+        sub_commands = [
             "databrowser",
             "plugin",
             "history",
             "crawl-my-data",
             "esgf",
-        )
+            ]
         epilog = f"""To get help for the individual sub-commands use:
         {COMMAND} <sub-command> --help
 """
         argv = argv or sys.argv[1:]
-        admin_commands = ("solr", "check", "doc")
+        admin_commands = ["solr", "check", "doc"]
         if is_admin():
             sub_commands += admin_commands
         try:
@@ -39,10 +37,10 @@ class ArgParser(BaseParser):
         parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
-            description=f"Free EVAluation sysystem framework (freva)",
+            description="Free EVAluation sysystem framework (freva)",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        self.call_parsers = []
+        self.call_parsers: List[argparse.ArgumentParser] = []
         super().__init__(sub_commands, parser)
         args = self.parse_args(argv)
         argcomplete.autocomplete(self.parser)
@@ -51,7 +49,7 @@ class ArgParser(BaseParser):
         except KeyboardInterrupt:
             sys.exit(130)
 
-    def parse_crawl_my_data(self):
+    def parse_crawl_my_data(self) -> None:
         """Parse the user data crawl."""
         from .crawl_my_data import CrawlDataCli
 
@@ -63,9 +61,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = CrawlDataCli(COMMAND, self.call_parsers[-1])
+        CrawlDataCli(COMMAND, self.call_parsers[-1])
 
-    def parse_history(self):
+    def parse_history(self) -> None:
         """Parse the history command."""
         from .history import HistoryCli
 
@@ -77,9 +75,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = HistoryCli(COMMAND, self.call_parsers[-1])
+        HistoryCli(COMMAND, self.call_parsers[-1])
 
-    def parse_plugin(self):
+    def parse_plugin(self) -> None:
         """Parse the plugin command."""
         from .plugin import PluginCli
 
@@ -91,9 +89,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = PluginCli(COMMAND, self.call_parsers[-1])
+        PluginCli(COMMAND, self.call_parsers[-1])
 
-    def parse_check(self):
+    def parse_check(self) -> None:
         """Parse the check command."""
         from .admin.checks import CheckCli
 
@@ -105,9 +103,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = CheckCli(self.call_parsers[-1])
+        CheckCli(self.call_parsers[-1])
 
-    def parse_solr(self):
+    def parse_solr(self) -> None:
         """Parse the solr index command."""
         from .admin.solr import SolrCli
 
@@ -119,9 +117,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = SolrCli(self.call_parsers[-1])
+        SolrCli(self.call_parsers[-1])
 
-    def parse_doc(self):
+    def parse_doc(self) -> None:
         """Parse the docu update command."""
         from .admin.doc import DocCli
 
@@ -133,9 +131,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = DocCli(self.call_parsers[-1])
+        DocCli(self.call_parsers[-1])
 
-    def parse_esgf(self):
+    def parse_esgf(self) -> None:
         """Parse the esgf command."""
         from .esgf import EsgfCli
 
@@ -147,9 +145,9 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = EsgfCli(COMMAND, self.call_parsers[-1])
+        EsgfCli(COMMAND, self.call_parsers[-1])
 
-    def parse_databrowser(self):
+    def parse_databrowser(self) -> None:
         """Parse the databrowser command."""
         from .databrowser import DataBrowserCli
 
@@ -161,7 +159,7 @@ class ArgParser(BaseParser):
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
-        _cli = DataBrowserCli(COMMAND, self.call_parsers[-1])
+        DataBrowserCli(COMMAND, self.call_parsers[-1])
 
 
 def main(argv: Optional[List[str]] = None) -> None:
