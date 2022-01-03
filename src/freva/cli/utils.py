@@ -75,9 +75,9 @@ class BaseCompleter:
 class BaseParser:
     """Base class for common command line argument parsers."""
 
-    def __init__(self,
-                 sub_commands: List[str],
-                 parser: argparse.ArgumentParser) -> None:
+    def __init__(
+        self, sub_commands: List[str], parser: argparse.ArgumentParser
+    ) -> None:
         """Create the sub-command parsers."""
 
         self.parser = parser

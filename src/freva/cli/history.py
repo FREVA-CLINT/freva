@@ -35,8 +35,10 @@ class HistoryCli(BaseParser):
             "--return-command",
             default=False,
             action="store_true",
-            help=("Show freva commands belonging to the history entries "
-                  "instead of the entries themself."),
+            help=(
+                "Show freva commands belonging to the history entries "
+                "instead of the entries themself."
+            ),
         )
         subparser.add_argument(
             "--limit",

@@ -11,15 +11,29 @@ __all__ = ["databrowser"]
 
 
 @overload
-def databrowser(*, attributes: Literal[False], all_facets: Literal[False], facet: Union[str, List[str]]) -> Dict[Any, Dict[Any, Any]]:
+def databrowser(
+    *,
+    attributes: Literal[False],
+    all_facets: Literal[False],
+    facet: Union[str, List[str]],
+) -> Dict[Any, Dict[Any, Any]]:
     ...
 
-@overload
-def databrowser(*, attributes: Literal[False], all_facets: Literal[True]) -> Dict[Any, Dict[Any, Any]]:
-    ...
 
 @overload
-def databrowser(*, attributes: Literal[True], all_facets: Literal[False], facet: Optional[Union[str, List[str]]]) -> Iterator[str]:
+def databrowser(
+    *, attributes: Literal[False], all_facets: Literal[True]
+) -> Dict[Any, Dict[Any, Any]]:
+    ...
+
+
+@overload
+def databrowser(
+    *,
+    attributes: Literal[True],
+    all_facets: Literal[False],
+    facet: Optional[Union[str, List[str]]],
+) -> Iterator[str]:
     ...
 
 

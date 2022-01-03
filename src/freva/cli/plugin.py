@@ -141,9 +141,7 @@ class PluginCli(BaseParser):
         if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        options: Dict[str, Any] = BaseCompleter.arg_to_dict(
-                kwargs.pop("options", {})
-        )
+        options: Dict[str, Any] = BaseCompleter.arg_to_dict(kwargs.pop("options", {}))
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]

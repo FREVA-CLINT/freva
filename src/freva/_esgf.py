@@ -24,7 +24,7 @@ def esgf(
     query: Optional[str] = None,
     opendap: bool = False,
     gridftp: bool = False,
-    **search_constraints: Dict[str, str]
+    **search_constraints: Dict[str, str],
 ) -> Union[str, List[Tuple[str, str]], Dict[str, List[str]]]:
     """Find data in the ESGF.
 

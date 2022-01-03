@@ -111,7 +111,7 @@ class SolrIndex(BaseParser):
             action="store_true",
             default=False,
         )
-        self.logger.setLevel(20) #Set log level to info
+        self.logger.setLevel(20)  # Set log level to info
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod

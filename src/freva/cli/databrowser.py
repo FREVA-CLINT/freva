@@ -14,9 +14,7 @@ class ChoicesCompleter(BaseCompleter):
     def __call__(self, **kwargs: Any) -> List[str]:  # pragma: no cover
         choices = []
         facets = self._to_dict(kwargs["parsed_args"])
-        search = databrowser(attributes=False,
-                             all_facets=True,
-                             **facets)
+        search = databrowser(attributes=False, all_facets=True, **facets)
         for key, values in search.items():
             if key not in facets:
                 for value in values:
@@ -108,12 +106,9 @@ class DataBrowserCli(BaseParser):
         argcomplete.autocomplete(self.parser)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace,
-                **kwargs: Optional[Any]) -> None:
+    def run_cmd(args: argparse.Namespace, **kwargs: Optional[Any]) -> None:
         """Call the databrowser command and print the results."""
-        facets: Dict[str, Any] = ChoicesCompleter.arg_to_dict(
-                args.facets, append=True
-        )
+        facets: Dict[str, Any] = ChoicesCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
         _ = kwargs.pop("facets")
         for key, values in facets.items():

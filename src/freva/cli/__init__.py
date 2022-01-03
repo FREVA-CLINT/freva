@@ -21,7 +21,7 @@ class ArgParser(BaseParser):
             "history",
             "crawl-my-data",
             "esgf",
-            ]
+        ]
         epilog = f"""To get help for the individual sub-commands use:
         {COMMAND} <sub-command> --help
 """
