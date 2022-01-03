@@ -63,7 +63,7 @@ plugin_name=>{
     description=>"string"}"""
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
-__version_cache: Dict[str, Optional[Tuple[str, ...]]] = {}
+__version_cache: Dict[str, Tuple[str, str]] = {}
 
 
 def munge(seq):
