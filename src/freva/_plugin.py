@@ -50,7 +50,8 @@ def get_tools_list() -> str:
     return "\n".join(result)
 
 
-def handle_pull_request(tag, tool_name: Optional[str]) -> Tuple[int, str]:
+def handle_pull_request(tag: Optional[str],
+                        tool_name: Optional[str]) -> Tuple[int, str]:
     if not tag:
         return 1, 'Missing required option "--tag"'
     # create new entry in
@@ -104,7 +105,7 @@ def run_plugin(
     batchmode: bool = False,
     pull_request: bool = False,
     caption: str = "",
-    tag: bool = False,
+    tag: Optional[str] = None,
     return_result: bool = False,
     **options: Dict[str, Union[str, float, int]],
 ) -> Tuple[int, Any]:

@@ -4,8 +4,7 @@ __all__ = ["check4broken_runs", "check4pull_request"]
 
 import argparse
 import os
-
-
+from typing import Any
 from ..utils import BaseParser, is_admin
 
 from evaluation_system.misc import logger
@@ -128,7 +127,7 @@ class PullRequest(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Apply the check4broken_runs method"""
 
         check4pull_request()
@@ -154,7 +153,7 @@ class BrokenRun(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Apply the check4broken_runs method"""
 
         check4broken_runs()

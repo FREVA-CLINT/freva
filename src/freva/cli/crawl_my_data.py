@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional, List
+from typing import Any, Optional, List
 
 import argcomplete
 
@@ -53,7 +53,7 @@ class CrawlDataCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs) -> None:
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         try:
             freva.crawl_my_data(*args.crawl_dir, dtype=args.data_type)

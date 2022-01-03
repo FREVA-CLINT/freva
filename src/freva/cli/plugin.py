@@ -136,7 +136,7 @@ class PluginCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the databrowser command and print the results."""
         if kwargs.pop("list_tools"):
             print(get_tools_list())

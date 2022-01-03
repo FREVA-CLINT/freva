@@ -87,11 +87,11 @@ class BaseParser:
             getattr(self, f"parse_{command.replace('-','_')}")()
 
     @property
-    def logger(self):
+    def logger(self) -> logging.Logger:
         """Use evaluation_system logger in all classes using ths class."""
         return logger
 
-    def set_debug(self, debug: bool):
+    def set_debug(self, debug: bool) -> None:
         """Set the logger level to DEBUG."""
         if debug is True:
             self.logger.setLevel(logging.DEBUG)

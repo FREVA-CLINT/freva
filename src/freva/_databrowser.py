@@ -5,21 +5,34 @@ from pathlib import Path
 from evaluation_system.misc import logger
 from evaluation_system.model.solr import SolrFindFiles
 
-from typing import Any, Optional, Union, Dict, Iterator, List
+from typing import Any, Optional, Union, Dict, Iterator, List, overload, Literal
 
 __all__ = ["databrowser"]
 
 
+@overload
+def databrowser(*, attributes: Literal[False], all_facets: Literal[False], facet: Union[str, List[str]]) -> Dict[Any, Dict[Any, Any]]:
+    ...
+
+@overload
+def databrowser(*, attributes: Literal[False], all_facets: Literal[True]) -> Dict[Any, Dict[Any, Any]]:
+    ...
+
+@overload
+def databrowser(*, attributes: Literal[True], all_facets: Literal[False], facet: Optional[Union[str, List[str]]]) -> Iterator[str]:
+    ...
+
+
 def databrowser(
     *,
+    attributes: bool = False,
+    all_facets: bool = False,
+    facet: Optional[Union[str, List[str]]] = None,
     multiversion: bool = False,
     relevant_only: bool = False,
     batch_size: int = 10,
     count_facet_values: bool = False,
-    attributes: bool = False,
-    all_facets: bool = False,
-    facet: Optional[Union[str, List[str]]] = None,
-    **search_facets: Union[str, Path, int],
+    **search_facets: Union[str, Path, int, List[str]],
 ) -> Union[Dict[Any, Dict[Any, Any]], Iterator[str]]:
     """Find data in the system.
 

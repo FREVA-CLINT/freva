@@ -36,7 +36,7 @@ class Convert2Html:
         suffix = Path(input_file).suffix.strip(".")
         self.conv_func = getattr(self, f"convert_{suffix}")
 
-    def convert_tex(self):
+    def convert_tex(self) -> str:
         """Convert latex to html files."""
         bibfiles = [str(f) for f in self.input_dir.rglob("*.bib")]
         cmd = f"pandoc {self.input_file} -f latex -t html5"
@@ -68,7 +68,7 @@ class Convert2Html:
         return text.replace('mathsize="big"', "")
 
 
-def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None):
+def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None) -> None:
     """Update the html files of tool documentation"""
     is_admin(raise_error=True)
     plugin_path = Path(pm.getPluginInstance(tool_name).getClassBaseDir())
@@ -124,7 +124,7 @@ class DocCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Apply the check4broken_runs method"""
 
         update_tool_doc(args.tool, args.file_name)

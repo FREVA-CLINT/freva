@@ -115,7 +115,7 @@ class SolrIndex(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs):
+    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Reindex the data."""
         input_dir = kwargs.pop("input_dir")
         if kwargs.pop("delete"):

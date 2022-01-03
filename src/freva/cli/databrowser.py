@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Union
 
 import argcomplete
 
@@ -11,10 +11,12 @@ from freva import databrowser
 class ChoicesCompleter(BaseCompleter):
     """Extent the BaseCompleter by a databrowser specific __call__method ."""
 
-    def __call__(self, **kwargs):  # pragma: no cover
+    def __call__(self, **kwargs: Any) -> List[str]:  # pragma: no cover
         choices = []
         facets = self._to_dict(kwargs["parsed_args"])
-        search = databrowser(all_facets=True, **facets)
+        search = databrowser(attributes=False,
+                             all_facets=True,
+                             **facets)
         for key, values in search.items():
             if key not in facets:
                 for value in values:
