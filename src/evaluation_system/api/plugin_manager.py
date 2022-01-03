@@ -28,15 +28,14 @@ import logging
 import json
 import importlib.machinery
 import subprocess as sub
+from typing import Dict, Optional, Tuple
 from evaluation_system.model.history.models import History, HistoryTag, Configuration
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.api.parameters import ParameterNotFoundError
-from evaluation_system.model.repository import getVersion
 from evaluation_system.model.user import User
-from evaluation_system.misc import config, utils
+from evaluation_system.misc import config, utils, logger as log
 from subprocess import PIPE, run
 from multiprocessing import Pool
-log = logging.getLogger(__name__)
 
 
 class PluginManagerException(Exception):
@@ -64,7 +63,7 @@ plugin_name=>{
     description=>"string"}"""
 """ A dictionary which acts as a cache for the git information to
     reduce hard disk access"""
-__version_cache = {}
+__version_cache: Dict[str, Tuple[str, str]] = {}
 
 
 def munge(seq):
@@ -147,7 +146,8 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                 __plugin_modules__[plugin_name] = os.path.join(py_dir, py_mod)
         else:
             log.warn("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
-    # new way of loading plugins
+    # new way of loading plugins 
+    # TODO: Sorry the code below is bollocks! this needs to go!
     import re
     reg = re.compile(r'__short_description__\s*=(.*)')
     r = re.compile(r'\'(.*)\'')
@@ -166,23 +166,18 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
         tags = None
         class_name_str = ''
         for line in f:
+            line = line.replace("'", '"')
             description = re.search(reg, line)
-            if description is not None:
-                description_str = re.search(r, description.groups()[0])
-                if description_str is None:
-                    description_str = re.search(r_2, description.groups()[0])
-                if description_str is not None:
-                    description_str = description_str.groups()[0]
+            if description:
+                description_str = json.loads(line.split("=")[-1].strip())
             # search for category
             category_search = re.search(cat_reg, line)
             if category_search:
-                category = re.search(r, category_search.groups()[0])
-                category = category.groups()[0]
+                category_str = json.loads(line.split("=")[-1].strip())
             # search for tags
             tags_search = re.search(tag_reg, line)
             if tags_search:
-                tags = re.search(r_list, tags_search.groups()[0])
-                tags = list(eval(tags.groups()[0]))
+                tags = json.loads(line.split('=')[-1].strip())
             # search for classname
             class_name = re.search(reg_class_name, line)
             if class_name is not None:
@@ -200,8 +195,8 @@ and can therefore overwrite existing plug-ins (useful for debugging and testing)
                                                           tags=tags)
             __plugins__[class_name_str] = class_name_str
         elif class_name_str != '':
-            log.warn("Default plugin %s is being overwritten by: %s",
-                     class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
+            log.warning("Default plugin %s is being overwritten by: %s",
+                         class_name_str, __plugins_meta[class_name_str.lower()]['plugin_module']+'.py')
     sys.path = [p for p in munge(sys.path)]
     __plugin_modules_user__[user_name] = __plugin_modules__
     __plugins_user__[user_name] = __plugins__
@@ -257,8 +252,7 @@ description
             similar_words = utils.find_similar_words(plugin_name, getPlugins(user_name))
             if similar_words:
                 mesg = "%s\n Did you mean this?\n\t%s" % (mesg, '\n\t'.join(similar_words))
-            mesg = '%s\n\nUse --list-tools to list all available plug-ins.' % mesg
-            raise PluginManagerException(mesg + ' %s' % user_name)
+            raise PluginManagerException(mesg + "\n")
     return getPlugins(user_name)[plugin_name]
 
 

@@ -35,6 +35,7 @@ therefore live longer"""
         
     EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR,'evaluation_system.config')
     """The file containing a central configuration for the whole system (user-wise)"""
+    
     EVAL_SYS_DEFAULT_CONFIG = os.path.normpath(os.path.dirname(__file__)+'/../../etc/system_default.config')
     """The central default configuration file for all users. It should not be confused with the system configuration
 file that is handled by :class:`evaluation_system.api.config`."""

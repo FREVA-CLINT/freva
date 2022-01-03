@@ -102,9 +102,7 @@ def test_parse_arguments(dummy_settings, temp_user):
         d = pm.parseArguments('Dummyplugin', args.split(), use_user_defaults=True, user=temp_user)
         assert d == result
 
-    if os.path.isdir(home) and home.startswith(tempfile.gettempdir()):
-        # make sure the home is a temporary one!!!
-        shutil.rmtree(home)
+    shutil.rmtree(home)
 
 def test_write_setup(dummy_settings, temp_user):
     import evaluation_system.api.plugin_manager as pm

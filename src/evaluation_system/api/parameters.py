@@ -6,22 +6,16 @@ Created on 15.03.2013
 This types represent the type of parameter a plugin expects and gives some
 metadata about them.
 '''
+import json
+from typing import Optional, Union, Type
 
 from evaluation_system.misc.utils import (find_similar_words, PrintableList,
                                           initOrder)
+from evaluation_system.misc.exceptions import (ValidationError,
+                                               ParameterNotFoundError)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.history.models import Configuration
-import json
 
-
-class ValidationError(Exception):
-    "Thrown if some variable contains an improper value."
-    pass
-
-
-class ParameterNotFoundError(Exception):
-    "Thrown if some parameter is not in the database."
-    pass
 
 
 class ParameterDictionary(dict):
@@ -209,7 +203,10 @@ for those not provided parameters that has no defaults.
 class ParameterType(initOrder):
     """A General type for all parameter types in the framework"""
     _pattern = None         #laizy init.
-    base_type = None
+    base_type: Optional[Union[Type[str],
+                              Type[int],
+                              Type[float],
+                              Type[bool]]] = None
 
     def __init__(self, name=None, default=None,
                  mandatory=False, max_items=1, item_separator=',', regex=None,
@@ -410,7 +407,7 @@ class String(ParameterType):
 class Integer(ParameterType):
     """An integer parameter."""
     base_type = int
-    def __init__(self, regex='^[+-]?[0-9]+$', **kwargs):
+    def __init__(self, regex=r'^[+-]?[0-9]+$', **kwargs):
         ParameterType.__init__(self, regex=regex, **kwargs)
 
 

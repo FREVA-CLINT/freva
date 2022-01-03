@@ -15,6 +15,9 @@ class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstract one"""
     __short_description__ = 'A dummy plugin'
     __version__ = (0,0,0)
+    __tags__ = ["foo"]
+    __category__ = "statistical"
+    __name__ = "DummyPlugin"
     __parameters__ =  ParameterDictionary(
                                    Integer(name='number', help='This is just a number, not really important'),
                                    Integer(name='the_number',mandatory=True,help='This is *THE* number. Please provide it'), 
@@ -65,8 +68,7 @@ class DummyUser(User):
         # copy the current data
         user_data = list(self._userdata[:])
         for key, value in override.items():
-            if key in DummyUserData._NAMES:
-                user_data[DummyUserData._NAMES.index(key)] = value
+            user_data[DummyUserData._NAMES.index(key)] = value
         self._userdata = DummyUserData(user_data)
         self._db = UserDB(self)
 

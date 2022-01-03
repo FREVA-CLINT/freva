@@ -14,12 +14,10 @@ from datetime import datetime
 import json
 import re
 import pandas as pd
-import logging
 from evaluation_system.misc import config
 from evaluation_system.model.history.models import Configuration
 
-log = logging.getLogger(__name__)
-
+from evaluation_system.misc import logger as log
 import evaluation_system.settings.database
 
 TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'

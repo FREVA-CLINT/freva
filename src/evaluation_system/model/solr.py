@@ -25,7 +25,7 @@ and read from the configuration file.
 """
         self.solr = SolrCore(core, host=host, port=port, get_status=get_status)
         
-    def __str__(self):  # pragma nocover
+    def __str__(self):  # pragma: no cover
         return '<SolrFindFiles %s>' % self.solr
     
     def _to_solr_query(self, partial_dict):
@@ -76,7 +76,7 @@ implement a result set object. But that would break the find_files compatibility
         query = self._to_solr_query(partial_dict)
         # DEPRECATED:
         # This is not used anymore, because we have 2 different cores now
-        if latest_version:  # pragma nocover
+        if latest_version:  # pragma: no cover
             query += '&group=true&group.field=file_no_version&group.sort=version+desc&group.ngroups=true&group.format=simple'
             
         while True:
@@ -89,7 +89,7 @@ implement a result set object. But that would break the find_files compatibility
                 yield meta
                 _retrieve_metadata = False
             # Not used anymore (see above)
-            if latest_version:  # pragma nocover
+            if latest_version:  # pragma: no cover
                 offset = answer['grouped']['file_no_version']['doclist']['start']
                 total = answer['grouped']['file_no_version']['ngroups']
                 iter_answer = answer['grouped']['file_no_version']['doclist']['docs']
@@ -149,7 +149,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
         if facets:
             query += '&facet=true&facet.sort=index&facet.mincount=1&facet.field=' + '&facet.field='.join(facets)
             
-        if latest_version:  # pragma nocover (see above)
+        if latest_version:  # pragma: no cover (see above)
             query += '&group=true&group.field=file_no_version&group.facet=true'
             
         answer = self.solr.get_json('select?facet=true&rows=0&%s' % query)
@@ -162,7 +162,7 @@ The implementation contacts the required Solr cores instead of contacting the fi
         return answer
             
     @staticmethod
-    def facets(latest_version=True, facets=None, **partial_dict):
+    def facets(latest_version=True, facets=None, facet_limit=-1, **partial_dict):
         # use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core='latest')

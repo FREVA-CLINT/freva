@@ -101,7 +101,7 @@ class History(models.Model):
         
         super(History, self).__init__(*args, **kwargs)
         
-    def __str__(self, compact=True):
+    def __str__(self, compact=True): # pragma: no cover
         conf_str = ''
         
         if compact:
@@ -122,8 +122,8 @@ class History(models.Model):
         return '%s) %s%s [%s] %s %s' % (self.pk, self.tool, version, self.timestamp, self.status_name(), conf_str)
 
     def slurmId(self):
-        id = re.sub('.*\-', '', self.slurm_output)
-        id = re.sub('\..*', '', id)
+        id = re.sub(r'.*\-', '', self.slurm_output)
+        id = re.sub(r'\..*', '', id)
         
         # always return a number, even when the string is too short
         # (the default value for the string is '0')

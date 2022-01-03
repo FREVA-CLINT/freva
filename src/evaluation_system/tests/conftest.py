@@ -2,9 +2,6 @@ from collections import namedtuple
 from configparser import ConfigParser, ExtendedInterpolation
 from datetime import datetime
 from getpass import getuser
-import importlib
-from io import StringIO
-import json
 import os
 from pathlib import Path
 import shutil
@@ -20,11 +17,13 @@ import mock
 from evaluation_system.misc import config
 
 
-def get_config():
+def get_config(admin=False):
     from .mocks import TEST_EVAL
     test_cfg = ConfigParser(interpolation=ExtendedInterpolation())
     test_cfg.read_string(TEST_EVAL)
     cfg_p = ConfigParser(interpolation=ExtendedInterpolation())
+    if admin:
+        test_cfg['evaluation_system'].setdefault('admins', getuser())
     items_to_overwrite = [
             'db.host',
             'db.user',
@@ -35,63 +34,34 @@ def get_config():
             'solr.port',
             'solr.core'
     ]
-    try:
-        cfg_p.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
-        cfg = dict(cfg_p['evaluation_system'].items())
-    except (FileNotFoundError, KeyError):
-        return test_cfg
+    cfg_p.read(os.environ['EVALUATION_SYSTEM_CONFIG_FILE'])
+    cfg = dict(cfg_p['evaluation_system'].items())
     for key in items_to_overwrite:
         value = test_cfg['evaluation_system'].get(key)
         test_cfg.set('evaluation_system', key, cfg.get(key, value))
     return test_cfg
 
-# The following is a recipe by 'Ciro Santilli TRUMP BAN IS BAD'
-# which was taken from stackoverflow 
-#(https://stackoverflow.com/questions/19009932/import-arbitrary-python-source-file-python-3-3#19011259)
-def import_path(path):
-    module_name = os.path.basename(path).replace('-', '_')
-    spec = importlib.util.spec_from_loader(
-        module_name,
-        importlib.machinery.SourceFileLoader(module_name, str(path))
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    sys.modules[module_name] = module
-    return module
-
-class OutputWrapper:
-    def __init__(self, ioStream):
-        self.__buffer = StringIO()
-        self.__original = ioStream
-        self.capturing = False
-
-    def write(self, s):
-        if self.capturing:
-            self.__buffer.write(s)
-        self.__original.write(s)
-
-    def writelines(self, strs):
-        if self.capturing:
-            self.__buffer.writelines(strs)
-        self.__original.writelines( strs)
-
-    def getvalue(self):
-        return str(self.__buffer.getvalue()).replace('\x00', '')
-
-    def reset(self):
-        self.__buffer.truncate(0)
-
-    def getOriginalStream(self):
-        return self.__original
-
-    def startCapturing(self):
-        self.capturing = True
-
-    def stopCapturing(self):
-        self.capturing = False
-
-    def __getattr__(self, *args, **kwargs):
-        return self.__original.__getattribute__(*args, **kwargs)
+def mock_config(keyfile, admin=False, patch_env=True):
+    config = get_config(admin)
+    with NamedTemporaryFile(suffix='.conf') as tf:
+        PATH = (Path(__file__).parent / 'mocks' / 'bin').absolute()
+        env = dict(
+                EVALUATION_SYSTEM_CONFIG_FILE=tf.name,
+                EVALUATION_SYSTEM_DRS_CONFIG_FILE=os.environ["EVALUATION_SYSTEM_DRS_CONFIG_FILE"],
+                PUBKEY=str(keyfile),
+                PATH=str(PATH)+ ':' + os.environ['PATH']
+        )
+        with open(tf.name, 'w') as f:
+            config.write(f)
+        if not patch_env:
+            yield env
+        else:
+            with mock.patch.dict(os.environ, env, clear=True):
+                yield config
+    try:
+        shutil.rmtree(config.get('base_dir_location'))
+    except:
+        pass
 
 @pytest.fixture(scope='function')
 def temp_script():
@@ -126,37 +96,16 @@ This is a dummy doc
 
 
 @pytest.fixture(scope='session')
+def admin_env(dummy_key):
+    yield from mock_config(dummy_key, admin=True, patch_env=False)
+
+@pytest.fixture(scope='session')
 def dummy_env(dummy_key):
-    config = get_config()
-    with NamedTemporaryFile(suffix='.conf') as tf:
-        PATH = (Path(__file__).parent / 'mocks' / 'bin').absolute()
-        env = dict(
-                EVALUATION_SYSTEM_CONFIG_FILE=tf.name,
-                EVALUATION_SYSTEM_DRS_CONFIG_FILE=os.environ["EVALUATION_SYSTEM_DRS_CONFIG_FILE"],
-                PUBKEY=str(dummy_key),
-                PATH=str(PATH)+ ':' + os.environ['PATH']
-        )
-        with open(tf.name, 'w') as f:
-            config.write(f)
-        with mock.patch.dict(os.environ, env, clear=True):
-            yield config
-    try:
-        shutil.rmtree(config.get('base_dir_location'))
-    except:
-        pass
+    yield from mock_config(dummy_key, admin=False)
 
 @pytest.fixture(scope='session')
 def git_config():
     yield 'git config init.defaultBranch main; git config user.name your_user; git; config user.email your@email.com'
-
-@pytest.fixture(scope='module')
-def dummy_pr(dummy_env, dummy_settings):
-
-    from evaluation_system.commands.admin.process_pull_requests import Command
-    from evaluation_system.api import plugin_manager as pm
-    pm.reloadPlugins()
-    dummy_settings.reloadConfiguration()
-    yield Command()
 
 @pytest.fixture(scope='module')
 def dummy_git_path():
@@ -175,14 +124,25 @@ def temp_dir():
 @pytest.fixture(scope='module')
 def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
 
-    from evaluation_system.model.solr_models.models import UserCrawl
     # At this point files have been ingested into the server already,
     # delete them again
     [getattr(dummy_solr, key).delete('*') for key in ('all_files', 'latest')]
-    yield dummy_solr
-    UserCrawl.objects.all().delete()
+    from evaluation_system.misc import config
+    root_path = Path(config.get("project_data")).absolute()
+    crawl_dir = root_path / f"user-{getuser()}"
+    user_files = []
+    orig_dir = dummy_solr.DRSFile.DRS_STRUCTURE['crawl_my_data'].root_dir
+    dummy_solr.DRSFile.DRS_STRUCTURE['crawl_my_data'].root_dir = str(crawl_dir)
+    for file in dummy_solr.files:
+        (crawl_dir / file).parent.mkdir(exist_ok=True, parents=True)
+        (crawl_dir / file).touch()
+        user_files.append(crawl_dir / file)
+    yield user_files
+    [getattr(dummy_solr, key).delete('*') for key in ('all_files', 'latest')]
+    dummy_solr.DRSFile.DRS_STRUCTURE['crawl_my_data'].root_dir = orig_dir
+    shutil.rmtree(root_path)
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='module')
 def dummy_solr(dummy_env, dummy_settings):
 
     dummy_settings.reloadConfiguration()
@@ -194,7 +154,6 @@ def dummy_solr(dummy_env, dummy_settings):
                                   'drsfile',
                                   'files',
                                   'cmd',
-                                  'dump_file'
                                   'DRSFILE'])
     server.solr_port = dummy_settings.get('solr.port')
     server.solr_host = dummy_settings.get('solr.host')
@@ -224,23 +183,18 @@ def dummy_solr(dummy_env, dummy_settings):
             abs_path.parent.mkdir(exist_ok=True, parents=True)
             with abs_path.open('w') as f_out:
                 f_out.write(' ')
-        dump_file = str(Path(server.tmpdir) / 'dump1.csv')
+        data_dir = Path(server.tmpdir) / 'cmip5'
         # add the files to solr
-        SolrCore.dump_fs_to_file(str(Path(server.tmpdir) /  'cmip5'), dump_file)
-        SolrCore.load_fs_from_file(
-            dump_file, abort_on_errors=True,
+        SolrCore.load_fs(
+            data_dir, abort_on_errors=True,
             core_all_files=server.all_files, core_latest=server.latest
         )
-        server.dump_file = dump_file
         server.DRSFile = DRSFile
         server.fn = str(Path(server.tmpdir) / server.files[0])
         server.drs = server.DRSFile.from_path(server.fn)
         yield server
-    try:
-        server.all_files.delete('*')
-        server.latest.delete('*')
-    except:
-        pass
+    server.all_files.delete('*')
+    server.latest.delete('*')
     DRSFile.DRS_STRUCTURE['cmip5'].root_dir = orig_dir
 
 
@@ -277,18 +231,6 @@ def dummy_history(dummy_env, dummy_settings):
     yield History
     History.objects.all().delete()
 
-@pytest.fixture(scope='function')
-def plugin_command(dummy_settings, dummy_env):
-
-    from evaluation_system.misc import config
-    from evaluation_system.api import plugin_manager as pm
-    from evaluation_system.commands.plugin import Command
-    config.reloadConfiguration()
-    pm.reloadPlugins()
-    yield Command()
-    config.reloadConfiguration()
-    pm.reloadPlugins()
-
 @pytest.fixture(scope='module')
 def test_user(dummy_env, dummy_settings, config_dict):
 
@@ -315,7 +257,12 @@ def temp_user(dummy_settings):
         yield user
 
 @pytest.fixture(scope='function')
-def dummy_user(dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user):
+def dummy_user(dummy_env,
+               dummy_settings,
+               config_dict,
+               dummy_plugin,
+               dummy_history,
+               temp_user):
 
     from django.contrib.auth.models import User
     User.objects.filter(username='test_user2').delete()
@@ -359,42 +306,6 @@ def search_dict():
            'ensemble': 'r1i1p1',
            }
 
-@pytest.fixture(scope='module')
-def esgf_command():
-    from evaluation_system.commands.esgf import Command
-    yield Command()
-
-
-
-
-@pytest.fixture(scope='module')
-def dummy_cmd(dummy_settings):
-
-    from evaluation_system.commands import FrevaBaseCommand
-    class DummyCommand(FrevaBaseCommand):
-        __short_description__ = '''This is a test dummy'''
-        __description__ = __short_description__
-
-        _args = [
-            {'name': '--debug', 'short': '-d', 'help': 'turn on debugging info and show stack trace on exceptions.',
-             'action': 'store_true'},
-            {'name': '--interrupt', 'short': '-i', 'help': 'interrupt the call',
-             'action': 'store_true'},
-            {'name': '--fail', 'short': '-f', 'help': 'simulate a failed state', 'action':'store_true'},
-            {'name': '--help', 'short': '-h', 'help': 'show this help message and exit', 'action': 'store_true'},
-         {'name': '--input', 'help': 'Some input value', 'metavar': 'PATH'},
-         ]
-
-        def _run(self,*args,**kwargs):
-            if self.args.interrupt:
-                raise KeyboardInterrupt('Interrupting the work')
-            if self.args.fail:
-                raise RuntimeError('The did not work')
-            if not self.args.input:
-                raise IOError('Nothing was given')
-            print('The answer is %s' % self.args.input)
-
-    yield DummyCommand()
 
 @pytest.fixture(scope='module')
 def dummy_settings_single(dummy_env):
@@ -411,20 +322,16 @@ def dummy_settings(dummy_env):
     import evaluation_system.settings.database
     yield config
 
-@pytest.fixture(scope='module')
-def broken_run(dummy_settings):
-
-    from evaluation_system.commands.admin.check_4_broken_runs import Command
-    from evaluation_system.api import plugin_manager as pm
+@pytest.fixture(scope="function")
+def root_path_with_empty_config(dummy_env):
     from evaluation_system.misc import config
+    root_path = Path(config.get("project_data")).absolute()
+    config._config = {}
+    yield root_path / f"user-{getuser()}"
     config.reloadConfiguration()
-    pm.reloadPlugins()
-    yield Command()
-    config.reloadConfiguration()
-    pm.reloadPlugins()
 
 @pytest.fixture(scope='module')
-def hist_obj():
+def hist_obj(django_user):
 
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
@@ -435,36 +342,4 @@ def hist_obj():
             timestamp=datetime.now(),
             uid=User.objects.first()
         )
-    config.reloadConfiguration()
-
-@pytest.fixture(scope='module')
-def freva_lib(dummy_env, dummy_settings):
-    sys.dont_write_bytecode = True
-    from evaluation_system.commands._main import Freva
-    yield Freva()
-    import evaluation_system.api.plugin_manager as pm
-    pm.reloadPlugins()
-
-@pytest.fixture(scope='module')
-def prog_name():
-    try:
-        arg = f' {sys.argv[1]}'
-    except IndexError:
-        arg = ' '
-    return Path(sys.argv[0]).name + arg
-
-@pytest.fixture(scope='module')
-def stderr():
-    __original_stderr = sys.stderr
-    sys.stderr = OutputWrapper(sys.stderr)
-    yield sys.stderr
-    sys.stderr = __original_stderr
-
-@pytest.fixture(scope='module')
-def stdout():
-    from evaluation_system.misc import config
-    __original_stdout = sys.stdout
-    sys.stdout = OutputWrapper(sys.stdout)
-    yield sys.stdout
-    sys.stdout = __original_stdout
     config.reloadConfiguration()
