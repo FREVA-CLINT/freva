@@ -13,22 +13,14 @@ COMMAND = "freva"
 class ArgParser(BaseParser):
     """Cmd argument parser class for main entry-point."""
 
+
     def __init__(self, argv: List[str]):
 
-        sub_commands = [
-            "databrowser",
-            "plugin",
-            "history",
-            "crawl-my-data",
-            "esgf",
-        ]
         epilog = f"""To get help for the individual sub-commands use:
         {COMMAND} <sub-command> --help
 """
         argv = argv or sys.argv[1:]
-        admin_commands = ["solr", "check", "doc"]
-        if is_admin():
-            sub_commands += admin_commands
+        sub_commands = self.get_subcommands()
         try:
             if argv[0] in sub_commands:
                 argv[0] = argv[0].strip("-")
@@ -93,7 +85,7 @@ class ArgParser(BaseParser):
 
     def parse_check(self) -> None:
         """Parse the check command."""
-        from .admin.checks import CheckCli
+        from .admin.check import CheckCli
 
         self.call_parsers.append(
             self.subparsers.add_parser(

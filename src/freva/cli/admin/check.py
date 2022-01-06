@@ -2,6 +2,8 @@
 
 __all__ = ["check4broken_runs", "check4pull_request"]
 
+CLI = "CheckCli"
+
 import argparse
 import os
 from typing import Any
@@ -12,7 +14,6 @@ from evaluation_system.misc.exceptions import CommandError
 from evaluation_system.model.history.models import History
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
-
 
 def check4pull_request() -> None:
     """Check for pending pull requests."""
@@ -71,39 +72,6 @@ def check4broken_runs() -> None:
             job.save()
 
 
-class CheckCli(BaseParser):
-    """Interface defining parsers to perform checks."""
-
-    desc = "Perform various checks."
-
-    def __init__(self, parser: argparse.ArgumentParser) -> None:
-        """Construct the sub arg. parser."""
-
-        sub_commands = ["broken-runs", "pull-request"]
-        super().__init__(sub_commands, parser)
-        # This parser doesn't do anything without a sub-commands
-        # hence the default function should just print the usage
-        self.parser.set_defaults(apply_func=self._usage)
-
-    def parse_pull_request(self) -> None:
-        sub_parser = self.subparsers.add_parser(
-            "pull-request",
-            description=PullRequest.desc,
-            help=PullRequest.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        PullRequest(sub_parser)
-
-    def parse_broken_runs(self) -> None:
-        sub_parser = self.subparsers.add_parser(
-            "broken-runs",
-            description=BrokenRun.desc,
-            help=BrokenRun.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        BrokenRun(sub_parser)
-
-
 class PullRequest(BaseParser):
     """Command line interface to check for incoming PR's"""
 
@@ -157,3 +125,37 @@ class BrokenRun(BaseParser):
         """Apply the check4broken_runs method"""
 
         check4broken_runs()
+
+
+class CheckCli(BaseParser):
+    """Interface defining parsers to perform checks."""
+
+    desc = "Perform various checks."
+
+    def __init__(self, parser: argparse.ArgumentParser) -> None:
+        """Construct the sub arg. parser."""
+
+        sub_commands = ["broken-runs", "pull-request"]
+        super().__init__(sub_commands, parser)
+        # This parser doesn't do anything without a sub-commands
+        # hence the default function should just print the usage
+        self.parser.set_defaults(apply_func=self._usage)
+
+    def parse_pull_request(self) -> PullRequest:
+        sub_parser = self.subparsers.add_parser(
+            "pull-request",
+            description=PullRequest.desc,
+            help=PullRequest.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+        return PullRequest(sub_parser)
+
+    def parse_broken_runs(self) -> BrokenRun:
+        sub_parser = self.subparsers.add_parser(
+            "broken-runs",
+            description=BrokenRun.desc,
+            help=BrokenRun.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+        return BrokenRun(sub_parser)
+

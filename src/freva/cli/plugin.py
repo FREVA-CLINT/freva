@@ -15,6 +15,8 @@ from evaluation_system.misc.exceptions import (
 from evaluation_system.misc import logger
 from freva._plugin import get_tools_list, run_plugin, plugin_doc
 
+CLI = "PluginCli"
+
 
 class PluginCli(BaseParser):
     """Class that constructs the Plugin Argument Parser."""

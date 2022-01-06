@@ -78,7 +78,7 @@ def _check_if_plugin_exists(tool_name: str) -> None:
     """Check if a given plugin name is part of the plugin stack."""
     if tool_name in pm.getPlugins():
         return
-    error = f"{tool_name} Plugin not found, "
+    error = f"{tool_name or ''} Plugin not found, "
     similar_tools = utils.find_similar_words(tool_name, list_plugins())
     if similar_tools:
         error += "did you mean this:\n" + "\n".join(similar_tools)

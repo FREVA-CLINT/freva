@@ -9,6 +9,7 @@ from .utils import BaseCompleter, BaseParser
 from evaluation_system.misc.exceptions import ValidationError
 import freva
 
+CLI = "CrawlDataCli"
 
 class CrawlDataCli(BaseParser):
     """Class that constructs the Data Crawler Argument Parser."""

@@ -1,11 +1,13 @@
 import argparse
 import sys
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, List
 
 import argcomplete
 
 from .utils import BaseCompleter, BaseParser
 from freva import databrowser
+
+CLI = "DataBrowserCli"
 
 
 class ChoicesCompleter(BaseCompleter):

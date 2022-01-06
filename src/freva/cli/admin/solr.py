@@ -11,6 +11,7 @@ from ..utils import BaseParser, is_admin
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import config
 
+CLI = "SolrCli"
 
 def re_index(
     input_dir: Path,
@@ -137,11 +138,11 @@ class SolrCli(BaseParser):
         # hence the default function should just print the usage
         self.parser.set_defaults(apply_func=self._usage)
 
-    def parse_index(self) -> None:
+    def parse_index(self) -> SolrIndex:
         sub_parser = self.subparsers.add_parser(
             "index",
             description=SolrIndex.desc,
             help=SolrIndex.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        SolrIndex(sub_parser)
+        return SolrIndex(sub_parser)

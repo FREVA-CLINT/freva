@@ -2,6 +2,8 @@
 
 __all__ = ["update_tool_doc"]
 
+CLI = "DocCli"
+
 import argparse
 import os
 from pathlib import Path

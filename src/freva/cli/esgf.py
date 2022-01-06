@@ -7,6 +7,7 @@ import argcomplete
 from .utils import BaseCompleter, BaseParser
 import freva
 
+CLI = "EsgfCli"
 
 class EsgfCli(BaseParser):
     """Class that constructs the ESGF Query Argument Parser."""
