@@ -1,0 +1,31 @@
+#compdef freva
+
+__freva() {
+    local line state _values ret=1
+    local -a subcommands
+    subcommands=(${(f)"$(python3 -m freva.cli --shell zsh freva)"})
+    _arguments -C \
+        "--help[Show help and exit]" \
+        "1: :->cmds" \
+        "*::arg:->args" && ret=0
+    case "${state}" in
+        cmds)
+            _values "Available subcommands" "${subcommands[@]}"
+            ret=0
+        ;;
+        args)
+            case $line[1] in
+                databrowser)
+                    __databrowser
+                ;;
+                plugin)
+                    __plugin
+                ;;
+                *)
+                    __process $line[1]
+                ;;
+            esac
+        ;;
+    esac
+}
+__freva "$@"
