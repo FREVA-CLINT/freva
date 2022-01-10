@@ -49,16 +49,25 @@ __plugin_options() {
 }
 
 __process() {
-    local -a args options
+    local -a args options positional_args
     options=(${(f)"$(python3 -m freva.cli --shell zsh freva ${1})"})
     for arg in ${options[@]};do
         first_char=$(echo ${arg}|cut -c1)
         if [ "${first_char}" = '-' ];then
             args+=(${arg})
+        else
+            positional_args+=(${arg})
         fi
     done
-    _arguments ${args[@]}
-
+    _arguments ${args[@]} '1::->pos'
+    case "${state}" in
+        pos)
+           _values "Positional args" "${positional_args[@]}"
+           ret=0
+        ;;
+        *)
+            ;;
+    esac
 }
 
 __solr() {
