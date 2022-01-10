@@ -132,8 +132,8 @@ class SolrCli(BaseParser):
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
-        self.sub_commands = ["index"]
-        super().__init__(self.sub_commands, parser)
+        sub_commands = {"index": self.desc}
+        super().__init__(sub_commands, parser)
         # This parser doesn't do anything without a sub-commands
         # hence the default function should just print the usage
         self.parser.set_defaults(apply_func=self._usage)
