@@ -48,8 +48,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "crawl-my-data",
-                description=CrawlDataCli.desc,
-                help=CrawlDataCli.desc,
+                description=self.sub_commands["crawl-my-data"],
+                help=self.sub_commands["crawl-my-data"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -62,8 +62,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "history",
-                description=HistoryCli.desc,
-                help=HistoryCli.desc,
+                description=self.sub_commands["history"],
+                help=self.sub_commands["history"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -76,8 +76,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "plugin",
-                description=PluginCli.desc,
-                help=PluginCli.desc,
+                description=self.sub_commands["plugin"],
+                help=self.sub_commands["plugin"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -90,8 +90,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "check",
-                description=CheckCli.desc,
-                help=CheckCli.desc,
+                description=self.sub_commands["check"],
+                help=self.sub_commands["check"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -104,8 +104,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "solr",
-                description=SolrCli.desc,
-                help=SolrCli.desc,
+                description=self.sub_commands["solr"],
+                help=self.sub_commands["solr"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -118,8 +118,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "doc",
-                description=DocCli.desc,
-                help=DocCli.desc,
+                description=self.sub_commands["doc"],
+                help=self.sub_commands["doc"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -132,8 +132,8 @@ class ArgParser(BaseParser):
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "esgf",
-                description=EsgfCli.desc,
-                help=EsgfCli.desc,
+                description=self.sub_commands["esgf"],
+                help=self.sub_commands["esgf"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
@@ -142,12 +142,11 @@ class ArgParser(BaseParser):
     def parse_databrowser(self) -> None:
         """Parse the databrowser command."""
         from .databrowser import DataBrowserCli
-
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "databrowser",
-                description=DataBrowserCli.desc,
-                help=DataBrowserCli.desc,
+                description=self.sub_commands["databrowser"],
+                help=self.sub_commands["databrowser"],
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             )
         )
