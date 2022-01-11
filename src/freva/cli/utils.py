@@ -119,6 +119,20 @@ class ZshCompleter:
                 out.append(f"{key}: {help}")
         return out
 
+class FishCompleter:
+    """Class for completion definitions a la sh, bash, tcsh, csh."""
+
+    def __init__(self, command: str):
+        """Construct a help message."""
+        self.command = command
+
+    def print(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+        out = []
+        for key, (help, func) in choices.items():
+            out.append(f"{key}: {help}")
+        return out
+
+
 
 class BaseCompleter:
     """Base class for command line argument completers."""
@@ -135,6 +149,8 @@ class BaseCompleter:
         self.argv = argv
         if shell == "zsh":
             self.complete_factory = ZshCompleter(metavar)
+        elif shell == "fish":
+            self.complete_factory = FishCompleter(metavar)
         else:
             self.complete_factory = ShellCompleter(metavar)
 
@@ -183,7 +199,7 @@ class BaseCompleter:
             setup = desc[args[0]]
         except KeyError:
             # Wrong plugin name
-            return []
+            return {}
         options = []
         for key in config.keys():
             option_present = False
@@ -276,7 +292,7 @@ class BaseCompleter:
         return choices
 
     @classmethod
-    def get_args_of_subcommand(cls, argv: List[str]) -> Dict[str, str]:
+    def get_args_of_subcommand(cls, argv: List[str]) -> Dict[str, Tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
         sub_command = argv.pop(0)
         sub_mod = sub_command.replace("-", "_")
@@ -289,7 +305,7 @@ class BaseCompleter:
         # Admin parsers are sub command parsers and need a parent parser
         parent_parser = argparse.ArgumentParser()
         CliParser = getattr(mod, mod.CLI)(parent_parser)
-        sub_cmds = CliParser.sub_commands
+        sub_cmds = {k: (v, "") for (k, v) in CliParser.sub_commands.items()}
         if not argv:
             # Only the 1st admin sub command was given:
             return sub_cmds
@@ -298,7 +314,7 @@ class BaseCompleter:
         try:
             NewParser = getattr(CliParser, f"parse_{next_cmd}")()
         except AttributeError:
-            return []
+            return {}
         return cls._get_choices_from_parser(NewParser.parser)
 
     @classmethod
