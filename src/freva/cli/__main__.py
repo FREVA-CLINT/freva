@@ -5,7 +5,7 @@ from .utils import BaseCompleter
 
 
 def main() -> None:
-    argv = sys.argv[1:]
+    argv = [arg.strip() for arg in sys.argv[1:] if arg.strip()]
     comp = BaseCompleter.parse_choices(argv)
     if not comp.choices:
         return
