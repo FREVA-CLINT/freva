@@ -48,14 +48,14 @@ class EsgfCli(BaseParser):
             "--opendap",
             default=False,
             action="store_true",
-            help="List the name of the datasets instead of showing the urls.",
+            help="Show opendap endpoints instead of http onse.",
         )
         subparser.add_argument(
             "--gridftp",
             default=False,
             action="store_true",
             help=(
-                "Show Opendap endpoints instead of the http default "
+                "Show gridftp endpoints instead of the http default "
                 "ones (or skip them if none found)"
             ),
         )
