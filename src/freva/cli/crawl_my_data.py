@@ -3,7 +3,6 @@ from pathlib import Path
 import sys
 from typing import Any, Optional, List
 
-import argcomplete
 
 from .utils import BaseCompleter, BaseParser
 from evaluation_system.misc.exceptions import ValidationError
@@ -72,7 +71,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = CrawlDataCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

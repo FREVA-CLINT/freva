@@ -89,70 +89,46 @@ class BaseParser:
         )
 
 
-class ShellCompleter:
-    """Class for completion definitions a la sh, bash, tcsh, csh."""
-
-    def __init__(self, command: str):
-        """Construct a help message."""
-        self.command = command
-
-    def print(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
-        out = []
-        for key, help in choices.items():
-            out.append(key)
-        return out
-
-
-class ZshCompleter:
-    """Class for completion definitions a la sh, bash, tcsh, csh."""
-
-    def __init__(self, command: str):
-        """Construct a help message."""
-        self.command = command
-
-    def print(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
-        out = []
-        for key, (help, func) in choices.items():
-            if self.command != "databrowser" or key.startswith('-'):
-                out.append(f"{key}[{help}]{func}")
-            else:
-                out.append(f"{key}: {help}")
-        return out
-
-class FishCompleter:
-    """Class for completion definitions a la sh, bash, tcsh, csh."""
-
-    def __init__(self, command: str):
-        """Construct a help message."""
-        self.command = command
-
-    def print(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
-        out = []
-        for key, (help, func) in choices.items():
-            out.append(f"{key}: {help}")
-        return out
-
-
-
 class BaseCompleter:
     """Base class for command line argument completers."""
 
     def __init__(self,
                  metavar: str,
-                 choices: Optional[List[str]] = None,
+                 choices: Optional[Dict[str, Tuple[str, str]]] = None,
                  shell: str = "bash",
                  argv: List[str] = [],
                  strip: bool = False):
-        self.choices = choices
+        self.choices = choices or {}
         self.strip = strip
         self.metavar = metavar
         self.argv = argv
         if shell == "zsh":
-            self.complete_factory = ZshCompleter(metavar)
+            self.get_print = self._print_zsh
         elif shell == "fish":
-            self.complete_factory = FishCompleter(metavar)
+            self.get_print = self._print_fish
         else:
-            self.complete_factory = ShellCompleter(metavar)
+            self.get_print = self._print_default
+
+    def _print_zsh(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+        out = []
+        for key, (help, func) in choices.items():
+            if self.metavar != "databrowser" or key.startswith('-'):
+                out.append(f"{key}[{help}]{func}")
+            else:
+                out.append(f"{key}: {help}")
+        return out
+
+    def _print_fish(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+        out = []
+        for key, (help, func) in choices.items():
+            out.append(f"{key}: {help}")
+        return out
+
+    def _print_default(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+        out = []
+        for key, help in choices.items():
+            out.append(key)
+        return out
 
     def _get_databrowser_choices(self) -> Dict[str, Tuple[str, str]]:
         """Get the choices for databrowser command."""
@@ -178,7 +154,9 @@ class BaseCompleter:
         from freva._plugin import list_plugins
         from evaluation_system.api import plugin_manager as pm
 
-        docs, desc, plugins = {}, {}, {}
+        docs: Dict[str, Dict[str, str]] = {}
+        desc: Dict[str, Dict[str, str]] = {}
+        plugins: Dict[str, str] = {}
         for plugin in list_plugins():
             parameters = pm.getPluginInstance(plugin).__parameters__
             plugins[plugin] = pm.getPluginInstance(plugin).__short_description__
@@ -218,7 +196,7 @@ class BaseCompleter:
         return choices
 
     @property
-    def command_choices(self):
+    def command_choices(self) -> Dict[str, Tuple[str, str]]:
 
         choices = {}
         if self.metavar == "databrowser":
@@ -227,10 +205,10 @@ class BaseCompleter:
             choices = self._get_plugin_choices()
         return {**self.choices, **choices}
 
-    def formated_print(self):
+    def formated_print(self) -> None:
         """Print all choices to be processed by the shell completion function."""
 
-        out = self.complete_factory.print(self.command_choices)
+        out = self.get_print(self.command_choices)
         for line in out:
             if line.startswith("-") and self.strip:
                 continue
@@ -271,7 +249,7 @@ class BaseCompleter:
         return self.arg_to_dict(args)
 
     def __call__(self, **kwargs: Optional[str]) -> Optional[List[str]]:
-        return self.choices
+        return list(self.choices.keys())
 
     @staticmethod
     def _get_choices_from_parser(
@@ -288,7 +266,7 @@ class BaseCompleter:
             else:
                 choice = action.dest
             if choice not in ("facet", "facets", "tool-name", "options"):
-                choices[choice] = (action.help, action_type)
+                choices[choice] = (action.help or "", action_type)
         return choices
 
     @classmethod
@@ -318,7 +296,7 @@ class BaseCompleter:
         return cls._get_choices_from_parser(NewParser.parser)
 
     @classmethod
-    def parse_choices(cls, argv: List[str] = sys.argv[1:]):
+    def parse_choices(cls, argv: List[str] = sys.argv[1:]) -> BaseCompleter:
         """Create the completion choices from given cmd arguments."""
         parser = argparse.ArgumentParser(
                 description="Get choices for command line arguments"

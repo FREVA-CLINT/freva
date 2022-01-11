@@ -11,7 +11,6 @@ dependencies:
   - gcc
   - pip:
       - allure-pytest
-      - argcomplete
       - requests_mock
       - django-auth-ldap
       - django-datatable-view

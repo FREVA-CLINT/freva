@@ -14,7 +14,6 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Any, List, Optional
 
-import argcomplete
 from django.contrib.flatpages.models import FlatPage
 
 from ..utils import BaseCompleter, BaseParser, is_admin

@@ -3,7 +3,6 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, Optional, List
 
-import argcomplete
 
 from .utils import BaseCompleter, BaseParser
 from evaluation_system.misc.exceptions import (
@@ -170,7 +169,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     cli = PluginCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
     _ = BaseCompleter.arg_to_dict(args.options)
-    argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

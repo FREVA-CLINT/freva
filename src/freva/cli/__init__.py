@@ -1,6 +1,5 @@
 """General Freva commandline argument parser."""
 
-import argcomplete
 import argparse
 import sys
 
@@ -35,7 +34,6 @@ class ArgParser(BaseParser):
         self.call_parsers: List[argparse.ArgumentParser] = []
         super().__init__(sub_commands, parser)
         args = self.parse_args(argv)
-        argcomplete.autocomplete(self.parser)
         try:
             args.apply_func(args, **self.kwargs)
         except KeyboardInterrupt:
