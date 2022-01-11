@@ -103,7 +103,7 @@ class DocCli(BaseParser):
 
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
-
+        self.sub_commands = {}
         parser.add_argument("tool", help="Plugin name", type=str)
         parser.add_argument(
             "--file-name",
