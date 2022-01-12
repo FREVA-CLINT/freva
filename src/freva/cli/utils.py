@@ -1,5 +1,6 @@
 """Collection of utilities of the freva command line argument parser."""
 
+from __future__ import annotations
 import argparse
 from copy import copy
 from getpass import getuser
