@@ -98,11 +98,13 @@ class BaseCompleter:
                  choices: Optional[Dict[str, Tuple[str, str]]] = None,
                  shell: str = "bash",
                  argv: List[str] = [],
-                 strip: bool = False):
+                 strip: bool = False,
+                 flags_only: bool = True):
         self.choices = choices or {}
         self.strip = strip
         self.metavar = metavar
         self.argv = argv
+        self.flags_only = flags_only
         if shell == "zsh":
             self.get_print = self._print_zsh
         elif shell == "fish":
@@ -126,9 +128,13 @@ class BaseCompleter:
         return out
 
     def _print_default(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+
         out = []
-        for key, help in choices.items():
-            out.append(key)
+        for key, (help, func) in choices.items():
+            if self.metavar == "databrowser" and not key.startswith("-"):
+                out.append(f"{key}: {help}")
+            else:
+                out.append(key)
         return out
 
     def _get_databrowser_choices(self) -> Dict[str, Tuple[str, str]]:
@@ -200,6 +206,8 @@ class BaseCompleter:
     def command_choices(self) -> Dict[str, Tuple[str, str]]:
 
         choices = {}
+        if self.flags_only:
+            return self.choices
         if self.metavar == "databrowser":
             choices = self._get_databrowser_choices()
         elif self.metavar == "plugin":
@@ -211,7 +219,7 @@ class BaseCompleter:
 
         out = self.get_print(self.command_choices)
         for line in out:
-            if line.startswith("-") and self.strip:
+            if line.startswith("-") and self.strip and not self.flags_only:
                 continue
             print(line)
 
@@ -310,7 +318,11 @@ class BaseCompleter:
                             default="bash",
                             type=str)
         parser.add_argument("--strip",
-                            help="Do not print options starting with --",
+                            help="Do not print options starting with -",
+                            default=False,
+                            action="store_true")
+        parser.add_argument("--flags-only",
+                            help="Only print options starting with -",
                             default=False,
                             action="store_true")
         ap, args = parser.parse_known_args(argv)
@@ -324,4 +336,9 @@ class BaseCompleter:
         if args[0] in main_choices:
             choices = cls.get_args_of_subcommand(copy(args))
         choices = {k: v for (k, v) in choices.items() if k not in args}
-        return cls(args[0], choices, shell=ap.shell, argv=args, strip=ap.strip)
+        return cls(args[0],
+                   choices,
+                   shell=ap.shell,
+                   argv=args,
+                   strip=ap.strip,
+                   flags_only=ap.flags_only)
