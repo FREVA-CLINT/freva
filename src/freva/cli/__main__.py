@@ -11,5 +11,7 @@ def main() -> None:
         return
     comp.formated_print()
 
-
-main()
+try:
+    main()
+except KeyboardInterrupt:
+    pass
