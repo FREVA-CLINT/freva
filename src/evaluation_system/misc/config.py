@@ -14,7 +14,7 @@ import logging
 import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
-import json
+import toml
 from evaluation_system.misc.utils import Struct, TemplateDict
 from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
@@ -296,5 +296,5 @@ def get_drs_config():
     if _drs_config is None:
         drs_config = os.environ.get(_DRS_CONFIG_FILE_ENVVAR, str(_DEFAULT_DRS_CONFIG_FILE))
         with open(drs_config, 'r') as drs_file:
-            _drs_config = json.load(drs_file)
+            _drs_config = toml.load(drs_file)
     return _drs_config
