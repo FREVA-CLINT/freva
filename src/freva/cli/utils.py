@@ -99,7 +99,7 @@ class BaseCompleter:
                  shell: str = "bash",
                  argv: List[str] = [],
                  strip: bool = False,
-                 flags_only: bool = True):
+                 flags_only: bool = False):
         self.choices = choices or {}
         self.strip = strip
         self.metavar = metavar
@@ -220,6 +220,8 @@ class BaseCompleter:
         out = self.get_print(self.command_choices)
         for line in out:
             if line.startswith("-") and self.strip and not self.flags_only:
+                continue
+            elif not line.startswith("-") and self.flags_only:
                 continue
             print(line)
 
