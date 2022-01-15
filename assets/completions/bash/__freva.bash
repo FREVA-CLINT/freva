@@ -62,40 +62,44 @@ __plugin() {
         else
             options="$(python3 -m freva.cli --shell bash --strip freva plugin)"
         fi
-    elif [ "$(echo $cur |cut -c1)" == "-" ]; then
+        echo $options
+        return
+    fi
+    if [ "$(echo $cur |cut -c1)" == "-" ]; then
+        # Search for flags only
         for arg in ${cmd_args[@]};do
             if [ "$(echo $arg|cut -c1)" = "-" ];then
                 flags="$flags $arg"
             fi
         done
         options="$(python3 -m freva.cli --shell bash --flags-only freva plugin $flags)"
-    else
-        for comp in ${cmd_args[@]};do
-            if [ ! "$(echo $comp|cut -c1)" == "-" ];then
-                plugin=$comp
-                break
-            fi
-        done
-        if [ -z "$plugin" ];then
-            cur=""
-            options="$(python3 -m freva.cli --shell bash --strip freva plugin)"
-        else
-            # We do have a plugin
-            opts="$(python3 -m freva.cli --shell bash --strip freva plugin $cmd_args)"
-            options=''
-            for opt in $opts;do
-                if [ "${cmd_args##*${opt}*}" ];then
-                    echo ${opt}=
-                fi
-            done
-        fi
+        echo $options
     fi
-    echo $options
+    for comp in ${cmd_args[@]};do
+        if [ ! "$(echo $comp|cut -c1)" == "-" ];then
+            # First are not startig with '-' should be the plugin
+            plugin=$comp
+            break
+        fi
+    done
+    if [ -z "$plugin" ];then
+        cur=""
+        options="$(python3 -m freva.cli --shell bash --strip freva plugin)"
+        echo $options
+        return
+    fi
+    # We do have a plugin
+    opts="$(python3 -m freva.cli --shell bash --strip freva plugin $cmd_args)"
+    for opt in $opts;do
+        if [ "${cmd_args##*${opt}*}" ];then
+            echo ${opt}=
+        fi
+    done
 }
 
 __freva_databrowser() {
 
-    options="$(__databrowser 1)"
+    options="$(__databrowser $1)"
     cur="${COMP_WORDS[COMP_CWORD],,}"
     if [[ "$cur" == "=" ]]; then
         cur=
@@ -105,7 +109,7 @@ __freva_databrowser() {
 
 __freva_plugin() {
 
-    options="$(__plugin 1)"
+    options="$(__plugin $1)"
     cur="${COMP_WORDS[COMP_CWORD]}"
     if [ "$cur" == "=" ]; then
         cur=
@@ -117,55 +121,38 @@ __freva_plugin() {
 }
 
 
-__freva_history() {
-
-    options="$(python3 -m freva.cli --shell bash --flags-only freva history "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
-    cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
-    COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
-}
-
-
-__freva_esgf() {
-    options="$(python3 -m freva.cli --shell bash --flags-only freva esgf "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
-    cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
-    COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
-}
-
-
-__freva_crawl_my_data() {
-    options="$(python3 -m freva.cli --shell bash --flags-only freva crawl-my-data "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
-    cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
-    COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
-}
-
-
 __freva() {
 
     local options args
     if [ "${COMP_WORDS[1]}" == "databrowser" ];then
-        options="$(__databrowser 2)"
-        cur="${COMP_WORDS[COMP_CWORD],,}"
-        if [[ "$cur" == "=" ]]; then
-            cur=
-        fi
+        __freva_databrowser 2
     elif [ "${COMP_WORDS[1]}" == "plugin" ];then
-        options="$(__plugin 2)"
-        cur="${COMP_WORDS[COMP_CWORD],,}"
-        if [ "$cur" == "=" ]; then
-            cur=
-        elif [ "$cur" == "-" ] && [ -z "$(echo $options|grep - '-')" ];then
-            # Something is odd with compgen, I have no clue why this happens
-            cur=
-        fi
+        __freva_plugin 2
     else
-        options="$(python3 -m freva.cli --shell bash --flags-only freva "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
-        cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
+        __show_help
     fi
-    COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
 }
-complete -F __freva_plugin freva-plugin
+
+__show_help() {
+    local cmd=$1
+    if [ -z "$cmd" ];then
+        cmd=freva
+    fi
+    if [ "$cmd" == freva-databrowser ];then
+        __freva_databrowser 1
+    elif [ "$cmd" == freva-plugin ];then
+        __freva_plugin 1
+    else
+        options="$(python3 -m freva.cli --shell bash --flags-only $cmd "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+        cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
+        COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
+    fi
+}
+
+
 complete -o nospace -o default -F __freva freva
-complete -o nospace -o default -F __freva_history freva-history
-complete -o nospace -o default -F __freva_esgf freva-esgf
-complete -o nospace -o default -F __freva_crawl_my_data freva-crawl-my-data
-complete -o nospace -o default -F __freva_databrowser freva-databrowser
+complete -o nospace -o default -F __show_help freva-history
+complete -o nospace -o default -F __show_help freva-esgf
+complete -o nospace -o default -F __show_help freva-crawl-my-data
+complete -o nospace -o default -F __show_help freva-databrowser
+complete -o nospace -o default -F __show_help freva-plugin
