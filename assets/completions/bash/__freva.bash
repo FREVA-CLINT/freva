@@ -17,10 +17,8 @@ __databrowser() {
     let num=$1
     if [ $num -eq 1 ];then
         cmd_args="${COMP_WORDS[@]:$1:COMP_CWORD-1}"
-        cmd_args_prev="${COMP_WORDS[@]:$1:COMP_CWORD}"
     else
         cmd_args="${COMP_WORDS[@]:$1:COMP_CWORD-2}"
-        cmd_args_prev="${COMP_WORDS[@]:$1:COMP_CWORD-3}"
     fi
     [[ -z "$cur" ]] && extra=--relevant-only
     if [[ "$cur" == "=" ]]; then
@@ -28,6 +26,11 @@ __databrowser() {
         options="$(freva databrowser --facet $prev $query | sed -e 's/[^:]*: //' -e 's/,/ /g')"
         #don't consider this for selection of possible auto-complete word
     elif [ "$prev" == "=" ]; then
+        if [ $num -eq 1 ];then
+            cmd_args_prev="${COMP_WORDS[@]:$1:COMP_CWORD}"
+        else
+            cmd_args_prev="${COMP_WORDS[@]:$1:COMP_CWORD-3}"
+        fi
         query="$(__cmd_query "${cmd_args_prev}")"
         facet="${COMP_WORDS[COMP_CWORD-2]}"
         options="$(freva databrowser --facet $facet $query $facet=${cur}* | sed -e 's/[^:]*: //' -e 's/,/ /g')"
