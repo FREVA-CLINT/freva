@@ -146,8 +146,7 @@ class BaseCompleter:
                 key, value = arg.split("=")
             except ValueError:
                 continue
-            if value and key:
-                facet_args.append(arg)
+            facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
         search = databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
@@ -196,6 +195,7 @@ class BaseCompleter:
                 options.append(f"{key}=")
         for option in options:
             opt = option.strip("=")
+            print(setup[opt])
             if "file" in setup[opt].lower() or "dir" in setup[opt].lower():
                 choices[opt] = (setup[opt], ":file:_files")
             else:
@@ -254,13 +254,6 @@ class BaseCompleter:
             else:
                 out_dict[key] = [value]
         return out_dict
-
-    def _to_dict(self, parsed_args: argparse.ArgumentParser) -> Dict[str, List[str]]:
-        args = getattr(parsed_args, self.metavar)
-        return self.arg_to_dict(args)
-
-    def __call__(self, **kwargs: Optional[str]) -> Optional[List[str]]:
-        return list(self.choices.keys())
 
     @staticmethod
     def _get_choices_from_parser(
@@ -344,3 +337,15 @@ class BaseCompleter:
                    argv=args,
                    strip=ap.strip,
                    flags_only=ap.flags_only)
+
+def print_choices(arguments: List[str]) -> None:
+    """Print completion choices based of command line arguments.
+
+    Parameters:
+    -----------
+    arguments:
+        List of command line arguments, that are evaluated by the choice printer
+    """
+    argv = [arg.strip() for arg in arguments if arg.strip()]
+    comp = BaseCompleter.parse_choices(argv)
+    comp.formated_print()
