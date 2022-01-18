@@ -23,7 +23,7 @@ class DummyPlugin(PluginAbstract):
                                    Integer(name='the_number',mandatory=True,help='This is *THE* number. Please provide it'), 
                                    String(name='something',default='test'),
                                    Float(name='other',default=1.4),
-                                   Directory(name='input'))
+                                   Directory(name='input', help="An input file"))
     _runs = []
     _template = "${number} - $something - $other"
 

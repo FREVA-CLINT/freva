@@ -55,7 +55,7 @@ something  (default: test)
 other      (default: 1.4)
        No help available.
 input      (default: <undefined>)
-       No help available.
+       An input file.
 """,
     )
 
