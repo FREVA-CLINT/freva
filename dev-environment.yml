@@ -21,6 +21,7 @@ dependencies:
       - django-bootstrap3
       - pep257
       - types-requests
+      - types-toml
   - sphinx
   - pymysql
   - imagemagick
