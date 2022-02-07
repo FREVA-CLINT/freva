@@ -24,7 +24,8 @@ setup(name="evaluation_system",
                         "pymysql",
                         "pandas",
                         "Pillow",
-                        "PyPDF2"],
+                        "PyPDF2",
+                        "toml"],
       extras_require={
         "docs": [
               "sphinx",

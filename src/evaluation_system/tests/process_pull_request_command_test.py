@@ -58,7 +58,7 @@ def test_command_success(capsys, dummy_git_path, git_config, admin_env):
             os.environ,
             {'EVALUATION_SYSTEM_PLUGINS': f'{tool_path},result_tags'}
         ):
-            pm.reloadPlugins()
+            pm.reload_plugins()
             repository = Repo(tool_path)
             assert len(repository.tags) == 0
 

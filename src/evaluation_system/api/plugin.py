@@ -5,6 +5,7 @@
 
 This module defines the basic objects for implementing a plug-in.
 '''
+from __future__ import annotations
 
 import abc
 import subprocess as sub
@@ -21,7 +22,7 @@ import logging
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
 from evaluation_system.model.user import User
-from evaluation_system.misc.utils import TemplateDict
+from evaluation_system.misc.utils import TemplateDict, metadict
 from evaluation_system.misc import config
 from evaluation_system.model.solr_core import SolrCore
 
@@ -115,6 +116,10 @@ the current user, i.e. the user that started this program, is created."""
             self._user = kwargs.pop('user')
         else:
             self._user = User()
+        # id of row in history table I think
+        # this was being spontaneously created when running the plugin which works
+        # for now because it creates a new instance on every run
+        self.rowid = 0
             
         #this construct fixes some values but allow others to be computed on demand
         #it holds the special variables that are accessible to both users and developers
@@ -156,7 +161,15 @@ when listing all plug-ins."""
 A :class:`evaluation_system.plugin.parameters.ParametersDictionary` containing the definition of all known configurable 
 parameters for the implementing class."""
         raise NotImplementedError("This attribute must be implemented")
-        
+
+    @property
+    def __category__(self) -> str:
+        return ""
+
+    @property
+    def __tags__(self) -> list[str]:
+        return [""]
+
     @abc.abstractmethod
     def runTool(self, config_dict = None):
         """``@abc.abstractmethod``
@@ -727,19 +740,6 @@ It means, **never** start a plug-in comming from unknown sources.
         return result
     
     
-    # TODO: Is this used somewhere?
-    def getVersion():
- 
-        import evaluation_system.model.repository as repository
-        from inspect import getfile
-        version = __version_cache.get(pluginname, None)
-        if version is None:
-            plugin = getPlugins().get(pluginname, None)
-            srcfile = getfile(self.__class__.__name__)
-            version = repository.getVersion(srcfile) 
-        return version
-
-
     def __module_interaction(self, command, module_name):
         """
         Function to interact with the module interface

@@ -19,7 +19,7 @@ def check4pull_request() -> None:
 
     is_admin(raise_error=True)
     pull_requests = ToolPullRequest.objects.filter(status="waiting")
-    tools = pm.getPlugins()
+    tools = pm.get_plugins()
     for request in pull_requests:
         print(f"Processing pull request for {request.tool} by {request.user}")
         request.status = "processing"
@@ -31,7 +31,7 @@ def check4pull_request() -> None:
             logger.error(f"Plugin {request.tool} does not exist")
             return
         # get repo path
-        path = "/".join(tools[tool_name]["plugin_module"].split("/")[:-1])
+        path = "/".join(tools[tool_name].plugin_module.split("/")[:-1])
         exit_code = os.system(
             "cd %s; git pull; git checkout -b version_%s %s"
             % (path, request.tagged_version, request.tagged_version)

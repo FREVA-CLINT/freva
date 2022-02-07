@@ -13,7 +13,7 @@ import shlex
 from subprocess import run, PIPE
 from string import Template
 import sys
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, Iterable, List
 
 
 def run_cmd(cmd: str, **kwargs: Any) -> str:
@@ -294,7 +294,7 @@ As you see the recursion on :class:`TemplateDict.translation_dict` is not affect
 
 
 def find_similar_words(word: str,
-                       list_of_valid_words: List[str]
+                       list_of_valid_words: Iterable[str]
                        ) -> List[str]:
     """This function implements a "Did you mean? xxx" search algorith.
 

@@ -31,6 +31,12 @@ class CommandError(Exception):
     def __str__(self):
         return self.msg
 
+
+class PluginManagerException(Exception):
+    """For all problems generating while using the plugin manager."""
+
+    pass
+
 @contextmanager
 def hide_exception():
     """

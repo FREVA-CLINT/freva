@@ -19,13 +19,14 @@ __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
 def plugin_doc(tool_name: Optional[str]) -> str:
     """Display the documentation of a given plugin."""
-    _check_if_plugin_exists(tool_name or "")
-    return pm.getPluginInstance(tool_name).getHelp()
+    tool_name = tool_name or ""
+    _check_if_plugin_exists(tool_name)
+    return pm.get_plugin_instance(tool_name).getHelp()
 
 
 def list_plugins() -> List[str]:
     """Get the plugins that are available on the system."""
-    return list(pm.getPlugins().keys())
+    return list(pm.get_plugins().keys())
 
 
 def get_tools_list() -> str:
@@ -33,20 +34,20 @@ def get_tools_list() -> str:
     env = utils.get_console_size()
     # we just have to show the list and stop processing
     name_width = 0
-    plugins = pm.getPlugins()
+    plugins = pm.get_plugins()
     for key in plugins:
         name_width = max(name_width, len(key))
     offset = name_width + 2
     result = []
     for key, plugin in sorted(plugins.items()):
-        lines = textwrap.wrap("%s" % plugin["description"], env["columns"] - offset)
+        lines = textwrap.wrap("%s" % plugin.description, env["columns"] - offset)
         if not lines:
             lines = ["No description."]
         if len(lines) > 1:
             # multi-line
-            result.append(f"{plugin['name']}: {lines[0]}\n{' '*offset}\n{' '*offset}")
+            result.append(f"{plugin.name}: {lines[0]}\n{' '*offset}\n{' '*offset}")
         else:
-            result.append(f"{plugin['name']}: {lines[0]}")
+            result.append(f"{plugin.name}: {lines[0]}")
     return "\n".join(result)
 
 
@@ -76,7 +77,7 @@ def handle_pull_request(
 
 def _check_if_plugin_exists(tool_name: str) -> None:
     """Check if a given plugin name is part of the plugin stack."""
-    if tool_name in pm.getPlugins():
+    if tool_name in pm.get_plugins():
         return
     error = f"{tool_name} Plugin not found, "
     similar_tools = utils.find_similar_words(tool_name, list_plugins())
@@ -148,11 +149,10 @@ def run_plugin(
     _check_if_plugin_exists(tool_name)
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
-    results = ""
     if pull_request:
         return _return_value(*handle_pull_request(tag, tool_name))
     if repo_version:
-        (repos, version) = pm.getPluginVersion(tool_name)
+        (repos, version) = pm.get_plugin_version(tool_name)
         return _return_value(
             0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
         )
@@ -160,28 +160,28 @@ def run_plugin(
     options_str = []
     for k, v in options.items():
         options_str.append(f"{k}={v}")
-    tool_dict = pm.parseArguments(tool_name, options_str)
+    tool_dict = pm.parse_arguments(tool_name, options_str)
     if logger.level == logging.DEBUG:
         tool_dict["debug"] = True
     if caption:
-        caption = pm.generateCaption(caption, tool_name)
+        caption = pm.generate_caption(caption, tool_name)
     if save_config or save:
-        save_in = pm.writeSetup(tool_name, tool_dict, config_file=save_config)
+        save_in = pm.write_setup(tool_name, tool_dict, config_file=save_config)
         logger.info("Configuration file saved in %s", save_in)
     elif show_config:
         return _return_value(
-            0, pm.getPluginInstance(tool_name).getCurrentConfig(config_dict=tool_dict)
+            0, pm.get_plugin_instance(tool_name).getCurrentConfig(config_dict=tool_dict)
         )
     if scheduled_id and not dry_run:
         logger.info(
             "Running %s as scheduled in history with ID %i", tool_name, scheduled_id
         )
-        out = pm.runTool(
+        out = pm.run_tool(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
         )
         return _return_value(0, out, return_result)
     # now run the tool
-    (error, warning) = pm.getErrorWarning(tool_name)
+    (error, warning) = pm.get_error_warning(tool_name)
     if warning:
         logger.warning(warning)
     if error:
@@ -195,7 +195,7 @@ def run_plugin(
         ).exists():
             batchmode = True
         if batchmode:
-            [id, file] = pm.scheduleTool(
+            [id, file] = pm.schedule_tool(
                 tool_name,
                 config_dict=tool_dict,
                 user=user.User(email=email),
@@ -207,7 +207,7 @@ def run_plugin(
             logger.info("Your job's progress will be shown with the command")
             logger.info(f"tail -f {file}")
             return 0, ""
-        results = pm.runTool(
+        results = pm.run_tool(
             tool_name,
             config_dict=tool_dict,
             caption=caption,
