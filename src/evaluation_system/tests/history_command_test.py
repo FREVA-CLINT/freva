@@ -13,8 +13,10 @@ import pytest
 from evaluation_system.tests import run_cli
 from evaluation_system.tests.mocks.dummy import DummyPlugin
 
+
 def test_freva_history_method(dummy_history, dummy_user):
     from freva import history
+
     config_dict = {
         "the_number": 42,
         "number": 12,
@@ -49,6 +51,7 @@ def test_freva_history_method(dummy_history, dummy_user):
 def test_history_cmd(capsys, dummy_history, dummy_user):
 
     from freva.cli.history import main as run
+
     hist_ids = []
     uid = os.getuid()
     udata = pwd.getpwuid(uid)
@@ -85,13 +88,13 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     run_cli(["history", f"--entry-ids={hist_ids[0]}", "--return-command"])
     output_str = capsys.readouterr().out.strip("\n").strip()
     check_string = [
-            "plugin",
-            "dummyplugin",
-            "something='else'",
-            "input='/folder'",
-            "other='value'",
-            "number='12'",
-            "the_number='42'"
+        "plugin",
+        "dummyplugin",
+        "something='else'",
+        "input='/folder'",
+        "other='value'",
+        "number='12'",
+        "the_number='42'",
     ]
     for string in check_string:
         assert string in output_str

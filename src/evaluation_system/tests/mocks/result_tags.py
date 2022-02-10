@@ -1,8 +1,12 @@
-
 from evaluation_system.api import parameters
 from evaluation_system.api.plugin import PluginAbstract
-from evaluation_system.api.parameters import (ParameterDictionary, Integer,
-                                              Float, String, Directory)
+from evaluation_system.api.parameters import (
+    ParameterDictionary,
+    Integer,
+    Float,
+    String,
+    Directory,
+)
 
 
 class ResultTagTest(PluginAbstract):
@@ -11,14 +15,17 @@ class ResultTagTest(PluginAbstract):
     """
 
     __parameters__ = parameters.ParameterDictionary(
-                            parameters.File(name='input', mandatory=True))
-    __short_description__ = 'Test tool inserting results'
-    __version__ = '(0,0,2)'
+        parameters.File(name="input", mandatory=True)
+    )
+    __short_description__ = "Test tool inserting results"
+    __category__ = ""
+    __tags__ = ["foo"]
+    __version__ = (0, 0, 2)
 
-    def runTool(self, config_dict = None):
-        folder = config_dict.get('folder', None)
+    def runTool(self, config_dict=None):
+        folder = config_dict.get("folder", None)
         if folder:
             output = folder
         else:
-            output = {config_dict['input'] : {'caption' : 'Manually added result'}}
+            output = {config_dict["input"]: {"caption": "Manually added result"}}
         return self.prepareOutput(output)

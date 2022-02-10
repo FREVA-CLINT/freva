@@ -8,10 +8,12 @@ from pathlib import Path
 import pytest
 import mock
 
+
 def test_command(dummy_solr, capsys, temp_dir, admin_env):
     from evaluation_system.tests import run_cli
     from evaluation_system.model.solr import SolrFindFiles
     from evaluation_system.misc import config
+
     with mock.patch.dict(os.environ, admin_env, clear=True):
         with pytest.raises(SystemExit):
             run_cli(["solr", "foo"])
@@ -25,11 +27,12 @@ def test_command(dummy_solr, capsys, temp_dir, admin_env):
 
 
 def test_forbidden_usage(capsys, dummy_env):
-     from evaluation_system.tests import run_cli
-     from freva.cli.admin import re_index, del_index
-     with pytest.raises(SystemExit):
-         run_cli(["solr", "index" "--help"])
-     assert "invalid choice" in capsys.readouterr().err
-     for func in (re_index, del_index):
-         with pytest.raises(RuntimeError):
-             func('foo')
+    from evaluation_system.tests import run_cli
+    from freva.cli.admin import re_index, del_index
+
+    with pytest.raises(SystemExit):
+        run_cli(["solr", "index" "--help"])
+    assert "invalid choice" in capsys.readouterr().err
+    for func in (re_index, del_index):
+        with pytest.raises(RuntimeError):
+            func("foo")

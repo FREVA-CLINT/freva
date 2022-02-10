@@ -2,10 +2,9 @@
 __all__ = ["history"]
 
 import json
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 import evaluation_system.api.plugin_manager as pm
-from evaluation_system.model.db import timestamp_from_string
 from evaluation_system.misc import logger
 
 
@@ -16,7 +15,7 @@ def history(
     since: Optional[str] = None,
     until: Optional[str] = None,
     entry_ids: Union[int, List[int]] = None,
-    full_text: bool = True,
+    full_text: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
 ) -> Union[List[str], Dict[str, str]]:
@@ -71,7 +70,7 @@ def history(
             f"history of {plugin}, limit={limit}, since={since},"
             f" until={until}, entry_ids={entry_ids}"
         )
-    rows = pm.getHistory(
+    rows = pm.get_history(
         user=None,
         plugin_name=plugin,
         limit=limit,
@@ -79,23 +78,26 @@ def history(
         until=until,
         entry_ids=entry_ids,
     )
-    commands = []
     if rows:
         # pass some option for generating the command string
         if return_command:
+            commands = []
             for row in rows:
                 command_options = "plugin"
-                cmd = pm.getCommandConfigFromRow(row, command_name, command_options)
-                commands.append(pm.getCommandStringFromRow(cmd))
+                cmd = pm.get_command_string_from_row(row, command_name, command_options)
+                commands.append(cmd)
+            return commands
         else:
             if _return_dict:
-                commands = [row.__dict__ for row in rows]
-                for nn, cmd in enumerate(commands):
-                    for key, value in cmd.items():
+                command_dicts = [row.__dict__ for row in rows]
+                for nn, cmd_dict in enumerate(command_dicts):
+                    for key, value in cmd_dict.items():
                         try:
-                            commands[nn][key] = json.loads(value)
+                            command_dicts[nn][key] = json.loads(value)
                         except (json.JSONDecodeError, TypeError):
                             pass
+                return command_dicts
             else:
-                commands = [row for row in rows]
-    return commands
+                return [row for row in rows]
+    else:
+        return []

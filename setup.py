@@ -10,7 +10,6 @@ COMMANDS = ["databrowser", "esgf", "history", "plugin", "crawl-my-data"]
 this_dir = Path(__file__).parent
 COMPLETION_DIR = this_dir / "assets" / "completions"
 
-
 def prep_tcsh_completion(tempdir: Path) -> List[Tuple[str, List[str]]]:
     """Create completion scripts for tcsh."""
 
@@ -89,6 +88,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             "pandas",
             "Pillow",
             "PyPDF2",
+            "toml",
         ],
         extras_require={
             "docs": [

@@ -37,8 +37,8 @@ def apply_workarounds_for_path(filelist):
     # check if all file have the same root
     roots = []
     for onefile in filelist:
-        if not onefile.dict['root_dir'] in roots:
-            roots.append(onefile.dict['root_dir'])
+        if not onefile.dict["root_dir"] in roots:
+            roots.append(onefile.dict["root_dir"])
     has_multiple_roots = len(roots) > 1
 
     # check all files
@@ -47,17 +47,29 @@ def apply_workarounds_for_path(filelist):
         # this only matters if the root of the files is not always the same
         if has_multiple_roots:
             match = re.match(
-                "/miklip/integration/data4miklip/projectdata/baseline0/output1/MPI-M/MPI-ESM-LR/decadal(\d\d\d\d)/(day|mon|6hr)/atmos/" +
-                filelist[i].dict["parts"]["variable"] + "/" + filelist[i].dict["parts"]["ensemble"],
-                filelist[i].to_path())
+                "/miklip/integration/data4miklip/projectdata/baseline0/output1/MPI-M/MPI-ESM-LR/decadal(\d\d\d\d)/(day|mon|6hr)/atmos/"
+                + filelist[i].dict["parts"]["variable"]
+                + "/"
+                + filelist[i].dict["parts"]["ensemble"],
+                filelist[i].to_path(),
+            )
             if match is not None:
                 newfile = splittedFile([filelist[i]])
-                replacement = "/miklip/integration/data4miklip/model/global/miklip/baseline0/output1/MPI-M/MPI-ESM-LR/decadal%s/%s/atmos/%s/%s/v20111122/%s" % (
-                match.group(1), match.group(2), filelist[i].dict["parts"]["cmor_table"],
-                filelist[i].dict["parts"]["ensemble"], filelist[i].dict["parts"]["variable"])
+                replacement = (
+                    "/miklip/integration/data4miklip/model/global/miklip/baseline0/output1/MPI-M/MPI-ESM-LR/decadal%s/%s/atmos/%s/%s/v20111122/%s"
+                    % (
+                        match.group(1),
+                        match.group(2),
+                        filelist[i].dict["parts"]["cmor_table"],
+                        filelist[i].dict["parts"]["ensemble"],
+                        filelist[i].dict["parts"]["variable"],
+                    )
+                )
                 newpath = filelist[i].to_path().replace(match.group(0), replacement)
                 newfile.set_fake_path(newpath)
-                Logger.Indent("-> workaround: %s => %s" % (filelist[i].to_path(), newpath), 8, 11)
+                Logger.Indent(
+                    "-> workaround: %s => %s" % (filelist[i].to_path(), newpath), 8, 11
+                )
                 filelist[i] = newfile
 
 
@@ -70,14 +82,18 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
         timepart = name_or_file.dict["parts"]["time"]
         # is it a valid time part?
         if re.match("\d{6,12}-\d{6,12}", timepart) is None:
-            timepart_match = re.search("\d{6,12}-\d{6,12}", name_or_file.dict["parts"]["file_name"])
+            timepart_match = re.search(
+                "\d{6,12}-\d{6,12}", name_or_file.dict["parts"]["file_name"]
+            )
             if timepart_match is not None:
                 timepart = timepart_match.group(0)
                 # repair time part in dictionary
                 name_or_file.dict["parts"]["time"] = timepart
             else:
                 if not allow_no_time:
-                    Logger.Error("Unable to extract time of file %s" % dfile.to_path(), -1)
+                    Logger.Error(
+                        "Unable to extract time of file %s" % dfile.to_path(), -1
+                    )
                 else:
                     timepart = None
     # it is not a file object, that means it is a string containing a file name
@@ -106,14 +122,21 @@ def get_time_format_and_start_and_end(name_or_file, allow_no_time=False):
             datefmt = "%Y%m"
         else:
             Logger.Error("unable to get time_frequency from file '%s'" % name_or_file)
-            Logger.Error("only the time_frequencies 'day', '6hr', and 'mon' are so far supported!", -1)
+            Logger.Error(
+                "only the time_frequencies 'day', '6hr', and 'mon' are so far supported!",
+                -1,
+            )
         # split and convert
         timepart_split = timepart.split("-")
         try:
             starttime = datetime.strptime(timepart_split[0], datefmt)
             endtime = datetime.strptime(timepart_split[1], datefmt)
         except ValueError as ve:
-            Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
+            Logger.Error(
+                "The filename %s contains an invalid date: %s"
+                % (dfile.to_path(), ve.message),
+                -1,
+            )
         return (datefmt, starttime, endtime)
 
 
@@ -126,7 +149,9 @@ def get_start_and_end_time_from_DRSFile(dfile, include_str=True, only_str=False)
     timepart = dfile.dict["parts"]["time"]
     # workaround for TRMM:
     if re.match("\d{6,12}-\d{6,12}", timepart) is None:
-        timepart_match = re.search("\d{6,12}-\d{6,12}", dfile.dict["parts"]["file_name"])
+        timepart_match = re.search(
+            "\d{6,12}-\d{6,12}", dfile.dict["parts"]["file_name"]
+        )
         if timepart_match is not None:
             timepart = timepart_match.group(0)
             dfile.dict["parts"]["time"] = timepart
@@ -143,14 +168,21 @@ def get_start_and_end_time_from_DRSFile(dfile, include_str=True, only_str=False)
         datefmt = "%Y%m"
     else:
         Logger.Error("unable to get time_frequency from file '%s'" % dfile)
-        Logger.Error("only the time_frequencies 'day', '6hr', and 'mon' are so far supported!", -1)
+        Logger.Error(
+            "only the time_frequencies 'day', '6hr', and 'mon' are so far supported!",
+            -1,
+        )
     # split and convert
     timepart_split = timepart.split("-")
     try:
         starttime = datetime.strptime(timepart_split[0], datefmt)
         endtime = datetime.strptime(timepart_split[1], datefmt)
     except ValueError as ve:
-        Logger.Error("The filename %s contains an invalid date: %s" % (dfile.to_path(), ve.message), -1)
+        Logger.Error(
+            "The filename %s contains an invalid date: %s"
+            % (dfile.to_path(), ve.message),
+            -1,
+        )
     if include_str and not only_str:
         return (starttime, endtime, timepart_split[0], timepart_split[1])
     elif include_str == True and only_str == True:
@@ -182,7 +214,10 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
             return None, None
         else:
             Logger.Error("unable to get time_frequency from time string '%s'" % timestr)
-            Logger.Error("only the time_frequencies 'day', '6hr', and 'mon' are so far supoorted!", -1)
+            Logger.Error(
+                "only the time_frequencies 'day', '6hr', and 'mon' are so far supoorted!",
+                -1,
+            )
     # split and convert
     timepart_split = timepart.split("-")
 
@@ -193,7 +228,10 @@ def get_start_and_end_time_from_string(timestr, allow_no_time=False):
         if allow_no_time:
             return None, None
         else:
-            Logger.Error("The string '%s' contains an invalid date: %s" % (timestr, ve.message), -1)
+            Logger.Error(
+                "The string '%s' contains an invalid date: %s" % (timestr, ve.message),
+                -1,
+            )
     return starttime, endtime
 
 
@@ -208,11 +246,17 @@ def solr_search_multivar(variables, ssargs):
     del ssargs["variable"]
     result = []
     for onefile in allfiles:
-        if os.path.exists(onefile.to_path()) and not onefile.to_path().endswith(".nc.save") and not os.path.getsize(
-                onefile.to_path()) == 0:
+        if (
+            os.path.exists(onefile.to_path())
+            and not onefile.to_path().endswith(".nc.save")
+            and not os.path.getsize(onefile.to_path()) == 0
+        ):
             result.append(onefile)
         else:
-            Logger.Warning("the file '%s' does not exist, is empty, or ends with '.nc.save'!" % onefile.to_path())
+            Logger.Warning(
+                "the file '%s' does not exist, is empty, or ends with '.nc.save'!"
+                % onefile.to_path()
+            )
     return result
 
 
@@ -233,7 +277,7 @@ class splittedFile(object):
     """
     Files of the same experiment are sometimes splitted up if they would become to large otherwise. These
     splitted files
-    are can by grouped together in this class and treated as one. 
+    are can by grouped together in this class and treated as one.
     """
 
     def __init__(self, filelist, lead_year=None):
@@ -251,18 +295,30 @@ class splittedFile(object):
             datefmt, start, end = get_time_format_and_start_and_end(onefile)
             if lead_year is not None:
                 # calculate the new start and end time
-                start = datetime(year=start.year + lead_year - 1, month=start.month, day=start.day, hour=start.hour)
-                end = datetime(year=start.year, month=end.month, day=end.day, hour=end.hour)
+                start = datetime(
+                    year=start.year + lead_year - 1,
+                    month=start.month,
+                    day=start.day,
+                    hour=start.hour,
+                )
+                end = datetime(
+                    year=start.year, month=end.month, day=end.day, hour=end.hour
+                )
             if first is None or start < first:
                 first = start
             if last is None or end > last:
                 last = end
-                
+
         firsty = first.year
         lasty = last.year
-        first = datetime(1900,first.month,first.day,first.hour,first.minute)
-        last = datetime(1900,last.month,last.day,last.hour,last.minute)
-        self.dict["parts"]["time"] = "%s%s-%s%s" % (str(firsty),first.strftime(datefmt)[4:], str(lasty),last.strftime(datefmt)[4:])
+        first = datetime(1900, first.month, first.day, first.hour, first.minute)
+        last = datetime(1900, last.month, last.day, last.hour, last.minute)
+        self.dict["parts"]["time"] = "%s%s-%s%s" % (
+            str(firsty),
+            first.strftime(datefmt)[4:],
+            str(lasty),
+            last.strftime(datefmt)[4:],
+        )
         # merge variables
         # create at first a list of all variables
         variables = []
@@ -285,7 +341,7 @@ class splittedFile(object):
 
     def to_path(self, fake=False, as_list=False, separator=" "):
         """
-        returns a space separated string with all paths if fake == False, 
+        returns a space separated string with all paths if fake == False,
         otherwise a path is generated which would fit to a single file with the same content
         """
 
@@ -299,9 +355,16 @@ class splittedFile(object):
             if self.manual_set_path is not None:
                 return self.manual_set_path
             # get the first start time and the last end time
-            return get_path_string(self.parts[0], pfake=True).replace(self.parts[0].dict["parts"]["time"],
-                                                                      self.dict["parts"]["time"]).replace(
-                self.parts[0].dict["parts"]["variable"], self.dict["parts"]["variable"])
+            return (
+                get_path_string(self.parts[0], pfake=True)
+                .replace(
+                    self.parts[0].dict["parts"]["time"], self.dict["parts"]["time"]
+                )
+                .replace(
+                    self.parts[0].dict["parts"]["variable"],
+                    self.dict["parts"]["variable"],
+                )
+            )
         else:
             if as_list:
                 result = []
@@ -332,11 +395,13 @@ class splittedFile(object):
 
 
 class basePlugin(object):
-    def __init__(self, output=None, project="baseline1", model="mpi-esm-lr", experiment=None):
+    def __init__(
+        self, output=None, project="baseline1", model="mpi-esm-lr", experiment=None
+    ):
         # store some information for later usage
         if output is None:
             raise Exception("No output directory specified!")
-        subdir = "%s_%s_%s" % (time.strftime('%Y%m%d-%H%M%S'), project, model)
+        subdir = "%s_%s_%s" % (time.strftime("%Y%m%d-%H%M%S"), project, model)
         subdir = subdir.replace("_*", "")
         if experiment is not None and experiment != "*":
             subdir += "_%s" % experiment.replace("*", "")
@@ -344,10 +409,25 @@ class basePlugin(object):
         self.outputfiles = []
         self.outputfiles_ensstat = []
 
-    def search_files(self, decadals=None, project="baseline1", firstyear=None, lastyear=None, product="*",
-                     time_frequency='6hr', model="mpi-esm-lr",
-                     ensembles=["*"], experiment=None, variable="ta", institute="MPI-M", realm="atmos",
-                     driving_model=None, rcm_ensemble=None, domain=None, find_variables=False):
+    def search_files(
+        self,
+        decadals=None,
+        project="baseline1",
+        firstyear=None,
+        lastyear=None,
+        product="*",
+        time_frequency="6hr",
+        model="mpi-esm-lr",
+        ensembles=["*"],
+        experiment=None,
+        variable="ta",
+        institute="MPI-M",
+        realm="atmos",
+        driving_model=None,
+        rcm_ensemble=None,
+        domain=None,
+        find_variables=False,
+    ):
         """
         use solr_search to find the files needed by the plugin
         set find_variables=True to get a list of available variables instead of searching files
@@ -358,8 +438,8 @@ class basePlugin(object):
         #             Logger.Error('All ensembles not allowed\n'
         #                          'Please select one',-1)
 
-        if ensembles != '\*':
-            ensembles = ensembles.split(',')
+        if ensembles != "\*":
+            ensembles = ensembles.split(",")
         else:
             ensembles = [ensembles]
         if decadals is not None:
@@ -375,18 +455,18 @@ class basePlugin(object):
         # construct a search string for experiments
         experiment_prefix = experiment
         if experiment_prefix is None or experiment_prefix == "*":
-            if project.lower() == 'baseline0':
-                experiment_prefix = 'decadal'
-            elif project.lower() == 'baseline1':
-                experiment_prefix = 'decs4e'
-            elif project.lower() == 'prototype':
-                experiment_prefix = 'dffs4e'
-            elif project.lower() == 'cmip5':
-                experiment_prefix = 'decadal'
-            elif project.lower() == 'historical':
-                experiment_prefix = 'historical'
+            if project.lower() == "baseline0":
+                experiment_prefix = "decadal"
+            elif project.lower() == "baseline1":
+                experiment_prefix = "decs4e"
+            elif project.lower() == "prototype":
+                experiment_prefix = "dffs4e"
+            elif project.lower() == "cmip5":
+                experiment_prefix = "decadal"
+            elif project.lower() == "historical":
+                experiment_prefix = "historical"
             else:
-                experiment_prefix = '*'
+                experiment_prefix = "*"
         # if not experiment_prefix.endswith("*"):
         #    experiment_prefix += "*"
 
@@ -400,25 +480,29 @@ class basePlugin(object):
         else:
             variables = [variable]
         ssargs["time_frequency"] = time_frequency
-        # are there products in this project? 
+        # are there products in this project?
         product_facets = SolrFindFiles.facets(facets=["product"], **ssargs)
         if len(product_facets["product"]) > 0:
             ssargs["product"] = product
-        # are there models in this project? 
+        # are there models in this project?
         model_facets = SolrFindFiles.facets(facets=["model"], **ssargs)
         if len(model_facets["model"]) > 0:
             ssargs["model"] = model
-        # are there multiple experiments? 
+        # are there multiple experiments?
         experiment_facets = SolrFindFiles.facets(facets=["experiment"], **ssargs)
         if len(experiment_facets["experiment"]) > 0:
             ssargs["experiment"] = experiment_prefix
         # additional parameters for regional models
         if rcm_ensemble is not None:
-            rcm_ensemble_facets = SolrFindFiles.facets(facets=["rcm_ensemble"], **ssargs)
+            rcm_ensemble_facets = SolrFindFiles.facets(
+                facets=["rcm_ensemble"], **ssargs
+            )
             if len(rcm_ensemble_facets["rcm_ensemble"]) > 0:
                 ssargs["rcm_ensemble"] = rcm_ensemble
         if driving_model is not None:
-            driving_model_facets = SolrFindFiles.facets(facets=["driving_model"], **ssargs)
+            driving_model_facets = SolrFindFiles.facets(
+                facets=["driving_model"], **ssargs
+            )
             if len(driving_model_facets["driving_model"]) > 0:
                 ssargs["driving_model"] = driving_model
         if domain is not None:
@@ -437,7 +521,12 @@ class basePlugin(object):
         if years is not None or firstyear is not None or lastyear is not None:
             self.inputfilesByDecade = {}
             # we have multiple experiments that contain the decade
-            if "experiment" in ssargs and project != "observations" and project != "reanalysis" and years is not None:
+            if (
+                "experiment" in ssargs
+                and project != "observations"
+                and project != "reanalysis"
+                and years is not None
+            ):
                 for year in years:
                     yearfiles = []
                     ssargs["experiment"] = "%s%d" % (experiment_prefix, year)
@@ -455,17 +544,32 @@ class basePlugin(object):
                     if ens != "*":
                         ssargs["ensemble"] = ens
                     for onefile in solr_search_multivar(variables, ssargs):
-                        starttime, endtime = get_start_and_end_time_from_DRSFile(onefile, include_str=False)
-                        if firstyear is None and \
-                                any([True for e in range(starttime.year, endtime.year + 1, 1) \
-                                     if e <= lastyear]):
+                        starttime, endtime = get_start_and_end_time_from_DRSFile(
+                            onefile, include_str=False
+                        )
+                        if firstyear is None and any(
+                            [
+                                True
+                                for e in range(starttime.year, endtime.year + 1, 1)
+                                if e <= lastyear
+                            ]
+                        ):
                             self.inputfiles.append(onefile)
-                        elif lastyear is None and \
-                                any([True for e in range(starttime.year, endtime.year + 1, 1) \
-                                     if e >= firstyear]):
+                        elif lastyear is None and any(
+                            [
+                                True
+                                for e in range(starttime.year, endtime.year + 1, 1)
+                                if e >= firstyear
+                            ]
+                        ):
                             self.inputfiles.append(onefile)
-                        elif any([True for e in range(firstyear, lastyear + 1, 1)\
-                                  if e in range(starttime.year, endtime.year + 1, 1)]):
+                        elif any(
+                            [
+                                True
+                                for e in range(firstyear, lastyear + 1, 1)
+                                if e in range(starttime.year, endtime.year + 1, 1)
+                            ]
+                        ):
                             self.inputfiles.append(onefile)
 
             else:
@@ -473,7 +577,9 @@ class basePlugin(object):
                     if ens != "*":
                         ssargs["ensemble"] = ens
                     for onefile in solr_search_multivar(variables, ssargs):
-                        starttime, endtime = get_start_and_end_time_from_DRSFile(onefile, include_str=False)
+                        starttime, endtime = get_start_and_end_time_from_DRSFile(
+                            onefile, include_str=False
+                        )
                         for year in years:
                             if starttime.year > year and endtime.year <= year + 10:
                                 self.inputfiles.append(onefile)
@@ -491,21 +597,33 @@ class basePlugin(object):
                 for onefile in solr_search_multivar(variables, ssargs):
                     self.inputfiles.append(onefile)
 
-        # nothing found? cancel!        
+        # nothing found? cancel!
         if len(self.inputfiles) == 0:
-            Logger.Error("No input files found!\n"
-                         "Data-Browser command:\t"
-                         "freva --databrowser project='%s' product='%s' institute='%s' model='%s' experiment='%s'"
-                                    " time_frequency='%s' realm='%s' variable='%s'"
-                                    % (project,product,institute,model,experiment,time_frequency,
-                                       realm, variable)
-                         , -1)
+            Logger.Error(
+                "No input files found!\n"
+                "Data-Browser command:\t"
+                "freva --databrowser project='%s' product='%s' institute='%s' model='%s' experiment='%s'"
+                " time_frequency='%s' realm='%s' variable='%s'"
+                % (
+                    project,
+                    product,
+                    institute,
+                    model,
+                    experiment,
+                    time_frequency,
+                    realm,
+                    variable,
+                ),
+                -1,
+            )
 
-        # changed the time part if only a single lead year is of interest or remove files that do not belong to the 
+        # changed the time part if only a single lead year is of interest or remove files that do not belong to the
         # requested lead year
 
         # check for overlapping time-periods within the same folder
-        self.inputfiles = self.remove_overlapping_time_periods_from_file_list(self.inputfiles)
+        self.inputfiles = self.remove_overlapping_time_periods_from_file_list(
+            self.inputfiles
+        )
 
         # check if all ensemble members have the same number of files
         self.inputfiles = self.check_ensemble_completeness(self.inputfiles)
@@ -513,7 +631,7 @@ class basePlugin(object):
         # repair some known special cases
         apply_workarounds_for_path(self.inputfiles)
 
-        # merge multiple variables 
+        # merge multiple variables
         merged_by_var = self.merge_multiple_variables(self.inputfiles)
         if len(merged_by_var) == 0:
             Logger.Error("no files found for different variables and same time steps!")
@@ -628,8 +746,13 @@ class basePlugin(object):
             if len(filelist) == max_files:
                 result.extend(filelist)
             else:
-                Logger.Indent("-> removed ensemble member %s, not enough files found!" % ensemble_part, 8, 11)
-        # sort the result list 
+                Logger.Indent(
+                    "-> removed ensemble member %s, not enough files found!"
+                    % ensemble_part,
+                    8,
+                    11,
+                )
+        # sort the result list
         return sorted(result, key=splittedFile.get_fake_path)
 
     def remove_overlapping_time_periods_from_file_list(self, filelist):
@@ -637,7 +760,7 @@ class basePlugin(object):
         this is a workaround only. Removed are files that are located in the same folder but have overlapping
         time periods
         """
-        # the list has to be sorted 
+        # the list has to be sorted
         files = sorted(filelist, key=lambda x: x.to_path())
         # a dictionary for the periods, the folder is the key
         periods_per_folder = {}
@@ -648,7 +771,9 @@ class basePlugin(object):
             if folder in periods_per_folder:
                 old_period = periods_per_folder[folder]
                 if old_period[0] <= start and old_period[1] >= start:
-                    Logger.Warning("found overlapping time periods in folder '%s'" % folder)
+                    Logger.Warning(
+                        "found overlapping time periods in folder '%s'" % folder
+                    )
                     Logger.Warning("removing file '%s' from list" % onefile.to_path())
                 else:
                     new_period = (old_period[0], end)
@@ -705,7 +830,12 @@ class basePlugin(object):
                     else:
                         new_files.append(splittedFile(file_list))
                 else:
-                    Logger.Indent("-> %s not available for all variables in %s" % (time_part, ensemble_part), 8, 11)
+                    Logger.Indent(
+                        "-> %s not available for all variables in %s"
+                        % (time_part, ensemble_part),
+                        8,
+                        11,
+                    )
                     for onefile in file_list:
                         Logger.Indent("-> found only: %s" % onefile.to_path(), 12, 27)
         return sorted(new_files, key=splittedFile.get_fake_path)
@@ -743,7 +873,9 @@ class basePlugin(object):
             if self.lead_year is None:
                 return os.path.dirname(pathstr)
             else:
-                return os.path.dirname(pathstr).replace(onefile.dict["parts"]["experiment"], "")
+                return os.path.dirname(pathstr).replace(
+                    onefile.dict["parts"]["experiment"], ""
+                )
 
         # sort the files in the way they likely extend each other
         sortedfiles = sorted(files, key=lambda x: get_sort_key(x))
@@ -761,16 +893,27 @@ class basePlugin(object):
         elif time_frequency == "mon":
             max_delta_days = 31
         else:
-            Logger.Error("unable to get time_frequency from file '%s'" % files[0].to_path())
-            Logger.Error("only the time_frequencies 'day', '6hr', and 'mon' are so far supported!", -1)
+            Logger.Error(
+                "unable to get time_frequency from file '%s'" % files[0].to_path()
+            )
+            Logger.Error(
+                "only the time_frequencies 'day', '6hr', and 'mon' are so far supported!",
+                -1,
+            )
         for onefile in sortedfiles:
-            starttime, endtime = get_start_and_end_time_from_DRSFile(onefile, include_str=False)
+            starttime, endtime = get_start_and_end_time_from_DRSFile(
+                onefile, include_str=False
+            )
             currentdir = get_dir_without_experiment(onefile)
             if len(newpart) == 0:
                 newpart.append(onefile)
             else:
                 delta = starttime - lastend
-                if delta.days > max_delta_days or delta.days < 0 or currentdir != lastdir:
+                if (
+                    delta.days > max_delta_days
+                    or delta.days < 0
+                    or currentdir != lastdir
+                ):
                     newlist.append(newpart)
                     newpart = [onefile]
                 else:
@@ -800,7 +943,10 @@ class basePlugin(object):
         for onefile in filelist:
             start, end = get_start_and_end_time_from_DRSFile(onefile, include_str=False)
             if end.year - start.year + 1 < lead_year:
-                Logger.Warning("file to short for lead year %d: %s" % (lead_year, onefile.to_path()))
+                Logger.Warning(
+                    "file to short for lead year %d: %s"
+                    % (lead_year, onefile.to_path())
+                )
             else:
                 newlist.append(splittedFile([onefile], lead_year=lead_year))
         return newlist
@@ -818,7 +964,9 @@ class basePlugin(object):
             lead_end = datetime(start.year + lead_year - 1, 12, 31, 23, 59, 59)
             # now loop over all parts of this file to find the ones that belong to the correct lead year
             for onepart in onefile.parts:
-                fstart, fend = get_start_and_end_time_from_DRSFile(onepart, include_str=False)
+                fstart, fend = get_start_and_end_time_from_DRSFile(
+                    onepart, include_str=False
+                )
                 if fstart >= lead_start and fend <= lead_end:
                     result.append(onepart)
         return result
@@ -834,7 +982,12 @@ class basePlugin(object):
             first = None
             last = None
             for onefile in files:
-                starttime, endtime, startstr, endstr = get_start_and_end_time_from_DRSFile(onefile)
+                (
+                    starttime,
+                    endtime,
+                    startstr,
+                    endstr,
+                ) = get_start_and_end_time_from_DRSFile(onefile)
                 if first is None:
                     first = starttime
                 if last is None:
@@ -843,7 +996,11 @@ class basePlugin(object):
                     first = starttime
                 if endtime > last:
                     last = endtime
-            newname = files[0].to_path().replace(files[0].dict["parts"]["time"], "%s-%s" % (startstr, endstr))
+            newname = (
+                files[0]
+                .to_path()
+                .replace(files[0].dict["parts"]["time"], "%s-%s" % (startstr, endstr))
+            )
             return self.get_output_from_input_name(newname)
         return output_name
 
@@ -860,17 +1017,25 @@ class basePlugin(object):
             SLURM_NTASKS_PER_NODE = os.getenv("SLURM_NTASKS_PER_NODE")
             if SLURM_NTASKS_PER_NODE is not None:
                 SLURM_NTASKS_PER_NODE = int(SLURM_NTASKS_PER_NODE)
-                Logger.Info("Number of processes limited by SLURM to %d" % SLURM_NTASKS_PER_NODE)
-            exitcodes = ShellScript.run_scripts_parallel(commands, nproc=SLURM_NTASKS_PER_NODE)
+                Logger.Info(
+                    "Number of processes limited by SLURM to %d" % SLURM_NTASKS_PER_NODE
+                )
+            exitcodes = ShellScript.run_scripts_parallel(
+                commands, nproc=SLURM_NTASKS_PER_NODE
+            )
             # check for any errors
             for c in exitcodes:
                 if c[0] != 0:
-                    raise Exception("exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!" % (
-                    c[0], c[2], c[1]))
+                    raise Exception(
+                        "exitcode: %d during parallel execution:\ncommand:\n%s\n\noutput:\n%s!"
+                        % (c[0], c[2], c[1])
+                    )
 
-    def calculate_ensemble_stat(self, plugin_path, dryrun=False, separate=True, has_mon=False):
+    def calculate_ensemble_stat(
+        self, plugin_path, dryrun=False, separate=True, has_mon=False
+    ):
         """
-        calculate ensemble mean, min, max, etc. 
+        calculate ensemble mean, min, max, etc.
         @separate   set to True if you don't want to add the files to the list of output files. The additional list
         outputfiles_ensstat only will be filled.
         """
@@ -885,7 +1050,8 @@ class basePlugin(object):
             group_files = []
             for stat in stats:
                 output_name = self.get_output_from_input_name(
-                    key.replace("<ensemble>", stat).replace("<rcm_ensemble>", stat))
+                    key.replace("<ensemble>", stat).replace("<rcm_ensemble>", stat)
+                )
                 group_files.append(output_name)
                 if not separate:
                     self.outputfiles.append(output_name)
@@ -894,9 +1060,13 @@ class basePlugin(object):
                 command.addPositionalArgument(stat)
                 for ifile in value:
                     if isinstance(ifile, splittedFile):
-                        command.addPositionalArgument(self.get_output_from_input_name(ifile.to_path(fake=True)))
+                        command.addPositionalArgument(
+                            self.get_output_from_input_name(ifile.to_path(fake=True))
+                        )
                     else:
-                        command.addPositionalArgument(self.get_output_from_input_name(ifile.to_path()))
+                        command.addPositionalArgument(
+                            self.get_output_from_input_name(ifile.to_path())
+                        )
                 command.addPositionalArgument(output_name)
                 commands.append(command)
                 # is there an additional output with the same names but a different extension
@@ -910,10 +1080,16 @@ class basePlugin(object):
                     for ifile in value:
                         if isinstance(ifile, splittedFile):
                             command2.addPositionalArgument(
-                                self.get_output_from_input_name(ifile.to_path(fake=True)).replace(".nc", "_mon.nc"))
+                                self.get_output_from_input_name(
+                                    ifile.to_path(fake=True)
+                                ).replace(".nc", "_mon.nc")
+                            )
                         else:
                             command2.addPositionalArgument(
-                                self.get_output_from_input_name(ifile.to_path()).replace(".nc", "_mon.nc"))
+                                self.get_output_from_input_name(
+                                    ifile.to_path()
+                                ).replace(".nc", "_mon.nc")
+                            )
                     command2.addPositionalArgument(output_name2)
                     commands.append(command2)
             self.outputfiles_ensstat.append(group_files)
@@ -932,7 +1108,10 @@ class basePlugin(object):
 
         # get the requested variable
         if varname not in nc.variables:
-            Logger.Error("variable '%s' not found in file '%s' (get_variable_unit)" % (varname, filename))
+            Logger.Error(
+                "variable '%s' not found in file '%s' (get_variable_unit)"
+                % (varname, filename)
+            )
         var = nc.variables[varname]
         units = var.units
 

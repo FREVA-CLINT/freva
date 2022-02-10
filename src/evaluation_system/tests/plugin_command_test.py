@@ -21,20 +21,24 @@ def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
         out = capsys.readouterr().out
         _, loglevel, message = caplog.record_tuples[-1]
         assert loglevel == logging.INFO
-        assert 'dummyplugin' in message.lower()
-        assert 'created' in message.lower()
+        assert "dummyplugin" in message.lower()
+        assert "created" in message.lower()
         with pytest.raises(FileNotFoundError):
             run_cli(cmd[:-2])
 
+
 def test_forbidden_tool_doc(dummy_env):
-     from freva.cli.admin import update_tool_doc
-     with pytest.raises(RuntimeError):
-         update_tool_doc("dummyplugin")
-     with pytest.raises(SystemExit):
-         run_cli(["solr", "doc" "--help"])
+    from freva.cli.admin import update_tool_doc
+
+    with pytest.raises(RuntimeError):
+        update_tool_doc("dummyplugin")
+    with pytest.raises(SystemExit):
+        run_cli(["solr", "doc" "--help"])
+
 
 def test_list_tools(capsys, dummy_env):
     from freva.cli.plugin import main as run
+
     with pytest.raises(PluginNotFoundError):
         run_cli("plugin --doc -d")
     run(["--list-tools"])
@@ -64,11 +68,8 @@ def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
     from evaluation_system.model.plugins.models import ToolPullRequest
-    res, _ =  freva.run_plugin(
-            "dummyplugin",
-            the_number=32,
-            caption="Some caption"
-    )
+
+    res, _ = freva.run_plugin("dummyplugin", the_number=32, caption="Some caption")
     assert res == 0
     _, res = freva.run_plugin("dummyplugin", the_number=32, show_config=True)
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
@@ -76,17 +77,19 @@ def test_run_pyclientplugin(dummy_history):
         res, """    number: -the_number: 32 something: test other: 1.4 input: -"""
     )
     return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
-    assert 'git' in repo
+    assert "git" in repo
     ToolPullRequest.objects.all().delete()
     with pytest.raises(PluginNotFoundError):
-       freva.run_plugin("dummyplugin0", pull_request=True, tag="")
+        freva.run_plugin("dummyplugin0", pull_request=True, tag="")
 
     ret, _ = freva.run_plugin("dummyplugin", pull_request=True, tag="")
     assert ret != 0
+
     def pr_sleep(t, version=None, status=None, tool="dummyplugin"):
         t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
         t.status = status
         t.save()
+
     time.sleep = partial(pr_sleep, version="1.0", status="failed", tool="dummyplugin")
     retun_val, cmd_out = freva.run_plugin("dummyplugin", pull_request=True, tag="1.0")
     assert similar_string(
@@ -107,12 +110,10 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
     with pytest.raises(ValidationError):
         run_cli(["plugin", "dummyplugin"])
     # test run tool
-    run_cli([
-        "plugin", "dummyplugin", "the_number=32", '--caption="Some caption"'
-    ])
+    run_cli(["plugin", "dummyplugin", "the_number=32", '--caption="Some caption"'])
     output_str = capsys.readouterr().out
-    assert 'Dummy tool was run' in output_str
-    assert 'the_number' in output_str
+    assert "Dummy tool was run" in output_str
+    assert "the_number" in output_str
     # test get version
     run_cli(["plugin", "dummyplugin", "--repo-version"])
     # test batch mode
@@ -127,11 +128,13 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
     # test show config
     run_cli(["plugin", "dummyplugin", "the_number=42", "--show-config"])
     output_str = capsys.readouterr().out
-    for line in ("number: -",
-                 "the_number: 42",
-                 "something: test",
-                 "other: 1.4",
-                 "input: -"):
+    for line in (
+        "number: -",
+        "the_number: 42",
+        "something: test",
+        "other: 1.4",
+        "input: -",
+    ):
         assert line in output_str
 
 
@@ -143,6 +146,7 @@ def test_handle_pull_request(dummy_env, capsys):
     run_cli(["plugin", tool, "--pull-request"])
     cmd_out = capsys.readouterr().out
     assert similar_string(cmd_out, """'Missing required option "--tag"'""", 0.7)
+
     def pr_sleep(t, version=None, status=None, tool="dummyplugin"):
 
         t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)

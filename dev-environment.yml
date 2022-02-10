@@ -8,7 +8,6 @@ dependencies:
   - pandas
   - mysqlclient
   - pip
-  - gcc
   - pip:
       - allure-pytest
       - requests_mock
@@ -65,3 +64,4 @@ dependencies:
   - coverage
   - bleach
   - mypy
+  - black

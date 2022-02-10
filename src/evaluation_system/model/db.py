@@ -20,7 +20,7 @@ from evaluation_system.model.history.models import Configuration
 from evaluation_system.misc import logger as log
 import evaluation_system.settings.database
 
-TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 
 
 def timestamp_to_string(datetime_obj):
@@ -35,6 +35,7 @@ def timestamp_from_string(date_string):
         return pd.Timestamp(date_string).to_pydatetime()
     except:
         raise ValueError("Can't parse a date from '%s'" % date_string)
+
 
 # class HistoryResultEntry(object):
 #     """
@@ -68,18 +69,26 @@ class UserDB(object):
 
     @transaction.atomic
     @transaction.atomic
-    def storeHistory(self, tool, config_dict, uid, status,
-                     slurm_output=None, result=None, flag=None,
-                     version_details=None, caption=None):
+    def storeHistory(
+        self,
+        tool,
+        config_dict,
+        uid,
+        status,
+        slurm_output=None,
+        result=None,
+        flag=None,
+        version_details=None,
+        caption=None,
+    ):
         """Store a an analysis run into the DB.
 
-:type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
-:param tool: the plugin for which we are storing the information.
-:param config_dict: dictionary with the configuration used for this run,
-:param uid: the user id (useful in a global database)
-:param status: the process status
-:param result: dictionary with the results (created files).
-"""
+        :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
+        :param tool: the plugin for which we are storing the information.
+        :param config_dict: dictionary with the configuration used for this run,
+        :param uid: the user id (useful in a global database)
+        :param status: the process status
+        :param result: dictionary with the results (created files)."""
         if result is None:
             result = {}
         if slurm_output is None:
@@ -92,15 +101,17 @@ class UserDB(object):
         toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
 
-        newentry = hist.History(timestamp=datetime.now(),
-                                tool=toolname,
-                                version=version,
-                                configuration=json.dumps(config_dict),
-                                slurm_output=slurm_output,
-                                uid_id=uid,
-                                status=status,
-                                flag=flag,
-                                version_details_id=version_details)
+        newentry = hist.History(
+            timestamp=datetime.now(),
+            tool=toolname,
+            version=version,
+            configuration=json.dumps(config_dict),
+            slurm_output=slurm_output,
+            uid_id=uid,
+            status=status,
+            flag=flag,
+            version_details_id=version_details,
+        )
         # set caption
         if caption:
             newentry.caption = caption
@@ -112,10 +123,12 @@ class UserDB(object):
 
             for p in tool.__parameters__._params.values():
                 name = p.name
-                param = Configuration(history_id_id=newentry.id,
-                                      parameter_id_id=p.id,
-                                      value=json.dumps(config_dict[name]),
-                                      is_default=p.is_default)
+                param = Configuration(
+                    history_id_id=newentry.id,
+                    parameter_id_id=p.id,
+                    value=json.dumps(config_dict[name]),
+                    is_default=p.is_default,
+                )
 
                 param.save()
         except Exception as e:
@@ -131,9 +144,9 @@ class UserDB(object):
         Sets the name of the slurm file
         """
 
-        h = hist.History.objects.get(id=row_id,
-                                     uid_id=uid,
-                                     status=hist.History.processStatus.not_scheduled)
+        h = hist.History.objects.get(
+            id=row_id, uid_id=uid, status=hist.History.processStatus.not_scheduled
+        )
 
         h.slurm_output = slurmFileName
         h.status = hist.History.processStatus.scheduled
@@ -144,6 +157,7 @@ class UserDB(object):
         """
         Exception class for failing status upgrades
         """
+
         def __init__(self, msg="Status could not be upgraded"):
             super(UserDB.ExceptionStatusUpgrade, self).__init__(msg)
 
@@ -155,11 +169,10 @@ class UserDB(object):
         After validation the status will be upgraded.
         """
 
-        h = hist.History.objects.get(pk=row_id,
-                                     uid_id=uid)
+        h = hist.History.objects.get(pk=row_id, uid_id=uid)
 
         if h.status < status:
-            raise self.ExceptionStatusUpgrade('Tried to downgrade a status')
+            raise self.ExceptionStatusUpgrade("Tried to downgrade a status")
 
         h.status = status
 
@@ -179,43 +192,44 @@ class UserDB(object):
 
         h.save()
 
-    def getHistory(self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None):
+    def getHistory(
+        self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None
+    ):
         """Returns the stored history (run analysis) for the given tool.
 
-:type tool_name: str
-:param tool_name: name of the tool for which the information will be gathered (if None, then everything is returned).
-:type limit: int
-:param limit: Amount of rows to be returned (if < 0, return all).
-:type since: datetime.datetime
-:param since: Return only items stored after this date
-:type until: datetime.datetime
-:param until: Return only  items stored before this date
-:param entry_ids: ([int] or int) id or list thereof to be selected
-:returns: ([:class:`HistoryEntry`]) list of entries that match the query.
-"""
+        :type tool_name: str
+        :param tool_name: name of the tool for which the information will be gathered (if None, then everything is returned).
+        :type limit: int
+        :param limit: Amount of rows to be returned (if < 0, return all).
+        :type since: datetime.datetime
+        :param since: Return only items stored after this date
+        :type until: datetime.datetime
+        :param until: Return only  items stored before this date
+        :param entry_ids: ([int] or int) id or list thereof to be selected
+        :returns: ([:class:`HistoryEntry`]) list of entries that match the query."""
         filter_dict = {}
 
         if entry_ids is not None:
             if isinstance(entry_ids, int):
-                entry_ids=[entry_ids]
-            filter_dict['id__in'] = entry_ids
+                entry_ids = [entry_ids]
+            filter_dict["id__in"] = entry_ids
 
         if tool_name is not None:
-            filter_dict['tool'] = tool_name
+            filter_dict["tool"] = tool_name
 
         if since is not None:
-            filter_dict['timestamp__gte'] = since
+            filter_dict["timestamp__gte"] = since
 
         if until is not None:
-            filter_dict['timestamp__lte'] = until
+            filter_dict["timestamp__lte"] = until
 
         if uid is not None:
-            filter_dict['uid_id'] = uid
+            filter_dict["uid_id"] = uid
 
-        o = hist.History.objects.filter(**filter_dict).order_by('-id')
+        o = hist.History.objects.filter(**filter_dict).order_by("-id")
 
         if limit > 0:
-             o = o[:limit]
+            o = o[:limit]
 
         return o
 
@@ -231,9 +245,7 @@ class UserDB(object):
         :param: uid: the user, default: None
         """
 
-        h = hist.HistoryTag(history_id_id=hrowid,
-                            type=tagType,
-                            text=text)
+        h = hist.HistoryTag(history_id_id=hrowid, type=tagType, text=text)
 
         if uid is not None:
             h.uid_id = uid
@@ -252,8 +264,7 @@ class UserDB(object):
         :param: uid: the user, default: None
         """
 
-        h = hist.HistoryTag.objects.get(id=trowid,
-                                        uid_id=uid)
+        h = hist.HistoryTag.objects.get(id=trowid, uid_id=uid)
 
         if tagType is not None:
             h.type = tagType
@@ -274,7 +285,7 @@ class UserDB(object):
 
         # regex to get the relative path
         preview_path = config.get(config.PREVIEW_PATH, None)
-        expression = '(%s\\/*){1}(.*)' % re.escape(preview_path)
+        expression = "(%s\\/*){1}(.*)" % re.escape(preview_path)
 
         # only try to create previews, when a preview path is given
         if preview_path:
@@ -283,26 +294,28 @@ class UserDB(object):
         for file_name in results:
             metadata = results[file_name]
 
-            type_name = metadata.get('type', '')
+            type_name = metadata.get("type", "")
             type_number = hist.Result.Filetype.unknown
 
-            preview_path = metadata.get('preview_path', '')
-            preview_file = ''
+            preview_path = metadata.get("preview_path", "")
+            preview_file = ""
 
             if preview_path and reg_ex is not None:
                 # We store the relative path for previews only.
                 # Which allows us to move the preview files to a different folder.
                 preview_file = reg_ex.match(preview_path).group(2)
 
-            if type_name == 'plot':
+            if type_name == "plot":
                 type_number = hist.Result.Filetype.plot
-            elif type_name == 'data':
+            elif type_name == "data":
                 type_number = hist.Result.Filetype.data
 
-            h = hist.Result(history_id_id=rowid,
-                            output_file=file_name,
-                            preview_file=preview_file,
-                            file_type=type_number)
+            h = hist.Result(
+                history_id_id=rowid,
+                output_file=file_name,
+                preview_file=preview_file,
+                file_type=type_number,
+            )
 
             h.save()
 
@@ -320,26 +333,40 @@ class UserDB(object):
         data_to_store = []
 
         # append new tags here
-        caption = metadata.get('caption', None)
+        caption = metadata.get("caption", None)
 
         if caption:
-            data_to_store.append(hist.ResultTag(result_id_id=result_id,
-                                                type=hist.ResultTag.flagType.caption,
-                                                text=caption))
+            data_to_store.append(
+                hist.ResultTag(
+                    result_id_id=result_id,
+                    type=hist.ResultTag.flagType.caption,
+                    text=caption,
+                )
+            )
 
         hist.ResultTag.objects.bulk_create(data_to_store)
 
-    def getVersionId(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
-        repository = '%s;%s' % (repos_tool, repos_api)
+    def getVersionId(
+        self,
+        toolname,
+        version,
+        repos_api,
+        internal_version_api,
+        repos_tool,
+        internal_version_tool,
+    ):
+        repository = "%s;%s" % (repos_tool, repos_api)
 
         retval = None
 
         try:
-            p = pin.Version.objects.filter(tool=toolname,
-                                           version=version,
-                                           internal_version_tool=internal_version_tool[:40],
-                                           internal_version_api=internal_version_api[:40],
-                                           repository=repository)[0]
+            p = pin.Version.objects.filter(
+                tool=toolname,
+                version=version,
+                internal_version_tool=internal_version_tool[:40],
+                internal_version_api=internal_version_api[:40],
+                repository=repository,
+            )[0]
 
             retval = p.pk
 
@@ -348,15 +375,25 @@ class UserDB(object):
 
         return retval
 
-    def newVersion(self, toolname, version, repos_api, internal_version_api, repos_tool, internal_version_tool):
-        repository = '%s;%s' % (repos_tool, repos_api)
+    def newVersion(
+        self,
+        toolname,
+        version,
+        repos_api,
+        internal_version_api,
+        repos_tool,
+        internal_version_tool,
+    ):
+        repository = "%s;%s" % (repos_tool, repos_api)
 
-        p = pin.Version(timestamp=datetime.now(),
-                        tool=toolname,
-                        version=version,
-                        internal_version_tool=internal_version_tool,
-                        internal_version_api=internal_version_api,
-                        repository=repository)
+        p = pin.Version(
+            timestamp=datetime.now(),
+            tool=toolname,
+            version=version,
+            internal_version_tool=internal_version_tool,
+            internal_version_api=internal_version_api,
+            repository=repository,
+        )
 
         p.save()
 
@@ -386,29 +423,36 @@ class UserDB(object):
 
         u.save()
 
-    def createUser(self,
-                   username,
-                   email='-',
-                   first_name='',
-                   last_name='',):
+    def createUser(
+        self,
+        username,
+        email="-",
+        first_name="",
+        last_name="",
+    ):
 
         timestamp = datetime.now()
 
-        u = User(username=username,
-                 password='NoPasswd',
-                 date_joined=timestamp,
-                 last_login=timestamp,
-                 first_name=first_name,
-                 last_name=last_name,
-                 email=email,
-                 is_active=1,
-                 is_staff=0,
-                 is_superuser=0)
+        u = User(
+            username=username,
+            password="NoPasswd",
+            date_joined=timestamp,
+            last_login=timestamp,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            is_active=1,
+            is_staff=0,
+            is_superuser=0,
+        )
 
         u.save()
 
     def create_user_crawl(self, crawl_dir, username):
         from evaluation_system.model.solr_models.models import UserCrawl
-        crawl = UserCrawl(status='waiting', user_id=self.getUserId(username), path_to_crawl=crawl_dir)
+
+        crawl = UserCrawl(
+            status="waiting", user_id=self.getUserId(username), path_to_crawl=crawl_dir
+        )
         crawl.save()
         return crawl.id
