@@ -89,7 +89,12 @@ class Logger(object):
 
         # try to get the terminal size
         if cls.cols is None:
-            pipe = subprocess.Popen("stty size", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            pipe = subprocess.Popen(
+                "stty size",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
             output = str.join("", pipe.stdout.readlines())
             code = pipe.wait()
             if code == 0:

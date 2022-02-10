@@ -22,7 +22,7 @@ class TempDir(object):
 
     def __init__(self, parentdir=None):
         """
-        @param parentdir: the directory is created in the parent directory. If the argument 
+        @param parentdir: the directory is created in the parent directory. If the argument
         is none, then the directory is created in the default temp-Directory
         """
         # create the directory
@@ -51,9 +51,9 @@ class TempDir(object):
 
 
 class ShellScript(object):
-    '''
+    """
     This Class represents a shell script or any other external program
-    '''
+    """
 
     # the default environment variables
     default_env = os.environ
@@ -69,8 +69,15 @@ class ShellScript(object):
     def getstatusoutput(cls, cmd, workpath=None):
         """Return (status, output, cmd) of executing cmd in a shell."""
         """This new implementation should work on all platforms."""
-        pipe = subprocess.Popen(cmd, shell=True, universal_newlines=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=cls.default_env, cwd=workpath)
+        pipe = subprocess.Popen(
+            cmd,
+            shell=True,
+            universal_newlines=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=cls.default_env,
+            cwd=workpath,
+        )
         try:
             output = str.join("", pipe.stdout.readlines())
             sts = pipe.wait()
@@ -90,7 +97,7 @@ class ShellScript(object):
         """
         if nproc is None:
             nproc = min(multiprocessing.cpu_count(), len(scripts))
-        # create the multiprocessing pool 
+        # create the multiprocessing pool
         pool = multiprocessing.Pool(nproc)
         exitcodes = []
         try:
@@ -123,8 +130,13 @@ class ShellScript(object):
         self.workpath = workpath
 
         # check the existence of the script file
-        if check and workpath is None and not os.path.exists(
-                self.scriptfile) or workpath is not None and not os.path.exists(workpath + "/" + self.scriptfile):
+        if (
+            check
+            and workpath is None
+            and not os.path.exists(self.scriptfile)
+            or workpath is not None
+            and not os.path.exists(workpath + "/" + self.scriptfile)
+        ):
             Logger.Error("Script " + self.scriptfile + " not found!")
             exit()
 
@@ -153,7 +165,13 @@ class ShellScript(object):
                     result += " "
         # string type
         elif isinstance(argument, str):
-            if " " in argument or "?" in argument or "(" in argument or ")" in argument or "'" in argument:
+            if (
+                " " in argument
+                or "?" in argument
+                or "(" in argument
+                or ")" in argument
+                or "'" in argument
+            ):
                 result += "'" + argument + "'"
             else:
                 result += argument
@@ -167,13 +185,16 @@ class ShellScript(object):
             pass
         # unsupported argument
         else:
-            Logger.Error("ShellScripthelper, __getArgValueString: unsupported argument type " + str(type(argument)))
+            Logger.Error(
+                "ShellScripthelper, __getArgValueString: unsupported argument type "
+                + str(type(argument))
+            )
         return result
 
     def run(self):
         """
         Run the Script.
-        @return: a tuple with the return value     
+        @return: a tuple with the return value
         """
 
         # run the script

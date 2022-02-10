@@ -26,57 +26,66 @@ from evaluation_system.misc import config, logger as log
 
 class SolrCore:
     """Encapsulate access to a Solr instance"""
-    
-    def __init__(self, core=None, host=None, port=None, instance_dir=None, data_dir=None, get_status=True):
+
+    def __init__(
+        self,
+        core=None,
+        host=None,
+        port=None,
+        instance_dir=None,
+        data_dir=None,
+        get_status=True,
+    ):
         """Create the connection pointing to the proper solr url and core.
 
-:param core: The name of the core referred (default: loaded from config file)
-:param host: the hostname of the Solr server (default: loaded from config file)
-:param port: The port number of the Solr Server (default: loaded from config file)
-:param instance_dir: the core instance directory (if empty but the core exists it will get downloaded from Solr)
-:param data_dir: the directory where the data is being kept (if empty but the core exists it will
-get downloaded from Solr)"""
+        :param core: The name of the core referred (default: loaded from config file)
+        :param host: the hostname of the Solr server (default: loaded from config file)
+        :param port: The port number of the Solr Server (default: loaded from config file)
+        :param instance_dir: the core instance directory (if empty but the core exists it will get downloaded from Solr)
+        :param data_dir: the directory where the data is being kept (if empty but the core exists it will
+        get downloaded from Solr)"""
 
         self.host = host or config.get(config.SOLR_HOST)
         self.port = port or config.get(config.SOLR_PORT)
         self.core = core or config.get(config.SOLR_CORE)
-        self.solr_url = f'http://{self.host}:{self.port}/solr/'
-        self.core_url = self.solr_url + self.core + '/'
+        self.solr_url = f"http://{self.host}:{self.port}/solr/"
+        self.core_url = self.solr_url + self.core + "/"
         self.instance_dir = instance_dir
         self.data_dir = data_dir
-    
+
         if get_status:
             st = self.status()
         else:
             st = {}
-        if self.instance_dir is None and 'instanceDir' in st:
-            self.instance_dir = st['instanceDir']
-        if self.data_dir is None and 'dataDir' in st:
-            self.data_dir = st['dataDir']
+        if self.instance_dir is None and "instanceDir" in st:
+            self.instance_dir = st["instanceDir"]
+        if self.data_dir is None and "dataDir" in st:
+            self.data_dir = st["dataDir"]
         else:
-            self.data_dir = 'data'
-        
+            self.data_dir = "data"
+
         # Other Defaults
         import socket
+
         socket.setdefaulttimeout(20)
-            
+
     def __str__(self):
-        return '<SolrCore %s>' % self.core_url
-        
+        return "<SolrCore %s>" % self.core_url
+
     def post(self, list_of_dicts, auto_list=True, commit=True):
         """Sends some json to Solr for ingestion.
 
-:param list_of_dicts: either a json or more normally a list of json instances that will be sent to Solr for ingestion
-:param auto_list: avoid packing list_of dicts in a directory if it's not one
-:param commit: send also a Solr commit so that changes can be seen immediately."""
+        :param list_of_dicts: either a json or more normally a list of json instances that will be sent to Solr for ingestion
+        :param auto_list: avoid packing list_of dicts in a directory if it's not one
+        :param commit: send also a Solr commit so that changes can be seen immediately."""
         if auto_list and not isinstance(list_of_dicts, list):
             list_of_dicts = [list_of_dicts]
-        endpoint = 'update/json?'
+        endpoint = "update/json?"
         if commit:
-            endpoint += 'commit=true'
+            endpoint += "commit=true"
         query = self.core_url + endpoint
         log.debug(query)
-        post_data = json.dumps(list_of_dicts).encode('ascii')
+        post_data = json.dumps(list_of_dicts).encode("ascii")
         req = urllib.request.Request(query, post_data)
         req.add_header("Content-type", "application/json")
 
@@ -84,127 +93,154 @@ get downloaded from Solr)"""
 
     def get_json(self, endpoint, use_core=True, check_response=True):
         """Return some json from server. Is the raw access to Solr.
-        
-:param endpoint: The endpoint, path missing after the core url and all parameters encoded in it (e.g. 'select?q=*')
-:param use_core: if the core info is used for generating the endpoint. (if False, then == self.core + '/' + endpoint)
-:param check_response: If the response should be checked for errors. If True, raise an exception if something is
- wrong (default: True)"""
-        if '?' in endpoint:
-            endpoint += '&wt=json'
+
+        :param endpoint: The endpoint, path missing after the core url and all parameters encoded in it (e.g. 'select?q=*')
+        :param use_core: if the core info is used for generating the endpoint. (if False, then == self.core + '/' + endpoint)
+        :param check_response: If the response should be checked for errors. If True, raise an exception if something is
+         wrong (default: True)"""
+        if "?" in endpoint:
+            endpoint += "&wt=json"
         else:
-            endpoint += '?wt=json'
-        
+            endpoint += "?wt=json"
+
         if use_core:
             query = self.core_url + endpoint
         else:
             query = self.solr_url + endpoint
         log.debug(query)
-        
+
         req = urllib.request.Request(query)
         response = json.loads(urllib.request.urlopen(req).read())
-        if response['responseHeader']['status'] != 0:
-            raise Exception("Error while accessing Core %s. Response: %s" % (self.core, response))
-        
+        if response["responseHeader"]["status"] != 0:
+            raise Exception(
+                "Error while accessing Core %s. Response: %s" % (self.core, response)
+            )
+
         return response
-    
+
     def get_solr_fields(self):
         """Return information about the Solr fields. This is dynamically generated and because of
-dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
-        answer = self.get_json('admin/luke')['fields']
-        #TODO: Solr has a language facet. Until we know why, delete it
+        dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
+        answer = self.get_json("admin/luke")["fields"]
+        # TODO: Solr has a language facet. Until we know why, delete it
         if isinstance(answer, dict):
             try:
-                del answer['language']
+                del answer["language"]
             except KeyError:
                 pass
         else:
             try:
-                answer.remove('language')
+                answer.remove("language")
             except ValueError:
                 pass
         return answer
-    
-    def create(self, instance_dir=None, data_dir=None, config='solrconfig.xml', schema='schema.xml', check_if_exist=True):
-        """Creates (actually "register") this core. The Core configuration and directories must
-be generated beforehand (not the data one). You may clone an existing one or start from scratch.
 
-:param instance_dir: main directory for this core
-:param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
-:param config: The configuration file (expected in instance_dir/conf)
-:param schema: The schema file (expected in instance_dir/conf)
-:param check_if_exist: check for the existence of the instance directorie"""
+    def create(
+        self,
+        instance_dir=None,
+        data_dir=None,
+        config="solrconfig.xml",
+        schema="schema.xml",
+        check_if_exist=True,
+    ):
+        """Creates (actually "register") this core. The Core configuration and directories must
+        be generated beforehand (not the data one). You may clone an existing one or start from scratch.
+
+        :param instance_dir: main directory for this core
+        :param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
+        :param config: The configuration file (expected in instance_dir/conf)
+        :param schema: The schema file (expected in instance_dir/conf)
+        :param check_if_exist: check for the existence of the instance directorie"""
         # check basic configuration (it must exists!)
         if instance_dir is None and self.instance_dir is None:
             raise ValueError("No Instance directory defined!")
         elif instance_dir is not None:
             self.instance_dir = instance_dir
         if not os.path.isdir(self.instance_dir) and check_if_exist:
-            raise FileNotFoundError("Expected Solr Core configuration not found in %s" % self.instance_dir)
-        
+            raise FileNotFoundError(
+                "Expected Solr Core configuration not found in %s" % self.instance_dir
+            )
+
         if data_dir is not None:
             self.data_dir = data_dir
-        
-        return self.get_json('admin/cores?action=CREATE&name=%s' % self.core
-                                + '&instanceDir=%s' % self.instance_dir
-                                + '&config=%s' % config
-                                + '&schema=%s' % schema
-                                + '&dataDir=%s' % self.data_dir, use_core=False
-                             )
-    
+
+        return self.get_json(
+            "admin/cores?action=CREATE&name=%s" % self.core
+            + "&instanceDir=%s" % self.instance_dir
+            + "&config=%s" % config
+            + "&schema=%s" % schema
+            + "&dataDir=%s" % self.data_dir,
+            use_core=False,
+        )
+
     def reload(self):
         """Reload the core. Useful after schema changes.
-Be aware that you might need to re-ingest everything if there were changes to the indexing part of the schema."""
-        return self.get_json('admin/cores?action=RELOAD&core=' + self.core, use_core=False)
-    
+        Be aware that you might need to re-ingest everything if there were changes to the indexing part of the schema."""
+        return self.get_json(
+            "admin/cores?action=RELOAD&core=" + self.core, use_core=False
+        )
+
     def unload(self):
         """Unload the core."""
-        return self.get_json('admin/cores?action=UNLOAD&core=' + self.core, use_core=False)
-    
+        return self.get_json(
+            "admin/cores?action=UNLOAD&core=" + self.core, use_core=False
+        )
+
     def swap(self, other_core):
         """Will swap this core with the given one (that means rename their references)
-        
-:param other_core: the name of the other core that this will be swapped with."""
-        return self.get_json('admin/cores?action=SWAP&core=%s&other=%s' % (self.core, other_core), use_core=False)
-    
+
+        :param other_core: the name of the other core that this will be swapped with."""
+        return self.get_json(
+            "admin/cores?action=SWAP&core=%s&other=%s" % (self.core, other_core),
+            use_core=False,
+        )
+
     def status(self, general=False):
         """Return status information about this core or the whole Solr server.
 
-:param general: If True return all information as provided by the server, otherwise just the status info
-from this core."""
-        url_str = 'admin/cores?action=STATUS'
+        :param general: If True return all information as provided by the server, otherwise just the status info
+        from this core."""
+        url_str = "admin/cores?action=STATUS"
         if not general:
-            url_str += '&core=' + self.core
+            url_str += "&core=" + self.core
         response = self.get_json(url_str, use_core=False)
         if general:
             return response
         else:
-            return response['status'][self.core]
-    
-    def clone(self, new_instance_dir, data_dir='data', copy_data=False):
+            return response["status"][self.core]
+
+    def clone(self, new_instance_dir, data_dir="data", copy_data=False):
         """Copies a core somewhere else.
-:param new_instance_dir: the new location for the clone.
-:param data_dir: the location of the data directory for this new clone.
-:param copy_data: If the data should also be copied (Warning, this is done on the-fly so be sure to unload the core
-first) or assure otherwise there's no chance of getting corrupted data (I don't know any other way besides
-unloading the original code))"""
+        :param new_instance_dir: the new location for the clone.
+        :param data_dir: the location of the data directory for this new clone.
+        :param copy_data: If the data should also be copied (Warning, this is done on the-fly so be sure to unload the core
+        first) or assure otherwise there's no chance of getting corrupted data (I don't know any other way besides
+        unloading the original code))"""
         try:
             os.makedirs(new_instance_dir)
         except:
             pass
-        shutil.copytree(os.path.join(self.instance_dir, 'conf'), os.path.join(new_instance_dir, 'conf'))
+        shutil.copytree(
+            os.path.join(self.instance_dir, "conf"),
+            os.path.join(new_instance_dir, "conf"),
+        )
         if copy_data:
-            shutil.copytree(os.path.join(self.instance_dir, self.data_dir), os.path.join(new_instance_dir, data_dir))
+            shutil.copytree(
+                os.path.join(self.instance_dir, self.data_dir),
+                os.path.join(new_instance_dir, data_dir),
+            )
 
     def delete(self, query):
         """Issue a delete command, there's no default query for this to avoid unintentional deletion."""
         self.post(dict(delete=dict(query=query)), auto_list=False)
 
     @staticmethod
-    def _get_metadata_from_path(in_dir: Path,
-                                abort_on_errors: bool,
-                                allowed_suffixes: Tuple[str, ...],
-                                drs_type: Optional[str] = None
-                                ) -> Iterator[Tuple[DRSFile, Dict[str, str]]]:
+    def _get_metadata_from_path(
+        in_dir: Path,
+        abort_on_errors: bool,
+        allowed_suffixes: Tuple[str, ...],
+        drs_type: Optional[str] = None,
+    ) -> Iterator[Tuple[DRSFile, Dict[str, str]]]:
         if in_dir.is_file():
             iterator = [in_dir]
         else:
@@ -212,7 +248,7 @@ unloading the original code))"""
         for file in iterator:
             if file.suffix not in allowed_suffixes:
                 continue
-            timestamp =  file.stat().st_mtime
+            timestamp = file.stat().st_mtime
             try:
                 drs_file = DRSFile.from_path(str(file), activity=drs_type)
             except (ValueError, FileNotFoundError) as e:
@@ -221,23 +257,25 @@ unloading the original code))"""
                 log.error(e.__str__())
                 continue
             metadata = SolrCore.to_solr_dict(drs_file)
-            metadata['timestamp'] = timestamp
-            metadata['creation_time'] = timestamp_to_solr_date(timestamp)
+            metadata["timestamp"] = timestamp
+            metadata["creation_time"] = timestamp_to_solr_date(timestamp)
             yield drs_file, metadata
 
-    def _del_file_pattern(self, file_pattern: Path, prefix: str = 'file') -> None:
+    def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:
         """Delete all entries of the core."""
         file_pattern = Path(file_pattern).expanduser().absolute()
         # TODO: Better way to determine if we have a regex on board
         if file_pattern.is_dir():
-            file_pattern /= '*'
-        self.delete(f'{prefix}:\\{file_pattern}')
+            file_pattern /= "*"
+        self.delete(f"{prefix}:\\{file_pattern}")
 
     @staticmethod
-    def delete_entries(file_pattern: Path,
-                       host: Optional[str] = None,
-                       port: Optional[int] = None,
-                       prefix: str = 'file') -> None:
+    def delete_entries(
+        file_pattern: Path,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+        prefix: str = "file",
+    ) -> None:
         """Delete all corresponding entries the the solr server.
 
         Parameters:
@@ -253,23 +291,24 @@ unloading the original code))"""
             The prefix representing the data sotre, currently only posix file
             types are supported (file)
         """
-        core_latest = SolrCore(core='latest', host=host, port=port)
+        core_latest = SolrCore(core="latest", host=host, port=port)
         core_all_files = SolrCore(core=None, host=host, port=port)
         core_all_files._del_file_pattern(file_pattern)
         core_latest._del_file_pattern(file_pattern)
 
     @staticmethod
-    def load_fs(input_dir: Path,
-                drs_type: Optional[str] = None,
-                chunk_size: int = 10000,
-                suffix: Tuple[str, ...] = ('.nc', '.grb', '.zarr', '.grib', '.nc4'),
-                core: Optional[str] = None,
-                core_latest: Optional[SolrCore] = None,
-                core_all_files: Optional[SolrCore] = None,
-                abort_on_errors: bool = False,
-                host: Optional[str] = None,
-                port: Optional[int] = None,
-                ) -> None:
+    def load_fs(
+        input_dir: Path,
+        drs_type: Optional[str] = None,
+        chunk_size: int = 10000,
+        suffix: Tuple[str, ...] = (".nc", ".grb", ".zarr", ".grib", ".nc4"),
+        core: Optional[str] = None,
+        core_latest: Optional[SolrCore] = None,
+        core_all_files: Optional[SolrCore] = None,
+        abort_on_errors: bool = False,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+    ) -> None:
         """Load information of files on posix file system into Solr.
 
         This method loads the information from a file and decides if it should be added
@@ -298,9 +337,8 @@ unloading the original code))"""
         host:
             The server hostname of the apache solr server.
         port:
-            The host port number the apache solr server is listinig to.
-"""
-        core_latest = core_latest or SolrCore(core='latest', host=host, port=port)
+            The host port number the apache solr server is listinig to."""
+        core_latest = core_latest or SolrCore(core="latest", host=host, port=port)
         core_all_files = core_all_files or SolrCore(core=core, host=host, port=port)
         core_latest._del_file_pattern(input_dir)
         core_all_files._del_file_pattern(input_dir)
@@ -309,26 +347,31 @@ unloading the original code))"""
         chunk_latest_new: Dict[str, Dict[str, str]] = {}
         latest_versions: Dict[str, str] = {}
         for (drs_file, metadata) in SolrCore._get_metadata_from_path(
-                input_dir, abort_on_errors, suffix, drs_type=drs_type):
+            input_dir, abort_on_errors, suffix, drs_type=drs_type
+        ):
             chunk.append(metadata)
             if drs_file.versioned:
                 # TODO: We need a proper data set versioning.
-                version = latest_versions.get(drs_file.to_dataset(versioned=False), "-1")
+                version = latest_versions.get(
+                    drs_file.to_dataset(versioned=False), "-1"
+                )
                 idx = drs_file.to_dataset(versioned=False)
                 if (drs_file.version or "0") > version:
                     # unknown or new version, update
                     version = drs_file.version or "0"
                     latest_versions[idx] = version
                     chunk_latest_new[idx] = metadata
-                if  (drs_file.version or "0") >= version:
+                if (drs_file.version or "0") >= version:
                     chunk_latest.append(metadata)
             else:
                 # if not version always add to latest
                 chunk_latest_new[drs_file.to_dataset(versioned=False)] = metadata
                 chunk_latest.append(metadata)
             if len(chunk) >= chunk_size:
-                log.info("Sending entries %s-%s" % (chunk_count * chunk_size,
-                                                   (chunk_count+1) * chunk_size))
+                log.info(
+                    "Sending entries %s-%s"
+                    % (chunk_count * chunk_size, (chunk_count + 1) * chunk_size)
+                )
                 core_all_files.post(chunk)
                 chunk = []
                 chunk_count += 1
@@ -345,23 +388,27 @@ unloading the original code))"""
     @staticmethod
     def to_solr_dict(drs_file):
         """Extracts from a DRSFile the information that will be stored in Solr"""
-        metadata = drs_file.dict['parts'].copy()
-        metadata['file'] = drs_file.to_path()
-        if 'version' in metadata:
-            metadata['file_no_version'] = metadata['file'].replace('/%s/' % metadata['version'], '/')
+        metadata = drs_file.dict["parts"].copy()
+        metadata["file"] = drs_file.to_path()
+        if "version" in metadata:
+            metadata["file_no_version"] = metadata["file"].replace(
+                "/%s/" % metadata["version"], "/"
+            )
         else:
-            metadata['file_no_version'] = metadata['file']
-        metadata['data_type'] = drs_file.drs_structure
+            metadata["file_no_version"] = metadata["file"]
+        metadata["data_type"] = drs_file.drs_structure
         return metadata
+
 
 def timestamp_to_solr_date(timestamp):
     """Transform a timestamp (float) into a string parsable by Solr"""
-    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%SZ')
+    return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%dT%H:%M:%SZ")
+
 
 def dir_iter(start_dir, abort_on_error=True, followlinks=True):
     for base_dir, dirs, files in os.walk(start_dir, followlinks=followlinks):
         # make sure we walk them in the proper order (latest version first)
         dirs.sort(reverse=True)
-        files.sort(reverse=True)    # just for consistency
+        files.sort(reverse=True)  # just for consistency
         for f in files:
             yield Path(base_dir) / f

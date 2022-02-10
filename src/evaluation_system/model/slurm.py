@@ -17,6 +17,7 @@ class slurm_file(object):
         """
         This class describes the format of an option for SLURM.
         """
+
         def __init__(self, indicator, separator):
             """
             initialize the member variables
@@ -82,9 +83,9 @@ class slurm_file(object):
         :param val: the value (will be converted to string)
         """
         if val is None:
-            e = self.EntryFormat('-', '')
+            e = self.EntryFormat("-", "")
         else:
-            e = self.EntryFormat('-', ' ')
+            e = self.EntryFormat("-", " ")
 
         self._options[opt] = (val, e)
 
@@ -95,9 +96,9 @@ class slurm_file(object):
         :param val: the value (will be converted to string)
         """
         if val is None:
-            e = self.EntryFormat('--', '')
+            e = self.EntryFormat("--", "")
         else:
-            e = self.EntryFormat('--', '=')
+            e = self.EntryFormat("--", "=")
 
         self._options[opt] = (val, e)
 
@@ -133,14 +134,14 @@ class slurm_file(object):
 
         # we check if the user is external and activate batch mode
         django_user = User.objects.get(username=user.getName())
-        if django_user.groups.filter(name=config.get('external_group',
-                                                     'noexternalgroupset')
-                                     ).exists():
-            options = config.get_section('scheduler_options_extern')
-        elif django_user.groups.filter(name='frevastud').exists():
-            options = config.get_section('scheduler_options_frevastud')
+        if django_user.groups.filter(
+            name=config.get("external_group", "noexternalgroupset")
+        ).exists():
+            options = config.get_section("scheduler_options_extern")
+        elif django_user.groups.filter(name="frevastud").exists():
+            options = config.get_section("scheduler_options_frevastud")
         else:
-            options = config.get_section('scheduler_options')
+            options = config.get_section("scheduler_options")
         self.scheduler_options = options
         # set the default options
         self.add_dash_option("D", outdir)
@@ -148,15 +149,15 @@ class slurm_file(object):
             self.add_ddash_option("mail-user", email)
         self.set_cmdstring(cmdstring)
 
-        self.source_file = options.pop('source', False)
-        module_file = options.pop('module_command')
+        self.source_file = options.pop("source", False)
+        module_file = options.pop("module_command")
         self.add_module(module_file)
 
         for opt, val in options.items():
-            if opt.startswith('option_'):
-                opt = opt.replace('option_','')
-                if val == 'None':
-                    self.add_ddash_option(opt,None)
+            if opt.startswith("option_"):
+                opt = opt.replace("option_", "")
+                if val == "None":
+                    self.add_ddash_option(opt, None)
                 else:
                     self.add_ddash_option(opt, val)
 
@@ -199,9 +200,13 @@ class slurm_file(object):
         for var in variables:
             fp.write("%s %s=%s" % (self.EXPORT_CMT, var[0], var[1]) + "\n")
 
-        if self.scheduler_options.get('chmod_output', False):
+        if self.scheduler_options.get("chmod_output", False):
             # workaround for slurm file acces
-            fp.write('JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o "StdOut=[^ ]*" | awk -F= \'{print $2}\')\n')
-            fp.write('chmod 664 $SLURM_STDOUT  #(oder welche Rechte ihr vergeben wollt)\n')
+            fp.write(
+                "JOBINFO=`scontrol show job $SLURM_JOB_ID`\nSLURM_STDOUT=$(echo $JOBINFO | grep -o \"StdOut=[^ ]*\" | awk -F= '{print $2}')\n"
+            )
+            fp.write(
+                "chmod 664 $SLURM_STDOUT  #(oder welche Rechte ihr vergeben wollt)\n"
+            )
         # write the execution command
         fp.write(self._cmdstring + "\n")
