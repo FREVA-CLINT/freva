@@ -48,8 +48,8 @@ def gather_completion_scripts(tempdir: Path) -> List[Tuple[str, List[str]]]:
     """Gather all data_files related to shell completion scripts."""
 
     shells = {
-        "zsh": Path("share") / "freva" / "zsh" / "completions",
-        "bash": Path("share") / "bash-completion" / "completion",
+        "zsh": Path("share") / "zsh" / "site-functions",
+        "bash": Path("share") / "bash-completion" / "completions",
         "fish": Path("share") / "fish" / "completions",
     }
     data_files = []
