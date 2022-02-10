@@ -15,6 +15,10 @@ test:
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
 
+lint:
+	mypy
+	black --check src
+
 dummy-data:
 	compose/dummy_plugin_runs.sh
 	python3 compose/solr/ingest_dummy_data.py

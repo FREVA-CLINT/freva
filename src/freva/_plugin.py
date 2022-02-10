@@ -70,8 +70,9 @@ def handle_pull_request(
         # TODO: Better error messages, like tag not valid or other
         return 1, "The pull request failed.\nPlease contact the admins."
     else:
-        return 0, (
-            f"{tool_name} plugin is now updated in the system.\nNew version: {tag}"
+        return (
+            0,
+            (f"{tool_name} plugin is now updated in the system.\nNew version: {tag}"),
         )
 
 

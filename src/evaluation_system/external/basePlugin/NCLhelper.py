@@ -39,13 +39,16 @@ class NCLscript(ShellScript):
             result += "/)"
         # string type
         elif isinstance(argument, str):
-            result += "\"" + argument + "\""
+            result += '"' + argument + '"'
         # integer of float
         elif isinstance(argument, int) or isinstance(argument, float):
             result += str(argument)
         # unsupported argument
         else:
-            Logger.Error("NCLhelper, __getArgValueString: unsupported argument type " + str(type(argument)))
+            Logger.Error(
+                "NCLhelper, __getArgValueString: unsupported argument type "
+                + str(type(argument))
+            )
         return result
 
     def getCommand(self):
@@ -64,7 +67,7 @@ class NCLscript(ShellScript):
     def run(self):
         """
         Run the Script.
-        @return: a tuple with the return value     
+        @return: a tuple with the return value
         """
         # run the script
         result = self.getstatusoutput(self.getCommand(), self.workpath)
