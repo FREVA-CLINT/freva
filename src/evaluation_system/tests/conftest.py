@@ -327,6 +327,7 @@ def config_dict():
         "something": "else",
         "other": "value",
         "input": "/folder",
+        "variable": "pr",
     }
 
 

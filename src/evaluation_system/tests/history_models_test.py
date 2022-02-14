@@ -57,6 +57,7 @@ def test_similar_results(dummy_user, test_user):
                     "something": "else",
                     "other": "value",
                     "input": "/folder",
+                    "variable": "pr",
                 },
                 status=0,
                 uid=udata.pw_name,
@@ -67,7 +68,7 @@ def test_similar_results(dummy_user, test_user):
         timestamp=datetime.now(),
         status=History.processStatus.running,
         uid=test_user[0],
-        configuration="{'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder'}",
+        configuration="{'the_number': 42, 'number': 12, 'something': 'else', 'other': 'value', 'input': '/folder', 'variable': 'pr'}",
         tool="dummytool",
         slurm_output="/path/to/slurm-44742.out",
     )
