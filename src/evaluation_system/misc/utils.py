@@ -323,8 +323,6 @@ def find_similar_words(word: str, list_of_valid_words: Iterable[str]) -> List[st
     --------
     list : a list of words that are close to the word given"""
     expand_list = {}
-    if not word:
-        return []
     for w in list_of_valid_words:
         for w_part in split(r"[ _\-:/]", w):
             if w_part not in expand_list:

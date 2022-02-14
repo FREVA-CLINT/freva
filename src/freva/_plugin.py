@@ -76,17 +76,17 @@ def handle_pull_request(
         )
 
 
-def _check_if_plugin_exists(tool_name: str) -> None:
+def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
     """Check if a given plugin name is part of the plugin stack."""
     if tool_name in pm.get_plugins():
         return
-    error = f"{tool_name or ''} Plugin not found, "
-    similar_tools = utils.find_similar_words(tool_name, list_plugins())
-    if similar_tools:
-        error += "did you mean this:\n" + "\n".join(similar_tools)
+    if not tool_name:
+        error = "Available tools are:\n"
+        tool_list = "\n".join(list_plugins())
     else:
-        error += "available tools:\n" + "\n".join(list_plugins())
-    raise PluginNotFoundError(f"\n{error}")
+        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
+        error = f"{tool_name} plugin not found, did you mean:\n"
+    raise PluginNotFoundError(f"\n{error}{tool_list}")
 
 
 def _return_value(value: int, result: Any, return_result: bool = True) -> Any:
