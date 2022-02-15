@@ -12,7 +12,6 @@ COMMAND = "freva"
 class ArgParser(BaseParser):
     """Cmd argument parser class for main entry-point."""
 
-
     def __init__(self, argv: List[str]):
 
         epilog = f"""To get help for the individual sub-commands use:
@@ -140,6 +139,7 @@ class ArgParser(BaseParser):
     def parse_databrowser(self) -> None:
         """Parse the databrowser command."""
         from .databrowser import DataBrowserCli
+
         self.call_parsers.append(
             self.subparsers.add_parser(
                 "databrowser",

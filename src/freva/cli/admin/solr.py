@@ -13,6 +13,7 @@ from evaluation_system.misc import config
 
 CLI = "SolrCli"
 
+
 def re_index(
     input_dir: Path,
     *,

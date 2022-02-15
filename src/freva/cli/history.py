@@ -8,6 +8,7 @@ from evaluation_system.misc import logger
 
 CLI = "HistoryCli"
 
+
 class HistoryCli(BaseParser):
     """Class that constructs the History Query Parser."""
 

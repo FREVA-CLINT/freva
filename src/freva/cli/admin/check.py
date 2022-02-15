@@ -15,6 +15,7 @@ from evaluation_system.model.history.models import History
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
 
+
 def check4pull_request() -> None:
     """Check for pending pull requests."""
 
@@ -135,9 +136,7 @@ class CheckCli(BaseParser):
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
-        sub_commands = {"broken-runs": BrokenRun.desc,
-                        "pull-request": PullRequest.desc
-                       }
+        sub_commands = {"broken-runs": BrokenRun.desc, "pull-request": PullRequest.desc}
         super().__init__(sub_commands, parser)
         # This parser doesn't do anything without a sub-commands
         # hence the default function should just print the usage
@@ -160,4 +159,3 @@ class CheckCli(BaseParser):
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return BrokenRun(sub_parser)
-

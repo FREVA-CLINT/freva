@@ -73,9 +73,9 @@ class BaseParser:
             "esgf": "Search/Download ESGF the data catalogue.",
         }
         admin_commands = {
-                "solr": "Apache solr server related sub-commands.",
-                "check": "Perform various checks.",
-                "doc": "Update the plugin documentation."
+            "solr": "Apache solr server related sub-commands.",
+            "check": "Perform various checks.",
+            "doc": "Update the plugin documentation.",
         }
         if is_admin():
             return {**sub_commands, **admin_commands}
@@ -92,13 +92,15 @@ class BaseParser:
 class BaseCompleter:
     """Base class for command line argument completers."""
 
-    def __init__(self,
-                 metavar: str,
-                 argv: list[str],
-                 choices: dict[str, tuple[str, str]] | None = None,
-                 shell: str = "bash",
-                 strip: bool = False,
-                 flags_only: bool = False):
+    def __init__(
+        self,
+        metavar: str,
+        argv: list[str],
+        choices: dict[str, tuple[str, str]] | None = None,
+        shell: str = "bash",
+        strip: bool = False,
+        flags_only: bool = False,
+    ):
         self.choices = choices or {}
         self.strip = strip
         self.metavar = metavar
@@ -114,7 +116,7 @@ class BaseCompleter:
     def _print_zsh(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
         for key, (help, func) in choices.items():
-            if self.metavar != "databrowser" or key.startswith('-'):
+            if self.metavar != "databrowser" or key.startswith("-"):
                 out.append(f"{key}[{help}]{func}")
             else:
                 out.append(f"{key}: {help}")
@@ -139,6 +141,7 @@ class BaseCompleter:
     def _get_databrowser_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for databrowser command."""
         from freva import databrowser
+
         facet_args = []
         for arg in self.argv:
             try:
@@ -173,7 +176,7 @@ class BaseCompleter:
                     desc[plugin][key] = f"{param.help} (mandatory)"
                 else:
                     desc[plugin][key] = f"{param.help} (default: {docs[plugin][key]})"
-        args = [arg for arg in self.argv if not arg.startswith('-') and arg != "plugin"]
+        args = [arg for arg in self.argv if not arg.startswith("-") and arg != "plugin"]
         choices = {}
         if not args:
             # No plugin name was given
@@ -256,7 +259,7 @@ class BaseCompleter:
 
     @staticmethod
     def _get_choices_from_parser(
-            parser: argparse.ArgumentParser
+        parser: argparse.ArgumentParser,
     ) -> dict[str, tuple[str, str]]:
 
         choices = {}
@@ -276,14 +279,15 @@ class BaseCompleter:
     def get_args_of_subcommand(cls, argv: list[str]) -> dict[str, tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
         from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
+
         sub_command = argv.pop(0)
         sub_mod = sub_command.replace("-", "_")
         modules = {
-                "plugin": plugin,
-                "databrowser": databrowser,
-                "crawl-my-data": crawl_my_data,
-                "history": history,
-                "esgf": esgf
+            "plugin": plugin,
+            "databrowser": databrowser,
+            "crawl-my-data": crawl_my_data,
+            "history": history,
+            "esgf": esgf,
         }
         try:
             mod = modules[sub_command]
@@ -296,23 +300,24 @@ class BaseCompleter:
     def parse_choices(cls, argv: list[str]) -> BaseCompleter:
         """Create the completion choices from given cmd arguments."""
         parser = argparse.ArgumentParser(
-                description="Get choices for command line arguments"
+            description="Get choices for command line arguments"
         )
-        parser.add_argument("command",
-                            help="First command, freva, freva-histor etc",
-                            type=str)
-        parser.add_argument("--shell",
-                            help="Shell in use",
-                            default="bash",
-                            type=str)
-        parser.add_argument("--strip",
-                            help="Do not print options starting with -",
-                            default=False,
-                            action="store_true")
-        parser.add_argument("--flags-only",
-                            help="Only print options starting with -",
-                            default=False,
-                            action="store_true")
+        parser.add_argument(
+            "command", help="First command, freva, freva-histor etc", type=str
+        )
+        parser.add_argument("--shell", help="Shell in use", default="bash", type=str)
+        parser.add_argument(
+            "--strip",
+            help="Do not print options starting with -",
+            default=False,
+            action="store_true",
+        )
+        parser.add_argument(
+            "--flags-only",
+            help="Only print options starting with -",
+            default=False,
+            action="store_true",
+        )
         ap, args = parser.parse_known_args(argv)
         main_choices = {k: (v, "") for k, v in BaseParser.get_subcommands().items()}
         if ap.command == "freva" and not args:
@@ -324,12 +329,15 @@ class BaseCompleter:
         if args[0] in main_choices:
             choices = cls.get_args_of_subcommand(copy(args))
         choices = {k: v for (k, v) in choices.items() if k not in args}
-        return cls(args[0],
-                   args,
-                   choices,
-                   shell=ap.shell,
-                   strip=ap.strip,
-                   flags_only=ap.flags_only)
+        return cls(
+            args[0],
+            args,
+            choices,
+            shell=ap.shell,
+            strip=ap.strip,
+            flags_only=ap.flags_only,
+        )
+
 
 def print_choices(arguments: list[str]) -> None:
     """Print completion choices based of command line arguments.
