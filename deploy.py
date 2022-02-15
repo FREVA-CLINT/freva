@@ -235,6 +235,7 @@ class Installer:
 
         for arg in vars(args):
             setattr(self, arg, getattr(args, arg))
+        self.run_tests = args.run_tests
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL

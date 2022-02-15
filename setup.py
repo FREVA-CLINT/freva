@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import annotations
 from pathlib import Path
 from setuptools import setup, find_packages
 import sys
@@ -10,7 +11,7 @@ COMMANDS = ["databrowser", "esgf", "history", "plugin", "crawl-my-data"]
 this_dir = Path(__file__).parent
 COMPLETION_DIR = this_dir / "assets" / "completions"
 
-def prep_tcsh_completion(tempdir: Path) -> List[Tuple[str, List[str]]]:
+def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
     """Create completion scripts for tcsh."""
 
     script_dir = COMPLETION_DIR.relative_to(this_dir) / "tcsh"
@@ -44,7 +45,7 @@ def prep_tcsh_completion(tempdir: Path) -> List[Tuple[str, List[str]]]:
     return script_paths
 
 
-def gather_completion_scripts(tempdir: Path) -> List[Tuple[str, List[str]]]:
+def gather_completion_scripts(tempdir: Path) -> list[tuple[str, list[str]]]:
     """Gather all data_files related to shell completion scripts."""
 
     shells = {

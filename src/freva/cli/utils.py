@@ -6,7 +6,6 @@ from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
 import sys
 
 from evaluation_system.misc import config, logger
@@ -36,7 +35,7 @@ class BaseParser:
     """Base class for common command line argument parsers."""
 
     def __init__(
-        self, sub_commands: Dict[str, str], parser: argparse.ArgumentParser
+        self, sub_commands: dict[str, str], parser: argparse.ArgumentParser
     ) -> None:
         """Create the sub-command parsers."""
 
@@ -56,15 +55,15 @@ class BaseParser:
         if debug is True:
             self.logger.setLevel(logging.DEBUG)
 
-    def parse_args(self, argv: Optional[List[str]] = None) -> argparse.Namespace:
+    def parse_args(self, argv: list[str] | None = None) -> argparse.Namespace:
         """Parse the command line arguments."""
-        args = self.parser.parse_args(argv or None)
+        args = self.parser.parse_args(argv)
         self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
         self.set_debug(self.kwargs.pop("debug", False))
         return args
 
     @classmethod
-    def get_subcommands(cls) -> Dict[str, str]:
+    def get_subcommands(cls) -> dict[str, str]:
         """Create the available sub commands for a user."""
         sub_commands = {
             "databrowser": "Find data in the system.",
@@ -82,7 +81,7 @@ class BaseParser:
             return {**sub_commands, **admin_commands}
         return sub_commands
 
-    def _usage(self, *args: Optional[Any], **kwargs: Optional[Any]) -> None:
+    def _usage(self, *args: str | None, **kwargs: str | None) -> None:
         """Exit with usage message."""
         self.parser.error(
             "the following sub-commands are "
@@ -95,9 +94,9 @@ class BaseCompleter:
 
     def __init__(self,
                  metavar: str,
-                 choices: Optional[Dict[str, Tuple[str, str]]] = None,
+                 argv: list[str],
+                 choices: dict[str, tuple[str, str]] | None = None,
                  shell: str = "bash",
-                 argv: List[str] = [],
                  strip: bool = False,
                  flags_only: bool = False):
         self.choices = choices or {}
@@ -112,7 +111,7 @@ class BaseCompleter:
         else:
             self.get_print = self._print_default
 
-    def _print_zsh(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+    def _print_zsh(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
         for key, (help, func) in choices.items():
             if self.metavar != "databrowser" or key.startswith('-'):
@@ -121,13 +120,13 @@ class BaseCompleter:
                 out.append(f"{key}: {help}")
         return out
 
-    def _print_fish(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+    def _print_fish(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
         for key, (help, func) in choices.items():
             out.append(f"{key}: {help}")
         return out
 
-    def _print_default(self, choices: Dict[str, Tuple[str, str]]) -> List[str]:
+    def _print_default(self, choices: dict[str, tuple[str, str]]) -> list[str]:
 
         out = []
         for key, (help, func) in choices.items():
@@ -137,7 +136,7 @@ class BaseCompleter:
                 out.append(key)
         return out
 
-    def _get_databrowser_choices(self) -> Dict[str, Tuple[str, str]]:
+    def _get_databrowser_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for databrowser command."""
         from freva import databrowser
         facet_args = []
@@ -155,17 +154,18 @@ class BaseCompleter:
             choices[att] = (keys, "")
         return choices
 
-    def _get_plugin_choices(self) -> Dict[str, Tuple[str, str]]:
+    def _get_plugin_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for the plugin command."""
         from freva._plugin import list_plugins
         from evaluation_system.api import plugin_manager as pm
 
-        docs: Dict[str, Dict[str, str]] = {}
-        desc: Dict[str, Dict[str, str]] = {}
-        plugins: Dict[str, str] = {}
+        docs: dict[str, dict[str, str]] = {}
+        desc: dict[str, dict[str, str]] = {}
+        plugins: dict[str, str] = {}
         for plugin in list_plugins():
-            parameters = pm.getPluginInstance(plugin).__parameters__
-            plugins[plugin] = pm.getPluginInstance(plugin).__short_description__
+            pm_instance = pm.get_plugin_instance(plugin)
+            parameters = pm_instance.__parameters__
+            plugins[plugin] = pm_instance.__short_description__
             docs[plugin] = dict(parameters.items())
             desc[plugin] = {}
             for key, param in parameters._params.items():
@@ -195,7 +195,6 @@ class BaseCompleter:
                 options.append(f"{key}=")
         for option in options:
             opt = option.strip("=")
-            print(setup[opt])
             if "file" in setup[opt].lower() or "dir" in setup[opt].lower():
                 choices[opt] = (setup[opt], ":file:_files")
             else:
@@ -203,7 +202,7 @@ class BaseCompleter:
         return choices
 
     @property
-    def command_choices(self) -> Dict[str, Tuple[str, str]]:
+    def command_choices(self) -> dict[str, tuple[str, str]]:
 
         choices = {}
         if self.flags_only:
@@ -226,7 +225,7 @@ class BaseCompleter:
             print(line)
 
     @staticmethod
-    def arg_to_dict(args: List[str], append: bool = False) -> Dict[str, List[str]]:
+    def arg_to_dict(args: list[str], append: bool = False) -> dict[str, list[str]]:
         """Convert a parsed arguments with key=value pairs to a dictionary.
 
         Parameters:
@@ -242,7 +241,7 @@ class BaseCompleter:
         --------
         dict: Dictionariy representation of key=value pairs
         """
-        out_dict: Dict[str, List[str]] = {}
+        out_dict: dict[str, list[str]] = {}
         for arg in args:
             try:
                 key, value = arg.split("=")
@@ -258,7 +257,7 @@ class BaseCompleter:
     @staticmethod
     def _get_choices_from_parser(
             parser: argparse.ArgumentParser
-    ) -> Dict[str, Tuple[str, str]]:
+    ) -> dict[str, tuple[str, str]]:
 
         choices = {}
         for action in parser._actions:
@@ -274,33 +273,27 @@ class BaseCompleter:
         return choices
 
     @classmethod
-    def get_args_of_subcommand(cls, argv: List[str]) -> Dict[str, Tuple[str, str]]:
+    def get_args_of_subcommand(cls, argv: list[str]) -> dict[str, tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
+        from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
         sub_command = argv.pop(0)
         sub_mod = sub_command.replace("-", "_")
+        modules = {
+                "plugin": plugin,
+                "databrowser": databrowser,
+                "crawl-my-data": crawl_my_data,
+                "history": history,
+                "esgf": esgf
+        }
         try:
-            mod = __import__(f"freva.cli.{sub_mod}", fromlist=[""])
-            CliParser = getattr(mod, mod.CLI)()
-            return cls._get_choices_from_parser(CliParser.parser)
-        except ImportError:
-            mod = __import__(f"freva.cli.admin.{sub_command}", fromlist=[""])
-        # Admin parsers are sub command parsers and need a parent parser
-        parent_parser = argparse.ArgumentParser()
-        CliParser = getattr(mod, mod.CLI)(parent_parser)
-        sub_cmds = {k: (v, "") for (k, v) in CliParser.sub_commands.items()}
-        if not argv:
-            # Only the 1st admin sub command was given:
-            return sub_cmds
-        # Get the choices for the 2nd sub command
-        next_cmd = argv.pop(0).replace('-', '_')
-        try:
-            NewParser = getattr(CliParser, f"parse_{next_cmd}")()
+            mod = modules[sub_command]
         except AttributeError:
             return {}
-        return cls._get_choices_from_parser(NewParser.parser)
+        CliParser = getattr(mod, mod.CLI)()
+        return cls._get_choices_from_parser(CliParser.parser)
 
     @classmethod
-    def parse_choices(cls, argv: List[str] = sys.argv[1:]) -> BaseCompleter:
+    def parse_choices(cls, argv: list[str]) -> BaseCompleter:
         """Create the completion choices from given cmd arguments."""
         parser = argparse.ArgumentParser(
                 description="Get choices for command line arguments"
@@ -323,7 +316,7 @@ class BaseCompleter:
         ap, args = parser.parse_known_args(argv)
         main_choices = {k: (v, "") for k, v in BaseParser.get_subcommands().items()}
         if ap.command == "freva" and not args:
-            return cls(ap.command, main_choices, shell=ap.shell, strip=ap.strip)
+            return cls(ap.command, [], main_choices, shell=ap.shell, strip=ap.strip)
         elif ap.command != "freva":
             sub_cmd = "-".join(ap.command.split("-")[1:])
             args.insert(0, sub_cmd)
@@ -332,13 +325,13 @@ class BaseCompleter:
             choices = cls.get_args_of_subcommand(copy(args))
         choices = {k: v for (k, v) in choices.items() if k not in args}
         return cls(args[0],
+                   args,
                    choices,
                    shell=ap.shell,
-                   argv=args,
                    strip=ap.strip,
                    flags_only=ap.flags_only)
 
-def print_choices(arguments: List[str]) -> None:
+def print_choices(arguments: list[str]) -> None:
     """Print completion choices based of command line arguments.
 
     Parameters:

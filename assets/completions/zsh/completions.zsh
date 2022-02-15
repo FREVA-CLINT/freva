@@ -96,15 +96,22 @@ __solr() {
 }
 
 __databrowser() {
-    local -a options args
+    local -a options args facets
     options=(${(f)"$(python3 -m freva.cli --shell zsh freva databrowser)"})
     for arg in ${options};do
         first_char=$(echo ${arg}|cut -c1)
         if [ "${first_char}" = '-' ];then
             args+=(${arg})
+        else
+            facets+=(${args})
         fi
     done
-    _arguments \
-        ${args[@]} \
-        '*:search facets:__solr'
+    if [ ${#facets} -eq 0 ];then
+        _arguments \
+            ${args[@]}
+    else
+        _arguments \
+            ${args[@]} \
+            '*:search facets:__solr'
+    fi
 }

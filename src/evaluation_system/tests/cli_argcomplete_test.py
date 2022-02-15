@@ -5,44 +5,6 @@ import mock
 SUBCOMMANDS = ("databrowser", "esgf", "crawl-my-data", "history", "plugin")
 
 
-def test_admin_complete(admin_env, capsys):
-
-    from freva.cli.utils import print_choices
-    from evaluation_system.tests import run_cli
-
-    admin_cmds = ("solr", "check", "doc")
-    with mock.patch.dict(os.environ, admin_env, clear=True):
-        print_choices(["freva"])
-        sub_commands = capsys.readouterr().out
-    for cmd in admin_cmds:
-        assert cmd in sub_commands
-    with mock.patch.dict(os.environ, admin_env, clear=True):
-        with pytest.raises(SystemExit):
-            run_cli(["solr", "index", "--help"])
-        doc_string = capsys.readouterr().out
-        print_choices(["freva", "solr"])
-        sub_commands = capsys.readouterr().out
-        assert "index" in sub_commands
-        print_choices(["freva", "solr", "no_such_subcommand"])
-        assert len(capsys.readouterr().out) == 0
-    for shell, sep in {"bash": "", "zsh": "[", "fish": ":"}.items():
-        with mock.patch.dict(os.environ, admin_env, clear=True):
-            print_choices(["--shell", shell, "--flags-only", f"freva", "solr", "index"])
-            choices = capsys.readouterr().out.split("\n")
-        for choice in [s.strip() for s in choices if s.strip()]:
-            if sep:
-                cmd, help = choice.split(sep)
-                help = help.rstrip("]")
-            else:
-                cmd = choice
-                help = ""
-            assert cmd in doc_string
-            assert cmd.startswith("-")
-            if help:
-                # The 20 first characters should be ok for this comparison
-                assert help[:20] in doc_string
-
-
 def test_main_complete(dummy_env, capsys):
 
     from freva.cli.utils import print_choices
