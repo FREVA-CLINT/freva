@@ -310,7 +310,7 @@ class Installer:
                         path.mkdir(exist_ok=True, parents=True)
                     except PermissionError:
                         pass
-        freva_path.mkdir(parents=True, exist_ok=True)
+        eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
