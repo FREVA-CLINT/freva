@@ -284,9 +284,9 @@ class Installer:
 if __name__ == '__main__':
     args = parse_args(sys.argv)
     Inst = Installer(args)
-    Inst.pip_install()
     if Inst.conda:
         Inst.create_conda()
-        Inst.create_loadscript()
+    Inst.pip_install()
+    Inst.create_loadscript()
     if Inst.run_tests:
         Inst.unittests()
