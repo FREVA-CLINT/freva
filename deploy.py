@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
+from configparser import ConfigParser, ExtendedInterpolation
 import logging
 import hashlib
 import os
@@ -10,9 +10,8 @@ import re
 import shlex
 import sys
 from subprocess import CalledProcessError, PIPE, run
-import shutil
 import urllib.request
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 
 
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
@@ -36,47 +35,20 @@ set toolName evaluation_system
 set curMode [module-info mode]
 module-whatis   "evaluation_system {version}"
 proc ModulesHelp {{ }} {{
-    puts stderr "evaluation_system {version}"
+    puts stderr "Load the free evaluation framework for the RegIklim project"
 }}
-proc show_info {{}}  {{
-    puts stderr {{
-Freva command line
-Available commands:
-  --plugin       : Applies some analysis to the given data.
-  --history      : provides access to the configuration history
-  --databrowser  : Find data in the system
-  --crawl_my_data: Use this command to update your projectdata.
-  --esgf         : Browse ESGF data and create wget script
-
-Usage: freva --COMMAND [OPTIONS]
-To get help for the individual commands use
-  freva --COMMAND --help
-  }}
-}}
-
-#pre-requisites
 if {{ $curMode eq "load" }} {{
-	if {{ $shell == "bash" || $shell == "sh" }} {{
-		        puts ". {auto_comp};"
-			puts stderr "Evaluation System by Freva successfully loaded."
-			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser
-by hitting tab as usual."
-			puts stderr "For more help/information check: "
-			show_info
-            }} else {{
-		puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
-		puts stderr "And load it again -> module load evaluation_system"
-		puts stderr "Your shell now: $shell"
-		}}
-}} elseif {{ $curMode eq "remove" }} {{
-	puts stderr "Evaluation System successfully unloaded."
+    if {{ $shell == "fish" }} {{
+        puts ". {root_dir}/etc/fish/conf.d/conda.fish"
+    }} elseif {{ $shell == "csh" || $shell == "tcsh" }} {{
+        puts ". {root_dir}/etc/profile.d/conda.csh"
+    }} else {{
+        puts ". {root_dir}/etc/profile.d/conda.sh"
+    }}
 }}
-#only one version at a time!!
-conflict evaluation_system
-prepend-path PATH {path}
-prepend-path LD_LIBRARY_PATH {ld_lib_path}
+prepend-path PATH {root_dir}/bin
+setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
-
 
 def get_script_path():
     return osp.dirname(osp.realpath(sys.argv[0]))
@@ -318,17 +290,18 @@ class Installer:
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         freva_path = Path(
-            os.environment.get(
+            os.environ.get(
                 "EVALUATION_SYSTEM_CONFIG_FILE", self.install_prefix / "freva"
             )
         )
+        eval_conf_file = freva_path / "evaluation_system.conf"
         for key in (
             "preview_path",
             "project_data",
             "base_dir_location",
             "scheduler_output_dir",
         ):
-            with open(freva_path / "evaluation_system.conf", "r") as fp:
+            with eval_conf_file.open("r") as fp:
                 config_parser.read_file(fp)
                 path = Path(config_parser["evaluation_system"][key])
                 if path:
@@ -341,8 +314,8 @@ class Installer:
             f.write(
                 MODULE.format(
                     version=find_version("src/evaluation_system", "__init__.py"),
-                    path=self.install_prefix / "bin",
-                    ld_lib_path=self.install_prefix / "lib",
+                    root_dir=self.install_prefix
+                    eval_conf_file=eval_conf_file
                     auto_comp=self.install_prefix / "etc" / "autocomplete.bash",
                 )
             )
