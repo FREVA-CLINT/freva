@@ -17,5 +17,4 @@ etc/evaluation_system.conf
 loadfreva.modules
 report.xml
 build/*
-evaluation_system.conf
 *.egg-info
