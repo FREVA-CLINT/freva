@@ -243,55 +243,24 @@ class Installer:
         self.install_prefix = self.install_prefix.expanduser().absolute()
         self.conda = self.no_conda == False
 
-    def create_config(self):
-        """Copy evaluation_system.conf to etc."""
-
-        this_dir = Path(__file__).absolute().parent
-        config_file = 'evaluation_system.conf'
-        defaults = dict(root_dir=self.install_prefix,
-                        base_dir_location=self.install_prefix / 'work',
-                        base_dir='evaluation_system',
-                        project_name='evaluation_system',)
-        if not (this_dir / config_file).is_file():
-            raise ValueError('No config file. Edit and copy the config template'
-                             ' "evaluation_system.conf.tmpl" to '
-                             '"evaluation_system.conf"')
-        with (this_dir / config_file).open() as f:
-            config = f.readlines()
-        for nn, line in enumerate(config):
-            cfg_key = line.split('=')[0].strip()
-            if cfg_key in defaults:
-                value = line.split('=')[-1].strip()
-                if not value:
-                    value = defaults[cfg_key]
-                config[nn] = f'{cfg_key}={value}\n'
-        (self.install_prefix / 'etc').mkdir(exist_ok=True, parents=True)
-        with (self.install_prefix / 'etc' / config_file).open('w') as f:
-            f.write(''.join(config))
-
-    def create_auxilary(self, auxilary_dirs=('etc', 'sbin')):
-        """Copy all auxilary files."""
+    def create_loadscript(self):
+        """Create the load-script for this installation."""
 
         this_dir = Path(__file__).absolute().parent
 
-        for d in auxilary_dirs:
-            for source in (this_dir / d).rglob('*'):
-                target = self.install_prefix / source.relative_to(this_dir)
-                if source.is_file():
-                    target.parent.mkdir(exist_ok=True, parents=True)
-                    logger.info(f'Copying auxilary file {source}')
-                    shutil.copy(source, target)
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        for key in 'preview_path', 'project_data', 'base_dir_location', 'scheduler_output_dir':
-            with open(self.install_prefix/ 'etc' / 'evaluation_system.conf', 'r') as fp:
+        freva_path = self.install_prefix / "freva"
+        for key in "preview_path", 'project_data', 'base_dir_location', 'scheduler_output_dir':
+            with open(freva_path / "evaluation_system.conf", "r") as fp:
                 config_parser.read_file(fp)
-                try:
-                    Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
-                except PermissionError:
-                    pass
-        freva_path = self.install_prefix / 'share' / 'freva'
+                path = Path(config_parser["evaluation_system"][key])
+                if path:
+                    try:
+                        path.mkdir(exist_ok=True, parents=True)
+                    except PermissionError:
+                        pass
         freva_path.mkdir(parents=True, exist_ok=True)
-        with (freva_path / 'loadfreva.modules').open('w') as f:
+        with (freva_path / "loadfreva.modules").open("w") as f:
             f.write(MODULE.format(version=find_version('src/evaluation_system',
                                                        '__init__.py'),
                           path=self.install_prefix / 'bin',
@@ -315,10 +284,9 @@ class Installer:
 if __name__ == '__main__':
     args = parse_args(sys.argv)
     Inst = Installer(args)
+    Inst.pip_install()
     if Inst.conda:
         Inst.create_conda()
-        Inst.create_config()
-        Inst.create_auxilary()
-    Inst.pip_install()
+        Inst.create_loadscript()
     if Inst.run_tests:
         Inst.unittests()

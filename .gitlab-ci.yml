@@ -50,7 +50,7 @@ test_latest:
     tags:
       - docker, specific
     before_script:
-      - cp .docker/evaluation_system.conf .
+      - cp .docker/evaluation_system.conf assets/
     script:
         # Do the unit tests
       - python3 deploy.py /tmp/freva_latest -s --python=3.9 --run_tests --packages pip gitpython pandoc
