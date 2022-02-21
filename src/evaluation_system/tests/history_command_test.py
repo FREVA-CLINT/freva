@@ -23,6 +23,7 @@ def test_freva_history_method(dummy_history, dummy_user):
         "something": "else",
         "other": "value",
         "input": "/folder",
+        "variable": "pr",
     }
     hist_ids = []
     uid = os.getuid()
@@ -65,6 +66,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
                     "something": "else",
                     "other": "value",
                     "input": "/folder",
+                    "variable": "pr",
                 },
                 status=0,
                 uid=udata.pw_name,
@@ -95,6 +97,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
         "other='value'",
         "number='12'",
         "the_number='42'",
+        "variable='pr'",
     ]
     for string in check_string:
         assert string in output_str

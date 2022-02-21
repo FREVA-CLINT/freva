@@ -95,6 +95,7 @@ def test_plugin_config_storage(dummy_settings, temp_user):
         "the_number": 42,
         "something": "test",
         "input": None,
+        "variable": "tas",
     }
     assert res["something"] == "test"
 
@@ -116,7 +117,12 @@ def test_parse_arguments(dummy_settings, temp_user):
     for args, result in [
         (
             "the_number=4",
-            {"other": 1.3999999999999999, "the_number": 4, "something": "test"},
+            {
+                "other": 1.3999999999999999,
+                "the_number": 4,
+                "something": "test",
+                "variable": "tas",
+            },
         )
     ]:
         d = pm.parse_arguments("Dummyplugin", args.split(), user=temp_user)
@@ -126,7 +132,12 @@ def test_parse_arguments(dummy_settings, temp_user):
     for args, result in [
         (
             "the_number=4",
-            {"other": 1.3999999999999999, "the_number": 4, "something": "test"},
+            {
+                "other": 1.3999999999999999,
+                "the_number": 4,
+                "something": "test",
+                "variable": "tas",
+            },
         )
     ]:
         d = pm.parse_arguments("Dummyplugin", args.split(), user=temp_user)
@@ -136,7 +147,14 @@ def test_parse_arguments(dummy_settings, temp_user):
     for args, result in [
         (
             "number=4",
-            dict(number=4, the_number=42, something="test", other=1.4, input=None),
+            dict(
+                number=4,
+                the_number=42,
+                something="test",
+                other=1.4,
+                input=None,
+                variable="tas",
+            ),
         )
     ]:
         d = pm.parse_arguments(

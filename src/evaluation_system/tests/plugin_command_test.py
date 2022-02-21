@@ -60,6 +60,8 @@ other      (default: 1.4)
        No help available.
 input      (default: <undefined>)
        No help available.
+variable   (default: tas)
+       No help available.
 """,
     )
 
@@ -74,7 +76,8 @@ def test_run_pyclientplugin(dummy_history):
     _, res = freva.run_plugin("dummyplugin", the_number=32, show_config=True)
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
     assert similar_string(
-        res, """    number: -the_number: 32 something: test other: 1.4 input: -"""
+        res,
+        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas""",
     )
     return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
     assert "git" in repo
