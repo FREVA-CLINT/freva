@@ -50,6 +50,7 @@ prepend-path PATH {root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
+
 def get_script_path():
     return osp.dirname(osp.realpath(sys.argv[0]))
 
@@ -289,12 +290,12 @@ class Installer:
         this_dir = Path(__file__).absolute().parent
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        freva_path = Path(
+        eval_conf_file = Path(
             os.environ.get(
-                "EVALUATION_SYSTEM_CONFIG_FILE", self.install_prefix / "freva"
+                "EVALUATION_SYSTEM_CONFIG_FILE",
+                self.install_prefix / "freva" / "evaluation_system.conf",
             )
         )
-        eval_conf_file = freva_path / "evaluation_system.conf"
         for key in (
             "preview_path",
             "project_data",
@@ -310,12 +311,12 @@ class Installer:
                     except PermissionError:
                         pass
         freva_path.mkdir(parents=True, exist_ok=True)
-        with (freva_path / "loadfreva.modules").open("w") as f:
+        with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
                     version=find_version("src/evaluation_system", "__init__.py"),
                     root_dir=self.install_prefix,
-                    eval_conf_file=eval_conf_file
+                    eval_conf_file=eval_conf_file,
                 )
             )
 
