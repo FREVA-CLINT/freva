@@ -535,7 +535,7 @@ def test_compose_command():
     )
     assert similar_string(
         command,
-        "freva --plugin DummyPlugin --batchmode=False --caption 'This is the caption' --unique_output True the_number=22 something=test other=1.4",
+        "freva --plugin DummyPlugin --batchmode=False --caption 'This is the caption' --unique_output True the_number=22 something=test other=1.4 variable=tas",
     )
 
 
