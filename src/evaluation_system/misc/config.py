@@ -323,7 +323,7 @@ def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
 
     config_file = config_file or os.environ.get(
-        _DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION
+        "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
     )
     conf.read(config_file)
     try:
@@ -337,7 +337,7 @@ def get_drs_config():
     global _drs_config
     if _drs_config is None:
         drs_config = os.environ.get(
-            _DRS_CONFIG_FILE_ENVVAR, str(_DEFAULT_DRS_CONFIG_FILE)
+            "EVALUATION_SYSTEM_DRS_CONFIG_FILE", str(_DEFAULT_DRS_CONFIG_FILE)
         )
         with open(drs_config, "r") as drs_file:
             _drs_config = toml.load(drs_file)
