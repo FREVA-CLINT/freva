@@ -314,9 +314,8 @@ class Installer:
             f.write(
                 MODULE.format(
                     version=find_version("src/evaluation_system", "__init__.py"),
-                    root_dir=self.install_prefix
+                    root_dir=self.install_prefix,
                     eval_conf_file=eval_conf_file
-                    auto_comp=self.install_prefix / "etc" / "autocomplete.bash",
                 )
             )
 
