@@ -43,7 +43,7 @@ _DEFAULT_DRS_CONFIG_FILE = os.environ.get(
     "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
     osp.abspath(osp.join(CONFIG_FILE, osp.pardir, "drs_config.toml")),
 )
-_PUBLIC_KEY_DIR = osp.abspath(osp.join(CONFIG_FILE, osp.pardir))
+_PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
 #: config options
 BASE_DIR = "base_dir"
 "The name of the directory storing the evaluation system (output, configuration, etc)"
