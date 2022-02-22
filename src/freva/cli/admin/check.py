@@ -7,7 +7,7 @@ CLI = "CheckCli"
 import argparse
 import os
 from typing import Any
-from ..utils import BaseParser, is_admin
+from ..utils import BaseParser, is_admin, subparser_func_type
 
 from evaluation_system.misc import logger
 from evaluation_system.misc.exceptions import CommandError
@@ -136,26 +136,35 @@ class CheckCli(BaseParser):
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
-        sub_commands = {"broken-runs": BrokenRun.desc, "pull-request": PullRequest.desc}
+        sub_commands: dict[str, subparser_func_type] = {
+            "broken-runs": self.parse_broken_runs,
+            "pull-request": self.parse_pull_request,
+        }
         super().__init__(sub_commands, parser)
         # This parser doesn't do anything without a sub-commands
         # hence the default function should just print the usage
         self.parser.set_defaults(apply_func=self._usage)
 
-    def parse_pull_request(self) -> PullRequest:
-        sub_parser = self.subparsers.add_parser(
+    @staticmethod
+    def parse_pull_request(
+        help: str, subparsers: argparse._SubParsersAction
+    ) -> PullRequest:
+        sub_parser = subparsers.add_parser(
             "pull-request",
-            description=PullRequest.desc,
-            help=PullRequest.desc,
+            description=help,
+            help=help,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return PullRequest(sub_parser)
 
-    def parse_broken_runs(self) -> BrokenRun:
-        sub_parser = self.subparsers.add_parser(
+    @staticmethod
+    def parse_broken_runs(
+        help: str, subparsers: argparse._SubParsersAction
+    ) -> BrokenRun:
+        sub_parser = subparsers.add_parser(
             "broken-runs",
-            description=BrokenRun.desc,
-            help=BrokenRun.desc,
+            description=help,
+            help=help,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return BrokenRun(sub_parser)
