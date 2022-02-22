@@ -6,8 +6,7 @@ from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
-import sys
-from typing import Callable, Any
+from typing import Callable, Optional
 
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
@@ -32,7 +31,7 @@ def is_admin(raise_error: bool = False) -> bool:
     return is_admin
 
 
-subparser_func_type = Callable[[str, argparse._SubParsersAction], Any]
+subparser_func_type = Callable[[str, argparse._SubParsersAction], Optional[BaseParser]]
 
 
 class BaseParser:
@@ -414,7 +413,6 @@ class BaseCompleter:
         from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
 
         sub_command = argv.pop(0)
-        sub_mod = sub_command.replace("-", "_")
         modules = {
             "plugin": plugin,
             "databrowser": databrowser,
