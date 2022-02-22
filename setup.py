@@ -11,6 +11,7 @@ COMMANDS = ["databrowser", "esgf", "history", "plugin", "crawl-my-data"]
 this_dir = Path(__file__).parent
 COMPLETION_DIR = this_dir / "assets" / "completions"
 
+
 def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
     """Create completion scripts for tcsh."""
 
