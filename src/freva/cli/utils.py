@@ -6,10 +6,20 @@ from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Generic, Optional, TypeVar
 
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
+
+BaseParserType = TypeVar("BaseParserType")
+"""Generic type defining the type for the BaseParser class."""
+subparser_func_type = Callable[
+    [str, argparse._SubParsersAction], Optional[BaseParserType]
+]
+"""Type for a method that creates a sub-command parser. This method gets a string
+representing the description of the sub command as well as the SubParserAction
+this sub command parser is added to.
+"""
 
 
 def is_admin(raise_error: bool = False) -> bool:
@@ -31,10 +41,7 @@ def is_admin(raise_error: bool = False) -> bool:
     return is_admin
 
 
-subparser_func_type = Callable[[str, argparse._SubParsersAction], Optional[BaseParser]]
-
-
-class BaseParser:
+class BaseParser(Generic[BaseParserType]):
     """Base class for common command line argument parsers."""
 
     def __init__(
@@ -61,7 +68,7 @@ class BaseParser:
         if debug is True:
             self.logger.setLevel(logging.DEBUG)
 
-    def parse_args(self, argv: list[str] | None = None) -> argparse.Namespace:
+    def parse_args(self, argv: Optional[list[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
         args = self.parser.parse_args(argv)
         self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
@@ -213,7 +220,7 @@ class BaseParser:
             return {**sub_commands, **admin_commands}
         return sub_commands
 
-    def _usage(self, *args: str | None, **kwargs: str | None) -> None:
+    def _usage(self, *args: Optional[str], **kwargs: Optional[str]) -> None:
         """Exit with usage message."""
         self.parser.error(
             "the following sub-commands are "
@@ -228,7 +235,7 @@ class BaseCompleter:
         self,
         metavar: str,
         argv: list[str],
-        choices: dict[str, tuple[str, str]] | None = None,
+        choices: Optional[dict[str, tuple[str, str]]] = None,
         shell: str = "bash",
         strip: bool = False,
         flags_only: bool = False,
