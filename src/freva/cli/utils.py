@@ -6,15 +6,13 @@ from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Callable, Optional
 
 from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import CommandError, hide_exception
 
-BaseParserType = TypeVar("BaseParserType")
-"""Generic type defining the type for the BaseParser class."""
 subparser_func_type = Callable[
-    [str, argparse._SubParsersAction], Optional[BaseParserType]
+    [str, argparse._SubParsersAction], Optional["BaseParser"]
 ]
 """Type for a method that creates a sub-command parser. This method gets a string
 representing the description of the sub command as well as the SubParserAction
@@ -41,7 +39,7 @@ def is_admin(raise_error: bool = False) -> bool:
     return is_admin
 
 
-class BaseParser(Generic[BaseParserType]):
+class BaseParser:
     """Base class for common command line argument parsers."""
 
     def __init__(
