@@ -17,7 +17,8 @@ dependencies:
       - django_compressor
       - django-debug-toolbar-user-panel
       - django-discover-runner
-      - django-bootstrap3
+      - django-bootstrap-v5
+      - django-model-utils
       - pep257
       - types-requests
       - types-toml
@@ -58,7 +59,6 @@ dependencies:
   - fabric
   - pylint
   - django-webpack-loader
-  - django-model-utils
   - django-debug-toolbar
   - pep8
   - coverage

@@ -33,9 +33,11 @@ class DummyPlugin(PluginAbstract):
         String(name="something", default="test"),
         Float(name="other", default=1.4),
         Directory(name="input", help="An input file"),
+        String(name="variable", default="tas", help="An input variable"),
     )
     _runs = []
     _template = "${number} - $something - $other"
+    tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}
 
     def runTool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
