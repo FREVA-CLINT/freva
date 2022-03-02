@@ -13,6 +13,7 @@ from subprocess import CalledProcessError, PIPE, run
 import urllib.request
 from tempfile import TemporaryDirectory
 
+from typing import Union
 
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
@@ -272,17 +273,33 @@ class Installer:
         logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
 
-    def __init__(self, args):
-
-        for arg in vars(args):
-            setattr(self, arg, getattr(args, arg))
+    def __init__(self,
+            install_prefix: Union[Path, str],
+            no_conda: bool = False,
+            packages: list[str] = Installer.default_pkgs,
+            channel: str = "conda-forge",
+            shell: str = "bash",
+            arch: str = "Linux-x86_64",
+            python: str = "3.10",
+            pip: list[str] = Installer.pip_pkgs,
+            develop: bool = False,
+            run_tests: bool = False,
+            silent : bool = False,
+            ):
+        self.run_tests: bool = run_tests
+        self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
+        self.packages = packages
+        self.channel = channel
+        self.arch = arch
+        self.python = python
+        self.pip = pip
+        self.silent = silent
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
         if "miniconda" in CONDA_PREFIX.lower():
             self.conda_url = MINICONDA_URL
-        self.install_prefix = self.install_prefix.expanduser().absolute()
-        self.conda = self.no_conda == False
+        self.conda: bool = no_conda == False
 
     def create_loadscript(self):
         """Create the load-script for this installation."""
@@ -320,6 +337,10 @@ class Installer:
                     project=config_parser["evaluation_system"]["project_name"]
                 )
             )
+        with (eval_conf_file.parent / "activate").open("w") as f:
+            with (self.install_prefix / "bin" / "activate").open("r") as g:
+                f.write(g.read())
+            f.write(f"\n export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}")
 
     def unittests(self):
         """Run unittests."""
@@ -337,7 +358,19 @@ class Installer:
 
 if __name__ == "__main__":
     args = parse_args(sys.argv)
-    Inst = Installer(args)
+    Inst = Installer(
+            install_prefix=args.install_prefix,
+            no_conda=args.no_conda,
+            packages=args.packages,
+            channel=args.channel,
+            shell=args.shell,
+            arch=args.arch,
+            python=args.python,
+            pip=args.pip,
+            develop=args.develop,
+            run_tests=args.run_test,
+            silent=args.silent
+        )
     if Inst.conda:
         Inst.create_conda()
         Inst.pip_install()
