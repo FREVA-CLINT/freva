@@ -369,7 +369,7 @@ if __name__ == "__main__":
             python=args.python,
             pip=args.pip,
             develop=args.develop,
-            run_tests=args.run_test,
+            run_tests=args.run_tests,
             silent=args.silent
         )
     if Inst.conda:
