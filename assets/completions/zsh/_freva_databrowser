@@ -1,0 +1,4 @@
+#compdef freva-databrowser
+
+
+__databrowser "$@"

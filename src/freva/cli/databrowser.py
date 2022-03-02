@@ -1,25 +1,12 @@
 import argparse
 import sys
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, List
 
-import argcomplete
 
 from .utils import BaseCompleter, BaseParser
 from freva import databrowser
 
-
-class ChoicesCompleter(BaseCompleter):
-    """Extent the BaseCompleter by a databrowser specific __call__method ."""
-
-    def __call__(self, **kwargs: Any) -> List[str]:  # pragma: no cover
-        choices = []
-        facets = self._to_dict(kwargs["parsed_args"])
-        search = databrowser(attributes=False, all_facets=True, **facets)
-        for key, values in search.items():
-            if key not in facets:
-                for value in values:
-                    choices.append(f"{key}={value}")
-        return choices
+CLI = "DataBrowserCli"
 
 
 class DataBrowserCli(BaseParser):
@@ -98,17 +85,16 @@ class DataBrowserCli(BaseParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(  # type: ignore
+        subparser.add_argument(
             "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
-        ).completer = ChoicesCompleter("facets")
+        )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
-        argcomplete.autocomplete(self.parser)
 
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs: Optional[Any]) -> None:
         """Call the databrowser command and print the results."""
-        facets: Dict[str, Any] = ChoicesCompleter.arg_to_dict(args.facets, append=True)
+        facets: Dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
         _ = kwargs.pop("facets")
         for key, values in facets.items():
@@ -149,7 +135,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = DataBrowserCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

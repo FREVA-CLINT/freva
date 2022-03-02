@@ -2,6 +2,8 @@
 
 __all__ = ["update_tool_doc"]
 
+CLI = "DocCli"
+
 import argparse
 import os
 from pathlib import Path
@@ -12,7 +14,6 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Any, List, Optional
 
-import argcomplete
 from django.contrib.flatpages.models import FlatPage
 
 from ..utils import BaseCompleter, BaseParser, is_admin
@@ -101,7 +102,7 @@ class DocCli(BaseParser):
 
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
-
+        self.sub_commands = {}
         parser.add_argument("tool", help="Plugin name", type=str)
         parser.add_argument(
             "--file-name",

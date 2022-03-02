@@ -6,10 +6,12 @@ import argparse
 from pathlib import Path
 from typing import Any, Optional
 
-from ..utils import BaseParser, is_admin
+from ..utils import BaseParser, is_admin, subparser_func_type
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import config
+
+CLI = "SolrCli"
 
 
 def re_index(
@@ -131,17 +133,18 @@ class SolrCli(BaseParser):
     def __init__(self, parser: argparse.ArgumentParser) -> None:
         """Construct the sub arg. parser."""
 
-        self.sub_commands = ["index"]
-        super().__init__(self.sub_commands, parser)
+        sub_commands: dict[str, subparser_func_type] = {"index": self.parse_index}
+        super().__init__(sub_commands, parser)
         # This parser doesn't do anything without a sub-commands
         # hence the default function should just print the usage
         self.parser.set_defaults(apply_func=self._usage)
 
-    def parse_index(self) -> None:
-        sub_parser = self.subparsers.add_parser(
+    @staticmethod
+    def parse_index(help: str, subparsers: argparse._SubParsersAction) -> SolrIndex:
+        sub_parser = subparsers.add_parser(
             "index",
-            description=SolrIndex.desc,
-            help=SolrIndex.desc,
+            description=help,
+            help=help,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        SolrIndex(sub_parser)
+        return SolrIndex(sub_parser)

@@ -2,10 +2,11 @@ import argparse
 from pathlib import Path
 import sys
 from typing import Optional, List, Any, cast, Dict, Union
-import argcomplete
 
 from .utils import BaseCompleter, BaseParser
 import freva
+
+CLI = "EsgfCli"
 
 
 class EsgfCli(BaseParser):
@@ -47,14 +48,14 @@ class EsgfCli(BaseParser):
             "--opendap",
             default=False,
             action="store_true",
-            help="List the name of the datasets instead of showing the urls.",
+            help="Show opendap endpoints instead of http onse.",
         )
         subparser.add_argument(
             "--gridftp",
             default=False,
             action="store_true",
             help=(
-                "Show Opendap endpoints instead of the http default "
+                "Show gridftp endpoints instead of the http default "
                 "ones (or skip them if none found)"
             ),
         )
@@ -132,7 +133,6 @@ def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = EsgfCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    argcomplete.autocomplete(cli.parser)
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

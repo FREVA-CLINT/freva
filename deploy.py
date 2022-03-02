@@ -24,7 +24,7 @@ logger = logging.getLogger(__file__)
 
 MODULE = """#%Module1.0#####################################################################
 ##
-## FREVA - Free Evaluation Framework modulefile
+## FREVA - Free Evaluation System Framework modulefile
 ##
 #
 ### BEGIN of config part ********
@@ -35,7 +35,7 @@ set toolName evaluation_system
 set curMode [module-info mode]
 module-whatis   "evaluation_system {version}"
 proc ModulesHelp {{ }} {{
-    puts stderr "Load the free evaluation framework for the RegIklim project"
+    puts stderr "Load the free evaluation system framework {project}"
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
@@ -317,6 +317,7 @@ class Installer:
                     version=find_version("src/evaluation_system", "__init__.py"),
                     root_dir=self.install_prefix,
                     eval_conf_file=eval_conf_file,
+                    project=config_parser["evaluation_system"]["project_name"]
                 )
             )
 
