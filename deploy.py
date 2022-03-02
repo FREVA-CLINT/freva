@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
@@ -276,12 +277,12 @@ class Installer:
     def __init__(self,
             install_prefix: Union[Path, str],
             no_conda: bool = False,
-            packages: list[str] = Installer.default_pkgs,
+            packages: list[str] = [],
             channel: str = "conda-forge",
             shell: str = "bash",
             arch: str = "Linux-x86_64",
             python: str = "3.10",
-            pip: list[str] = Installer.pip_pkgs,
+            pip: list[str] = [],
             develop: bool = False,
             run_tests: bool = False,
             silent : bool = False,
