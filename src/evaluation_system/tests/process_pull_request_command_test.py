@@ -97,7 +97,7 @@ def test_get_version(admin_env):
 
 
 def test_forbidden_usage(dummy_env):
-    from freva.cli.admin.checks import check4pull_request
+    from freva.cli.admin.check import check4pull_request
 
     with pytest.raises(RuntimeError):
         check4pull_request()

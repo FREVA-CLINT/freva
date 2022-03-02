@@ -20,10 +20,10 @@ ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2021.11")
 CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
 
-MODULE='''#%Module1.0#####################################################################
+MODULE = """#%Module1.0#####################################################################
 ##
 ## FREVA - Free Evaluation Framework modulefile
 ##
@@ -75,7 +75,7 @@ by hitting tab as usual."
 conflict evaluation_system
 prepend-path PATH {path}
 prepend-path LD_LIBRARY_PATH {ld_lib_path}
-'''
+"""
 
 
 def get_script_path():
@@ -85,8 +85,10 @@ def get_script_path():
 def read(*parts):
     return open(osp.join(get_script_path(), *parts)).read()
 
-def find_files(path, glob_pattern='*'):
+
+def find_files(path, glob_pattern="*"):
     return [str(f) for f in Path(path).rglob(glob_pattern)]
+
 
 def find_version(*parts):
     vers_file = read(*parts)
@@ -96,16 +98,14 @@ def find_version(*parts):
     raise RuntimeError("Unable to find version string.")
 
 
-
 def reporthook(count, block_size, total_size):
     if count == 0:
         return
     frac = count * block_size / total_size
     percent = int(100 * frac)
-    bar = '#' * int(frac * 40)
-    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(
-           bar, 40, round(percent, 2))
-    print(msg, end='\r', flush=True)
+    bar = "#" * int(frac * 40)
+    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(bar, 40, round(percent, 2))
+    print(msg, end="\r", flush=True)
     if frac >= 1:
         print()
 
@@ -113,49 +113,116 @@ def reporthook(count, block_size, total_size):
 def parse_args(argv=None):
     """Consturct command line argument parser."""
 
-    ap = argparse.ArgumentParser(prog='deploy_freva',
-            description="""This Programm installs the evaluation_system package.""",
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    ap = argparse.ArgumentParser(
+        prog="deploy_freva",
+        description="""This Programm installs the evaluation_system package.""",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-    ap.add_argument('install_prefix', type=Path,
-                    help='Install prefix for the environment.')
-    ap.add_argument('--packages', type=str, nargs='*',
-            help='Pacakges that are installed', default=Installer.default_pkgs)
-    ap.add_argument('--channel', type=str, default='conda-forge', help='Conda channel to be used')
-    ap.add_argument('--shell', type=str, default='bash',
-                    help='Shell type')
-    ap.add_argument('--arch', type=str, default='Linux-x86_64',
-                   choices=['Linux-aarch64', 'Linux-ppc64le', 'Linux-s390x',
-                            'Linux-x86_64', 'MacOSX-x86_64'],
-                   help='Choose the architecture according to the system')
-    ap.add_argument('--python', type=str, default='3.9',
-            help='Python Version')
-    ap.add_argument('--pip', type=str, nargs='*', default=Installer.pip_pkgs,
-            help='Additional packages that should be installed using pip')
-    ap.add_argument('--develop', action='store_true', default=False,
-            help='Use the develop flag when installing the evaluation_system package')
-    ap.add_argument('--no_conda', '--no-conda', action='store_true', default=False,
-            help='Do not create conda environment')
-    ap.add_argument('--run_tests', action='store_true', default=False,
-            help='Run unittests after installation')
-    ap.add_argument('--silent', '-s', action='store_true', default=False,
-            help='Minimize writing to stdout')
+    ap.add_argument(
+        "install_prefix", type=Path, help="Install prefix for the environment."
+    )
+    ap.add_argument(
+        "--packages",
+        type=str,
+        nargs="*",
+        help="Pacakges that are installed",
+        default=Installer.default_pkgs,
+    )
+    ap.add_argument(
+        "--channel", type=str, default="conda-forge", help="Conda channel to be used"
+    )
+    ap.add_argument("--shell", type=str, default="bash", help="Shell type")
+    ap.add_argument(
+        "--arch",
+        type=str,
+        default="Linux-x86_64",
+        choices=[
+            "Linux-aarch64",
+            "Linux-ppc64le",
+            "Linux-s390x",
+            "Linux-x86_64",
+            "MacOSX-x86_64",
+        ],
+        help="Choose the architecture according to the system",
+    )
+    ap.add_argument("--python", type=str, default="3.9", help="Python Version")
+    ap.add_argument(
+        "--pip",
+        type=str,
+        nargs="*",
+        default=Installer.pip_pkgs,
+        help="Additional packages that should be installed using pip",
+    )
+    ap.add_argument(
+        "--develop",
+        action="store_true",
+        default=False,
+        help="Use the develop flag when installing the evaluation_system package",
+    )
+    ap.add_argument(
+        "--no_conda",
+        "--no-conda",
+        action="store_true",
+        default=False,
+        help="Do not create conda environment",
+    )
+    ap.add_argument(
+        "--run_tests",
+        action="store_true",
+        default=False,
+        help="Run unittests after installation",
+    )
+    ap.add_argument(
+        "--silent",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Minimize writing to stdout",
+    )
     args = ap.parse_args()
     return args
 
 
-
 class Installer:
 
-
-    default_pkgs = sorted(['cdo', 'conda', 'configparser', 'distributed',
-                    'django', 'ffmpeg', 'git', 'gitpython', 'dask',
-                    'ipython', 'imagemagick', 'libnetcdf', 'humanize', 'mamba',
-                    'mysqlclient', 'nco', 'netcdf4', 'numpy', 'pandas', 'pip',
-                    'pillow', 'pymysql', 'pypdf2', 'pytest', 'pytest-env', 'cartopy',
-                    'pytest-cov', 'pytest-html', 'python-cdo', 'xarray', 'pandoc',
-                    'pint'])
-    pip_pkgs = sorted(['pytest-html', 'python-git', 'python-swiftclient'])
+    default_pkgs = sorted(
+        [
+            "cdo",
+            "conda",
+            "configparser",
+            "distributed",
+            "django",
+            "ffmpeg",
+            "git",
+            "gitpython",
+            "dask",
+            "ipython",
+            "imagemagick",
+            "libnetcdf",
+            "humanize",
+            "mamba",
+            "mysqlclient",
+            "nco",
+            "netcdf4",
+            "numpy",
+            "pandas",
+            "pip",
+            "pillow",
+            "pymysql",
+            "pypdf2",
+            "pytest",
+            "pytest-env",
+            "cartopy",
+            "pytest-cov",
+            "pytest-html",
+            "python-cdo",
+            "xarray",
+            "pandoc",
+            "pint",
+        ]
+    )
+    pip_pkgs = sorted(["pytest-html", "python-git", "python-swiftclient"])
 
     @property
     def conda_name(self):
@@ -164,11 +231,11 @@ class Installer:
 
     def run_cmd(self, cmd, **kwargs):
         """Run a given command."""
-        verbose = kwargs.pop('verbose', False)
-        kwargs['check'] = False
+        verbose = kwargs.pop("verbose", False)
+        kwargs["check"] = False
         if self.silent and not verbose:
-            kwargs['stdout'] = PIPE
-            kwargs['stderr'] = PIPE
+            kwargs["stdout"] = PIPE
+            kwargs["stderr"] = PIPE
         res = run(shlex.split(cmd), **kwargs)
         if res.returncode != 0:
             try:
@@ -180,20 +247,22 @@ class Installer:
 
     def create_conda(self):
         """Create the conda environment."""
-        with TemporaryDirectory(prefix='conda') as td:
-            conda_script = Path(td) / 'anaconda.sh'
-            tmp_env = Path(td) / 'env'
-            logger.info(f'Downloading {CONDA_PREFIX} script')
-            kwargs = {'filename': str(conda_script)}
+        with TemporaryDirectory(prefix="conda") as td:
+            conda_script = Path(td) / "anaconda.sh"
+            tmp_env = Path(td) / "env"
+            logger.info(f"Downloading {CONDA_PREFIX} script")
+            kwargs = {"filename": str(conda_script)}
             print(self.arch)
-            print(self.conda_url+CONDA_VERSION.format(arch=self.arch,
-                                                      conda_prefix=CONDA_PREFIX))
-            if  self.silent is False:
-                kwargs['reporthook'] = reporthook
+            print(
+                self.conda_url
+                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX)
+            )
+            if self.silent is False:
+                kwargs["reporthook"] = reporthook
             urllib.request.urlretrieve(
-                    self.conda_url+CONDA_VERSION.format(arch=self.arch,
-                                                        conda_prefix=CONDA_PREFIX),
-                    **kwargs
+                self.conda_url
+                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
+                **kwargs,
             )
             self.check_hash(conda_script)
             conda_script.touch(0o755)
@@ -201,44 +270,44 @@ class Installer:
             logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
             self.run_cmd(cmd)
             cmd = f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} -q -p {self.install_prefix} python={self.python} {' '.join(self.packages)} -y"
-            logger.info(f'Creating conda environment:\n{cmd}')
+            logger.info(f"Creating conda environment:\n{cmd}")
             self.run_cmd(cmd)
 
     def check_hash(self, filename):
         archive = urllib.request.urlopen(self.conda_url).read().decode()
-        md5sum = ''
-        for line in archive.split('</tr>'):
-            if CONDA_VERSION.format(arch=self.arch,
-                                    conda_prefix=CONDA_PREFIX) in line:
-                md5sum = line.split('<td>')[-1].strip().strip('</td>')
+        md5sum = ""
+        for line in archive.split("</tr>"):
+            if CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX) in line:
+                md5sum = line.split("<td>")[-1].strip().strip("</td>")
         md5_hash = hashlib.md5()
-        with filename.open('rb') as f:
+        with filename.open("rb") as f:
             for byte_block in iter(lambda: f.read(4096), b""):
                 md5_hash.update(byte_block)
         if md5_hash.hexdigest() != md5sum:
-            raise ValueError('Download failed, md5sum mismatch: {md5sum} ')
+            raise ValueError("Download failed, md5sum mismatch: {md5sum} ")
 
     def pip_install(self):
         """Install additional packages using pip."""
 
         cmd = f"{self.python_prefix} -m pip install .[test]"
-        logger.info(f'Installing additional packages\n{cmd}')
+        logger.info(f"Installing additional packages\n{cmd}")
         self.run_cmd(cmd)
-        pip_opts = ''
+        pip_opts = ""
         if self.develop:
-            pip_opts = '-e'
+            pip_opts = "-e"
         cmd = f"{self.python_prefix} -m pip install {pip_opts} ."
-        logger.info('Installing evaluation_system packages')
+        logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
 
     def __init__(self, args):
 
         for arg in vars(args):
             setattr(self, arg, getattr(args, arg))
+        self.run_tests = args.run_tests
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
-        if 'miniconda' in CONDA_PREFIX.lower():
+        if "miniconda" in CONDA_PREFIX.lower():
             self.conda_url = MINICONDA_URL
         self.install_prefix = self.install_prefix.expanduser().absolute()
         self.conda = self.no_conda == False
@@ -247,72 +316,88 @@ class Installer:
         """Copy evaluation_system.conf to etc."""
 
         this_dir = Path(__file__).absolute().parent
-        config_file = 'evaluation_system.conf'
-        defaults = dict(root_dir=self.install_prefix,
-                        base_dir_location=self.install_prefix / 'work',
-                        base_dir='evaluation_system',
-                        project_name='evaluation_system',)
+        config_file = "evaluation_system.conf"
+        defaults = dict(
+            root_dir=self.install_prefix,
+            base_dir_location=self.install_prefix / "work",
+            base_dir="evaluation_system",
+            project_name="evaluation_system",
+        )
         if not (this_dir / config_file).is_file():
-            raise ValueError('No config file. Edit and copy the config template'
-                             ' "evaluation_system.conf.tmpl" to '
-                             '"evaluation_system.conf"')
+            raise ValueError(
+                "No config file. Edit and copy the config template"
+                ' "evaluation_system.conf.tmpl" to '
+                '"evaluation_system.conf"'
+            )
         with (this_dir / config_file).open() as f:
             config = f.readlines()
         for nn, line in enumerate(config):
-            cfg_key = line.split('=')[0].strip()
+            cfg_key = line.split("=")[0].strip()
             if cfg_key in defaults:
-                value = line.split('=')[-1].strip()
+                value = line.split("=")[-1].strip()
                 if not value:
                     value = defaults[cfg_key]
-                config[nn] = f'{cfg_key}={value}\n'
-        (self.install_prefix / 'etc').mkdir(exist_ok=True, parents=True)
-        with (self.install_prefix / 'etc' / config_file).open('w') as f:
-            f.write(''.join(config))
+                config[nn] = f"{cfg_key}={value}\n"
+        (self.install_prefix / "etc").mkdir(exist_ok=True, parents=True)
+        with (self.install_prefix / "etc" / config_file).open("w") as f:
+            f.write("".join(config))
 
-    def create_auxilary(self, auxilary_dirs=('etc', 'sbin')):
+    def create_auxilary(self, auxilary_dirs=("etc", "sbin")):
         """Copy all auxilary files."""
 
         this_dir = Path(__file__).absolute().parent
 
         for d in auxilary_dirs:
-            for source in (this_dir / d).rglob('*'):
+            for source in (this_dir / d).rglob("*"):
                 target = self.install_prefix / source.relative_to(this_dir)
                 if source.is_file():
                     target.parent.mkdir(exist_ok=True, parents=True)
-                    logger.info(f'Copying auxilary file {source}')
+                    logger.info(f"Copying auxilary file {source}")
                     shutil.copy(source, target)
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        for key in 'preview_path', 'project_data', 'base_dir_location', 'scheduler_output_dir':
-            with open(self.install_prefix/ 'etc' / 'evaluation_system.conf', 'r') as fp:
+        for key in (
+            "preview_path",
+            "project_data",
+            "base_dir_location",
+            "scheduler_output_dir",
+        ):
+            with open(
+                self.install_prefix / "etc" / "evaluation_system.conf", "r"
+            ) as fp:
                 config_parser.read_file(fp)
                 try:
-                    Path(config_parser['evaluation_system'][key]).mkdir(exist_ok=True, parents=True)
+                    Path(config_parser["evaluation_system"][key]).mkdir(
+                        exist_ok=True, parents=True
+                    )
                 except PermissionError:
                     pass
-        freva_path = self.install_prefix / 'share' / 'freva'
+        freva_path = self.install_prefix / "share" / "freva"
         freva_path.mkdir(parents=True, exist_ok=True)
-        with (freva_path / 'loadfreva.modules').open('w') as f:
-            f.write(MODULE.format(version=find_version('src/evaluation_system',
-                                                       '__init__.py'),
-                          path=self.install_prefix / 'bin',
-                          ld_lib_path=self.install_prefix / 'lib',
-                          auto_comp=self.install_prefix / 'etc' / 'autocomplete.bash'
-                          ))
-
+        with (freva_path / "loadfreva.modules").open("w") as f:
+            f.write(
+                MODULE.format(
+                    version=find_version("src/evaluation_system", "__init__.py"),
+                    path=self.install_prefix / "bin",
+                    ld_lib_path=self.install_prefix / "lib",
+                    auto_comp=self.install_prefix / "etc" / "autocomplete.bash",
+                )
+            )
 
     def unittests(self):
         """Run unittests."""
-        logger.info('Running unittests:')
+        logger.info("Running unittests:")
         env = os.environ.copy()
-        env['PATH'] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
-        env['FREVA_ENV'] = str(self.install_prefix / "bin")
-        self.run_cmd(f'make test', verbose=True, env=env)
+        env["PATH"] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
+        env["FREVA_ENV"] = str(self.install_prefix / "bin")
+        self.run_cmd(f"make test", verbose=True, env=env)
 
     @property
     def python_prefix(self):
         """Get the path of the new conda evnironment."""
-        return self.install_prefix / 'bin' / 'python3'
-if __name__ == '__main__':
+        return self.install_prefix / "bin" / "python3"
+
+
+if __name__ == "__main__":
     args = parse_args(sys.argv)
     Inst = Installer(args)
     if Inst.conda:

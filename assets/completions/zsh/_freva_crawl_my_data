@@ -1,0 +1,3 @@
+#compdef freva-crawl-my-data
+
+__process crawl-my-data "$@"
