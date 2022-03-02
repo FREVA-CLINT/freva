@@ -57,11 +57,11 @@ the_number (default: <undefined>) [mandatory]
 something  (default: test)
        No help available.
 other      (default: 1.4)
-       No help available.
+       No help available
 input      (default: <undefined>)
-       An input file.
+       An input file
 variable   (default: tas)
-       An input variable.
+       An input variable
 """,
     )
 
