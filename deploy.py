@@ -227,11 +227,6 @@ class Installer:
             tmp_env = Path(td) / "env"
             logger.info(f"Downloading {CONDA_PREFIX} script")
             kwargs = {"filename": str(conda_script)}
-            print(self.arch)
-            print(
-                self.conda_url
-                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX)
-            )
             if self.silent is False:
                 kwargs["reporthook"] = reporthook
             urllib.request.urlretrieve(
@@ -295,6 +290,7 @@ class Installer:
         self.python = python
         self.pip = pip
         self.silent = silent
+        self.shell = shell
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
