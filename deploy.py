@@ -335,9 +335,12 @@ class Installer:
                 )
             )
         with (eval_conf_file.parent / "activate").open("w") as f:
-            with (self.install_prefix / "bin" / "activate").open("r") as g:
-                f.write(g.read())
-            f.write(f"\n export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}")
+            try:
+                with (self.install_prefix / "bin" / "activate").open("r") as g:
+                    f.write(g.read())
+                f.write(f"\n export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}")
+            except FileNotFoundError:
+                pass
 
     def unittests(self):
         """Run unittests."""
