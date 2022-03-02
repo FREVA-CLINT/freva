@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
@@ -270,19 +269,19 @@ class Installer:
         self.run_cmd(cmd)
 
     def __init__(self,
-            install_prefix: Union[Path, str],
-            no_conda: bool = False,
-            packages: list[str] = [],
-            channel: str = "conda-forge",
-            shell: str = "bash",
-            arch: str = "Linux-x86_64",
-            python: str = "3.10",
-            pip: list[str] = [],
-            develop: bool = False,
-            run_tests: bool = False,
-            silent : bool = False,
+            install_prefix,
+            no_conda=False,
+            packages=[],
+            channel="conda-forge",
+            shell="bash",
+            arch="Linux-x86_64",
+            python="3.10",
+            pip=[],
+            develop=False,
+            run_tests=False,
+            silent=False,
             ):
-        self.run_tests: bool = run_tests
+        self.run_tests = run_tests
         self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
         self.packages = packages
         self.channel = channel
@@ -291,6 +290,7 @@ class Installer:
         self.pip = pip
         self.silent = silent
         self.shell = shell
+        self.develop = develop
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
