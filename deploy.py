@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+"""Deploy the evaluation_system / core."""
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
@@ -13,7 +13,6 @@ from subprocess import CalledProcessError, PIPE, run
 import urllib.request
 from tempfile import TemporaryDirectory
 
-from typing import Union
 
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
@@ -238,7 +237,11 @@ class Installer:
             cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
             logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
             self.run_cmd(cmd)
-            cmd = f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} -q -p {self.install_prefix} python={self.python} {' '.join(self.packages)} -y"
+            cmd = (
+                f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} "
+                f"-q -p {self.install_prefix} python={self.python} "
+                f"{' '.join(self.packages)} -y"
+            )
             logger.info(f"Creating conda environment:\n{cmd}")
             self.run_cmd(cmd)
 
@@ -268,22 +271,23 @@ class Installer:
         logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
 
-    def __init__(self,
-            install_prefix,
-            no_conda=False,
-            packages=[],
-            channel="conda-forge",
-            shell="bash",
-            arch="Linux-x86_64",
-            python="3.10",
-            pip=[],
-            develop=False,
-            run_tests=False,
-            silent=False,
-            ):
+    def __init__(
+        self,
+        install_prefix,
+        no_conda=False,
+        packages=["conda"],
+        channel="conda-forge",
+        shell="bash",
+        arch="Linux-x86_64",
+        python="3.10",
+        pip=[],
+        develop=False,
+        run_tests=False,
+        silent=False,
+    ):
         self.run_tests = run_tests
         self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
-        self.packages = packages
+        self.packages = set(packages + ["conda"])
         self.channel = channel
         self.arch = arch
         self.python = python
@@ -296,12 +300,10 @@ class Installer:
         self.conda_url = ANACONDA_URL
         if "miniconda" in CONDA_PREFIX.lower():
             self.conda_url = MINICONDA_URL
-        self.conda: bool = no_conda == False
+        self.conda = no_conda is False
 
     def create_loadscript(self):
         """Create the load-script for this installation."""
-
-        this_dir = Path(__file__).absolute().parent
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         eval_conf_file = Path(
@@ -331,16 +333,13 @@ class Installer:
                     version=find_version("src/evaluation_system", "__init__.py"),
                     root_dir=self.install_prefix,
                     eval_conf_file=eval_conf_file,
-                    project=config_parser["evaluation_system"]["project_name"]
+                    project=config_parser["evaluation_system"]["project_name"],
                 )
             )
         with (eval_conf_file.parent / "activate").open("w") as f:
-            try:
-                with (self.install_prefix / "bin" / "activate").open("r") as g:
-                    f.write(g.read())
-                f.write(f"\n export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}")
-            except FileNotFoundError:
-                pass
+            with (self.install_prefix / "bin" / "activate").open("r") as g:
+                f.write(g.read())
+            f.write(f"\nexport EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}\n")
 
     def unittests(self):
         """Run unittests."""
@@ -348,7 +347,7 @@ class Installer:
         env = os.environ.copy()
         env["PATH"] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
         env["FREVA_ENV"] = str(self.install_prefix / "bin")
-        self.run_cmd(f"make test", verbose=True, env=env)
+        self.run_cmd("make test", verbose=True, env=env)
 
     @property
     def python_prefix(self):
@@ -359,18 +358,18 @@ class Installer:
 if __name__ == "__main__":
     args = parse_args(sys.argv)
     Inst = Installer(
-            install_prefix=args.install_prefix,
-            no_conda=args.no_conda,
-            packages=args.packages,
-            channel=args.channel,
-            shell=args.shell,
-            arch=args.arch,
-            python=args.python,
-            pip=args.pip,
-            develop=args.develop,
-            run_tests=args.run_tests,
-            silent=args.silent
-        )
+        install_prefix=args.install_prefix,
+        no_conda=args.no_conda,
+        packages=args.packages,
+        channel=args.channel,
+        shell=args.shell,
+        arch=args.arch,
+        python=args.python,
+        pip=args.pip,
+        develop=args.develop,
+        run_tests=args.run_tests,
+        silent=args.silent,
+    )
     if Inst.conda:
         Inst.create_conda()
         Inst.pip_install()
