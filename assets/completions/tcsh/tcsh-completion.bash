@@ -73,7 +73,7 @@ elif [ "${1}" == "freva" ] && [ "${COMP_WORDS[1]}" == "plugin" ];then
 elif [ "${1}" == "freva-plugin" ];then
     COMPREPLY=$(__plugin 1)
 else
-    COMPREPLY=$(python3 -m freva.cli --shell bash --flags-only ${COMP_WORDS[@]})
+    COMPREPLY=$(python -m freva.cli --shell bash --flags-only ${COMP_WORDS[@]})
 fi
 
 if [ "${debug}" == "true" ]; then
