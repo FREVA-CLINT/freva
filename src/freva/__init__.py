@@ -47,7 +47,7 @@ __all__ = [
 
 def __getattr__(name):
     if name in ["crawl_my_data", "databrowser", "esgf", "history"]:
-        return importlib.import_module(f"._{name}", __name__)
+        return getattr(importlib.import_module(f"._{name}", __name__), name)
     elif name in ["run_plugin", "list_plugins", "plugin_doc"]:
-        return importlib.import_module(f"._plugin", __name__)
+        return getattr(importlib.import_module(f"._plugin", __name__), name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
