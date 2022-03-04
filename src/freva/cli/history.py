@@ -99,7 +99,7 @@ class HistoryCli(BaseParser):
             result = "\n".join(commands)
         else:
             result = "\n".join(
-                [c.__str__(compact=not args.full_text) for c in commands]  # type: ignore
+                [c.__str__(compact=not args.full_text) for c in commands]
             )
         print(result)
 

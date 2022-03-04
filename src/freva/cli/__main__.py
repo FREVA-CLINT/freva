@@ -3,6 +3,7 @@
 import sys
 import logging
 from .utils import print_choices, logger
+
 logger.setLevel(logging.ERROR)
 
 try:
