@@ -6,12 +6,12 @@ from typing import Any, Union, Dict, Optional, List, Tuple
 import time
 
 
-from django.contrib.auth.models import User
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
 from evaluation_system.misc import config, utils, logger
 from evaluation_system.misc.exceptions import PluginNotFoundError
 from evaluation_system.model.plugins.models import ToolPullRequest
+from django.contrib.auth.models import User
 
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
