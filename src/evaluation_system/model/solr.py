@@ -59,7 +59,7 @@ class SolrFindFiles(object):
         batch_size=10000,
         latest_version=False,
         _retrieve_metadata=False,
-        **partial_dict
+        **partial_dict,
     ):
         """This encapsulates the Solr call to get documents and returns an iterator providing the. The special
         parameter _retrieve_metadata will affect the first value returned by the iterator.
