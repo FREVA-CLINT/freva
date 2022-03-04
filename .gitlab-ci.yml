@@ -12,10 +12,10 @@ lint:
   tags:
     - docker, specific
   before_script:
-    - conda env create -f dev-environment.yml
+    - python -m pip install .[test]
     - apt update && apt install make
   script:
-    - conda run -n $CONDA_ENV make lint
+    - make lint
 
 dev-obs:
     stage: build
