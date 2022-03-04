@@ -5,6 +5,7 @@ stages:
 
 variables:
   CONDA_ENV: "freva-dev"
+  PYTHON_VERSION: "3.10"
 
 lint:
   image: continuumio/anaconda3
@@ -12,10 +13,11 @@ lint:
   tags:
     - docker, specific
   before_script:
+    - conda create -n freva-dev python=$PYTHON_VERSION mypy black
     - apt update && apt install make
-    - pip install mypy black
+    - conda run -n $CONDA_ENV pip install types-requests types-toml
   script:
-    - make lint
+    - conda run -n $CONDA_ENV make lint
 
 dev-obs:
     stage: build
