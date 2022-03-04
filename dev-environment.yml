@@ -2,66 +2,43 @@ name: freva-dev
 channels:
   - conda-forge
 dependencies:
-  - python=3.9
+  - python=3.10
+  - cdo
+  - conda
+  - configparser
+  - distributed
   - django
-  - pytest-env
-  - pandas
+  - ffmpeg
+  - git
+  - gitpython
+  - dask
+  - ipython
+  - imagemagick
+  - libnetcdf
+  - humanize
+  - mamba
   - mysqlclient
+  - nco
+  - netcdf4
+  - numpy
+  - pandas
+  - pandoc
+  - pint
   - pip
   - pip:
       - allure-pytest
       - requests_mock
-      - django-auth-ldap
-      - django-datatable-view
-      - django-templated-email
-      - django_compressor
-      - django-debug-toolbar-user-panel
-      - django-discover-runner
-      - django-bootstrap-v5
-      - django-model-utils
       - pep257
       - types-requests
       - types-toml
-  - sphinx
-  - pymysql
-  - imagemagick
-  - gitpython
-  - git
-  - conda
+      - humanize
   - pillow
-  - numpy
-  - ffmpeg
-  - pytest-cov
-  - pandoc
-  - distributed
-  - pytest
-  - configparser
-  - pytest-html
+  - pymysql
   - pypdf2
-  - djangorestframework
-  - python-memcached
-  - django-debug-toolbar
-  - paramiko
-  - ldap3
-  - django-nose
-  - python-ldap
-  - mock
-  - pygtail
-  - requests
-  - toml
-  - mod_wsgi
-  - django-ipware
-  - nose
-  - nbval
-  - requests-mock
-  - markdown
-  - testpath
-  - fabric
-  - pylint
-  - django-webpack-loader
-  - django-debug-toolbar
-  - pep8
-  - coverage
-  - bleach
-  - mypy
-  - black
+  - pytest
+  - pytest-env
+  - cartopy
+  - pytest-cov
+  - pytest-html
+  - python-cdo
+  - xarray

@@ -132,7 +132,7 @@ def parse_args(argv=None):
         type=str,
         nargs="*",
         help="Pacakges that are installed",
-        default=Installer.default_pkgs,
+        default=[],
     )
     ap.add_argument(
         "--channel", type=str, default="conda-forge", help="Conda channel to be used"
@@ -152,19 +152,6 @@ def parse_args(argv=None):
         help="Choose the architecture according to the system",
     )
     ap.add_argument("--python", type=str, default="3.9", help="Python Version")
-    ap.add_argument(
-        "--pip",
-        type=str,
-        nargs="*",
-        default=Installer.pip_pkgs,
-        help="Additional packages that should be installed using pip",
-    )
-    ap.add_argument(
-        "--develop",
-        action="store_true",
-        default=False,
-        help="Use the develop flag when installing the evaluation_system package",
-    )
     ap.add_argument(
         "--no_conda",
         "--no-conda",
@@ -190,44 +177,6 @@ def parse_args(argv=None):
 
 
 class Installer:
-
-    default_pkgs = sorted(
-        [
-            "cdo",
-            "conda",
-            "configparser",
-            "distributed",
-            "django",
-            "ffmpeg",
-            "git",
-            "gitpython",
-            "dask",
-            "ipython",
-            "imagemagick",
-            "libnetcdf",
-            "humanize",
-            "mamba",
-            "mysqlclient",
-            "nco",
-            "netcdf4",
-            "numpy",
-            "pandas",
-            "pip",
-            "pillow",
-            "pymysql",
-            "pypdf2",
-            "pytest",
-            "pytest-env",
-            "cartopy",
-            "pytest-cov",
-            "pytest-html",
-            "python-cdo",
-            "xarray",
-            "pandoc",
-            "pint",
-        ]
-    )
-    pip_pkgs = sorted(["pytest-html", "python-git", "python-swiftclient"])
 
     @property
     def conda_name(self):
@@ -269,13 +218,33 @@ class Installer:
             cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
             logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
             self.run_cmd(cmd)
-            cmd = (
-                f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} "
-                f"-q -p {self.install_prefix} python={self.python} "
-                f"{' '.join(self.packages)} -y"
-            )
+            cmd = f"{tmp_env / 'bin' / 'conda'} {self.create_command(td)}"
             logger.info(f"Creating conda environment:\n{cmd}")
             self.run_cmd(cmd)
+
+    def create_command(self, tmp_dir):
+        """Construct the conda create command."""
+        # If packages were given, create a conda env from this packages list
+        if self.packages:
+            packages = set(self.packages + ["conda", "pip"])
+            return (f"create -c {self.channel} -q -p {self.install_prefix} "
+                    f"python={self.python} -y " + " ".join(packages))
+        # This is awkward, but since we can't guarrantee that we have a yml
+        # parser installed we have to do this manually
+        dev_env = []
+        with open(Path(__file__).parent / "dev-environment.yml") as f:
+            for nn, line in enumerate(f.readlines()):
+                if "name:" in line:
+                    continue
+                if "python=" in line:
+                    num = line.strip().split("=")[-1].strip()
+                    dev_env.append(line.replace(num, self.python))
+                else:
+                    dev_env.append(line)
+        env_file = Path(tmp_dir) / "dev-environment.yml"
+        with env_file.open("w") as f:
+            f.write("".join(dev_env))
+        return f"env create -q -p {self.install_prefix} -f {env_file} --force"
 
     def check_hash(self, filename):
         archive = urllib.request.urlopen(self.conda_url).read().decode()
@@ -297,8 +266,6 @@ class Installer:
         logger.info(f"Installing additional packages\n{cmd}")
         self.run_cmd(cmd)
         pip_opts = ""
-        if self.develop:
-            pip_opts = "-e"
         cmd = f"{self.python_prefix} -m pip install {pip_opts} ."
         logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
@@ -307,26 +274,22 @@ class Installer:
         self,
         install_prefix,
         no_conda=False,
-        packages=["conda"],
+        packages=[],
         channel="conda-forge",
         shell="bash",
         arch="Linux-x86_64",
         python="3.10",
-        pip=[],
-        develop=False,
         run_tests=False,
         silent=False,
     ):
         self.run_tests = run_tests
         self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
-        self.packages = set(packages + ["conda"])
+        self.packages = packages
         self.channel = channel
         self.arch = arch
         self.python = python
-        self.pip = pip
         self.silent = silent
         self.shell = shell
-        self.develop = develop
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
@@ -409,8 +372,6 @@ if __name__ == "__main__":
         shell=args.shell,
         arch=args.arch,
         python=args.python,
-        pip=args.pip,
-        develop=args.develop,
         run_tests=args.run_tests,
         silent=args.silent,
     )
