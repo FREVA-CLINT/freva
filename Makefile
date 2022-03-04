@@ -15,7 +15,7 @@ test:
 
 lint:
 	mypy
-	black --check src
+	black --check -t py39 src
 
 dummy-data:
 	compose/dummy_plugin_runs.sh
