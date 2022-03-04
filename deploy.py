@@ -228,7 +228,7 @@ class Installer:
         if self.packages:
             packages = set(self.packages + ["conda", "pip"])
             return (f"create -c {self.channel} -q -p {self.install_prefix} "
-                    f"python={self.python} -y " + " ".join(packages))
+                    f"python={self.python}" + " ".join(packages) + " -y")
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
         dev_env = []
