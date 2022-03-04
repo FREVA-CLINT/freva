@@ -13,9 +13,9 @@ lint:
   tags:
     - docker, specific
   before_script:
-    - conda env create -f dev-environment.yml
+    - conda env create -q -f dev-environment.yml
     - apt update && apt install make
-    - conda run -n $CONDA_ENV pip install types-requests types-toml
+    - conda run -n $CONDA_ENV pip install .[test]
   script:
     - conda run -n $CONDA_ENV make lint
 
