@@ -199,26 +199,35 @@ class Installer:
                 pass
             raise CalledProcessError(res.returncode, cmd)
 
+    def use_or_download_temp_conda(self, tempdir):
+        """Return to path an existing conda env, if there is none, cerate one."""
+
+        conda_exec_path = Path(os.environ.get("CONDA_EXEC_PATH", ""))
+        if conda_exec_path.exists() and conda_exec_path.is_file():
+            return Path(conda_exec_path)
+        tmp_env = Path(tempdir) / "env"
+        conda_script = Path(tempdir) / "anaconda.sh"
+        logger.info(f"Downloading {CONDA_PREFIX} script")
+        kwargs = {"filename": str(conda_script)}
+        if self.silent is False:
+            kwargs["reporthook"] = reporthook
+        urllib.request.urlretrieve(
+            self.conda_url
+            + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
+            **kwargs,
+        )
+        self.check_hash(conda_script)
+        conda_script.touch(0o755)
+        cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
+        logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
+        self.run_cmd(cmd)
+        return tmp_env / "bin" / "conda"
+
     def create_conda(self):
         """Create the conda environment."""
         with TemporaryDirectory(prefix="conda") as td:
-            conda_script = Path(td) / "anaconda.sh"
-            tmp_env = Path(td) / "env"
-            logger.info(f"Downloading {CONDA_PREFIX} script")
-            kwargs = {"filename": str(conda_script)}
-            if self.silent is False:
-                kwargs["reporthook"] = reporthook
-            urllib.request.urlretrieve(
-                self.conda_url
-                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
-                **kwargs,
-            )
-            self.check_hash(conda_script)
-            conda_script.touch(0o755)
-            cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
-            logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
-            self.run_cmd(cmd)
-            cmd = f"{tmp_env / 'bin' / 'conda'} {self.create_command(td)}"
+            conda_exec_path = self.use_or_download_temp_conda(td)
+            cmd = f"{conda_exec_path} {self.create_command(td)}"
             logger.info(f"Creating conda environment:\n{cmd}")
             self.run_cmd(cmd)
 
