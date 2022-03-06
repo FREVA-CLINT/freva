@@ -42,6 +42,7 @@ if {{ $curMode eq "load" }} {{
         puts "\\. {eval_conf_file.parent}/activate_csh"
     }} elseif {{ $shell == "sh" }} {{
         puts "\\. {eval_conf_file.parent}/activate_sh"
+    }}
 }}
 prepend-path PATH {root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
@@ -56,7 +57,7 @@ set -gx PATH {root_dir}/bin $PATH
 SH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.sh
 export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
 export PATH={root_dir}/bin:$PATH
-shell=$(basname $SHELL)
+shell=$(basename $SHELL)
 if [ $shell = zsh ];then
     \\. {root_dir}/share/zsh/site-functions/source.zsh
 elif [ $shell = bash ];then
