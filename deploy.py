@@ -29,9 +29,7 @@ MODULE = """#%Module1.0#########################################################
 #
 ### BEGIN of config part ********
 #define some variables
-set shell [module-info shell]
-set modName [module-info name]
-set toolName evaluation_system
+set shell [module-info shelltype]
 set curMode [module-info mode]
 module-whatis   "evaluation_system {version}"
 proc ModulesHelp {{ }} {{
@@ -39,48 +37,40 @@ proc ModulesHelp {{ }} {{
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
-        puts "{fish}"
+        puts "\\. {eval_conf_file.parent}/activate_fish"
     }} elseif {{ $shell == "csh" }} {{
-        puts "{csh}"
-    }} elseif {{ $shell == "tcsh" }} {{
-        puts "{tcsh}"
-    }} elseif {{ $shell == "zsh" }} {{
-        puts "{zsh}"
-    }} elseif {{ $shell == "bash" }} {{
-        puts "{bash}"
-    }} else {{
-        puts "{sh}"
-    }}
+        puts "\\. {eval_conf_file.parent}/activate_csh"
+    }} elseif {{ $shell == "sh" }} {{
+        puts "\\. {eval_conf_file.parent}/activate_sh"
 }}
 prepend-path PATH {root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
+FISH_SCRIPT = """\\. {root_dir}/etc/fish/conf.d/conda.fish
+set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+set -gx PATH {root_dir}/bin $PATH
+\\. {root_dir}/share/fish/completions/freva.fish
+"""
 
-def get_activate_string(shell, root_dir):
-    """Get the activate command for a given shell."""
-    try:
-        return dict(
-            fish=(
-                f"\\. {root_dir}/etc/fish/conf.d/conda.fish && "
-                f"\\. {root_dir}/share/fish/completions/freva.fish"
-            ),
-            tcsh=(
-                f"\\. {root_dir}/etc/profile.d/conda.csh && "
-                f"\\. {root_dir}/share/tcsh-completion/completion/freva"
-            ),
-            csh=(f"\\. {root_dir}/etc/profile.d/conda.csh"),
-            zsh=(
-                f"\\. {root_dir}/etc/profile.d/conda.sh && "
-                f"\\. {root_dir}/share/zsh/site-functions/source.zsh"
-            ),
-            bash=(
-                f"\\. {root_dir}/etc/profile.d/conda.sh && "
-                f"\\. {root_dir}/share/bash-completion/completions/freva"
-            ),
-        )[shell]
-    except KeyError:
-        return f"\\. {root_dir}/etc/profile.d/conda.sh"
+SH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.sh
+export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
+export PATH={root_dir}/bin:$PATH
+shell=$(basname $SHELL)
+if [ $shell = zsh ];then
+    \\. {root_dir}/share/zsh/site-functions/source.zsh
+elif [ $shell = bash ];then
+    \\. {root_dir}/share/bash-completion/completions/freva
+fi
+"""
+
+CSH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.csh
+setenv PATH {root_dir}/bin:\\$PATH
+setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
+if ( `basename $SHELL` == tcsh ) then
+    \\. {root_dir}/share/tcsh-completion/completion/freva
+endif
+"""
 
 
 def get_script_path():
@@ -177,7 +167,6 @@ def parse_args(argv=None):
 
 
 class Installer:
-
     @property
     def conda_name(self):
 
@@ -236,8 +225,10 @@ class Installer:
         # If packages were given, create a conda env from this packages list
         if self.packages:
             packages = set(self.packages + ["conda", "pip"])
-            return (f"create -c {self.channel} -q -p {self.install_prefix} "
-                    f"python={self.python} " + " ".join(packages) + " -y")
+            return (
+                f"create -c {self.channel} -q -p {self.install_prefix} "
+                f"python={self.python} " + " ".join(packages) + " -y"
+            )
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
         dev_env = []
@@ -331,31 +322,23 @@ class Installer:
                     except PermissionError:
                         pass
         eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
-        module_format = dict(
-            version=find_version("src/evaluation_system", "__init__.py"),
-            root_dir=self.install_prefix,
-            eval_conf_file=eval_conf_file,
-            project=config_parser["evaluation_system"]["project_name"],
-        )
-        for shell in ("zsh", "fish", "csh", "tcsh", "sh", "bash", "ksh"):
-            if shell != "ksh":
-                module_format[shell] = get_activate_string(shell, self.install_prefix)
-            if shell in ("csh", "tcsh"):
-                set_env = (
-                    f"setenv PATH $PATH\\:{self.install_prefix / 'bin'}\n"
-                    f"setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}"
-                )
-            else:
-                set_env = (
-                    f"export PATH=$PATH:{self.install_prefix / 'bin'}\n"
-                    f"export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}"
-                )
+        shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
+        for shell in ("fish", "csh", "sh"):
             with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
-                f.write(get_activate_string(shell, self.install_prefix))
-                f.write(f"\n{set_env}")
-
+                f.write(
+                    shell_scripts[shell].format(
+                        root_dir=self.install_prefix, eval_conf_file=eval_conf_file
+                    )
+                )
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
-            f.write(MODULE.format(**module_format))
+            f.write(
+                MODULE.format(
+                    version=find_version("src/evaluation_system", "__init__.py"),
+                    root_dir=self.install_prefix,
+                    eval_conf_file=eval_conf_file,
+                    project=config_parser["evaluation_system"]["project_name"],
+                )
+            )
 
     def unittests(self):
         """Run unittests."""
