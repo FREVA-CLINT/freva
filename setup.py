@@ -124,6 +124,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
                 "python-swiftclient",
                 "testpath",
                 "types-toml",
+                "types-mock",
                 "types-requests",
             ],
         },

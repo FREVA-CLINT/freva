@@ -201,11 +201,13 @@ A plug-in/user might then use them to define a value in the following way::
         return_code = res.wait()
         if return_code:
             raise sub.CalledProcessError(return_code, cmd)
+
     @property
     def patch_env(self):
         """Add the conda env path of the plugin to the environment."""
-        
+
         from evaluation_system.api import plugin_manager as pm
+
         plugin_name = self.__class__.__name__.lower()
         env = os.environ.copy()
         try:
