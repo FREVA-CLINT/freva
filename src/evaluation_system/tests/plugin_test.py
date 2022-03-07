@@ -437,14 +437,14 @@ def test_run(dummy_plugin):
 
     dummy = dummy_plugin
     # no config
-    dummy.runTool()
+    dummy._runTool()
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
     assert run is None
     DummyPlugin._runs = []
 
     # direct config
-    dummy.runTool(config_dict=dict(the_number=42))
+    dummy._runTool(config_dict=dict(the_number=42))
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
     assert "the_number" in run
