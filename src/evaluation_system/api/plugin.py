@@ -375,7 +375,7 @@ A plug-in/user might then use them to define a value in the following way::
             ext = os.path.splitext(file_path)
             if ext:
                 ext = ext[-1].lower()
-                if ext in ".jpg .jpeg .png .gif".split():
+                if ext in ".jpg .jpeg .png .gif .mp4 .mov".split():
                     metadata["type"] = "plot"
                     metadata["todo"] = "copy"
 
@@ -402,6 +402,8 @@ A plug-in/user might then use them to define a value in the following way::
                 if ext in [".zip"]:
                     metadata["type"] = "pdf"
                     metadata["todo"] = "copy"
+                elif ext in [".html", ".xhtml"]:
+                    metadata["tody"] = "copy"
 
     def getHelp(self, width=80):
         """This method uses the information from the implementing class name, :class:`__version__`,
