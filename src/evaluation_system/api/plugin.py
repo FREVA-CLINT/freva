@@ -403,7 +403,7 @@ A plug-in/user might then use them to define a value in the following way::
                     metadata["type"] = "pdf"
                     metadata["todo"] = "copy"
                 elif ext in [".html", ".xhtml"]:
-                    metadata["tody"] = "copy"
+                    metadata["todo"] = "copy"
 
     def getHelp(self, width=80):
         """This method uses the information from the implementing class name, :class:`__version__`,
