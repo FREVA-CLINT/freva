@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import abc
 from configparser import ConfigParser, ExtendedInterpolation
+from contextlib import contextmanager
 from datetime import datetime
 import logging
 import mock
@@ -202,24 +203,45 @@ A plug-in/user might then use them to define a value in the following way::
         if return_code:
             raise sub.CalledProcessError(return_code, cmd)
 
+    @contextmanager
+    def set_environment(self) -> str:
+        """Set the environement."""
+        from copy import copy, deepcopy
+        env = os.environ.copy()
+        stdout = sys.stdout
+        stderr = sys.stderr
+        from evaluation_system.misc.utils import PIPE_STD
+        try:
+            os.environ["PATH"] = f"{self.conda_path}:{env['PATH']}"
+            with open("/tmp/DummyPlugin-4321.out", "a") as f:
+                with PIPE_STD(stdout, f) as stdout_pipe, PIPE_STD(stdout, f) as stderr_pipe:
+                    sys.stdout = stdout_pipe
+                    sys.stdout = stderr_pipe
+                    yield
+        finally:
+            os.environ = env
+            sys.stdout = stdout
+            sys.stderr = stderr
+
+
+
     @property
-    def patch_env(self):
+    def conda_path(self) -> str:
         """Add the conda env path of the plugin to the environment."""
 
         from evaluation_system.api import plugin_manager as pm
 
         plugin_name = self.__class__.__name__.lower()
-        env = os.environ.copy()
         try:
             plugin_path = Path(pm.get_plugins()[plugin_name].plugin_module)
         except KeyError:
             return env
-        env["PATH"] = f"{plugin_path.parent / 'plugin_env' / 'bin'}:{env['PATH']}"
+        return f"{plugin_path.parent / 'plugin_env' / 'bin'}"
         return env
 
     def _runTool(self, config_dict=None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
-        with mock.patch.dict(os.environ, self.patch_env, clear=True):
+        with self.set_environment():
             result = self.runTool(config_dict=config_dict)
             return result
 
@@ -647,9 +669,9 @@ A plug-in/user might then use them to define a value in the following way::
                 fp.flush()  # in case we want to stream this for a very awkward reason...
         return fp
 
-    def suggestSlurmFileName(self):
+    def suggest_batchscript_name(self) -> str:
         """
-        Return a suggestion for the SLURM file name
+        Return a suggestion for the batch script file name
         :return: file name
         """
 
@@ -661,53 +683,58 @@ A plug-in/user might then use them to define a value in the following way::
         )
         return filename
 
-    def writeSlurmFile(
+    def submit_job_script(
         self,
-        fp,
-        config_dict=None,
-        user=None,
-        scheduled_id=None,
-        slurmoutdir=None,
-        unique_output=True,
-    ):
-        """
-        Writes a file which can be executed by the SLURM scheduler
-        if no configuration is provided the default one will be used.
+        config_dict: dict[str, Union[str, int, float, bool]] = {},
+        user: Optional[User] = None,
+        scheduled_id: Optional[int] = None,
+        log_directory: Optional[str] = None,
+        unique_output: bool = True,
+    ) -> str:
+        """Create a job script suitable for the configured workload manager.
 
-        :param fp: An object with a readline argument (e.g. as return by :py:func:`open` ) from where the configuration is going to be read.
-        :param config_dict: a metadict with the configuration to be stored. If none is provided the result from
-        :param user: a user object
-        :param scheduled_id: The row-id of a scheduled job in history
-        :return: an object of class slurm_file
+        Parameters:
+        -----------
+
+        config_dict:
+            Dictionary holding the plugin config setup
+        user:
+            Django user object
+        scheduled_id:
+            The row-id of a scheduled job in history
+        unique_output:
+            flag indicating if the output directory should be unique
+
+        Returns:
+        --------
+        command: str
+            Submit command for the workload manager
         """
-        from evaluation_system.model import slurm
 
         if user is None:
             user = self.getCurrentUser()
 
-        sf = slurm.slurm_file()
-
         if scheduled_id:
-            sf.set_default_options(
-                user,
-                self.composeCommand(
-                    scheduled_id=scheduled_id, unique_output=unique_output
-                ),
-                outdir=slurmoutdir,
+            cmd = self.composeCommand(
+                scheduled_id=scheduled_id, unique_output=unique_output
             )
         else:
-            sf.set_default_options(
-                user,
-                self.composeCommand(
-                    config_dict=config_dict, unique_output=unique_output
-                ),
-                outdir=slurmoutdir,
+            cmd = self.composeCommand(
+                config_dict=config_dict, unique_output=unique_output
             )
+        from .workload_manager import schedule_job
+        from evaluation_system.misc import logger
 
-        sf.write_to_file(fp)
-        fp.flush()
-
-        return sf
+        cfg = config.get_section("scheduler_options").copy()
+        cfg["args"] = cmd
+        cfg["name"] = self.__class__.__name__
+        return schedule_job(
+            config.get("scheduler_system"),
+            Path(config.CONFIG_FILE).parent / "activate_sh",
+            cfg,
+            delete_job_script=logger.root.level <= logging.DEBUG,
+            log_directory=log_directory,
+        )
 
     class ExceptionMissingParam(Exception):
         """
@@ -734,32 +761,28 @@ A plug-in/user might then use them to define a value in the following way::
         logging.debug("config dict:" + str(config_dict))
         logging.debug("scheduled_id:" + str(scheduled_id))
 
-        cmd_param = "analyze "
-        cmd_param = "freva --plugin "
-        cmd_param += self.__class__.__name__
+        tool_param = [self.__class__.__name__.lower()]
+        cmd_param = []
         # write explicitly if batchmode is requested
-        cmd_param += " --batchmode=%s" % str(batchmode)
+        cmd_param.append("--batchmode")
 
         # add a given e-mail
         if email:
-            cmd_param += " --mail=%s" % email
-
-        # the parameter string
-        # cmd_param += ' --tool ' + self.__class__.__name__
+            cmd_param.append(f"--mail={email}")
 
         # add a caption if given
         if not caption is None:
             quote_caption = caption
             quote_caption = caption.replace("\\", "\\\\")
             quote_caption = quote_caption.replace("'", "'\\''")
-            cmd_param += " --caption '%s'" % quote_caption
+            cmd_param.append(f"--caption '{quote_caption}'")
 
         # append the unique_output param
-        cmd_param += " --unique_output %s" % unique_output
+        cmd_param.append(f"--unique_output {unique_output}")
 
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:
-            cmd_param += " --scheduled-id %i" % scheduled_id
+            cmd_param.append(f"--scheduled-id {scheduled_id}")
 
         else:
             # store the section header
@@ -782,11 +805,9 @@ A plug-in/user might then use them to define a value in the following way::
                     if isMandatory:
                         raise self.ExceptionMissingParam(param_name)
                 else:
-                    cmd_param += " %s=%s" % (param_name, param.str(value))
-
-        logging.debug("Execute command:" + cmd_param)
-
-        return cmd_param
+                    tool_param.append(f"{param_name}={param.str(value)}")
+        logging.debug(f"Execute command: {' '.join(tool_param+cmd_param)}")
+        return tool_param + cmd_param
 
     def call(
         self,

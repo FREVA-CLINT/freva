@@ -534,43 +534,10 @@ def test_compose_command():
         config_dict={"the_number": 22}, caption="This is the caption"
     )
     assert similar_string(
-        command,
-        "freva --plugin DummyPlugin --batchmode=False --caption 'This is the caption' --unique_output True the_number=22 something=test other=1.4 variable=tas",
+        " ".join(command),
+        ("dummpyplugin the_number=22 something=test other=1.4 variable=tas "
+         "--batchmode --caption 'This is the caption' --unique_output")
     )
-
-
-def test_write_slurm_field(dummy_settings_single, temp_script):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-        Directory,
-    )
-    from evaluation_system.tests.mocks.dummy import DummyPlugin
-
-    dummy_plugin = DummyPlugin()
-
-    with open(temp_script, "w") as fp:
-        slurm_file = dummy_plugin.writeSlurmFile(fp, config_dict={"the_number": 22})
-    assert os.path.isfile(temp_script)
-    assert slurm_file._cmdstring == dummy_plugin.composeCommand(
-        config_dict={"the_number": 22}
-    )
-
-
-def test_suggest_slurm_file_name(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-        Directory,
-    )
-
-    dummy_plugin.rowid = 1
-    fn = dummy_plugin.suggestSlurmFileName()
-    date_str = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    assert "DummyPlugin" in fn
-    assert date_str in fn
 
 
 def test_append_unique_output():

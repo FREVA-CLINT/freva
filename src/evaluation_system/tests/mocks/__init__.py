@@ -6,8 +6,7 @@ scratch_dir=/tmp/scratch/$$USER
 directory_structure_type=central
 scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=/tmp/slurm
-scheduler_command=sbatch
-scheduler_options='--begin now'
+scheduler_system=slurm
 preview_path=/tmp/preview
 project_data=/tmp/crawl_my_data
 db.host=127.0.0.1
@@ -18,10 +17,10 @@ solr.host=localhost
 solr.port=8983
 solr.core=files
 [scheduler_options]
-module_command=$$EVALUATION_SYSTEM_HOME/loadfreva.modules
-option_partition=compute
-option_account=ch1187
-option_mem=0
+source=$$EVALUATION_SYSTEM_HOME/activate_sh
+queue=compute
+project=ch1187
+memory=10G
 [plugin:DummyPlugin]
 plugin_path=$$EVALUATION_SYSTEM_HOME/src/evaluation_system/tests/mocks
 python_path=$$EVALUATION_SYSTEM_HOME/src/evaluation_system/tests/mocks

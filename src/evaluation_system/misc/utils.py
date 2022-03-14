@@ -35,8 +35,33 @@ def get_console_size() -> Dict[str, int]:
     return dict(rows=rows, columns=columns)
 
 
-class Data(object):
-    pass
+
+
+class PIPE_STD:
+    """Pipe stdout/stderr into a different handlers."""
+
+    def __enter__(self):
+        return self
+    
+    def __init__(self, *handlers: list):
+
+        self.handlers = handlers
+
+    def write(self, msg, *args, **kwargs):
+        for handler in self.handlers:
+            handler.write(msg, *args, **kwargs)
+        self.handlers[-1].flush()
+
+    def flush():
+        for handler in self.handler:
+            handler.flush()
+
+    def __exit__(self, *args):
+        for handler in self.handlers:
+            try:
+                handler.close()
+            except AttributeError:
+                pass
 
 
 @contextlib.contextmanager

@@ -48,6 +48,11 @@ class DummyPlugin(PluginAbstract):
         assert "plugin_env" in os.environ["PATH"]
         out = res.stdout.decode().strip()
         assert out == str(tool_path.absolute())
+        import time
+        time.sleep(2)
+        for i in range(10):
+            print("Dummy tool running ....")
+            time.sleep(2)
         print(f"Dummy tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),

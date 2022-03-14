@@ -102,7 +102,7 @@ def run_plugin(
     save_config: Optional[Union[str, Path]] = None,
     show_config: bool = False,
     dry_run: bool = False,
-    scheduled_id: bool = False,
+    scheduled_id: Optional[int] = None,
     repo_version: bool = False,
     unique_output: bool = False,
     batchmode: bool = False,
@@ -158,10 +158,11 @@ def run_plugin(
             0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
         )
     email = None
-    options_str = []
+    options_str, tool_dict = [], {}
     for k, v in options.items():
         options_str.append(f"{k}={v}")
-    tool_dict = pm.parse_arguments(tool_name, options_str)
+    if scheduled_id is None:
+        tool_dict = pm.parse_arguments(tool_name, options_str)
     if logger.level == logging.DEBUG:
         tool_dict["debug"] = True
     if caption:
@@ -196,17 +197,17 @@ def run_plugin(
         ).exists():
             batchmode = True
         if batchmode:
-            [id, file] = pm.schedule_tool(
+            [scheduled_id, job_file] = pm.schedule_tool(
                 tool_name,
                 config_dict=tool_dict,
                 user=user.User(email=email),
                 caption=caption,
                 unique_output=unique_output,
             )
-            logger.info(f"Scheduled job with history id: {id}")
+            logger.info(f"Scheduled job with history id: {scheduled_id}")
             logger.info("You can view the job's status with the command squeue")
             logger.info("Your job's progress will be shown with the command")
-            logger.info(f"tail -f {file}")
+            logger.info(f"tail -f {job_file}")
             return 0, ""
         results = pm.run_tool(
             tool_name,

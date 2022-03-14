@@ -396,4 +396,4 @@ def test_scheduletool(dummy_env, dummy_plugin):
     import evaluation_system.api.plugin_manager as pm
 
     with TemporaryDirectory() as td:
-        pm.schedule_tool("dummyplugin", slurmoutdir=str(Path(td) / "tmp"))
+        pm.schedule_tool("dummyplugin", log_directory=str(Path(td) / "tmp"))

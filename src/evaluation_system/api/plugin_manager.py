@@ -34,7 +34,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
-from subprocess import PIPE, run
 from types import ModuleType
 from typing import Any, Iterator, Optional, Sequence, TypedDict, TypeVar, Union
 
@@ -151,7 +150,8 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
             for path, module_name in plugin_env_iter(
                 os.environ[PLUGIN_ENV + "_" + user_name]
             ):
-                # extend path to be exact by resolving all "user shortcuts" (e.g. '~' or '$HOME')
+                # extend path to be exact by resolving all
+                # "user shortcuts" (e.g. '~' or '$HOME')
                 path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
                 if os.path.isdir(path):
                     # we have a plugin_imp with defined api
@@ -395,8 +395,9 @@ def parse_arguments(
                 complete_conf.update(p.readConfiguration(f))
     # update with user defaults if desired
     complete_conf.update(p.__parameters__.parseArguments(arguments, check_errors=False))
-    # we haven't check for errors because we might have a half implemented configuration
-    # some required field might have already been setup (user/system defaults, files, etc)
+    # we haven't check for errors because we might have a half implemented
+    # configuration some required field might have already been setup
+    # (user/system defaults, files, etc)
     # but better if we check them
     if check_errors:
         p.__parameters__.validate_errors(complete_conf, raise_exception=True)
@@ -682,7 +683,7 @@ def run_tool(
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
-    log.info("Running %s with %s", plugin_name, complete_conf)
+    log.debug("Running %s with %s", plugin_name, complete_conf)
     rowid = 0
     if scheduled_id:
         user.getUserDB().upgradeStatus(
@@ -718,29 +719,29 @@ def run_tool(
             # create the preview
             preview_path = config.get(config.PREVIEW_PATH, None)
             if preview_path:
-                log.info("Converting....")
+                log.debug("Converting....")
                 _preview_create(plugin_name, result)
-                log.info("finished")
+                log.debug("finished")
             # write the created files to the database
-            log.info("Storing results into data base....")
+            log.debug("Storing results into data base....")
             user.getUserDB().storeResults(rowid, result)
-            log.info("finished")
+            log.debug("finished")
             # temporary set all processes to finished
             user.getUserDB().upgradeStatus(
                 rowid, user.getName(), History.processStatus.finished
             )
-    except:
+    except Exception as e:
         user.getUserDB().upgradeStatus(
             rowid, user.getName(), History.processStatus.broken
         )
-        raise
+        raise e
     return result
 
 
 def schedule_tool(
     plugin_name: str,
-    slurmoutdir: Optional[str] = None,
-    config_dict: Optional[dict[str, str]] = None,
+    log_directory: Optional[str] = None,
+    config_dict: Optional[dict[str, Union[str, int, bool]]] = None,
     user: Optional[User] = None,
     caption: Optional[str] = None,
     unique_output: bool = True,
@@ -751,7 +752,7 @@ def schedule_tool(
     ----------
     plugin_name
         Name of the plugin to run
-    slurmoutdir
+    log_directory
         Directory for the output
     config_dict
         The configuration used for running the tool. If None, the default
@@ -762,7 +763,13 @@ def schedule_tool(
         If the process is already scheduled then put the row id here
     caption
         The caption to set.
+
+    Returns:
+    -------
+    job_id, output_file:
+        The slurm job id, path to the std out file.
     """
+
     plugin_name = plugin_name.lower()
     user = user or User()
 
@@ -782,9 +789,6 @@ def schedule_tool(
         # check before going further
         complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
     log.debug("Schedule %s with %s", plugin_name, complete_conf)
-    slurmindir = os.path.join(user.getUserSchedulerInputDir(), user.getName())
-    if not os.path.exists(slurmindir):
-        utils.supermakedirs(slurmindir, 0o0777)
     version_details = get_version(plugin_name)
     rowid = user.getUserDB().storeHistory(
         p,
@@ -796,65 +800,39 @@ def schedule_tool(
     )
     # follow the notes
     follow_history_tag(rowid, user.getName(), "Owner")
-    # set the SLURM output directory
-    if slurmoutdir is None:
-        slurmoutdir = user.getUserSchedulerOutputDir()
-        slurmoutdir = os.path.join(slurmoutdir, plugin_name)
+    # set the output directory
+    if log_directory is None:
+        log_directory = user.getUserSchedulerOutputDir()
+        log_directory = os.path.join(log_directory, plugin_name)
 
-    if not os.path.exists(slurmoutdir):
-        utils.supermakedirs(slurmoutdir, 0o0777)
-    # write the SLURM file
+    if not os.path.exists(log_directory):
+        utils.supermakedirs(log_directory, 0o0777)
+    # write the std out file
     p.rowid = rowid
-    full_path = os.path.join(slurmindir, p.suggestSlurmFileName())
-    with open(full_path, "w") as fp:
-        p.writeSlurmFile(
-            fp,
-            scheduled_id=rowid,
-            user=user,
-            slurmoutdir=slurmoutdir,
-            unique_output=unique_output,
-        )
-
-    # create the batch command
-    command = [
-        "/bin/bash",
-        "-c",
-        "%s %s %s\n"
-        % (
-            config.get("scheduler_command"),  # SCHEDULER_COMMAND,
-            config.SCHEDULER_OPTIONS,
-            # user.getName(),
-            full_path,
-        ),
-    ]
-    # run this
-    log.debug("Command: " + str(command))
-    res = run(command, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = res.stdout.decode(), res.stderr.decode()
-    log.debug("scheduler call output:\n" + str(stdout))
-    log.debug("scheduler call error:\n" + str(stderr))
-    # get the very first line only
-    out_first_line = stdout.split("\n")[0]
-
-    # read the id from stdout
-    if out_first_line.split(" ")[0] == "Submitted":
-        slurm_id = int(out_first_line.split(" ")[-1])
-    else:
-        slurm_id = 0
-        raise Exception("Unexpected scheduler output:\n%s" % out_first_line)
-
-    slurm_out = os.path.join(slurmoutdir, "slurm-%i.out" % slurm_id)
+    job_id, output_file = p.submit_job_script(
+        config_dict=config_dict,
+        scheduled_id=rowid,
+        user=user,
+        log_directory=log_directory,
+        unique_output=unique_output,
+    )
     # create a standard slurm file to view with less
-    with open(slurm_out, "w") as the_file:
-        the_file.write("Your job is pending with id %i.\n" % slurm_id)
-        the_file.write("You can get further information using the command squeue.\n")
-        the_file.write(
-            "\nThis file was automatically created by the evaluation system.\n"
-        )
-        the_file.write("It will be overwritten by the output of %s.\n" % plugin_name)
+    with open(output_file, "w") as the_file:
+        if job_id:
+            the_file.write(
+                f"Your job is pending with id {job_id}.\n"
+                f"\nThis file was automatically "
+                "created by the evaluation system.\n"
+                f"It will be overwritten by the output of {plugin_name}.\n"
+            )
+        else:
+            the_file.write(
+                f"The job id for the submission of {plugin_name} "
+                "could not be retreived.\n"
+            )
     # set the slurm output file
-    user.getUserDB().scheduleEntry(rowid, user.getName(), slurm_out)
-    return rowid, slurm_out
+    user.getUserDB().scheduleEntry(rowid, user.getName(), output_file)
+    return rowid, output_file
 
 
 def get_history(
@@ -1344,7 +1322,8 @@ def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:
     raise PluginManagerException()
 
 
-# This only runs once after start. To load new plugins on the fly we have 2 possibilities
+# This only runs once after start. To load new plugins on the fly we have
+# 2 possibilities:
 # 1) Watch the tool directory
 # 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
 reload_plugins()
