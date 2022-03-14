@@ -6,6 +6,7 @@ stages:
 variables:
   CONDA_ENV: "freva-dev"
   PYTHON_VERSION: "3.10"
+  EVALUATION_SYSTEM_CONFIG_FILE: "assets/evaluation_system.conf"
 
 lint:
   image: continuumio/anaconda3
@@ -15,7 +16,6 @@ lint:
   before_script:
     - conda env create -q -f dev-environment.yml
     - apt update && apt install make
-    - conda run -n $CONDA_ENV pip install .[test]
   script:
     - conda run -n $CONDA_ENV make lint
 
