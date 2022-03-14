@@ -68,6 +68,7 @@ class DataBrowserCli(BaseParser):
             "--facet",
             default=None,
             type=str,
+            action="append",
             help=("Retrieve values of given facet instead of files"),
         )
         subparser.add_argument(
