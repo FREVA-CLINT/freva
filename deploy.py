@@ -321,7 +321,7 @@ class Installer:
                     try:
                         path.mkdir(exist_ok=True, parents=True)
                     except PermissionError:
-                        pass
+                        logger.warning(f"Could not create path: {path}")
         eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
         for shell in ("fish", "csh", "sh"):

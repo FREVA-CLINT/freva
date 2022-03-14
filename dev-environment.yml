@@ -32,6 +32,8 @@ dependencies:
       - types-requests
       - types-toml
       - humanize
+      - mypy
+      - black
   - pillow
   - pymysql
   - pypdf2

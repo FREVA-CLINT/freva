@@ -15,7 +15,6 @@ data_files = [
     (
         "freva",
         [
-            str(this_dir / "assets" / "evaluation_system.conf"),
             str(this_dir / "assets" / "drs_config.toml"),
         ],
     )

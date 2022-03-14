@@ -84,7 +84,7 @@ mamba env create -f dev-environment.yml
 Use the `pip install` command to install the actual python core packages into your activated environment:
 
 ```bash
-$: pip install -e .[test]
+pip install -e .[test]
 ```
 
 The `-e` flag will link the source code into your python environment, which can be useful for development purpose.
