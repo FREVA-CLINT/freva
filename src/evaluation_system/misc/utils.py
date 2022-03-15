@@ -1,10 +1,8 @@
-"""Provide different utilities that does not depend on any other 
-internal package.
+"""Provide different utilities that does not depend on any other internal package.
 """
 import copy
 from copy import deepcopy
-import contextlib
-from io import StringIO
+from io import TextIOWrapper
 from difflib import get_close_matches
 import errno
 import os
@@ -12,7 +10,6 @@ from re import split
 import shlex
 from subprocess import run, PIPE
 from string import Template
-import sys
 from typing import Any, Dict, Iterable, List
 
 
@@ -35,25 +32,23 @@ def get_console_size() -> Dict[str, int]:
     return dict(rows=rows, columns=columns)
 
 
-
-
-class PIPE_STD:
+class PIPE_OUT:
     """Pipe stdout/stderr into a different handlers."""
 
     def __enter__(self):
         return self
-    
-    def __init__(self, *handlers: list):
+
+    def __init__(self, *handlers: TextIOWrapper):
 
         self.handlers = handlers
 
-    def write(self, msg, *args, **kwargs):
+    def write(self, msg, *args, **kwargs) -> None:
         for handler in self.handlers:
             handler.write(msg, *args, **kwargs)
         self.handlers[-1].flush()
 
-    def flush():
-        for handler in self.handler:
+    def flush(self) -> None:
+        for handler in self.handlers:
             handler.flush()
 
     def __exit__(self, *args):
@@ -62,17 +57,6 @@ class PIPE_STD:
                 handler.close()
             except AttributeError:
                 pass
-
-
-@contextlib.contextmanager
-def capture_stdout():
-    old = sys.stdout
-    capturer = StringIO()
-    sys.stdout = capturer
-    data = Data()
-    yield data
-    sys.stdout = old
-    data.result = capturer.getvalue()
 
 
 def supermakedirs(path, mode):
@@ -87,7 +71,7 @@ def supermakedirs(path, mode):
     try:
         if path[-1] == "/":
             path = path[:-1]
-    except:
+    except IndexError:
         pass
 
     if not path or os.path.exists(path):
@@ -208,7 +192,7 @@ class TemplateDict(object):
     (e.g. ``${var_to_replace}$another_var_to_replace``)."""
 
     translation_dict = None
-    """Stores the translation dictionary used every time 
+    """Stores the translation dictionary used every time
     :class:`TemplateDict.substitute` is call."""
 
     def __init__(self, **translation_dict):
@@ -258,39 +242,49 @@ class TemplateDict(object):
         ``value`` in ``substitute_dict`` may be any of:
              * a simple value (int, float, str, object).
              * a string containing ``$`` characters as start marks for variables
-             which must exists in either ``substitute_dict`` or :class:`TemplateDict.translate_dict`.
+             which must exists in either ``substitute_dict``
+             or :class:`TemplateDict.translate_dict`.
              * a parameterless function returning any of the previous values.
 
         For instance, given this setup::
 
             from evaluation_system.misc.utils import TemplateDict
             from time import time
-            my_dict = TemplateDict(A='Something: $B', B='milliseconds ($C)', C=lambda: '%.12f' % (time() * 1000))
+            my_dict = TemplateDict(A='Something: $B',
+                                   B='milliseconds ($C)',
+                                   C=lambda: '%.12f' % (time() * 1000))
             to_resolve = dict(c='$A', d='The Time in $e', e=lambda: '$B')
 
-        The result of substituting ``to_resolve`` would be::
+        Example:
+        --------
 
-            >>> my_dict.substitute(to_resolve)
+            my_dict.substitute(to_resolve)
             {'c': 'Something: milliseconds (1358779343538.392089843750)',
             'e': <function <lambda> at 0xb6f0d374>,
             'd': 'The Time in milliseconds (1358779343538.410888671875)'}
 
-        As you can see functions remain as functions in the ``substitute_dict`` but they are used for resolution.
-        Though there's no guarantee in which order resolution takes place, so there's no guarantee that functions are called
-        only once. For instance in the example above you see two different calls to :py:func:`time.time`.
+        As you can see functions remain as functions in the ``substitute_dict``
+        but they are used for resolution.
+        Though there's no guarantee in which order resolution takes place, so
+        there's no guarantee that functions are called only once. For instance
+        in the example above you see two different calls to :py:func:`time.time`.
         The complete resolution was:
 
-        * For **c**: c = '$A' -> 'Something: $B' -> 'Something: milliseconds ($C)' -> 'Something: milliseconds (1358779343538.392089843750)'
-        * For **d**: d = 'The time in $e' -> 'The time in %s' % e() -> 'The time in $B' -> 'The Time in milliseconds (1358779343538.410888671875)'
-
-        Using ``recursive=False`` results in:
-            >>> my_dict.substitute(to_resolve, recursive=False)
+        * For **c**: c = '$A' -> 'Something: $B' -> 'Something: milliseconds ($C)'
+                       -> 'Something: milliseconds (1358779343538.392089843750)'
+        * For **d**: d = 'The time in $e' -> 'The time in %s' % e()
+                       -> 'The time in $B'
+                       -> 'The Time in milliseconds (1358779343538.410888671875)'
+        Example:
+        --------
+            my_dict.substitute(to_resolve, recursive=False)
             {'c': 'Something: milliseconds (1358779553514.358886718750)',
             'e': <function <lambda> at 0xb6f0d374>,
             'd': 'The Time in $e'}
 
-        As you see the recursion on :class:`TemplateDict.translation_dict` is not affected, but the variables from
-        ``substitute_dict`` are not used for substitution at all."""
+        As you see the recursion on :class:`TemplateDict.translation_dict`
+        is not affected, but the variables from ``substitute_dict`` are not
+        used for substitution at all."""
         # we need to work in a copy if using recursion. But we do this anyways
         # to keep the code simple.
         result = substitute_dict.copy()
@@ -364,21 +358,25 @@ class metadict(dict):
 
     def __init__(self, *args, **kw):
         """Creates a metadict dictionary.
-        If the keyword ``compact_creation`` is used and set to ``True`` the entries will be given like this:
+        If the keyword ``compact_creation`` is used and set to ``True`` the
+        entries will be given like this:
 
             key1=(value1, dict1) or key2=value2
 
-        Where dict1 is the dictionary attached to the key providing its meta-data (key2 has no meta-data, by the way)."""
+        Where dict1 is the dictionary attached to the key providing its
+        meta-data (key2 has no meta-data, by the way)."""
         self.metainfo = {}
         compact_creation = kw.pop("compact_creation", False)
         if compact_creation:
-            # separate the special "default" in the first field from the dictionary in the second
+            # separate the special "default" in the first field from the
+            # dictionary in the second
             super(metadict, self).__init__()
             for key, values in kw.items():
                 if isinstance(values, tuple):
                     if len(values) != 2:
                         raise AttributeError(
-                            "On compact creation a tuple with only 2 values is expected: (default, metadata)"
+                            ("On compact creation a tuple with only 2 values is"
+                             " expected: (default, metadata)")
                         )
                     if not isinstance(values[1], dict):
                         raise AttributeError("metadata entry must be a dictionary")
@@ -394,7 +392,7 @@ class metadict(dict):
         return deepcopy(self)
 
     def getMetadata(self, key):
-        """:return: The meta-data value associated with this key or ``None`` if no meta-data was stored."""
+        """Meta-data value associated with this key."""
         if key in self.metainfo:
             return self.metainfo[key]
         else:
@@ -421,8 +419,9 @@ class metadict(dict):
 
     def put(self, key, value, **meta_dict):
         """Puts a key,value pair into the dictionary and all other keywords are added
-        as meta-data to this key. If key was already present, it will be over-written and its
-        meta-data will be removed (even if no new meta-data is provided)."""
+        as meta-data to this key. If key was already present, it will be
+        over-written and its meta-data will be removed
+        (even if no new meta-data is provided)."""
         self[key] = value
         if meta_dict:
             self.clearMetadata(key)
@@ -433,7 +432,11 @@ class metadict(dict):
         """if the given dictionary has meta-data for the given key or, if no key was given,
          if the dictionary can hold meta-data at all.
 
-        :returns: if ``some_dict`` has stored meta-data for ``key`` or any meta-data at all if ``key==None``."""
+        Returns:
+        --------
+         bool: bool
+            if ``some_dict`` has stored meta-data for ``key`` or
+            any meta-data at all if ``key==None``."""
         if key is None:
             return hasattr(some_dict, "getMetadata")
         else:
