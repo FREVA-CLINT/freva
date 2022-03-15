@@ -13,7 +13,7 @@ from subprocess import CalledProcessError, PIPE, run
 import urllib.request
 from tempfile import TemporaryDirectory
 
-
+DEFAULT_PYTHON = "3.10"
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2021.11")
@@ -142,7 +142,6 @@ def parse_args(argv=None):
         ],
         help="Choose the architecture according to the system",
     )
-    ap.add_argument("--python", type=str, default="3.9", help="Python Version")
     ap.add_argument(
         "--no_conda",
         "--no-conda",
@@ -232,19 +231,7 @@ class Installer:
             )
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
-        dev_env = []
-        with open(Path(__file__).parent / "dev-environment.yml") as f:
-            for nn, line in enumerate(f.readlines()):
-                if "name:" in line:
-                    continue
-                if "python=" in line:
-                    num = line.strip().split("=")[-1].strip()
-                    dev_env.append(line.replace(num, self.python))
-                else:
-                    dev_env.append(line)
-        env_file = Path(tmp_dir) / "dev-environment.yml"
-        with env_file.open("w") as f:
-            f.write("".join(dev_env))
+        env_file = (Path(__file__).parent / "dev-environment.yml")
         return f"env create -q -p {self.install_prefix} -f {env_file} --force"
 
     def check_hash(self, filename):
@@ -364,7 +351,7 @@ if __name__ == "__main__":
         channel=args.channel,
         shell=args.shell,
         arch=args.arch,
-        python=args.python,
+        python=os.environ.get("PYTHON_VERSION", DEFAULT_PYTHON),
         run_tests=args.run_tests,
         silent=args.silent,
     )
