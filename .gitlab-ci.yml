@@ -14,7 +14,7 @@ lint:
   tags:
     - docker, specific
   before_script:
-    - conda env create -q -f dev-environment.yml python=$PYTHON_VERSION
+    - conda env create -q -f dev-environment.yml
     - apt update && apt install make
   script:
     - conda run -n $CONDA_ENV make lint
@@ -56,7 +56,7 @@ test_39:
       - cp .docker/evaluation_system.conf assets/
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_38:
     stage: test
@@ -70,7 +70,7 @@ test_38:
       - cp .docker/evaluation_system.conf assets/
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_latest:
     stage: test
@@ -84,7 +84,7 @@ test_latest:
       - cp .docker/evaluation_system.conf assets/
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
     artifacts:
       when: always
       reports:
