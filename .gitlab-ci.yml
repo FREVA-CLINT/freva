@@ -14,7 +14,7 @@ lint:
   tags:
     - docker, specific
   before_script:
-    - conda env create -q -f dev-environment.yml
+    - conda env create -q -f dev-environment.yml python=$PYTHON_VERSION
     - apt update && apt install make
   script:
     - conda run -n $CONDA_ENV make lint
@@ -44,12 +44,40 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
+test_39:
+    stage: test
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    variables:
+      CONDA: "Miniconda3-latest"
+      PYTHON_VERSION: "3.9"
+    tags:
+      - docker, specific
+    before_script:
+      - cp .docker/evaluation_system.conf assets/
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+
+test_38:
+    stage: test
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    variables:
+      CONDA: "Miniconda3-latest"
+      PYTHON_VERSION: "3.8"
+    tags:
+      - docker, specific
+    before_script:
+      - cp .docker/evaluation_system.conf assets/
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+
 test_latest:
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     variables:
-      CONDA: 'Miniconda3-latest'
-      PYTHON_VERSION: '3.10'
+      CONDA: "Miniconda3-latest"
+      PYTHON_VERSION: "3.10"
     tags:
       - docker, specific
     before_script:
