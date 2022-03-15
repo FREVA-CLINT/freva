@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+
 from __future__ import annotations
 from pathlib import Path
 from setuptools import setup, find_packages
 import sys
-from typing import List, Tuple
 from tempfile import TemporaryDirectory
 from deploy import find_version, read
 
@@ -19,6 +19,7 @@ data_files = [
         ],
     )
 ]
+
 
 def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
     """Create completion scripts for tcsh."""
@@ -70,6 +71,7 @@ def gather_completion_scripts(tempdir: Path) -> list[tuple[str, list[str]]]:
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
 
+
 with TemporaryDirectory(dir=COMPLETION_DIR) as td:
     data_files += gather_completion_scripts(Path(td))
     entry_points = ["freva = freva.cli:main"]
@@ -108,12 +110,13 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
                 "sphinxcontrib_github_alt",
             ],
             "test": [
+                "black",
                 "pytest",
                 "nbformat",
-                "black",
                 "pytest-html",
                 "pytest-env",
                 "pytest-cov",
+                "pep257",
                 "nbval",
                 "h5netcdf",
                 "mock",

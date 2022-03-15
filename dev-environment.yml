@@ -1,4 +1,4 @@
-name: freva-dev
+name: freva-test
 channels:
   - conda-forge
 dependencies:
@@ -26,14 +26,7 @@ dependencies:
   - pint
   - pip
   - pip:
-      - allure-pytest
-      - requests_mock
-      - pep257
-      - types-requests
-      - types-toml
-      - humanize
-      - mypy
-      - black
+    - .[test]
   - pillow
   - pymysql
   - pypdf2
