@@ -1,4 +1,4 @@
-name: freva-test
+name: freva-dev
 channels:
   - conda-forge
 dependencies:
