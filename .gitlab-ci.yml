@@ -84,17 +84,17 @@ test_latest:
       PYTHON_VERSION: "3.10"
     artifacts:
       when: always
-      script:
-        # Do the unit tests
-        - python3 deploy.py /tmp/freva_latest -s --packages gitpython pandoc
-        - make test_coverage
+    script:
+      # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --packages gitpython pandoc
+      - make test_coverage
 
-      reports:
-        junit: report.xml
-      paths:
-        - coverage_report
-        - test_results
-        - report.xml
+    reports:
+      junit: report.xml
+    paths:
+      - coverage_report
+      - test_results
+      - report.xml
 
 pages:
   stage: report
