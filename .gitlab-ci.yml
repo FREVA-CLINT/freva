@@ -82,19 +82,21 @@ test_latest:
     << : *py_test
     variables:
       PYTHON_VERSION: "3.10"
+    before_script:
+      - cp .docker/evaluation_system.conf .
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --packages pip gitpython pandoc
+      - make test_coverage
     artifacts:
       when: always
-    script:
-      # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --packages gitpython pandoc
-      - make test_coverage
-
-    reports:
-      junit: report.xml
-    paths:
-      - coverage_report
-      - test_results
-      - report.xml
+      reports:
+        junit: report.xml
+      paths:
+        - coverage_report
+        - test_results
+        - report.xml
+      
 
 pages:
   stage: report
