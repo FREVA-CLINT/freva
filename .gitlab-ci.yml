@@ -44,12 +44,11 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
-test_39:
+.test_template: &py_test # pytest framework template
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     variables:
       CONDA: "Miniconda3-latest"
-      PYTHON_VERSION: "3.9"
     tags:
       - docker, specific
     before_script:
@@ -57,43 +56,39 @@ test_39:
     script:
         # Do the unit tests
       - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
+
+test_37:
+    << : *py_test
+    variables:
+      PYTHON_VERSION: "3.7"
 
 test_38:
-    stage: test
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    << : *py_test
     variables:
-      CONDA: "Miniconda3-latest"
       PYTHON_VERSION: "3.8"
-    tags:
-      - docker, specific
-    before_script:
-      - cp .docker/evaluation_system.conf assets/
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
+
+test_39:
+    << : *py_test
+    variables:
+      PYTHON_VERSION: "3.8"
 
 test_latest:
-    stage: test
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    << : *py_test
     variables:
-      CONDA: "Miniconda3-latest"
       PYTHON_VERSION: "3.10"
-    tags:
-      - docker, specific
-    before_script:
-      - cp .docker/evaluation_system.conf assets/
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
     artifacts:
       when: always
+      script:
+        # Do the unit tests
+        - python3 deploy.py /tmp/freva_latest -s --packages gitpython pandoc
+        - make test_coverage
+
       reports:
         junit: report.xml
       paths:
         - coverage_report
         - test_results
         - report.xml
-
 
 pages:
   stage: report
