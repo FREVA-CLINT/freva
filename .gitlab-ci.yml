@@ -87,6 +87,7 @@ test_latest:
     script:
         # Do the unit tests
       - python3 deploy.py /tmp/freva_latest -s --packages pip gitpython pandoc
+      - /tmp/freva_latest/bin/python -m pip install .[test]
       - make test_coverage
     artifacts:
       when: always
