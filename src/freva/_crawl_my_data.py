@@ -1,8 +1,8 @@
 """Crawl user data and ingest metadata into the solr server."""
 
-from datetime import datetime
+from __future__ import annotations
 from pathlib import Path
-from typing import Optional, Union, Tuple
+from typing import Optional, Union
 
 from evaluation_system.model.user import User
 from evaluation_system.misc import config
@@ -12,17 +12,19 @@ from evaluation_system.model.solr_core import SolrCore
 __all__ = ["crawl_my_data"]
 
 
-def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> Tuple[Path, ...]:
+def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> tuple[Path, ...]:
     try:
         root_path = Path(config.get("project_data")).absolute()
     except ConfigurationException:
         config.reloadConfiguration()
         root_path = Path(config.get("project_data")).absolute()
     user_root_path = root_path / f"user-{User().getName()}"
-    user_paths: Tuple[Path, ...] = ()
+    user_paths: tuple[Path, ...] = ()
     for crawl_dir in crawl_dirs or (user_root_path,):
         crawl_dir = Path(crawl_dir or user_root_path).expanduser().absolute()
-        if not crawl_dir.is_relative_to(root_path):
+        try:
+            _ = crawl_dir.relative_to(root_path)
+        except ValueError:
             raise ValidationError(f"You are only allowed to crawl data in {root_path}")
         user_paths += (crawl_dir,)
     return user_paths
@@ -43,7 +45,7 @@ def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") ->
     """
     if dtype not in ("fs",):
         raise NotImplementedError("Only data on POSIX file system is supported")
-    print(f"Status: crawling ...", end="")
+    print("Status: crawling ...", end="")
     for crawl_dir in _validate_user_dirs(*crawl_dirs):
         SolrCore.load_fs(
             crawl_dir, chunk_size=200, abort_on_errors=True, drs_type="crawl_my_data"

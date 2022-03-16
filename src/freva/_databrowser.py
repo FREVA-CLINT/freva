@@ -1,11 +1,12 @@
 """Module to access the apache solr databrowser."""
-
+from __future__ import annotations
 from pathlib import Path
 
 from evaluation_system.misc import logger
 from evaluation_system.model.solr import SolrFindFiles
 
-from typing import Any, Optional, Union, Dict, Iterator, List, overload, Literal
+from typing import Any, Optional, Union, Iterator, overload
+from typing_extensions import Literal
 
 __all__ = ["databrowser"]
 
@@ -15,15 +16,15 @@ def databrowser(
     *,
     attributes: Literal[False],
     all_facets: Literal[False],
-    facet: Union[str, List[str]],
-) -> Dict[Any, Dict[Any, Any]]:
+    facet: Union[str, list[str]],
+) -> dict[Any, dict[Any, Any]]:
     ...
 
 
 @overload
 def databrowser(
     *, attributes: Literal[False], all_facets: Literal[True]
-) -> Dict[Any, Dict[Any, Any]]:
+) -> dict[Any, dict[Any, Any]]:
     ...
 
 
@@ -32,7 +33,7 @@ def databrowser(
     *,
     attributes: Literal[True],
     all_facets: Literal[False],
-    facet: Optional[Union[str, List[str]]],
+    facet: Optional[Union[str, list[str]]],
 ) -> Iterator[str]:
     ...
 
@@ -41,13 +42,13 @@ def databrowser(
     *,
     attributes: bool = False,
     all_facets: bool = False,
-    facet: Optional[Union[str, List[str]]] = None,
+    facet: Optional[Union[str, list[str]]] = None,
     multiversion: bool = False,
     relevant_only: bool = False,
     batch_size: int = 10,
     count_facet_values: bool = False,
-    **search_facets: Union[str, Path, int, List[str]],
-) -> Union[Dict[Any, Dict[Any, Any]], Iterator[str]]:
+    **search_facets: Union[str, Path, int, list[str]],
+) -> Union[dict[Any, dict[Any, Any]], Iterator[str]]:
     """Find data in the system.
 
     The query is of the form key=value. <value> might use *, ? as wildcards or
@@ -88,7 +89,7 @@ def databrowser(
         collection : List, Dict of files, facets or attributes
 
     """
-    facets: List[str] = []
+    facets: list[str] = []
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"]))

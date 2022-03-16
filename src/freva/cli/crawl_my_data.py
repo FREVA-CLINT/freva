@@ -1,10 +1,11 @@
+from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from typing import Any, Optional, List
+from typing import Any, Optional
 
 
-from .utils import BaseCompleter, BaseParser
+from .utils import BaseParser
 from evaluation_system.misc.exceptions import ValidationError
 import freva
 
@@ -68,7 +69,7 @@ class CrawlDataCli(BaseParser):
             sys.exit(1)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = CrawlDataCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
