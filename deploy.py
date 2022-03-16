@@ -292,7 +292,7 @@ class Installer:
         eval_conf_file = Path(
             os.environ.get(
                 "EVALUATION_SYSTEM_CONFIG_FILE",
-                self.install_prefix / "freva" / "evaluation_system.conf",
+                Path(__file__).parent / "assets" / "evaluation_system.conf",
             )
         )
         for key in (
