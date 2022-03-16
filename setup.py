@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import annotations
 from pathlib import Path
 from setuptools import setup, find_packages
 import sys
@@ -21,7 +20,7 @@ data_files = [
 ]
 
 
-def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
+def prep_tcsh_completion(tempdir):
     """Create completion scripts for tcsh."""
 
     script_dir = COMPLETION_DIR.relative_to(this_dir) / "tcsh"
@@ -55,7 +54,7 @@ def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
     return script_paths
 
 
-def gather_completion_scripts(tempdir: Path) -> list[tuple[str, list[str]]]:
+def gather_completion_scripts(tempdir):
     """Gather all data_files related to shell completion scripts."""
 
     shells = {
@@ -131,7 +130,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             ],
         },
         entry_points={"console_scripts": entry_points},
-        python_requires=">=3.8",
+        python_requires=">=3.7",
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Environment :: Console",
@@ -140,6 +139,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             "License :: OSI Approved :: BSD License",
             "Operating System :: POSIX :: Linux",
             "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
