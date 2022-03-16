@@ -53,24 +53,30 @@ dev-obs:
       - docker, specific
     before_script:
       - cp .docker/evaluation_system.conf assets/
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_37:
     << : *py_test
     variables:
       PYTHON_VERSION: "3.7"
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_38:
     << : *py_test
     variables:
       PYTHON_VERSION: "3.8"
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_39:
     << : *py_test
     variables:
       PYTHON_VERSION: "3.8"
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva_latest -s --run_tests --packages gitpython pandoc
 
 test_latest:
     << : *py_test
