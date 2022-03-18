@@ -51,12 +51,8 @@ class PIPE_OUT:
         for handler in self.handlers:
             handler.flush()
 
-    def __exit__(self, *args):
-        for handler in self.handlers:
-            try:
-                handler.close()
-            except AttributeError:
-                pass
+    def __exit__(self, *args, **kwargs) -> None:
+        return None
 
 
 def supermakedirs(path, mode):
