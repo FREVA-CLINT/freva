@@ -11,10 +11,10 @@ import logging
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess as sub
 import sys
 import stat
-import shutil
 import shlex
 import textwrap
 from time import time
@@ -165,6 +165,7 @@ A plug-in/user might then use them to define a value in the following way::
         # this was being spontaneously created when running the plugin which works
         # for now because it creates a new instance on every run
         self.rowid = 0
+        self._plugin_out: Optional[Path] = None
 
         # this construct fixes some values but allow others to be computed on demand
         # it holds the special variables that are accessible to both users
@@ -203,10 +204,10 @@ A plug-in/user might then use them to define a value in the following way::
         """
         raise NotImplementedError("This attribute must be implemented")
 
-    @abc.abstractproperty
+    @property
     def __long_description__(self):
         """Long description of the plugion."""
-        raise NotImplementedError("This attribute must be implemented")
+        return ""
 
     @abc.abstractproperty
     def __short_description__(self):
@@ -258,6 +259,19 @@ A plug-in/user might then use them to define a value in the following way::
         if return_code:
             raise sub.CalledProcessError(return_code, cmd)
 
+    @property
+    def plugin_output_file(self) -> Path:
+        """Define a plugin output file."""
+        if self._plugin_out is None:
+            pid = os.getpid()
+            plugin_name = self.__class__.__name__
+            log_directory = os.path.join(
+                    self._user.getUserSchedulerOutputDir(),
+                    plugin_name,
+            )
+            self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.out"
+        return self._plugin_out
+
     @contextmanager
     def set_environment(self) -> Iterator[None]:
         """Set the environement."""
@@ -265,16 +279,18 @@ A plug-in/user might then use them to define a value in the following way::
         stdout: io.TextIOWrapper = sys.stdout
         stderr: io.TextIOWrapper = sys.stderr
         try:
+            self.plugin_output_file.parent.mkdir(exist_ok=True, parents=True)
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
-            with open("/tmp/DummyPlugin-4321.out", "a") as f:
-                with PIPE_OUT(stdout, f) as p_sto, PIPE_OUT(stdout, f) as p_ste:
-                    sys.stdout = p_sto
-                    sys.stdout = p_ste
-                    yield
+            f = self.plugin_output_file.open("w")
+            with PIPE_OUT(stdout, f) as p_sto, PIPE_OUT(stdout, f) as p_ste:
+                sys.stdout = p_sto
+                sys.stdout = p_ste
+                yield
         finally:
             os.environ["PATH"] = env_path
             sys.stdout = stdout
             sys.stderr = stderr
+            f.close()
 
     @property
     def conda_path(self) -> str:
@@ -293,6 +309,8 @@ A plug-in/user might then use them to define a value in the following way::
                  config_dict: config_dict_type = {},
                  unique_output: bool = True) -> Optional[Any]:
         config_dict = self.append_unique_id(config_dict, unique_output)
+        for key in config.exclude:
+            config_dict.pop(key, "")
         with self.set_environment():
             result = self.runTool(config_dict=config_dict)
             return result
@@ -350,8 +368,8 @@ A plug-in/user might then use them to define a value in the following way::
         if re.match(toolintool, product):
             nproduct = re.match(toolintool, product).group("product")
             nproject = re.match(toolintool, product).group("project")
-            ntool = ".{}".format(re.match(toolintool, product).group("tool"))
-            new_product = "{}.{}.{}.{}.{}".format(
+            ntool = ".%s" % re.match(toolintool, product).group("tool")
+            new_product = "%s.%s.%s.%s.%s" % (
                 self.__class__.__name__.lower(),
                 ntool,
                 self.rowid,
@@ -385,6 +403,7 @@ A plug-in/user might then use them to define a value in the following way::
         # Solr part with move orgy
         SolrCore.dump_fs_to_file(crawl_dir, output)
         shutil.move(os.path.join(solr_in, output), os.path.join(solr_ps, output))
+        hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
         shutil.move(os.path.join(solr_ps, output), os.path.join(solr_bk, output))
 
     def prepareOutput(self,
@@ -509,9 +528,8 @@ A plug-in/user might then use them to define a value in the following way::
         help_str: str
             A string containing the help.
         """
-        try:
-            help_txt = self.__long_description__
-        except NotImplementedError:
+        help_txt = self.__long_description__.strip()
+        if not help_txt:
             help_txt = self.__short_description__
         return "{} (v{}): {}\n{}".format(
             self.__class__.__name__,
@@ -673,7 +691,6 @@ A plug-in/user might then use them to define a value in the following way::
             config_dict = conf
         else:
             config_dict = dict(self.__parameters__)
-
         if substitute:
             results = self._special_variables.substitute(
                 config_dict, recursive=recursion
@@ -831,6 +848,7 @@ A plug-in/user might then use them to define a value in the following way::
         scheduled_id: Optional[int] = None,
         log_directory: Optional[str] = None,
         unique_output: bool = True,
+        extra_options: list[str] = [],
     ) -> tuple[int, str]:
         """Create a job script suitable for the configured workload manager.
 
@@ -845,11 +863,13 @@ A plug-in/user might then use them to define a value in the following way::
             The row-id of a scheduled job in history
         unique_output:
             flag indicating if the output directory should be unique
+        extra_options:
+            Extra options passed to the workload manager, batchmode only
 
         Returns:
         --------
-        command: str
-            Submit command for the workload manager
+        job_id, stdout_file: int, str
+            The workload manager job id, the file containing the std out.
         """
 
         if user is None:
@@ -868,6 +888,7 @@ A plug-in/user might then use them to define a value in the following way::
 
         cfg = config.get_section("scheduler_options").copy()
         cfg["args"] = cmd
+        cfg["extra_options"] = extra_options
         cfg["name"] = self.__class__.__name__
         return schedule_job(
             config.get("scheduler_system"),
@@ -944,10 +965,10 @@ A plug-in/user might then use them to define a value in the following way::
                     value = config_dict[param_name]
                     isMandatory = param.mandatory
 
-                if value is None:
+                if value is None and param_name not in config.exclude:
                     if isMandatory:
                         raise self.ExceptionMissingParam(param_name)
-                else:
+                elif param_name not in config.exclude:
                     tool_param.append(f"{param_name}={param.str(value)}")
         logging.debug(f"Execute command: {' '.join(tool_param+cmd_param)}")
         return tool_param + cmd_param
