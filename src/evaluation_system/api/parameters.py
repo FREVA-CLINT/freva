@@ -10,9 +10,9 @@ import json
 from typing import Optional, Union, Type
 
 from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
-from evaluation_system.misc.exceptions import ValidationError, ParameterNotFoundError
+from evaluation_system.misc import config
+from evaluation_system.misc.exceptions import ValidationError
 from evaluation_system.model.plugins.models import Parameter
-from evaluation_system.model.history.models import Configuration
 
 
 class ParameterDictionary(dict):
@@ -30,8 +30,17 @@ class ParameterDictionary(dict):
         :param list_of_parameters: parameters defined in order. The order will be kept,
         so it's important."""
         super().__init__()
-
-        self._params = {}
+        extra = config.get_section("scheduler_options").get("extra_options", "").strip()
+        if extra.lower() == "none":
+            extra = ""
+        extra_scheduler_options = String(
+                "extra_scheduler_options",
+                default=extra,
+                help=("Set additional options for the job submission to the "
+                      "workload manager (, seperated). Note: batchmode and web only."
+                      )
+        )
+        self._params = dict()
         for param in list_of_parameters:
             # check name is unique
             if param.name in self._params:
@@ -40,6 +49,8 @@ class ParameterDictionary(dict):
                 )
             self._params[param.name] = param
             self[param.name] = param.default
+        self._params.setdefault(extra_scheduler_options.name, extra_scheduler_options)
+        self.setdefault(extra_scheduler_options.name, extra_scheduler_options)
 
     def __str__(self):
         return "%s(%s)" % (
@@ -267,7 +278,8 @@ class ParameterType(initOrder):
         understood by both python and Javascript.
         :param help: The help string describing what this parameter is good for.
         :param print_format: A python string format that will be used when displaying
-        the value of this parameter (e.g. @%.2f@ to display always 2 decimals for floats)
+        the value of this parameter (e.g. @%.2f@ to display always 2 decimals
+        for floats)
         :param impact: The impact of the parameter to the output, possible values are
         Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.
         Impact.no_effects
