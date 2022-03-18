@@ -83,7 +83,7 @@ def dummy_key():
         yield tf.name
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def plugin_doc():
 
     with TemporaryDirectory() as td:
