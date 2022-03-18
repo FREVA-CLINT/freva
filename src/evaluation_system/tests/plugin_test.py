@@ -440,7 +440,7 @@ def test_run(dummy_plugin):
     dummy._runTool()
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
-    assert run is None
+    assert not run
     DummyPlugin._runs = []
 
     # direct config
@@ -536,7 +536,7 @@ def test_compose_command():
     assert similar_string(
         " ".join(command),
         ("dummpyplugin the_number=22 something=test other=1.4 variable=tas "
-         "--batchmode --caption 'This is the caption' --unique_output")
+         "--caption 'This is the caption' --unique_output True")
     )
 
 
