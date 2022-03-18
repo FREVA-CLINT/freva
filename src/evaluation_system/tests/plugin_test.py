@@ -173,7 +173,7 @@ def test_read_config_parser(dummy_plugin):
     ]:
         dummy.__parameters__ = ParameterDictionary(*d)
         res = dummy.readFromConfigParser(conf)
-        assert res == res_d
+        assert res == {**res_d, **{"extra_scheduler_options": ""}}
     # check errors
     # wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="b"))
@@ -188,6 +188,9 @@ def test_read_config_parser(dummy_plugin):
 def test_save_config(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
     from io import StringIO
+    batchmode_options = """#: Set additional options for the job submission to the workload manager (,
+#:  seperated). Note: batchmode and web only.
+#extra_scheduler_options="""
 
     res_str = StringIO()
     dummy = dummy_plugin
@@ -218,7 +221,17 @@ def test_save_config(dummy_plugin):
     dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
     assert (
         res_str.getvalue().strip("\x00").strip()
-        == "[DummyPlugin]\n#: This is\n#: a test\na=1\n\n#: Also\n#: a\n#: test.\n#b=None"
+        == """[DummyPlugin]
+#: This is
+#: a test
+a=1
+
+#: Also
+#: a
+#: test.
+#b=None
+
+"""+batchmode_options
     )
 
     dummy.__parameters__ = ParameterDictionary(
@@ -302,7 +315,10 @@ def test_read_config(dummy_plugin):
             open(tf.name, "w").write(resource)
             with open(tf.name, "r") as f:
                 conf_dict = dummy.readConfiguration(f)
-                assert conf_dict == expected_dict
+                assert conf_dict == {
+                        **expected_dict,
+                        **{"extra_scheduler_options":""}
+                    }
 
 
 def testSubstitution(dummy_plugin):
@@ -321,11 +337,8 @@ def testSubstitution(dummy_plugin):
     )
     cfg_str = dummy.getCurrentConfig({"a": 72})
     assert "value:72" in cfg_str
-    assert cfg_str.startswith(
-        """a: 72
-b: - (default: value:$a [value:72])
-c: - (default: $USER_OUTPUT_DIR ["""
-    )
+    assert "b: - (default: value:$a [value:72])" in cfg_str
+    assert "c: - (default: $USER_OUTPUT_DIR [" in cfg_str
 
 
 def test_help(dummy_plugin):
@@ -357,10 +370,14 @@ a       (default: 1)
 b       (default: <undefined>)
     This is not the value of b
 example (default: test)
-    let's hope people write some useful help..."""
+    let's hope people write some useful help...#
+extra_scheduler_options (default: )
+                        Set additional options for the job submission to the
+                        workload manager (, seperated). Note: batchmode and web
+                        only."""
             % desc[1]
         )
-        assert similar_string(dummy.getHelp().strip(), resource.strip())
+        assert similar_string(dummy.getHelp().strip(), resource.strip(), 0.9)
 
 
 def test_show_config(dummy_plugin):
@@ -383,23 +400,34 @@ def test_show_config(dummy_plugin):
             default=1.4,
         ),
     )
-    assert (
-        dummy.getCurrentConfig()
-        == "    a: - *MUST BE DEFINED!*\n    b: - (default: test)\nother: - (default: 1.4)"
-    )
-    assert (
-        dummy.getCurrentConfig(config_dict=dict(a=2123123))
-        == "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)"
-    )
-    assert (
-        dummy.getCurrentConfig(config_dict=dict(a=2123123))
-        == "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)"
-    )
+    assert (similar_string(
+        dummy.getCurrentConfig(),
+        """           a: - *MUST BE DEFINED!*
+                      b: - (default: test)
+                  other: - (default: 1.4)
+extra_scheduler_options: - (default: )"""
+    ))
+    assert (similar_string(
+        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+        """           a: 2123123
+                      b: - (default: test)
+                  other: - (default: 1.4)
+extra_scheduler_options: - (default: )"""
+    ))
+    assert (similar_string(
+        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+       """         a: 2123123
+                   b: - (default: test)
+               other: - (default: 1.4)
+extra_scheduler_options: - (default: )"""
+    ))
     res = dummy.getCurrentConfig(config_dict=dict(a="/tmp$USER_PLOTS_DIR"))
     cmp_str = (
-        "    a: /tmp$USER_PLOTS_DIR [/tmp"
+        "                          a: /tmp$USER_PLOTS_DIR [/tmp"
         + user.getUserPlotsDir("DummyPlugin")
-        + "]\n    b: - (default: test)\nother: - (default: 1.4)"
+        + "]\n                     b: - (default: test)\n"
+        +"                     other: - (default: 1.4)"
+        + "\nextra_scheduler_options: - (default: )"
     )
     assert similar_string(cmp_str, res)
     user.cleanRandomHome()

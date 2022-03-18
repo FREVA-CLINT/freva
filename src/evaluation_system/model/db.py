@@ -97,7 +97,6 @@ class UserDB(object):
             flag = 0
         if version_details is None:
             version_details = 1
-
         toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
         for key in config.exclude:

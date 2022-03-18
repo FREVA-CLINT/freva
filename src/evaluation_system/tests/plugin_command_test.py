@@ -48,21 +48,24 @@ def test_list_tools(capsys, dummy_env):
     help_str = capsys.readouterr().out
     assert similar_string(
         help_str,
-        """DummyPlugin (v0.0.0): A dummy plugin
+"""DummyPlugin (v0.0.0): A dummy plugin
 Options:
-number     (default: <undefined>)
-       This is just a number, not really important
-the_number (default: <undefined>) [mandatory]
-       This is *THE* number. Please provide it
-something  (default: test)
-       No help available.
-other      (default: 1.4)
-       No help available
-input      (default: <undefined>)
-       An input file
-variable   (default: tas)
-       An input variable
-""",
+number                  (default: <undefined>)
+                        This is just a number, not really important
+the_number              (default: <undefined>) [mandatory]
+                        This is *THE* number. Please provide it
+something               (default: test)
+                        No help available.
+other                   (default: 1.4)
+                        No help available.
+input                   (default: <undefined>)
+                        An input file
+variable                (default: tas)
+                        An input variable
+extra_scheduler_options (default: --qos=test, --array=20)
+                        Set additional options for the job submission to the
+                        workload manager (, seperated). Note: batchmode and web
+                        only.""",
     )
 
 
@@ -77,7 +80,8 @@ def test_run_pyclientplugin(dummy_history):
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
     assert similar_string(
         res,
-        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas""",
+        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
+extra_scheduler_options: - (default: )""",
     )
     return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
     assert "git" in repo

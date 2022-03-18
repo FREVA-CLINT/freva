@@ -49,8 +49,8 @@ class ParameterDictionary(dict):
                 )
             self._params[param.name] = param
             self[param.name] = param.default
-        self._params.setdefault(extra_scheduler_options.name, extra_scheduler_options)
-        self.setdefault(extra_scheduler_options.name, extra_scheduler_options)
+        self.setdefault("extra_scheduler_options", extra)
+        self._params.setdefault("extra_scheduler_options", extra_scheduler_options)
 
     def __str__(self):
         return "%s(%s)" % (
@@ -188,7 +188,6 @@ class ParameterDictionary(dict):
 
         if check_errors:
             self.validate_errors(config, raise_exception=True)
-
         return config
 
     def getHelpString(self, width=80):

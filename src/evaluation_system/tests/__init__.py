@@ -21,9 +21,9 @@ def run_cli(cmd):
 def similar_string(a, b, thresh=0.98):
     a = a.strip().replace("\n", " ").replace("\t", " ").replace("  ", " ").strip()
     b = b.strip().replace("\n", " ").replace("\t", " ").replace("  ", " ").strip()
-    print("a", a.split(" "))
+    print("a", a)
     print("\n")
-    print("b", b.split(" "))
+    print("b", b)
     ratio = SequenceMatcher(None, a, b).ratio()
-    print(ratio)
+    print(ratio >= thresh, thresh)
     return ratio >= thresh

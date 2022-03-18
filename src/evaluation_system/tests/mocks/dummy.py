@@ -21,6 +21,7 @@ class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstract one"""
 
     __short_description__ = "A dummy plugin"
+    __long_description__ = ""
     __version__ = (0, 0, 0)
     __tags__ = ["foo"]
     __category__ = "statistical"
@@ -48,11 +49,6 @@ class DummyPlugin(PluginAbstract):
         assert "plugin_env" in os.environ["PATH"]
         out = res.stdout.decode().strip()
         assert out == str(tool_path.absolute())
-        import time
-        time.sleep(2)
-        for i in range(10):
-            print("Dummy tool running ....")
-            time.sleep(2)
         print(f"Dummy tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),
