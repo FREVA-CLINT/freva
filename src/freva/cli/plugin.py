@@ -22,6 +22,8 @@ class PluginCli(BaseParser):
 
     desc = "Apply data analysis plugin."
 
+    parser_func = argparse.ArgumentParser.parse_known_args
+
     def __init__(
         self,
         command: str = "freva",
@@ -126,13 +128,6 @@ class PluginCli(BaseParser):
             action="store_true",
             help="Display plugin documentation",
         )
-        subparser.add_argument(
-            "options",
-            nargs="*",
-            help="Plugin configuration",
-            type=str,
-            metavar="options",
-        )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
@@ -142,7 +137,8 @@ class PluginCli(BaseParser):
         if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        options: Dict[str, Any] = BaseCompleter.arg_to_dict(kwargs.pop("options", {}))
+        tool_args = kwargs.pop("other_args", {})
+        options: Dict[str, Any] = BaseCompleter.arg_to_dict(tool_args)
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
@@ -168,7 +164,7 @@ def main(argv: Optional[List[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    _ = BaseCompleter.arg_to_dict(args.options)
+    _ = BaseCompleter.arg_to_dict(cli.kwargs["other_args"])
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

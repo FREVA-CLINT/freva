@@ -86,6 +86,7 @@ class HistoryCli(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the databrowser command and print the results."""
+        kwargs.pop("other_args", "")
         try:
             if len(kwargs["entry_ids"]) == 1:
                 kwargs["entry_ids"] = kwargs["entry_ids"][0].split(",")

@@ -120,6 +120,7 @@ class SolrIndex(BaseParser):
     def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Reindex the data."""
         input_dir = kwargs.pop("input_dir")
+        kwargs.pop("other_args", "")
         if kwargs.pop("delete"):
             return del_index(input_dir, port=kwargs["port"], host=kwargs["host"])
         re_index(input_dir, **kwargs)
