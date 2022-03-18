@@ -100,7 +100,8 @@ class UserDB(object):
 
         toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
-
+        for key in config.exclude:
+            config_dict.pop(key, "")
         newentry = hist.History(
             timestamp=datetime.now(),
             tool=toolname,
@@ -122,15 +123,15 @@ class UserDB(object):
             newentry.save()
 
             for p in tool.__parameters__._params.values():
-                name = p.name
-                param = Configuration(
-                    history_id_id=newentry.id,
-                    parameter_id_id=p.id,
-                    value=json.dumps(config_dict[name]),
-                    is_default=p.is_default,
-                )
-
-                param.save()
+                if p.name not in config.exclude:
+                    name = p.name
+                    param = Configuration(
+                        history_id_id=newentry.id,
+                        parameter_id_id=p.id,
+                        value=json.dumps(config_dict[name]),
+                        is_default=p.is_default,
+                    )
+                    param.save()
         except Exception as e:
             raise e
 
