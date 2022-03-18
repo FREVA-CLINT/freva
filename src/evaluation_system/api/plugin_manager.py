@@ -38,11 +38,13 @@ from types import ModuleType
 from typing import Any, Iterator, Optional, Sequence, TypedDict, TypeVar, Union
 
 from django.db.models.query import QuerySet
-from evaluation_system.api.parameters import ParameterNotFoundError
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
 from evaluation_system.misc import utils
-from evaluation_system.misc.exceptions import PluginManagerException
+from evaluation_system.misc.exceptions import (
+    PluginManagerException,
+    ParameterNotFoundError,
+)
 from evaluation_system.model.history.models import Configuration, History, HistoryTag
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
@@ -744,25 +746,28 @@ def schedule_tool(
     config_dict: Optional[dict[str, Union[str, int, bool]]] = None,
     user: Optional[User] = None,
     caption: Optional[str] = None,
+    extra_options: list[str] = [],
     unique_output: bool = True,
 ) -> tuple[int, str]:
     """Schedules a tool and stores the run information.
 
     Parameters
     ----------
-    plugin_name
+    plugin_name:
         Name of the plugin to run
-    log_directory
+    log_directory:
         Directory for the output
-    config_dict
+    config_dict:
         The configuration used for running the tool. If None, the default
         configuration will be stored, this might be incomplete.
-    user
+    user:
         The user starting the tool
-    scheduled_id
+    scheduled_id:
         If the process is already scheduled then put the row id here
-    caption
+    caption:
         The caption to set.
+    extra_options:
+        Extra options passed to the workload manager, batchmode only
 
     Returns:
     -------
@@ -815,6 +820,7 @@ def schedule_tool(
         user=user,
         log_directory=log_directory,
         unique_output=unique_output,
+        extra_options=extra_options,
     )
     # create a standard slurm file to view with less
     with open(output_file, "w") as the_file:

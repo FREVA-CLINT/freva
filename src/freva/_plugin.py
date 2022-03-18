@@ -165,6 +165,7 @@ def run_plugin(
         tool_dict = pm.parse_arguments(tool_name, options_str)
     if logger.level == logging.DEBUG:
         tool_dict["debug"] = True
+    extra_scheduler_options = tool_dict.pop("extra_scheduler_options", "")
     if caption:
         caption = pm.generate_caption(caption, tool_name)
     if save_config or save:
@@ -182,6 +183,9 @@ def run_plugin(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
         )
         return _return_value(0, out, return_result)
+    extra_options: list[str] = [
+            opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
+    ]
     # now run the tool
     (error, warning) = pm.get_error_warning(tool_name)
     if warning:
@@ -202,6 +206,7 @@ def run_plugin(
                 config_dict=tool_dict,
                 user=user.User(email=email),
                 caption=caption,
+                extra_options=extra_options,
                 unique_output=unique_output,
             )
             logger.info(f"Scheduled job with history id: {scheduled_id}")
