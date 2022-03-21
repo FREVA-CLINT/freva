@@ -35,7 +35,7 @@ class LocalJob(Job):
         **kwargs,
     ):
         # Instantiate args and parameters from parent abstract class
-        env_extra = ["PID=$(pgrep -f $0)", "sleep 20"] + env_extra
+        env_extra = ["PID=$(pgrep -f $0)", "sleep 3"] + env_extra
         kwargs["memory"] = 1
         super().__init__(name=name, shebang="#!/usr/bin/env bash",
                          env_extra=env_extra, **kwargs)
