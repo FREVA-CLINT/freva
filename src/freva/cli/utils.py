@@ -43,6 +43,7 @@ class BaseParser:
 
     parser_func = argparse.ArgumentParser.parse_args
     """Define the standard arparse parsing function"""
+
     def __init__(
         self,
         sub_commands: dict[str, subparser_func_type],
@@ -367,7 +368,9 @@ class BaseCompleter:
             print(line)
 
     @staticmethod
-    def arg_to_dict(args: list[str], append: bool = False) -> dict[str, list[str]]:
+    def arg_to_dict(
+        args: Optional[list[str]], append: bool = False
+    ) -> dict[str, list[str]]:
         """Convert a parsed arguments with key=value pairs to a dictionary.
 
         Parameters:
@@ -384,7 +387,7 @@ class BaseCompleter:
         dict: Dictionariy representation of key=value pairs
         """
         out_dict: dict[str, list[str]] = {}
-        for arg in args:
+        for arg in args or []:
             key, _, value = arg.partition("=")
             if append and key in out_dict:
                 out_dict[key].append(value)
@@ -399,6 +402,9 @@ class BaseCompleter:
 
         choices = {}
         for action in parser._actions:
+            if action.help == argparse.SUPPRESS:
+                # This is an option that is not exposed to users
+                continue
             action_type = ""
             if action.type == Path:
                 action_type = ":file:_files"

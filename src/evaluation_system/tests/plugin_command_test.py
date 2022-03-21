@@ -48,7 +48,7 @@ def test_list_tools(capsys, dummy_env):
     help_str = capsys.readouterr().out
     assert similar_string(
         help_str,
-"""DummyPlugin (v0.0.0): A dummy plugin
+        """DummyPlugin (v0.0.0): A dummy plugin
 Options:
 number                  (default: <undefined>)
                         This is just a number, not really important

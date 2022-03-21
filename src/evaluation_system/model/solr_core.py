@@ -24,6 +24,7 @@ from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.exceptions import CommandError
 
+
 class SolrCore:
     """Encapsulate access to a Solr instance"""
 

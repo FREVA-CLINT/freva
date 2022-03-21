@@ -188,6 +188,7 @@ def test_read_config_parser(dummy_plugin):
 def test_save_config(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
     from io import StringIO
+
     batchmode_options = """#: Set additional options for the job submission to the workload manager (,
 #:  seperated). Note: batchmode and web only.
 #extra_scheduler_options="""
@@ -231,7 +232,8 @@ a=1
 #: test.
 #b=None
 
-"""+batchmode_options
+"""
+        + batchmode_options
     )
 
     dummy.__parameters__ = ParameterDictionary(
@@ -315,10 +317,7 @@ def test_read_config(dummy_plugin):
             open(tf.name, "w").write(resource)
             with open(tf.name, "r") as f:
                 conf_dict = dummy.readConfiguration(f)
-                assert conf_dict == {
-                        **expected_dict,
-                        **{"extra_scheduler_options":""}
-                    }
+                assert conf_dict == {**expected_dict, **{"extra_scheduler_options": ""}}
 
 
 def testSubstitution(dummy_plugin):
@@ -400,33 +399,33 @@ def test_show_config(dummy_plugin):
             default=1.4,
         ),
     )
-    assert (similar_string(
+    assert similar_string(
         dummy.getCurrentConfig(),
         """           a: - *MUST BE DEFINED!*
                       b: - (default: test)
                   other: - (default: 1.4)
-extra_scheduler_options: - (default: )"""
-    ))
-    assert (similar_string(
+extra_scheduler_options: - (default: )""",
+    )
+    assert similar_string(
         dummy.getCurrentConfig(config_dict=dict(a=2123123)),
         """           a: 2123123
                       b: - (default: test)
                   other: - (default: 1.4)
-extra_scheduler_options: - (default: )"""
-    ))
-    assert (similar_string(
+extra_scheduler_options: - (default: )""",
+    )
+    assert similar_string(
         dummy.getCurrentConfig(config_dict=dict(a=2123123)),
-       """         a: 2123123
+        """         a: 2123123
                    b: - (default: test)
                other: - (default: 1.4)
-extra_scheduler_options: - (default: )"""
-    ))
+extra_scheduler_options: - (default: )""",
+    )
     res = dummy.getCurrentConfig(config_dict=dict(a="/tmp$USER_PLOTS_DIR"))
     cmp_str = (
         "                          a: /tmp$USER_PLOTS_DIR [/tmp"
         + user.getUserPlotsDir("DummyPlugin")
         + "]\n                     b: - (default: test)\n"
-        +"                     other: - (default: 1.4)"
+        + "                     other: - (default: 1.4)"
         + "\nextra_scheduler_options: - (default: )"
     )
     assert similar_string(cmp_str, res)
@@ -563,8 +562,10 @@ def test_compose_command():
     )
     assert similar_string(
         " ".join(command),
-        ("dummpyplugin the_number=22 something=test other=1.4 variable=tas "
-         "--caption 'This is the caption' --unique_output True")
+        (
+            "dummpyplugin the_number=22 something=test other=1.4 variable=tas "
+            "--caption 'This is the caption' --unique_output True"
+        ),
     )
 
 

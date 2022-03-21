@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 import os
 from pathlib import Path
@@ -37,8 +38,9 @@ class LocalJob(Job):
         # Instantiate args and parameters from parent abstract class
         env_extra = ["PID=$(pgrep -f $0)", "sleep 3"] + env_extra
         kwargs["memory"] = 1
-        super().__init__(name=name, shebang="#!/usr/bin/env bash",
-                         env_extra=env_extra, **kwargs)
+        super().__init__(
+            name=name, shebang="#!/usr/bin/env bash", env_extra=env_extra, **kwargs
+        )
 
         # Declare class attribute that shall be overridden
         self.job_header = ""
@@ -50,9 +52,7 @@ class LocalJob(Job):
     def _submit_job(self, script_filename):
         # Should we make this async friendly?
         cmd = ["/usr/bin/env", "bash", script_filename]
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return str(process.pid)
 
     @classmethod

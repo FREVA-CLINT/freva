@@ -84,7 +84,9 @@ class HistoryCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(
+        args: argparse.Namespace, other_args: Optional[list[str]], **kwargs: Any
+    ) -> None:
         """Call the databrowser command and print the results."""
         kwargs.pop("other_args", "")
         try:

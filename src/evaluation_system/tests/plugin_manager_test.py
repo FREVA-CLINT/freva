@@ -120,7 +120,7 @@ def test_parse_arguments(dummy_settings, temp_user):
                 "the_number": 4,
                 "something": "test",
                 "variable": "tas",
-                "extra_scheduler_options": ""
+                "extra_scheduler_options": "",
             },
         )
     ]:
@@ -136,7 +136,7 @@ def test_parse_arguments(dummy_settings, temp_user):
                 "the_number": 4,
                 "something": "test",
                 "variable": "tas",
-                "extra_scheduler_options": ""
+                "extra_scheduler_options": "",
             },
         )
     ]:

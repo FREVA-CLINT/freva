@@ -4,9 +4,7 @@ from evaluation_system.api.workload_manager.oar import OARJob
 
 
 def test_header():
-    with OARJob(
-        walltime="00:02:00", processes=4, cores=8, memory="28GB"
-    ) as cluster:
+    with OARJob(walltime="00:02:00", processes=4, cores=8, memory="28GB") as cluster:
         assert "#OAR -n worker" in cluster.job_header
         assert "#OAR -l /nodes=1/core=8,walltime=00:02:00" in cluster.job_header
         assert "#OAR --project" not in cluster.job_header
@@ -33,9 +31,7 @@ def test_header():
 
 
 def test_job_script():
-    with OARJob(
-        walltime="00:02:00", processes=4, cores=8, memory="28GB"
-    ) as cluster:
+    with OARJob(walltime="00:02:00", processes=4, cores=8, memory="28GB") as cluster:
         job_script = cluster.job_script()
         assert "#OAR" in job_script
         assert "#OAR -n worker" in job_script

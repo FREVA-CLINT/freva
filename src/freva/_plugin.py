@@ -184,7 +184,7 @@ def run_plugin(
         )
         return _return_value(0, out, return_result)
     extra_options: list[str] = [
-            opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
+        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
     ]
     # now run the tool
     (error, warning) = pm.get_error_warning(tool_name)

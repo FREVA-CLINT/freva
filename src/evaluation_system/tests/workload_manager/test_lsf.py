@@ -67,9 +67,7 @@ def test_header():
         assert "#BSUB -q" not in cluster.job_header
         assert "#BSUB -P" not in cluster.job_header
 
-    with LSFJob(
-        cores=4, memory="8GB", job_extra=["-u email@domain.com"]
-    ) as cluster:
+    with LSFJob(cores=4, memory="8GB", job_extra=["-u email@domain.com"]) as cluster:
 
         assert "#BSUB -u email@domain.com" in cluster.job_header
         assert "#BSUB -n" in cluster.job_header
@@ -133,6 +131,7 @@ def test_informative_errors():
     with pytest.raises(ValueError) as info:
         LSFJob(memory=None, cores=4)
     assert "memory" in str(info.value)
+
 
 def lsf_unit_detection_helper(expected_unit, conf_text=None):
     temp_dir = tempfile.mkdtemp()

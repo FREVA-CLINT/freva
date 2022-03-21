@@ -158,10 +158,11 @@ def _get_public_key(project_name: str) -> str:
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
         raise FileNotFoundError(
-            (f"{key_file} not found. Secrets are stored in central vault and "
-              "public key is needed to open the vault. Please deploy the backend"
-              " again using the vault option."
-              )
+            (
+                f"{key_file} not found. Secrets are stored in central vault and "
+                "public key is needed to open the vault. Please deploy the backend"
+                " again using the vault option."
+            )
         )
     return sha
 
@@ -223,7 +224,7 @@ def reloadConfiguration() -> None:
                     s for s in config_parser.sections() if s.startswith(PLUGINS)
                 ]:
                     _config[PLUGINS][
-                        plugin_section[len(PLUGINS):]
+                        plugin_section[len(PLUGINS) :]
                     ] = SPECIAL_VARIABLES.substitute(
                         dict(config_parser.items(plugin_section))
                     )

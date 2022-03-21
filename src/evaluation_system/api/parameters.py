@@ -34,11 +34,12 @@ class ParameterDictionary(dict):
         if extra.lower() == "none":
             extra = ""
         extra_scheduler_options = String(
-                "extra_scheduler_options",
-                default=extra,
-                help=("Set additional options for the job submission to the "
-                      "workload manager (, seperated). Note: batchmode and web only."
-                      )
+            "extra_scheduler_options",
+            default=extra,
+            help=(
+                "Set additional options for the job submission to the "
+                "workload manager (, seperated). Note: batchmode and web only."
+            ),
         )
         self._params = dict()
         for param in list_of_parameters:

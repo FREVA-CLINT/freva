@@ -229,8 +229,9 @@ def test_parse_arguments(dummy_env):
     res = p_dict.parseArguments("int=1 date=1 bool=1".split())
     assert res == dict(int=1, date="1", bool=True)
     res = p_dict.parseArguments("int=1 date=1 bool=1".split(), use_defaults=True)
-    assert res == dict(int=1, date="1", bool=True, extra_scheduler_options="",
-            file="/tmp/file1")
+    assert res == dict(
+        int=1, date="1", bool=True, extra_scheduler_options="", file="/tmp/file1"
+    )
     p_dict2 = ParameterDictionary(
         Bool(name="init"),
         Integer(name="num", default=2, item_separator=",", max_items=1),
@@ -308,7 +309,12 @@ def test_complete(dummy_env):
     p_dict.complete(conf)
     assert conf == {"int": 1, "extra_scheduler_options": "", "file": "/tmp/file1"}
     p_dict.complete(conf, add_missing_defaults=True)
-    assert conf == {"int": 1, "extra_scheduler_options": "", "date": None, "file": "/tmp/file1"}
+    assert conf == {
+        "int": 1,
+        "extra_scheduler_options": "",
+        "date": None,
+        "file": "/tmp/file1",
+    }
 
     assert p_dict.complete() == {"extra_scheduler_options": "", "file": "/tmp/file1"}
     assert p_dict.complete(add_missing_defaults=True) == {
@@ -320,7 +326,10 @@ def test_complete(dummy_env):
 
     # assure default value gets parsed (i.e. validated) when creating Parameter
     p = ParameterDictionary(Integer(name="a", default="0"))
-    assert p.complete(add_missing_defaults=True) == {"a": 0, "extra_scheduler_options": ""}
+    assert p.complete(add_missing_defaults=True) == {
+        "a": 0,
+        "extra_scheduler_options": "",
+    }
 
 
 def test_defaults(dummy_env):

@@ -35,7 +35,16 @@ from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Iterator, Optional, Sequence, TypedDict, TypeVar, Union
+from typing import (
+    Any,
+    cast,
+    Iterator,
+    Optional,
+    Sequence,
+    TypedDict,
+    TypeVar,
+    Union,
+)
 
 from django.db.models.query import QuerySet
 from evaluation_system.misc import config
@@ -441,10 +450,10 @@ def write_setup(
     """
     plugin_name = plugin_name.lower()
     user = user or User()
-
+    cfg = cast(dict[str, Union[str, int, float, bool, None]], config_dict or {})
     p = get_plugin_instance(plugin_name, user)
     complete_conf = p.setupConfiguration(
-        config_dict=config_dict, check_cfg=False, substitute=False
+        config_dict=cfg, check_cfg=False, substitute=False
     )
 
     if config_file is None:
@@ -666,25 +675,34 @@ def run_tool(
     """
     plugin_name = plugin_name.lower()
     user = user or User()
-
+    config_dict = config_dict or {}
     p = get_plugin_instance(plugin_name, user)
-    complete_conf = None
+    complete_conf: dict[str, Union[str, int, float, bool, None]] = {}
     # check whether a scheduled id is given
     if scheduled_id:
-        config_dict = load_scheduled_conf(plugin_name, scheduled_id, user)
-    if config_dict is None:
+        config_dict = cast(
+            dict[str, str],
+            load_scheduled_conf(plugin_name, scheduled_id, user) or {},
+        )
+    if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(conf_file):
             log.debug("Loading config file %s", conf_file)
             with open(conf_file, "r") as f:
-                complete_conf = p.readConfiguration(f)
+                complete_conf = cast(
+                    dict[str, Union[str, int, float, bool, None]],
+                    p.readConfiguration(f),
+                )
         else:
             log.debug("No config file was found in %s", conf_file)
-
-    if complete_conf is None:
+    if not complete_conf:
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
-        complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
+        cfg = cast(
+            dict[str, Union[str, int, float, bool, None]],
+            {k: v for (k, v) in config_dict.items()},
+        )
+        complete_conf = p.setupConfiguration(cfg, recursion=True)
     log.debug("Running %s with %s", plugin_name, complete_conf)
     rowid = 0
     if scheduled_id:
@@ -743,7 +761,7 @@ def run_tool(
 def schedule_tool(
     plugin_name: str,
     log_directory: Optional[str] = None,
-    config_dict: Optional[dict[str, Union[str, int, bool]]] = None,
+    config_dict: Optional[dict[str, Optional[Union[str, int, bool, float]]]] = None,
     user: Optional[User] = None,
     caption: Optional[str] = None,
     extra_options: list[str] = [],
@@ -777,27 +795,37 @@ def schedule_tool(
 
     plugin_name = plugin_name.lower()
     user = user or User()
-
+    config_dict = config_dict or {}
     p = get_plugin_instance(plugin_name, user)
-    complete_conf = None
+    complete_conf: dict[str, Union[str, int, float, bool, None]] = {}
     # check whether a scheduled id is given
-    if config_dict is None:
+    if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(conf_file):
             log.debug("Loading config file %s", conf_file)
             with open(conf_file, "r") as f:
-                complete_conf = p.readConfiguration(f)
+                complete_conf = cast(
+                    dict[str, Union[str, int, float, bool, None]],
+                    p.readConfiguration(f),
+                )
         else:
             log.debug("No config file was found in %s", conf_file)
-    if complete_conf is None:
+    if not complete_conf:
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
-        complete_conf = p.setupConfiguration(config_dict=config_dict, recursion=True)
+        conf = cast(
+            dict[str, Union[str, int, float, bool, None]],
+            {k: v for (k, v) in config_dict.items()},
+        )
+        complete_conf = cast(
+            dict[str, Union[str, int, float, bool, None]],
+            p.setupConfiguration(conf, recursion=True),
+        )
     log.debug("Schedule %s with %s", plugin_name, complete_conf)
     version_details = get_version(plugin_name)
     rowid = user.getUserDB().storeHistory(
         p,
-        complete_conf,
+        complete_conf or {},
         user.getName(),
         History.processStatus.not_scheduled,
         version_details=version_details,
@@ -1021,7 +1049,7 @@ def get_command_string_from_row(
     return result
 
 
-def load_scheduled_conf(plugin_name: str, entry_id: int, user: User) -> dict[str, Any]:
+def load_scheduled_conf(plugin_name: str, entry_id: int, user: User) -> dict[str, str]:
     """Loads the configuration from a scheduled plug-in.
 
     Parameters

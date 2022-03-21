@@ -2,9 +2,7 @@ from evaluation_system.api.workload_manager.slurm import SLURMJob
 
 
 def test_header():
-    with SLURMJob(
-        walltime="00:02:00", processes=4, cores=8, memory="28GB"
-    ) as cluster:
+    with SLURMJob(walltime="00:02:00", processes=4, cores=8, memory="28GB") as cluster:
 
         assert "#SBATCH" in cluster.job_header
         assert "#SBATCH -J worker" in cluster.job_header
@@ -43,9 +41,7 @@ def test_header():
 
 
 def test_job_script():
-    with SLURMJob(
-        walltime="00:02:00", processes=4, cores=8, memory="28GB"
-    ) as cluster:
+    with SLURMJob(walltime="00:02:00", processes=4, cores=8, memory="28GB") as cluster:
 
         job_script = cluster.job_script()
         assert "#SBATCH" in job_script

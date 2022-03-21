@@ -2,7 +2,6 @@
 """
 import copy
 from copy import deepcopy
-from io import TextIOWrapper
 from difflib import get_close_matches
 import errno
 import os
@@ -10,7 +9,7 @@ from re import split
 import shlex
 from subprocess import run, PIPE
 from string import Template
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, TextIO, IO, Union
 
 
 def run_cmd(cmd: str, **kwargs: Any) -> str:
@@ -38,7 +37,7 @@ class PIPE_OUT:
     def __enter__(self):
         return self
 
-    def __init__(self, *handlers: TextIOWrapper):
+    def __init__(self, *handlers: Union[IO[bytes], TextIO]):
 
         self.handlers = handlers
 
@@ -371,8 +370,10 @@ class metadict(dict):
                 if isinstance(values, tuple):
                     if len(values) != 2:
                         raise AttributeError(
-                            ("On compact creation a tuple with only 2 values is"
-                             " expected: (default, metadata)")
+                            (
+                                "On compact creation a tuple with only 2 values is"
+                                " expected: (default, metadata)"
+                            )
                         )
                     if not isinstance(values[1], dict):
                         raise AttributeError("metadata entry must be a dictionary")

@@ -10,8 +10,11 @@ import string
 import tempfile
 import time
 import abc
-from typing import Union
+from typing import Iterator, Generic, Optional, TypeVar, Union
 from evaluation_system.misc import logger
+
+JobType = TypeVar("JobType")
+"""The type of the Job class."""
 
 
 def parse_bytes(s):
@@ -62,16 +65,16 @@ def parse_bytes(s):
     except ValueError as e:
         raise ValueError("Could not interpret '%s' as a number" % prefix) from e
     byte_sizes = {
-        "kB": 10 ** 3,
-        "MB": 10 ** 6,
-        "GB": 10 ** 9,
-        "TB": 10 ** 12,
-        "PB": 10 ** 15,
-        "KiB": 2 ** 10,
-        "MiB": 2 ** 20,
-        "GiB": 2 ** 30,
-        "TiB": 2 ** 40,
-        "PiB": 2 ** 50,
+        "kB": 10**3,
+        "MB": 10**6,
+        "GB": 10**9,
+        "TB": 10**12,
+        "PB": 10**15,
+        "KiB": 2**10,
+        "MiB": 2**20,
+        "GiB": 2**30,
+        "TiB": 2**40,
+        "PiB": 2**50,
         "B": 1,
         "": 1,
     }
@@ -89,7 +92,7 @@ def parse_bytes(s):
 
 
 @contextmanager
-def tmpfile(**kwargs) -> Path:
+def tmpfile(**kwargs) -> Iterator[Path]:
     """
     Function to create and return a unique temporary file with the given
     extension, if provided.
@@ -114,7 +117,7 @@ def tmpfile(**kwargs) -> Path:
         yield Path(tf.name)
 
 
-def string_to_bytes(size: str) -> int:
+def string_to_bytes(size: str) -> float:
     """Convert a size string to int."""
 
     mul_dec = dict(pb=1000**5, tb=1000**4, gb=1000**3, mb=1000**2, kb=1000, b=1)
@@ -176,7 +179,7 @@ def format_bytes(n: int) -> str:
 
 
 class Job(abc.ABC):
-    """Base class to launch Dask workers on Job queues
+    """Base class to launch workers on Job queues
 
     This class should not be used directly, use a class appropriate for
     your queueing system (e.g. PBScluster or SLURMCluster) instead.
@@ -212,10 +215,10 @@ class Job(abc.ABC):
 """.lstrip()
 
     # Following class attributes should be overridden by extending classes.
-    submit_command = None
-    cancel_command = None
-    config_name = None
-    job_id_regexp = r"(?P<job_id>\d+)"
+    submit_command: Optional[str] = None
+    cancel_command: Optional[str] = None
+    config_name: Optional[str] = None
+    job_id_regexp: str = r"(?P<job_id>\d+)"
 
     @abc.abstractmethod
     def __init__(

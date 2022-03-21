@@ -6,7 +6,6 @@ import abc
 from configparser import ConfigParser, ExtendedInterpolation
 from contextlib import contextmanager
 from datetime import datetime
-import io
 import logging
 import os
 from pathlib import Path
@@ -16,9 +15,10 @@ import subprocess as sub
 import sys
 import stat
 import shlex
+import tempfile
 import textwrap
 from time import time
-from typing import Any, Optional, Union, Iterator
+from typing import Any, IO, Optional, Union, Iterator, Iterable, TextIO
 
 from PyPDF2 import PdfFileReader
 
@@ -27,6 +27,7 @@ from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.utils import PIPE_OUT
 from evaluation_system.model.solr_core import SolrCore
+from .workload_manager import schedule_job
 
 __version__ = (1, 0, 0)
 config_dict_type = dict[str, Optional[Union[str, float, int, bool]]]
@@ -266,8 +267,8 @@ A plug-in/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                    self._user.getUserSchedulerOutputDir(),
-                    plugin_name,
+                self._user.getUserSchedulerOutputDir(),
+                plugin_name,
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.out"
         return self._plugin_out
@@ -276,8 +277,8 @@ A plug-in/user might then use them to define a value in the following way::
     def set_environment(self) -> Iterator[None]:
         """Set the environement."""
         env_path = os.environ["PATH"]
-        stdout: io.TextIOWrapper = sys.stdout
-        stderr: io.TextIOWrapper = sys.stderr
+        stdout = sys.stdout
+        stderr = sys.stderr
         try:
             self.plugin_output_file.parent.mkdir(exist_ok=True, parents=True)
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
@@ -305,9 +306,9 @@ A plug-in/user might then use them to define a value in the following way::
             return ""
         return f"{plugin_path.parent / 'plugin_env' / 'bin'}"
 
-    def _runTool(self,
-                 config_dict: config_dict_type = {},
-                 unique_output: bool = True) -> Optional[Any]:
+    def _runTool(
+        self, config_dict: config_dict_type = {}, unique_output: bool = True
+    ) -> Optional[Any]:
         config_dict = self.append_unique_id(config_dict, unique_output)
         for key in config.exclude:
             config_dict.pop(key, "")
@@ -315,9 +316,9 @@ A plug-in/user might then use them to define a value in the following way::
             result = self.runTool(config_dict=config_dict)
             return result
 
-    def append_unique_id(self,
-                         config_dict: config_dict_type,
-                         unique_output: bool) -> config_dict_type:
+    def append_unique_id(
+        self, config_dict: config_dict_type, unique_output: bool
+    ) -> config_dict_type:
         from evaluation_system.api.parameters import Directory, CacheDirectory
 
         for key, param in self.__parameters__.items():
@@ -403,13 +404,12 @@ A plug-in/user might then use them to define a value in the following way::
         # Solr part with move orgy
         SolrCore.dump_fs_to_file(crawl_dir, output)
         shutil.move(os.path.join(solr_in, output), os.path.join(solr_ps, output))
-        hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
+        # hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
         shutil.move(os.path.join(solr_ps, output), os.path.join(solr_bk, output))
 
-    def prepareOutput(self,
-                      output_files: Union[str, list[str],
-                                          dict[str, dict[str, str]]]
-                      ) -> dict[str, dict[str, str]]:
+    def prepareOutput(
+        self, output_files: Union[str, list[str], dict[str, dict[str, str]]]
+    ) -> dict[str, dict[str, str]]:
         """Prepare output for files supposedly created.
 
         This method checks the files exist and returns a dictionary with
@@ -685,6 +685,7 @@ A plug-in/user might then use them to define a value in the following way::
             a copy of self.self.__config_metadict__ with all defaults values
             plus those provided here.
         """
+        config_dict = config_dict or {}
         if config_dict:
             conf = dict(self.__parameters__)
             conf.update(config_dict)
@@ -733,7 +734,7 @@ A plug-in/user might then use them to define a value in the following way::
             )
         return result
 
-    def readConfiguration(self, fp: io.TextIOWrapper) -> dict[str, str]:
+    def readConfiguration(self, fp: Iterable[str]) -> dict[str, str]:
         """Read the configuration from a file object using a ConfigParser.
 
         Parameters:
@@ -752,10 +753,10 @@ A plug-in/user might then use them to define a value in the following way::
 
     def saveConfiguration(
         self,
-        fp: io.TextIOWrapper,
+        fp: Union[TextIO, IO[str]],
         config_dict: config_dict_type = None,
         include_defaults: bool = False,
-    ) -> io.TextIOWrapper:
+    ) -> IO[str]:
         """Stores the given configuration to the provided file object.
 
         If no configuration is provided the default one will be used.
@@ -871,7 +872,7 @@ A plug-in/user might then use them to define a value in the following way::
         job_id, stdout_file: int, str
             The workload manager job id, the file containing the std out.
         """
-
+        log_directory = log_directory or tempfile.mkdtemp()
         if user is None:
             user = self.getCurrentUser()
 
@@ -883,8 +884,6 @@ A plug-in/user might then use them to define a value in the following way::
             cmd = self.composeCommand(
                 config_dict=config_dict, unique_output=unique_output
             )
-        from .workload_manager import schedule_job
-        from evaluation_system.misc import logger
 
         cfg = config.get_section("scheduler_options").copy()
         cfg["args"] = cmd
@@ -894,7 +893,7 @@ A plug-in/user might then use them to define a value in the following way::
             config.get("scheduler_system"),
             Path(config.CONFIG_FILE).parent / "activate_sh",
             cfg,
-            delete_job_script=logger.root.level <= logging.DEBUG,
+            delete_job_script=log.root.level <= logging.DEBUG,
             log_directory=log_directory,
         )
 
@@ -1023,30 +1022,3 @@ A plug-in/user might then use them to define a value in the following way::
                 break
             result.insert(0, path_item)
         return result
-
-    def __module_interaction(self, command: str, module_name: str) -> bool:
-        """
-        Function to interact with the module interface
-        """
-        module_path = config.get("module_path", None)
-        if module_path is None:
-            logging.warning(
-                "Module path is not set. Module %s NOT %sed" % (module_name, command)
-            )
-            return False
-
-        cmd = os.popen("%s python %s %s" % (module_path, command, module_name))
-        exec(cmd in globals(), locals())
-        return True
-
-    def load_module(self, module_name: str) -> bool:
-        """
-        Helper function to load modules like cdo or nco in python
-        """
-        return self.__module_interaction("load", module_name)
-
-    def unload_module(self, module_name: str) -> bool:
-        """
-        Helper function to unload modules in python
-        """
-        return self.__module_interaction("unload", module_name)

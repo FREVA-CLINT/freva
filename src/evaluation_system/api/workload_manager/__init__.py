@@ -1,9 +1,8 @@
 """Collection of methods and classes for submitting plugins to a workload manager."""
+from __future__ import annotations
 from pathlib import Path
-from typing import Optional
-
+from typing import Union, Type
 from .core import Job
-
 from .local import LocalJob
 from .lsf import LSFJob
 from .moab import MoabJob
@@ -13,9 +12,9 @@ from .sge import SGEJob
 from .slurm import SLURMJob
 
 
-def _get_job_object(system: str) -> Job:
+def _get_job_object(system: str) -> Type[Job]:
     """Get the correct job scheduler object for a given workload manager."""
-    job_objects = dict(
+    job_objects: dict[str, Type[Job]] = dict(
         local=LocalJob,
         lfs=LSFJob,
         moab=MoabJob,
@@ -52,7 +51,7 @@ def schedule_job(
     system: str,
     source: Path,
     config: dict[str, str],
-    log_directory: Optional[str] = None,
+    log_directory: Union[Path, str],
     delete_job_script: bool = True,
 ) -> tuple[int, str]:
     """Create a scheduler object from a given scheduler configuration.
@@ -70,7 +69,7 @@ def schedule_job(
     ========
     Instance of a workload manager object
     """
-    job_object = _get_job_object(system)
+    job_object: Type[Job] = _get_job_object(system)
     source = source.expanduser().absolute()
     if source.exists():
         env_extra = [f"\\. {source}"]

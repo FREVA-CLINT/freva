@@ -92,7 +92,11 @@ class DataBrowserCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Optional[Any]) -> None:
+    def run_cmd(
+        args: argparse.Namespace,
+        other_args: Optional[list[str]] = None,
+        **kwargs: Optional[Any],
+    ) -> None:
         """Call the databrowser command and print the results."""
         facets: Dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
