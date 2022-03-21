@@ -20,7 +20,6 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 /tmp/test,some.other.plugin
 """
 from __future__ import annotations
-
 import importlib.machinery
 import inspect
 import json
@@ -38,13 +37,14 @@ from types import ModuleType
 from typing import (
     Any,
     cast,
+    Dict,
     Iterator,
     Optional,
     Sequence,
-    TypedDict,
     TypeVar,
     Union,
 )
+from typing_extensions import TypedDict
 
 from django.db.models.query import QuerySet
 from evaluation_system.misc import config
@@ -450,7 +450,7 @@ def write_setup(
     """
     plugin_name = plugin_name.lower()
     user = user or User()
-    cfg = cast(dict[str, Union[str, int, float, bool, None]], config_dict or {})
+    cfg = cast(Dict[str, Union[str, int, float, bool, None]], config_dict or {})
     p = get_plugin_instance(plugin_name, user)
     complete_conf = p.setupConfiguration(
         config_dict=cfg, check_cfg=False, substitute=False
@@ -681,7 +681,7 @@ def run_tool(
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = cast(
-            dict[str, str],
+            Dict[str, str],
             load_scheduled_conf(plugin_name, scheduled_id, user) or {},
         )
     if not config_dict:
@@ -690,7 +690,7 @@ def run_tool(
             log.debug("Loading config file %s", conf_file)
             with open(conf_file, "r") as f:
                 complete_conf = cast(
-                    dict[str, Union[str, int, float, bool, None]],
+                    Dict[str, Union[str, int, float, bool, None]],
                     p.readConfiguration(f),
                 )
         else:
@@ -699,7 +699,7 @@ def run_tool(
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
         cfg = cast(
-            dict[str, Union[str, int, float, bool, None]],
+            Dict[str, Union[str, int, float, bool, None]],
             {k: v for (k, v) in config_dict.items()},
         )
         complete_conf = p.setupConfiguration(cfg, recursion=True)
@@ -805,7 +805,7 @@ def schedule_tool(
             log.debug("Loading config file %s", conf_file)
             with open(conf_file, "r") as f:
                 complete_conf = cast(
-                    dict[str, Union[str, int, float, bool, None]],
+                    Dict[str, Union[str, int, float, bool, None]],
                     p.readConfiguration(f),
                 )
         else:
@@ -814,11 +814,11 @@ def schedule_tool(
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
         conf = cast(
-            dict[str, Union[str, int, float, bool, None]],
+            Dict[str, Union[str, int, float, bool, None]],
             {k: v for (k, v) in config_dict.items()},
         )
         complete_conf = cast(
-            dict[str, Union[str, int, float, bool, None]],
+            Dict[str, Union[str, int, float, bool, None]],
             p.setupConfiguration(conf, recursion=True),
         )
     log.debug("Schedule %s with %s", plugin_name, complete_conf)

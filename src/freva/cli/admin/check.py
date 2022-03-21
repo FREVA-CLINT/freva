@@ -1,9 +1,5 @@
 """Collection of admin commands that perform checks."""
-
-__all__ = ["check4broken_runs", "check4pull_request"]
-
-CLI = "CheckCli"
-
+from __future__ import annotations
 import argparse
 import os
 from typing import Any
@@ -14,6 +10,11 @@ from evaluation_system.misc.exceptions import CommandError
 from evaluation_system.model.history.models import History
 from evaluation_system.model.plugins.models import ToolPullRequest
 from evaluation_system.api import plugin_manager as pm
+
+
+__all__ = ["check4broken_runs", "check4pull_request"]
+
+CLI = "CheckCli"
 
 
 def check4pull_request() -> None:

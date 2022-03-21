@@ -18,7 +18,7 @@ import shlex
 import tempfile
 import textwrap
 from time import time
-from typing import Any, IO, Optional, Union, Iterator, Iterable, TextIO
+from typing import Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
 
 from PyPDF2 import PdfFileReader
 
@@ -30,7 +30,7 @@ from evaluation_system.model.solr_core import SolrCore
 from .workload_manager import schedule_job
 
 __version__ = (1, 0, 0)
-config_dict_type = dict[str, Optional[Union[str, float, int, bool]]]
+config_dict_type = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
 class ConfigurationError(Exception):

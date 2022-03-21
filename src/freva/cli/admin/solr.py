@@ -1,7 +1,5 @@
 """Collection of admin commands for apache solr requests."""
-
-__all__ = ["re_index", "del_index"]
-
+from __future__ import annotations
 import argparse
 from pathlib import Path
 from typing import Any, Optional
@@ -10,6 +8,10 @@ from ..utils import BaseParser, is_admin, subparser_func_type
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import config
+
+
+__all__ = ["re_index", "del_index"]
+
 
 CLI = "SolrCli"
 
