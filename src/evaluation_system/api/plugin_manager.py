@@ -36,7 +36,8 @@ from multiprocessing import Pool
 from pathlib import Path
 from subprocess import PIPE, run
 from types import ModuleType
-from typing import Any, Iterator, Optional, Sequence, TypedDict, TypeVar, Union
+from typing import Any, Iterator, Optional, Sequence, TypeVar, Union
+from typing_extensions import TypedDict
 
 from django.db.models.query import QuerySet
 from evaluation_system.api.parameters import ParameterNotFoundError

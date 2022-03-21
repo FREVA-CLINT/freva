@@ -2,7 +2,7 @@
 function __fish_default_complete
     set -l cmd $argv[1]
     set -l keywords_only $argv[2]
-    for sub_str in (python3 -m freva.cli --shell fish freva $cmd)
+    for sub_str in (python -m freva.cli --shell fish freva $cmd)
         set -l sub_cmd (echo $sub_str|cut -d ':' -f1)
         set -l sub_h (echo $sub_str|sed "s/$sub_cmd: //")
         if [ $keywords_only = 0 ] || [ (echo $sub_cmd|cut -c1) = "-" ]
@@ -47,7 +47,7 @@ function __fish_complete_databrowser -d "Completion for databrowser"
             end
         end
     end
-    set -l facets (python3 -m freva.cli --shell fish --strip freva databrowser $search_keys)
+    set -l facets (python -m freva.cli --shell fish --strip freva databrowser $search_keys)
     for line in $facets
         set -l facet (echo $line|cut -d : -f1)
         set -l entries (echo $line|cut -d : -f2 |awk '{print $NF}'|sed 's/,/\n/g')
@@ -93,7 +93,7 @@ function __fish_complete_plugin -d "Completion definition for the freva plugin c
             end
         end
     end
-    set -l options (python3 -m freva.cli --strip freva plugin $search_keys)
+    set -l options (python -m freva.cli --strip freva plugin $search_keys)
     for option in $options
         if [ (__fish_facet_in_cmd $option) = 1 ]
             set -l num (count $keys)
@@ -108,7 +108,7 @@ function __fish_complete_plugin -d "Completion definition for the freva plugin c
     end
 end
 
-set -l freva_str (python3 -m freva.cli --shell fish freva)
+set -l freva_str (python -m freva.cli --shell fish freva)
 set -l cmds help
 for i in (seq (count $freva_str))
     set -l cmd (echo $freva_str[$i]|cut -d ':' -f1)

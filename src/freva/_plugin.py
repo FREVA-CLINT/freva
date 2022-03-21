@@ -1,17 +1,18 @@
+from __future__ import annotations
 import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Union, Dict, Optional, List, Tuple
+from typing import Any, Union, Optional
 import time
 
 
-from django.contrib.auth.models import User
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
 from evaluation_system.misc import config, utils, logger
 from evaluation_system.misc.exceptions import PluginNotFoundError
 from evaluation_system.model.plugins.models import ToolPullRequest
+from django.contrib.auth.models import User
 
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
@@ -24,7 +25,7 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     return pm.get_plugin_instance(tool_name).getHelp()
 
 
-def list_plugins() -> List[str]:
+def list_plugins() -> list[str]:
     """Get the plugins that are available on the system."""
     return list(pm.get_plugins().keys())
 
@@ -53,7 +54,7 @@ def get_tools_list() -> str:
 
 def handle_pull_request(
     tag: Optional[str], tool_name: Optional[str]
-) -> Tuple[int, str]:
+) -> tuple[int, str]:
     if not tag:
         return 1, 'Missing required option "--tag"'
     # create new entry in
@@ -110,8 +111,8 @@ def run_plugin(
     caption: str = "",
     tag: Optional[str] = None,
     return_result: bool = False,
-    **options: Dict[str, Union[str, float, int]],
-) -> Tuple[int, Any]:
+    **options: dict[str, Union[str, float, int]],
+) -> tuple[int, Any]:
     """Apply an available data analysis plugin.
 
     Parameters:

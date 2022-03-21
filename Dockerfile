@@ -54,7 +54,6 @@ RUN set -ex; \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
   cp /tmp/evaluation_system/.docker/*.sql\
-    /tmp/evaluation_system/.docker/evaluation_system.conf\
     /tmp/evaluation_system/.docker/managed-schema /tmp/evaluation_system/ ;\
   cd /tmp/evaluation_system ;\
   mysql < /tmp/evaluation_system/create_user.sql ; \
@@ -64,7 +63,7 @@ RUN set -ex; \
   mkdir -p /opt/evaluation_system/bin ;\
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /opt/evaluation_system/bin/ ; \
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ ;\
-  cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/;\
+  cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/assets;\
   chmod 0771 ${HOME}/solr;\
   chown -R ${NB_USER}:${NB_GROUP} /var/solr;\
   find ${HOME}/solr -type d -print0 | xargs -0 chmod 0771; \

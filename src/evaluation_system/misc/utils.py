@@ -1,6 +1,5 @@
-"""Provide different utilities that does not depend on any other 
-internal package.
-"""
+"""Provide different utilities that does not depend on any other internal package."""
+from __future__ import annotations
 import copy
 from copy import deepcopy
 import contextlib

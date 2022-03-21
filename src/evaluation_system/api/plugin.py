@@ -1,24 +1,22 @@
 """
-
-.. moduleauthor:: Sebastian Illing / estani 
-
-
 This module defines the basic objects for implementing a plug-in.
 """
 from __future__ import annotations
 
 import abc
-import subprocess as sub
+from configparser import ConfigParser, ExtendedInterpolation
+from contextlib import contextmanager
+from datetime import datetime
+import logging
 import os
+from pathlib import Path
+import re
+import subprocess as sub
 import sys
 import stat
 import shutil
-import re
-from time import time
 import shlex
-from datetime import datetime
-from configparser import ConfigParser, ExtendedInterpolation
-import logging
+from time import time
 
 log = logging.getLogger(__name__)
 from PyPDF2 import PdfFileReader
@@ -204,10 +202,34 @@ A plug-in/user might then use them to define a value in the following way::
         if return_code:
             raise sub.CalledProcessError(return_code, cmd)
 
+    @property
+    def conda_path(self) -> str:
+        """Add the conda env path of the plugin to the environment."""
+
+        from evaluation_system.api import plugin_manager as pm
+
+        plugin_name = self.__class__.__name__.lower()
+        try:
+            plugin_path = Path(pm.get_plugins()[plugin_name].plugin_module)
+        except KeyError:
+            return ""
+        return f"{plugin_path.parent / 'plugin_env' / 'bin'}"
+
+    @contextmanager
+    def patch_environ(self):
+
+        env = os.environ.copy()
+        try:
+            os.environ["PATH"] = f"{self.conda_path}:{env['PATH']}"
+            yield
+        finally:
+            os.environ = env
+
     def _runTool(self, config_dict=None, unique_output=True):
         config_dict = self.append_unique_id(config_dict, unique_output)
-        result = self.runTool(config_dict=config_dict)
-        return result
+        with self.patch_environ():
+            result = self.runTool(config_dict=config_dict)
+            return result
 
     def append_unique_id(self, config_dict, unique_output):
         from evaluation_system.api.parameters import Directory, CacheDirectory
@@ -361,7 +383,7 @@ A plug-in/user might then use them to define a value in the following way::
             ext = os.path.splitext(file_path)
             if ext:
                 ext = ext[-1].lower()
-                if ext in ".jpg .jpeg .png .gif".split():
+                if ext in ".jpg .jpeg .png .gif .mp4 .mov".split():
                     metadata["type"] = "plot"
                     metadata["todo"] = "copy"
 
@@ -387,6 +409,8 @@ A plug-in/user might then use them to define a value in the following way::
                     metadata["type"] = "data"
                 if ext in [".zip"]:
                     metadata["type"] = "pdf"
+                    metadata["todo"] = "copy"
+                elif ext in [".html", ".xhtml"]:
                     metadata["todo"] = "copy"
 
     def getHelp(self, width=80):

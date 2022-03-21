@@ -54,22 +54,13 @@ the dev environment simply use the following command:
 
 ```
 conda env create -f dev-environment.yml
+source .envrc
 ```
+This will automatically set environment variables needed for development.
 The freshly installed environment can be activated:
 ```
 conda activate freva-dev
 ```
-You can also save the above environment variables stored in `.envrc` upon activation of the conda environment:
-```
-source .envrc
-conda env config vars set EVALUATION_SYSTEM_CONFIG_FILE=$EVALUATION_SYSTEM_CONFIG_FILE
-conda env config vars set PUBKEY=$EVALUATION_SYSTEM_CONFIG_FILE
-conda env config vars set DEV_MODE=1
-conda deactivate
-conda activate freva-dev
-```
-This will automatically set the above environment variables.
-
 The conda environment can be deactivated using the following command:
 ```
 conda deactivate
@@ -80,6 +71,7 @@ _Note_: The conda install command can be slow. If you want to speed up the insta
 ```
 conda install mamba
 mamba env create -f dev-environment.yml
+source .envrc
 ```
 
 ### Installing the python package
@@ -87,7 +79,7 @@ mamba env create -f dev-environment.yml
 Use the `pip install` command to install the actual python core packages into your activated environment:
 
 ```bash
-$: pip install -e .
+pip install -e .[test]
 ```
 
 The `-e` flag will link the source code into your python environment, which can be useful for development purpose.
@@ -97,7 +89,13 @@ The `-e` flag will link the source code into your python environment, which can 
 The system can be tested with a `Makefile`. To run the tests and generate a simple test coverage report simply use the make command:
 
 ```bash
-$:  make test
+make test
+```
+
+The linter testing can be applied by:
+
+```bash
+make lint
 ```
 
 ## Central configuration

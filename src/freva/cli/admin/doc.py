@@ -1,9 +1,6 @@
 """Collection of admin commands to create flat pages."""
 
-__all__ = ["update_tool_doc"]
-
-CLI = "DocCli"
-
+from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
@@ -12,15 +9,17 @@ import shlex
 from subprocess import run, PIPE
 import sys
 from tempfile import TemporaryDirectory
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from django.contrib.flatpages.models import FlatPage
 
-from ..utils import BaseCompleter, BaseParser, is_admin
+from ..utils import BaseParser, is_admin
 
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.misc import config, logger
-from evaluation_system.model.history.models import History
+
+__all__ = ["update_tool_doc"]
+CLI = "DocCli"
 
 
 class Convert2Html:
@@ -31,7 +30,6 @@ class Convert2Html:
         self.tmpdir = tmpdir
         shutil.copytree(input_file.parent, self.tmpdir)
         self.input_file = tmpdir / input_file.name
-        input_dir = input_file.parent
         self.input_dir = tmpdir
         self.html_file = self.input_file.with_suffix(".html")
         suffix = Path(input_file).suffix.strip(".")
@@ -51,7 +49,7 @@ class Convert2Html:
         cmd = self.conv_func()
         env = os.environ.copy()
         env["PATH"] = f"{Path(sys.exec_prefix) / 'bin'}:{env['PATH']}"
-        res = run(
+        _ = run(
             shlex.split(cmd),
             stdout=PIPE,
             stderr=PIPE,
@@ -80,7 +78,6 @@ def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None) -> None:
     # copy folder to /tmp for processing
     config.reloadConfiguration()
     with TemporaryDirectory(prefix=tool, suffix="_doc") as td:
-        new_path = Path(td) / "doc"
         conv = Convert2Html(doc_file, Path(td) / "doc")
         html_text = conv.convert(tool)
         flat_page, created = FlatPage.objects.get_or_create(

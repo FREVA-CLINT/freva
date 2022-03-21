@@ -31,11 +31,23 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-__version__ = "2021.5"
-from ._crawl_my_data import *
-from ._databrowser import *
-from ._plugin import *
-from ._esgf import *
-from ._history import *
+import importlib
 
-__all__ = _databrowser.__all__ + _plugin.__all__ + _esgf.__all__ + _history.__all__  # type: ignore
+__version__ = "2021.5"
+__all__ = [
+    "crawl_my_data",
+    "databrowser",
+    "run_plugin",
+    "list_plugins",
+    "plugin_doc",
+    "esgf",
+    "history",
+]
+
+
+def __getattr__(name):
+    if name in ["crawl_my_data", "databrowser", "esgf", "history"]:
+        return getattr(importlib.import_module(f"._{name}", __name__), name)
+    elif name in ["run_plugin", "list_plugins", "plugin_doc"]:
+        return getattr(importlib.import_module(f"._plugin", __name__), name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

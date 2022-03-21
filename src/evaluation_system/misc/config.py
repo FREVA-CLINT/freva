@@ -29,17 +29,21 @@ DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch"
 We only use local at this time, but we'll be migrating to central in 
 the future for the next project phase."""
 # Some defaults in case nothing is defined
-_DEFAULT_ENV_CONFIG_FILE = "EVALUATION_SYSTEM_CONFIG_FILE"
-_DEFAULT_CONFIG_DIR = Path(sys.prefix)
-_DEFAULT_CONFIG_FILE_LOCATION = _DEFAULT_CONFIG_DIR / "etc" / "evaluation_system.conf"
-_DRS_CONFIG_FILE_ENVVAR = "EVALUATION_SYSTEM_DRS_CONFIG_FILE"
-_DEFAULT_DRS_CONFIG_FILE = _DEFAULT_CONFIG_DIR / "etc" / "drs_config.json"
-_PUBLIC_KEY_DIR = _DEFAULT_CONFIG_DIR / "share" / "freva"
+_DEFAULT_CONFIG_FILE_LOCATION = osp.join(
+    sys.prefix, "etc", "freva", "evaluation_system.conf"
+)
 EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
 # now check if we have a configuration file, and read the defaults from there
-CONFIG_FILE = os.environ.get(_DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION)
+CONFIG_FILE = os.environ.get(
+    "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
+)
+_DEFAULT_DRS_CONFIG_FILE = os.environ.get(
+    "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
+    osp.abspath(osp.join(CONFIG_FILE, osp.pardir, "drs_config.toml")),
+)
+_PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
 #: config options
 BASE_DIR = "base_dir"
 "The name of the directory storing the evaluation system (output, configuration, etc)"
@@ -47,7 +51,7 @@ BASE_DIR = "base_dir"
 ROOT_DIR = "root_dir"
 
 DIRECTORY_STRUCTURE_TYPE = "directory_structure_type"
-"""Defines which directory structure is going to be used. 
+"""Defines which directory structure is going to be used.
 See DIRECTORY_STRUCTURE"""
 
 BASE_DIR_LOCATION = "base_dir_location"
@@ -192,7 +196,7 @@ def reloadConfiguration() -> None:
     }
 
     config_file = os.environ.get(
-        _DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION
+        "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
     )
     log.debug("Loading configuration file from: %s" % config_file)
     if config_file and os.path.isfile(config_file):
@@ -227,13 +231,14 @@ def reloadConfiguration() -> None:
                 # look for the missing keys in the vault. Any keys set in the config
                 # will take priority
                 secret_store_keys: list[str] = []
-                for secret in ("db.user", "db.passwd", "db.db", "db.host", "db.port"):
+                for secret in ("db.user", "db.passwd", "db.db", "db.host"):
                     value = _config.get(secret, None)
                     if value:
                         _config[secret] = value
                     else:
                         secret_store_keys.append(secret)
                 if len(secret_store_keys) > 0:
+                    secret_store_keys += ["db.port"]
                     sha: str = _get_public_key(
                         config_parser[CONFIG_SECTION_NAME]["project_name"]
                     )
@@ -318,7 +323,7 @@ def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
 
     config_file = config_file or os.environ.get(
-        _DEFAULT_ENV_CONFIG_FILE, _DEFAULT_CONFIG_FILE_LOCATION
+        "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
     )
     conf.read(config_file)
     try:
@@ -332,7 +337,7 @@ def get_drs_config():
     global _drs_config
     if _drs_config is None:
         drs_config = os.environ.get(
-            _DRS_CONFIG_FILE_ENVVAR, str(_DEFAULT_DRS_CONFIG_FILE)
+            "EVALUATION_SYSTEM_DRS_CONFIG_FILE", str(_DEFAULT_DRS_CONFIG_FILE)
         )
         with open(drs_config, "r") as drs_file:
             _drs_config = toml.load(drs_file)

@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+"""Deploy the evaluation_system / core."""
 import argparse
-from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
+from configparser import ConfigParser, ExtendedInterpolation
 import logging
 import hashlib
 import os
@@ -10,11 +10,10 @@ import re
 import shlex
 import sys
 from subprocess import CalledProcessError, PIPE, run
-import shutil
 import urllib.request
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import TemporaryDirectory
 
-
+DEFAULT_PYTHON = "3.10"
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2021.11")
@@ -25,56 +24,53 @@ logger = logging.getLogger(__file__)
 
 MODULE = """#%Module1.0#####################################################################
 ##
-## FREVA - Free Evaluation Framework modulefile
+## FREVA - Free Evaluation System Framework modulefile
 ##
 #
 ### BEGIN of config part ********
 #define some variables
-set shell [module-info shell]
-set modName [module-info name]
-set toolName evaluation_system
+set shell [module-info shelltype]
 set curMode [module-info mode]
 module-whatis   "evaluation_system {version}"
 proc ModulesHelp {{ }} {{
-    puts stderr "evaluation_system {version}"
+    puts stderr "Load the free evaluation system framework {project}"
 }}
-proc show_info {{}}  {{
-    puts stderr {{
-Freva command line
-Available commands:
-  --plugin       : Applies some analysis to the given data.
-  --history      : provides access to the configuration history
-  --databrowser  : Find data in the system
-  --crawl_my_data: Use this command to update your projectdata.
-  --esgf         : Browse ESGF data and create wget script
-
-Usage: freva --COMMAND [OPTIONS]
-To get help for the individual commands use
-  freva --COMMAND --help
-  }}
-}}
-
-#pre-requisites
 if {{ $curMode eq "load" }} {{
-	if {{ $shell == "bash" || $shell == "sh" }} {{
-		        puts ". {auto_comp};"
-			puts stderr "Evaluation System by Freva successfully loaded."
-			puts stderr "If you are using bash, try the auto complete feature for freva and freva --databrowser
-by hitting tab as usual."
-			puts stderr "For more help/information check: "
-			show_info
-            }} else {{
-		puts stderr "WARNING: Evaluation System is maybe NOT fully loaded, please type 'bash -l' "
-		puts stderr "And load it again -> module load evaluation_system"
-		puts stderr "Your shell now: $shell"
-		}}
-}} elseif {{ $curMode eq "remove" }} {{
-	puts stderr "Evaluation System successfully unloaded."
+    if {{ $shell == "fish" }} {{
+        puts "\\. {eval_conf_file.parent}/activate_fish"
+    }} elseif {{ $shell == "csh" }} {{
+        puts "\\. {eval_conf_file.parent}/activate_csh"
+    }} elseif {{ $shell == "sh" }} {{
+        puts "\\. {eval_conf_file.parent}/activate_sh"
+    }}
 }}
-#only one version at a time!!
-conflict evaluation_system
-prepend-path PATH {path}
-prepend-path LD_LIBRARY_PATH {ld_lib_path}
+prepend-path PATH {root_dir}/bin
+setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+"""
+
+FISH_SCRIPT = """\\. {root_dir}/etc/fish/conf.d/conda.fish
+set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+set -gx PATH {root_dir}/bin $PATH
+\\. {root_dir}/share/fish/completions/freva.fish
+"""
+
+SH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.sh
+export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
+export PATH={root_dir}/bin:$PATH
+shell=$(basename $SHELL)
+if [ $shell = zsh ];then
+    \\. {root_dir}/share/zsh/site-functions/source.zsh
+elif [ $shell = bash ];then
+    \\. {root_dir}/share/bash-completion/completions/freva
+fi
+"""
+
+CSH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.csh
+setenv PATH {root_dir}/bin:\\$PATH
+setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
+if ( `basename $SHELL` == tcsh ) then
+    \\. {root_dir}/share/tcsh-completion/completion/freva
+endif
 """
 
 
@@ -127,7 +123,7 @@ def parse_args(argv=None):
         type=str,
         nargs="*",
         help="Pacakges that are installed",
-        default=Installer.default_pkgs,
+        default=[],
     )
     ap.add_argument(
         "--channel", type=str, default="conda-forge", help="Conda channel to be used"
@@ -145,20 +141,6 @@ def parse_args(argv=None):
             "MacOSX-x86_64",
         ],
         help="Choose the architecture according to the system",
-    )
-    ap.add_argument("--python", type=str, default="3.9", help="Python Version")
-    ap.add_argument(
-        "--pip",
-        type=str,
-        nargs="*",
-        default=Installer.pip_pkgs,
-        help="Additional packages that should be installed using pip",
-    )
-    ap.add_argument(
-        "--develop",
-        action="store_true",
-        default=False,
-        help="Use the develop flag when installing the evaluation_system package",
     )
     ap.add_argument(
         "--no_conda",
@@ -185,45 +167,6 @@ def parse_args(argv=None):
 
 
 class Installer:
-
-    default_pkgs = sorted(
-        [
-            "cdo",
-            "conda",
-            "configparser",
-            "distributed",
-            "django",
-            "ffmpeg",
-            "git",
-            "gitpython",
-            "dask",
-            "ipython",
-            "imagemagick",
-            "libnetcdf",
-            "humanize",
-            "mamba",
-            "mysqlclient",
-            "nco",
-            "netcdf4",
-            "numpy",
-            "pandas",
-            "pip",
-            "pillow",
-            "pymysql",
-            "pypdf2",
-            "pytest",
-            "pytest-env",
-            "cartopy",
-            "pytest-cov",
-            "pytest-html",
-            "python-cdo",
-            "xarray",
-            "pandoc",
-            "pint",
-        ]
-    )
-    pip_pkgs = sorted(["pytest-html", "python-git", "python-swiftclient"])
-
     @property
     def conda_name(self):
 
@@ -245,33 +188,51 @@ class Installer:
                 pass
             raise CalledProcessError(res.returncode, cmd)
 
+    def use_or_download_temp_conda(self, tempdir):
+        """Return to path an existing conda env, if there is none, cerate one."""
+
+        conda_exec_path = Path(os.environ.get("CONDA_EXEC_PATH", ""))
+        if conda_exec_path.exists() and conda_exec_path.is_file():
+            return Path(conda_exec_path)
+        tmp_env = Path(tempdir) / "env"
+        conda_script = Path(tempdir) / "anaconda.sh"
+        logger.info(f"Downloading {CONDA_PREFIX} script")
+        kwargs = {"filename": str(conda_script)}
+        if self.silent is False:
+            kwargs["reporthook"] = reporthook
+        urllib.request.urlretrieve(
+            self.conda_url
+            + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
+            **kwargs,
+        )
+        self.check_hash(conda_script)
+        conda_script.touch(0o755)
+        cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
+        logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
+        self.run_cmd(cmd)
+        return tmp_env / "bin" / "conda"
+
     def create_conda(self):
         """Create the conda environment."""
         with TemporaryDirectory(prefix="conda") as td:
-            conda_script = Path(td) / "anaconda.sh"
-            tmp_env = Path(td) / "env"
-            logger.info(f"Downloading {CONDA_PREFIX} script")
-            kwargs = {"filename": str(conda_script)}
-            print(self.arch)
-            print(
-                self.conda_url
-                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX)
-            )
-            if self.silent is False:
-                kwargs["reporthook"] = reporthook
-            urllib.request.urlretrieve(
-                self.conda_url
-                + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
-                **kwargs,
-            )
-            self.check_hash(conda_script)
-            conda_script.touch(0o755)
-            cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
-            logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
-            self.run_cmd(cmd)
-            cmd = f"{tmp_env / 'bin' / 'conda'} create -c {self.channel} -q -p {self.install_prefix} python={self.python} {' '.join(self.packages)} -y"
+            conda_exec_path = self.use_or_download_temp_conda(td)
+            cmd = f"{conda_exec_path} {self.create_command(td)}"
             logger.info(f"Creating conda environment:\n{cmd}")
             self.run_cmd(cmd)
+
+    def create_command(self, tmp_dir):
+        """Construct the conda create command."""
+        # If packages were given, create a conda env from this packages list
+        if self.packages:
+            packages = set(self.packages + ["conda", "pip"])
+            return (
+                f"create -c {self.channel} -q -p {self.install_prefix} "
+                f"python={self.python} " + " ".join(packages) + " -y"
+            )
+        # This is awkward, but since we can't guarrantee that we have a yml
+        # parser installed we have to do this manually
+        env_file = (Path(__file__).parent / "dev-environment.yml")
+        return f"env create -q -p {self.install_prefix} -f {env_file} --force"
 
     def check_hash(self, filename):
         archive = urllib.request.urlopen(self.conda_url).read().decode()
@@ -293,93 +254,77 @@ class Installer:
         logger.info(f"Installing additional packages\n{cmd}")
         self.run_cmd(cmd)
         pip_opts = ""
-        if self.develop:
-            pip_opts = "-e"
         cmd = f"{self.python_prefix} -m pip install {pip_opts} ."
         logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
 
-    def __init__(self, args):
-
-        for arg in vars(args):
-            setattr(self, arg, getattr(args, arg))
-        self.run_tests = args.run_tests
+    def __init__(
+        self,
+        install_prefix,
+        no_conda=False,
+        packages=[],
+        channel="conda-forge",
+        shell="bash",
+        arch="Linux-x86_64",
+        python="3.10",
+        run_tests=False,
+        silent=False,
+    ):
+        self.run_tests = run_tests
+        self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
+        self.packages = packages
+        self.channel = channel
+        self.arch = arch
+        self.python = python
+        self.silent = silent
+        self.shell = shell
         if self.silent:
             logger.setLevel(logging.ERROR)
         self.conda_url = ANACONDA_URL
         if "miniconda" in CONDA_PREFIX.lower():
             self.conda_url = MINICONDA_URL
-        self.install_prefix = self.install_prefix.expanduser().absolute()
-        self.conda = self.no_conda == False
+        self.conda = no_conda is False
 
-    def create_config(self):
-        """Copy evaluation_system.conf to etc."""
+    def create_loadscript(self):
+        """Create the load-script for this installation."""
 
-        this_dir = Path(__file__).absolute().parent
-        config_file = "evaluation_system.conf"
-        defaults = dict(
-            root_dir=self.install_prefix,
-            base_dir_location=self.install_prefix / "work",
-            base_dir="evaluation_system",
-            project_name="evaluation_system",
-        )
-        if not (this_dir / config_file).is_file():
-            raise ValueError(
-                "No config file. Edit and copy the config template"
-                ' "evaluation_system.conf.tmpl" to '
-                '"evaluation_system.conf"'
-            )
-        with (this_dir / config_file).open() as f:
-            config = f.readlines()
-        for nn, line in enumerate(config):
-            cfg_key = line.split("=")[0].strip()
-            if cfg_key in defaults:
-                value = line.split("=")[-1].strip()
-                if not value:
-                    value = defaults[cfg_key]
-                config[nn] = f"{cfg_key}={value}\n"
-        (self.install_prefix / "etc").mkdir(exist_ok=True, parents=True)
-        with (self.install_prefix / "etc" / config_file).open("w") as f:
-            f.write("".join(config))
-
-    def create_auxilary(self, auxilary_dirs=("etc", "sbin")):
-        """Copy all auxilary files."""
-
-        this_dir = Path(__file__).absolute().parent
-
-        for d in auxilary_dirs:
-            for source in (this_dir / d).rglob("*"):
-                target = self.install_prefix / source.relative_to(this_dir)
-                if source.is_file():
-                    target.parent.mkdir(exist_ok=True, parents=True)
-                    logger.info(f"Copying auxilary file {source}")
-                    shutil.copy(source, target)
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+        eval_conf_file = Path(
+            os.environ.get(
+                "EVALUATION_SYSTEM_CONFIG_FILE",
+                Path(__file__).parent / "assets" / "evaluation_system.conf",
+            )
+        )
         for key in (
             "preview_path",
             "project_data",
             "base_dir_location",
             "scheduler_output_dir",
         ):
-            with open(
-                self.install_prefix / "etc" / "evaluation_system.conf", "r"
-            ) as fp:
+            with eval_conf_file.open("r") as fp:
                 config_parser.read_file(fp)
-                try:
-                    Path(config_parser["evaluation_system"][key]).mkdir(
-                        exist_ok=True, parents=True
+                path = Path(config_parser["evaluation_system"][key])
+                if path:
+                    try:
+                        path.mkdir(exist_ok=True, parents=True)
+                    except PermissionError:
+                        logger.warning(f"Could not create path: {path}")
+        eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
+        shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
+        for shell in ("fish", "csh", "sh"):
+            with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
+                f.write(
+                    shell_scripts[shell].format(
+                        root_dir=self.install_prefix, eval_conf_file=eval_conf_file
                     )
-                except PermissionError:
-                    pass
-        freva_path = self.install_prefix / "share" / "freva"
-        freva_path.mkdir(parents=True, exist_ok=True)
-        with (freva_path / "loadfreva.modules").open("w") as f:
+                )
+        with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
                     version=find_version("src/evaluation_system", "__init__.py"),
-                    path=self.install_prefix / "bin",
-                    ld_lib_path=self.install_prefix / "lib",
-                    auto_comp=self.install_prefix / "etc" / "autocomplete.bash",
+                    root_dir=self.install_prefix,
+                    eval_conf_file=eval_conf_file,
+                    project=config_parser["evaluation_system"]["project_name"],
                 )
             )
 
@@ -389,7 +334,7 @@ class Installer:
         env = os.environ.copy()
         env["PATH"] = f'{self.install_prefix / "bin"}:{env["PATH"]}'
         env["FREVA_ENV"] = str(self.install_prefix / "bin")
-        self.run_cmd(f"make test", verbose=True, env=env)
+        self.run_cmd("make test", verbose=True, env=env)
 
     @property
     def python_prefix(self):
@@ -399,11 +344,20 @@ class Installer:
 
 if __name__ == "__main__":
     args = parse_args(sys.argv)
-    Inst = Installer(args)
+    Inst = Installer(
+        install_prefix=args.install_prefix,
+        no_conda=args.no_conda,
+        packages=args.packages,
+        channel=args.channel,
+        shell=args.shell,
+        arch=args.arch,
+        python=os.environ.get("PYTHON_VERSION", DEFAULT_PYTHON),
+        run_tests=args.run_tests,
+        silent=args.silent,
+    )
     if Inst.conda:
         Inst.create_conda()
-        Inst.create_config()
-        Inst.create_auxilary()
-    Inst.pip_install()
+        Inst.pip_install()
+    Inst.create_loadscript()
     if Inst.run_tests:
         Inst.unittests()

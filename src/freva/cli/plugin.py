@@ -1,7 +1,8 @@
+from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from typing import Any, Dict, Optional, List
+from typing import Any, Optional
 
 
 from .utils import BaseCompleter, BaseParser
@@ -142,7 +143,7 @@ class PluginCli(BaseParser):
         if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        options: Dict[str, Any] = BaseCompleter.arg_to_dict(kwargs.pop("options", {}))
+        options: dict[str, Any] = BaseCompleter.arg_to_dict(kwargs.pop("options", {}))
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
@@ -164,7 +165,7 @@ class PluginCli(BaseParser):
             print(out)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])

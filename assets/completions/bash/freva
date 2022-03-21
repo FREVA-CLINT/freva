@@ -42,7 +42,7 @@ __databrowser() {
                 flags="$flags $arg"
             fi
         done
-        options="$(python3 -m freva.cli --shell bash --flags-only freva databrowser $flags)"
+        options="$(python -m freva.cli --shell bash --flags-only freva databrowser $flags)"
     else
         options="$(freva databrowser --attributes $query | sed  -e 's/,/=/g')="
     fi
@@ -61,9 +61,9 @@ __plugin() {
     fi
     if [ $num -ge $COMP_CWORD ];then
         if [ "$(echo $cur |cut -c1)" == "-" ]; then
-            options="$(python3 -m freva.cli --shell bash --flags-only freva plugin)"
+            options="$(python -m freva.cli --shell bash --flags-only freva plugin)"
         else
-            options="$(python3 -m freva.cli --shell bash --strip freva plugin)"
+            options="$(python -m freva.cli --shell bash --strip freva plugin)"
         fi
         echo $options
         return
@@ -75,7 +75,7 @@ __plugin() {
                 flags="$flags $arg"
             fi
         done
-        options="$(python3 -m freva.cli --shell bash --flags-only freva plugin $flags)"
+        options="$(python -m freva.cli --shell bash --flags-only freva plugin $flags)"
         echo $options
     fi
     for comp in ${cmd_args[@]};do
@@ -87,12 +87,12 @@ __plugin() {
     done
     if [ -z "$plugin" ];then
         cur=""
-        options="$(python3 -m freva.cli --shell bash --strip freva plugin)"
+        options="$(python -m freva.cli --shell bash --strip freva plugin)"
         echo $options
         return
     fi
     # We do have a plugin
-    opts="$(python3 -m freva.cli --shell bash --strip freva plugin $cmd_args)"
+    opts="$(python -m freva.cli --shell bash --strip freva plugin $cmd_args)"
     for opt in $opts;do
         if [ "${cmd_args##*${opt}*}" ];then
             echo ${opt}=
@@ -146,7 +146,7 @@ __show_help() {
     elif [ "$cmd" == freva-plugin ];then
         __freva_plugin 1
     else
-        options="$(python3 -m freva.cli --shell bash --flags-only $cmd "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
+        options="$(python -m freva.cli --shell bash --flags-only $cmd "${COMP_WORDS[@]:1:COMP_CWORD-1}")"
         cur="$(echo "${COMP_WORDS[COMP_CWORD]}" | tr '[:upper:]' '[:lower:]')"
         COMPREPLY=( $(compgen -W "${options}" -- "$cur"  ) )
     fi

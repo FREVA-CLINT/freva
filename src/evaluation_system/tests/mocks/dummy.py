@@ -1,5 +1,7 @@
 import tempfile
 import shutil
+from pathlib import Path
+from subprocess import run, PIPE
 import os
 
 from evaluation_system.api.plugin import PluginAbstract
@@ -41,6 +43,11 @@ class DummyPlugin(PluginAbstract):
 
     def runTool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
+        tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
+        res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
+        assert "plugin_env" in os.environ["PATH"]
+        out = res.stdout.decode().strip()
+        assert out == str(tool_path.absolute())
         print(f"Dummy tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),

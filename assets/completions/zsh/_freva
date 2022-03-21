@@ -3,7 +3,7 @@
 __freva() {
     local line state _values ret=1
     local -a subcommands
-    subcommands=(${(f)"$(python3 -m freva.cli --shell zsh freva)"})
+    subcommands=(${(f)"$(python -m freva.cli --shell zsh freva)"})
     _arguments -C \
         "--help[Show help and exit]" \
         "1: :->cmds" \

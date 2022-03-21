@@ -9,14 +9,13 @@ from __future__ import annotations
 from typing import (
     Optional,
     Generator,
-    TypedDict,
+    List,
     Union,
     Any,
     ClassVar,
-    Literal,
     cast,
-    overload,
 )
+from typing_extensions import Literal, TypedDict
 from dataclasses import dataclass, field
 
 import json
@@ -456,7 +455,7 @@ class DRSFile:
         # split file name
         # (extract .nc before splitting)
         file_name_parts = cast(
-            list[Optional[str]], result["parts"]["file_name"][:-3].split("_")
+            List[Optional[str]], result["parts"]["file_name"][:-3].split("_")
         )
         if (
             len(file_name_parts) == len(structure.parts_file_name) - 1
