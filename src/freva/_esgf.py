@@ -1,31 +1,32 @@
 """Module to access the esgf data catalogue."""
+from __future__ import annotations
 from pathlib import Path
 from evaluation_system.model.esgf import P2P
-from typing import Dict, Union, Optional, List, overload, Literal, Tuple
-
+from typing import Union, Optional, overload
+from typing_extensions import Literal
 
 __all__ = ["esgf"]
 
 
 @overload
-def esgf(datasets: Literal[True]) -> List[Tuple[str, str]]:
+def esgf(datasets: Literal[True]) -> list[tuple[str, str]]:
     ...
 
 
 @overload
-def esgf(datasets: Literal[False], show_facet: str) -> Dict[str, List[str]]:
+def esgf(datasets: Literal[False], show_facet: str) -> dict[str, list[str]]:
     ...
 
 
 def esgf(
     datasets: bool = False,
-    show_facet: Optional[Union[str, List[str]]] = None,
+    show_facet: Optional[Union[str, list[str]]] = None,
     download_script: Optional[Union[str, Path]] = None,
     query: Optional[str] = None,
     opendap: bool = False,
     gridftp: bool = False,
-    **search_constraints: Dict[str, str],
-) -> Union[str, List[Tuple[str, str]], Dict[str, List[str]]]:
+    **search_constraints: dict[str, str],
+) -> Union[str, list[tuple[str, str]], dict[str, list[str]]]:
     """Find data in the ESGF.
 
     ::

@@ -1,7 +1,8 @@
+from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from typing import Optional, List, Any, cast, Dict, Union
+from typing import Optional, Any, cast, Union
 
 from .utils import BaseCompleter, BaseParser
 import freva
@@ -94,7 +95,7 @@ class EsgfCli(BaseParser):
         args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
     ) -> None:
         """Call the esgf command and print the results."""
-        facets: Dict[str, Union[List[str], str]] = {}
+        facets: dict[str, Union[list[str], str]] = {}
         _facets = BaseCompleter.arg_to_dict(args.facets)
         _ = kwargs.pop("facets", None)
         for key, val in _facets.items():
@@ -131,7 +132,7 @@ class EsgfCli(BaseParser):
             print("\n".join([str(d) for d in out]))
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = EsgfCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])

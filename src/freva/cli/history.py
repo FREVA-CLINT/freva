@@ -1,6 +1,7 @@
+from __future__ import annotations
 import argparse
 import sys
-from typing import Any, Optional, List
+from typing import Any, Optional
 
 from .utils import BaseParser
 import freva
@@ -107,7 +108,7 @@ class HistoryCli(BaseParser):
         print(result)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = HistoryCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])

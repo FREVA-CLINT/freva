@@ -6,6 +6,8 @@ stages:
 variables:
   CONDA_ENV: "freva-dev"
   PYTHON_VERSION: "3.10"
+  FREVA_ENV: "/tmp/freva/bin"
+  EVALUATION_SYSTEM_CONFIG_FILE: ".docker/evaluation_system.conf"
 
 lint:
   image: continuumio/anaconda3
@@ -15,7 +17,6 @@ lint:
   before_script:
     - conda env create -q -f dev-environment.yml
     - apt update && apt install make
-    - conda run -n $CONDA_ENV pip install .[test]
   script:
     - conda run -n $CONDA_ENV make lint
 
@@ -44,19 +45,45 @@ dev-obs:
         - if: "$CI_COMMIT_BRANCH == 'master'"
         - if: "$CI_COMMIT_BRANCH != 'master'"
 
-test_latest:
+.test_template: &py_test # pytest framework template
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
     variables:
-      CONDA: 'Miniconda3-latest'
-      PYTHON_VERSION: '3.10'
+      CONDA: "Miniconda3-latest"
     tags:
       - docker, specific
-    before_script:
-      - cp .docker/evaluation_system.conf assets/
+
+test_37:
+    << : *py_test
+    variables:
+      PYTHON_VERSION: "3.7"
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva_latest -s --python=$PYTHON_VERSION --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+
+test_38:
+    << : *py_test
+    variables:
+      PYTHON_VERSION: "3.8"
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+
+test_39:
+    << : *py_test
+    variables:
+      PYTHON_VERSION: "3.8"
+    script:
+        # Do the unit tests
+      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+
+test_latest:
+    << : *py_test
+    script:
+      # Install the conda env
+      - python3 deploy.py /tmp/freva -s --packages pip gitpython pandoc
+      # Do the unit tests with converage reports
+      - make test_coverage
     artifacts:
       when: always
       reports:
@@ -65,7 +92,6 @@ test_latest:
         - coverage_report
         - test_results
         - report.xml
-
 
 pages:
   stage: report

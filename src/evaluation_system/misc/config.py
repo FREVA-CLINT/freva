@@ -238,7 +238,6 @@ def reloadConfiguration() -> None:
                 # look for the missing keys in the vault. Any keys set in the config
                 # will take priority
                 secret_store_keys: list[str] = []
-                _config.setdefault("db.port", 3306)
                 for secret in ("db.user", "db.passwd", "db.db", "db.host"):
                     value = _config.get(secret, None)
                     if value:
@@ -246,6 +245,7 @@ def reloadConfiguration() -> None:
                     else:
                         secret_store_keys.append(secret)
                 if len(secret_store_keys) > 0:
+                    secret_store_keys += ["db.port"]
                     sha: str = _get_public_key(
                         config_parser[CONFIG_SECTION_NAME]["project_name"]
                     )

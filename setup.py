@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-from __future__ import annotations
+
 from pathlib import Path
 from setuptools import setup, find_packages
 import sys
-from typing import List, Tuple
 from tempfile import TemporaryDirectory
 from deploy import find_version, read
 
@@ -15,13 +14,13 @@ data_files = [
     (
         "freva",
         [
-            str(this_dir / "assets" / "evaluation_system.conf"),
             str(this_dir / "assets" / "drs_config.toml"),
         ],
     )
 ]
 
-def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
+
+def prep_tcsh_completion(tempdir):
     """Create completion scripts for tcsh."""
 
     script_dir = COMPLETION_DIR.relative_to(this_dir) / "tcsh"
@@ -55,7 +54,7 @@ def prep_tcsh_completion(tempdir: Path) -> list[tuple[str, list[str]]]:
     return script_paths
 
 
-def gather_completion_scripts(tempdir: Path) -> list[tuple[str, list[str]]]:
+def gather_completion_scripts(tempdir):
     """Gather all data_files related to shell completion scripts."""
 
     shells = {
@@ -70,6 +69,7 @@ def gather_completion_scripts(tempdir: Path) -> list[tuple[str, list[str]]]:
         ]
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
+
 
 with TemporaryDirectory(dir=COMPLETION_DIR) as td:
     data_files += gather_completion_scripts(Path(td))
@@ -109,12 +109,13 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
                 "sphinxcontrib_github_alt",
             ],
             "test": [
+                "black",
                 "pytest",
                 "nbformat",
-                "black",
                 "pytest-html",
                 "pytest-env",
                 "pytest-cov",
+                "pep257",
                 "nbval",
                 "h5netcdf",
                 "mock",
@@ -129,7 +130,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             ],
         },
         entry_points={"console_scripts": entry_points},
-        python_requires=">=3.8",
+        python_requires=">=3.7",
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Environment :: Console",
@@ -138,6 +139,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             "License :: OSI Approved :: BSD License",
             "Operating System :: POSIX :: Linux",
             "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",

@@ -26,12 +26,7 @@ dependencies:
   - pint
   - pip
   - pip:
-      - allure-pytest
-      - requests_mock
-      - pep257
-      - types-requests
-      - types-toml
-      - humanize
+    - .[test]
   - pillow
   - pymysql
   - pypdf2

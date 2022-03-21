@@ -7,8 +7,12 @@ all: install test
 
 install:
 	python3 -m pip install .[test]
+
 test:
-	pytest -vv \
+	python3 -m pytest -vv $(PWD)/src/evaluation_system/tests
+
+test_coverage:
+	python3 -m pytest -vv \
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests

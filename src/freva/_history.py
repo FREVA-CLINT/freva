@@ -1,11 +1,12 @@
 """Module to query the database for plugin history entries."""
-__all__ = ["history"]
-
+from __future__ import annotations
 import json
-from typing import Dict, List, Optional, Union, Any
+from typing import Optional, Union
 
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.misc import logger
+
+__all__ = ["history"]
 
 
 def history(
@@ -14,15 +15,16 @@ def history(
     plugin: Optional[str] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
-    entry_ids: Union[int, List[int]] = None,
+    entry_ids: Union[int, list[int]] = None,
     full_text: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
-) -> Union[List[str], Dict[str, str]]:
+) -> Union[list[str], dict[str, str]]:
     """Get access to the configuration history.
 
     The `.history` mthod displays the entries with a one-line compact description.
-    The first number you see is the entry id, which you might use to select single entries.
+    The first number you see is the entry id, which you might use to select
+    single entries.
 
     Parameters:
     -----------

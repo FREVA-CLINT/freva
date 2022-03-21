@@ -1,6 +1,7 @@
+from __future__ import annotations
 import argparse
 import sys
-from typing import Any, Dict, Optional, List
+from typing import Any, Optional
 
 
 from .utils import BaseCompleter, BaseParser
@@ -68,6 +69,7 @@ class DataBrowserCli(BaseParser):
             "--facet",
             default=None,
             type=str,
+            action="append",
             help=("Retrieve values of given facet instead of files"),
         )
         subparser.add_argument(
@@ -98,13 +100,13 @@ class DataBrowserCli(BaseParser):
         **kwargs: Optional[Any],
     ) -> None:
         """Call the databrowser command and print the results."""
-        facets: Dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
+        facets: dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
         facet_limit = kwargs.pop("facet_limit")
         _ = kwargs.pop("facets")
         for key, values in facets.items():
             if len(values) == 1:
                 facets[key] = values[0]
-        merged_args: Dict[str, Any] = {**kwargs, **facets}
+        merged_args: dict[str, Any] = {**kwargs, **facets}
         out = databrowser(**merged_args)
         # flush stderr in case we have something pending
         sys.stderr.flush()
@@ -135,7 +137,7 @@ class DataBrowserCli(BaseParser):
             print(str(key), flush=True)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = DataBrowserCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
