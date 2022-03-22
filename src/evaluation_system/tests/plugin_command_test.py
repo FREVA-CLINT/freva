@@ -6,6 +6,7 @@ Created on 18.05.2016
 import logging
 from functools import partial
 import os
+import mock
 from pathlib import Path
 import pytest
 import mock
@@ -14,6 +15,47 @@ from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
 
+@mock.patch("os.getpid", lambda: 12345)
+def test_cli(dummy_plugin, capsys, dummy_config, caplog):
+
+    from freva.cli.plugin import main as plugin_cli
+    import time
+    from evaluation_system.misc.exceptions import ValidationError
+    from evaluation_system.misc import config
+    with pytest.raises(ValidationError):
+        plugin_cli(["dummyplugin"])
+    plugin_cli(["dummyplugin", "the_number=13"])
+    output = capsys.readouterr().out
+    assert "the_number" in output
+    assert "13" in output
+    assert os.getpid() == 12345
+    out_path = Path(dummy_config.get("scheduler_output_dir")) / "dummyplugin" / "DummyPlugin-12345.local"
+    try:
+        out_path.unlink()
+    except FileNotFoundError:
+        pass
+    plugin_cli(["dummyplugin", "the_number=13"])
+    interactive = capsys.readouterr().out
+    assert dummy_plugin.plugin_output_file == out_path
+    assert out_path.exists()
+    with out_path.open() as f:
+        assert interactive == f.read()
+    out_path.unlink()
+    plugin_cli(["dummyplugin", "the_number=13", "--batchmode"])
+    output = capsys.readouterr().out
+    _, loglevel, message = caplog.record_tuples[-1]
+    assert loglevel == logging.INFO
+    assert "tail -f" in message
+    out_f = Path(message.split('\n')[-1].split(" ")[-1])
+    assert out_f.exists()
+    with out_f.open() as f:
+        assert "pending" in f.read()
+    time.sleep(2)
+    with out_f.open() as f:
+        assert "the_number" in f.read()
+
+
+@mock.patch("os.getpid", lambda: 12345)
 def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
     cmd = ["doc", "DummyPlugin", "--file-name", str(plugin_doc)]
     with mock.patch.dict(os.environ, admin_env, clear=True):
@@ -27,6 +69,7 @@ def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
             run_cli(cmd[:-2])
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_forbidden_tool_doc(dummy_env):
     from freva.cli.admin import update_tool_doc
 
@@ -36,6 +79,7 @@ def test_forbidden_tool_doc(dummy_env):
         run_cli(["solr", "doc" "--help"])
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_list_tools(capsys, dummy_env):
     from freva.cli.plugin import main as run
 
@@ -69,6 +113,7 @@ extra_scheduler_options (default: --qos=test, --array=20)
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
@@ -111,6 +156,7 @@ extra_scheduler_options: - (default: )""",
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_plugin(capsys, dummy_history, dummy_env):
     from evaluation_system.misc import config
 
@@ -145,6 +191,7 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
         assert line in output_str
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_handle_pull_request(dummy_env, capsys):
     from evaluation_system.model.plugins.models import ToolPullRequest
 

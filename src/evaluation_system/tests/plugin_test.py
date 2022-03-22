@@ -8,12 +8,14 @@ import os
 import datetime
 from pathlib import Path
 import pytest
+import mock
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 import sys
 
 from evaluation_system.tests import similar_string
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_incomplete_abstract(dummy_plugin):
     # this is an incomplete class not implementing all required fields
     from evaluation_system.api.plugin import PluginAbstract
@@ -25,6 +27,7 @@ def test_incomplete_abstract(dummy_plugin):
         Incomplete()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_complete_abstract(dummy_plugin):
     """Tests the creation of a complete implementation of the Plugin Abstract class"""
     # even though py it's just a stub, it should be complete.
@@ -33,6 +36,7 @@ def test_complete_abstract(dummy_plugin):
     assert type(dummy_plugin) == type(DummyPlugin())
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_setup_configuration(dummy_plugin):
     from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
     from evaluation_system.api.parameters import (
@@ -76,6 +80,7 @@ def test_setup_configuration(dummy_plugin):
         assert "$USER_BASE_DIR" == res["num"]
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_parse_arguments(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -117,6 +122,7 @@ def test_parse_arguments(dummy_plugin):
         assert res == dict(a=parsed_val), "Error when parsing %s, got %s" % (arg, res)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_parse_metadict(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -151,6 +157,7 @@ def test_parse_metadict(dummy_plugin):
         dummy._parseConfigStrValue("b", "1")
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_read_config_parser(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -185,6 +192,7 @@ def test_read_config_parser(dummy_plugin):
         dummy.readFromConfigParser(conf)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_save_config(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
     from io import StringIO
@@ -286,6 +294,7 @@ dj1yfk""",
     dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_read_config(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -320,6 +329,7 @@ def test_read_config(dummy_plugin):
                 assert conf_dict == {**expected_dict, **{"extra_scheduler_options": ""}}
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def testSubstitution(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -340,6 +350,7 @@ def testSubstitution(dummy_plugin):
     assert "c: - (default: $USER_OUTPUT_DIR [" in cfg_str
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_help(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
 
@@ -379,6 +390,7 @@ extra_scheduler_options (default: )
         assert similar_string(dummy.getHelp().strip(), resource.strip(), 0.9)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_show_config(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -432,6 +444,7 @@ extra_scheduler_options: - (default: )""",
     user.cleanRandomHome()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_usage(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
 
@@ -453,6 +466,7 @@ def test_usage(dummy_plugin):
     assert res_str1.strip("\x00") == res_str2.strip("\x00")
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -479,6 +493,7 @@ def test_run(dummy_plugin):
     DummyPlugin._runs = []
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_get_class_base_dir(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -504,6 +519,7 @@ def test_get_class_base_dir(dummy_plugin):
     assert module_name == "evaluation_system.tests.mocks.dummy"
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_special_variables():
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -545,6 +561,7 @@ def test_special_variables():
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_compose_command():
 
     from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -569,6 +586,7 @@ def test_compose_command():
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_append_unique_output():
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -597,6 +615,7 @@ def test_append_unique_output():
         config.reloadConfiguration()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_tool(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -612,6 +631,7 @@ def test_run_tool(dummy_plugin):
     }
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_prepare_output(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -645,6 +665,7 @@ def test_prepare_output(dummy_plugin):
     assert len(meta_data) == 2
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_call(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -657,6 +678,7 @@ def test_call(dummy_plugin):
     assert res.strip("\n") == "/bin/bash"
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_link_mydata(dummy_plugin, dummy_solr):
     with TemporaryDirectory() as td:
         for file in dummy_solr.files:
