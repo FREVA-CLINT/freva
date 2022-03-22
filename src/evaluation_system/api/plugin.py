@@ -275,7 +275,7 @@ A plug-in/user might then use them to define a value in the following way::
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
 
-    def _set_interactive_job_as_running(self, rowid: int):
+    def _set_interactive_job_as_running(self, rowid: Optional[int]):
         """Set an interactive job as running."""
         try:
             h = hist_model.History.objects.get(id=rowid)
@@ -286,7 +286,9 @@ A plug-in/user might then use them to define a value in the following way::
             pass
 
     @contextmanager
-    def set_environment(self, rowid: int, is_interactive_job: bool) -> Iterator[None]:
+    def set_environment(
+        self, rowid: Optional[int], is_interactive_job: bool
+    ) -> Iterator[None]:
         """Set the environement."""
         env_path = os.environ["PATH"]
         stdout = [sys.stdout]
@@ -297,7 +299,8 @@ A plug-in/user might then use them to define a value in the following way::
             if is_interactive_job is True:
                 f = self.plugin_output_file.open("w")
                 self._set_interactive_job_as_running(rowid)
-                stdout.append(f), stderr.append(f)
+                stdout.append(f)
+                stderr.append(f)
             with PIPE_OUT(*stdout) as p_sto, PIPE_OUT(*stderr) as p_ste:
                 sys.stdout = p_sto
                 sys.stderr = p_ste

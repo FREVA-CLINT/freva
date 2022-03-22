@@ -22,6 +22,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     import time
     from evaluation_system.misc.exceptions import ValidationError
     from evaluation_system.misc import config
+
     with pytest.raises(ValidationError):
         plugin_cli(["dummyplugin"])
     plugin_cli(["dummyplugin", "the_number=13"])
@@ -29,7 +30,11 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     assert "the_number" in output
     assert "13" in output
     assert os.getpid() == 12345
-    out_path = Path(dummy_config.get("scheduler_output_dir")) / "dummyplugin" / "DummyPlugin-12345.local"
+    out_path = (
+        Path(dummy_config.get("scheduler_output_dir"))
+        / "dummyplugin"
+        / "DummyPlugin-12345.local"
+    )
     try:
         out_path.unlink()
     except FileNotFoundError:
@@ -46,7 +51,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     _, loglevel, message = caplog.record_tuples[-1]
     assert loglevel == logging.INFO
     assert "tail -f" in message
-    out_f = Path(message.split('\n')[-1].split(" ")[-1])
+    out_f = Path(message.split("\n")[-1].split(" ")[-1])
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
