@@ -81,7 +81,7 @@ test_latest:
     << : *py_test
     script:
       # Install the conda env
-      - python3 deploy.py /tmp/freva -e -s --packages pip gitpython pandoc
+      - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
       # Do the unit tests with converage reports
       - make test_coverage
     artifacts:

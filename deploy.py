@@ -264,10 +264,6 @@ class Installer:
             cmd = f"{self.python_prefix} -m pip install .[test]"
         logger.info(f"Installing additional packages\n{cmd}")
         self.run_cmd(cmd)
-        pip_opts = ""
-        cmd = f"{self.python_prefix} -m pip install {pip_opts} ."
-        logger.info("Installing evaluation_system packages")
-        self.run_cmd(cmd)
 
     def __init__(
         self,
