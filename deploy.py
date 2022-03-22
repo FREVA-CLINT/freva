@@ -156,6 +156,14 @@ def parse_args(argv=None):
         help="Run unittests after installation",
     )
     ap.add_argument(
+        "--editable",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Apply pip install in editable mode.",
+    )
+
+    ap.add_argument(
         "--silent",
         "-s",
         action="store_true",
@@ -247,10 +255,13 @@ class Installer:
         if md5_hash.hexdigest() != md5sum:
             raise ValueError("Download failed, md5sum mismatch: {md5sum} ")
 
-    def pip_install(self):
+    def pip_install(self, editable=False):
         """Install additional packages using pip."""
 
-        cmd = f"{self.python_prefix} -m pip install .[test]"
+        if editable:
+            cmd = f"{self.python_prefix} -m pip install -e .[test]"
+        else:
+            cmd = f"{self.python_prefix} -m pip install .[test]"
         logger.info(f"Installing additional packages\n{cmd}")
         self.run_cmd(cmd)
         pip_opts = ""
@@ -357,7 +368,7 @@ if __name__ == "__main__":
     )
     if Inst.conda:
         Inst.create_conda()
-        Inst.pip_install()
+        Inst.pip_install(args.editable)
     Inst.create_loadscript()
     if Inst.run_tests:
         Inst.unittests()
