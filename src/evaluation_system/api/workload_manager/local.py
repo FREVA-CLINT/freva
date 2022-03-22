@@ -45,7 +45,7 @@ class LocalJob(Job):
         # Declare class attribute that shall be overridden
         self.job_header = ""
         if self.log_directory:
-            out_file = Path(self.log_directory) / f"{self.job_name}-$PID.out"
+            out_file = Path(self.log_directory) / f"{self.job_name}-$PID.local"
             self._command_template += f" &> {out_file}"
         logger.debug("Job script: \n %s" % self.job_script())
 

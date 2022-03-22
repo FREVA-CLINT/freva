@@ -76,8 +76,8 @@ class PBSJob(Job):
         if walltime is not None:
             header_lines.append("#PBS -l walltime=%s" % walltime)
         if self.log_directory is not None:
-            header_lines.append("#PBS -e %s/" % self.log_directory)
             header_lines.append("#PBS -o %s/" % self.log_directory)
+            header_lines.append("#PBS -j oe")
         header_lines.extend(["#PBS %s" % arg for arg in job_extra])
 
         # Declare class attribute that shall be overridden
