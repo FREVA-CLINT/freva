@@ -136,7 +136,7 @@ class UserDB(object):
 
         return newentry.id
 
-    def scheduleEntry(self, row_id, uid, slurmFileName):
+    def scheduleEntry(self, row_id, uid, slurmFileName, status=None):
         """
         :param row_id: The index in the history table
         :param uid: the user id
@@ -149,7 +149,7 @@ class UserDB(object):
         )
 
         h.slurm_output = slurmFileName
-        h.status = hist.History.processStatus.scheduled
+        h.status = status or hist.History.processStatus.scheduled
 
         h.save()
 

@@ -16,6 +16,7 @@ import sys
 import stat
 import shlex
 import tempfile
+import traceback
 import textwrap
 from time import time
 from typing import Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
@@ -23,6 +24,7 @@ from typing import Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
 from PyPDF2 import PdfFileReader
 
 from evaluation_system.model.user import User
+import evaluation_system.model.history.models as hist_model
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.utils import PIPE_OUT
@@ -268,30 +270,49 @@ A plug-in/user might then use them to define a value in the following way::
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
                 self._user.getUserSchedulerOutputDir(),
-                plugin_name,
+                plugin_name.lower(),
             )
-            self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.out"
+            self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
 
+    def _set_interactive_job_as_running(self, rowid: int):
+        """Set an interactive job as running."""
+        try:
+            h = hist_model.History.objects.get(id=rowid)
+            h.slurm_output = str(self.plugin_output_file)
+            h.status = hist_model.History.processStatus.running
+            h.save()
+        except hist_model.History.DoesNotExist:
+            pass
+
     @contextmanager
-    def set_environment(self) -> Iterator[None]:
+    def set_environment(self, rowid: int, is_interactive_job: bool) -> Iterator[None]:
         """Set the environement."""
         env_path = os.environ["PATH"]
-        stdout = sys.stdout
-        stderr = sys.stderr
+        stdout = [sys.stdout]
+        stderr = [sys.stderr]
         try:
             self.plugin_output_file.parent.mkdir(exist_ok=True, parents=True)
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
-            f = self.plugin_output_file.open("w")
-            with PIPE_OUT(stdout, f) as p_sto, PIPE_OUT(stdout, f) as p_ste:
+            if is_interactive_job is True:
+                f = self.plugin_output_file.open("w")
+                self._set_interactive_job_as_running(rowid)
+                stdout.append(f), stderr.append(f)
+            with PIPE_OUT(*stdout) as p_sto, PIPE_OUT(*stderr) as p_ste:
                 sys.stdout = p_sto
-                sys.stdout = p_ste
+                sys.stderr = p_ste
                 yield
+        except Exception as e:
+            if is_interactive_job is True:
+                traceback.print_exc(file=f)
+            raise e
         finally:
             os.environ["PATH"] = env_path
-            sys.stdout = stdout
-            sys.stderr = stderr
-            f.close()
+            sys.stdout = stdout[0]
+            sys.stderr = stderr[0]
+            if is_interactive_job is True:
+                f.flush()
+                f.close()
 
     @property
     def conda_path(self) -> str:
@@ -307,12 +328,16 @@ A plug-in/user might then use them to define a value in the following way::
         return f"{plugin_path.parent / 'plugin_env' / 'bin'}"
 
     def _runTool(
-        self, config_dict: config_dict_type = {}, unique_output: bool = True
+        self,
+        config_dict: config_dict_type = {},
+        unique_output: bool = True,
+        is_interactive_job: bool = True,
+        rowid: Optional[int] = None,
     ) -> Optional[Any]:
         config_dict = self.append_unique_id(config_dict, unique_output)
         for key in config.exclude:
             config_dict.pop(key, "")
-        with self.set_environment():
+        with self.set_environment(rowid, is_interactive_job):
             result = self.runTool(config_dict=config_dict)
             return result
 

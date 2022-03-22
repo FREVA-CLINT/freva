@@ -44,7 +44,9 @@ class PIPE_OUT:
     def write(self, msg, *args, **kwargs) -> None:
         for handler in self.handlers:
             handler.write(msg, *args, **kwargs)
-        self.handlers[-1].flush()
+            # name = handler.name.lower()
+            # if name != "<stdout>" and name != "<stderr>":
+            #    handler.flush()
 
     def flush(self) -> None:
         for handler in self.handlers:
