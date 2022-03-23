@@ -15,6 +15,7 @@ import subprocess as sub
 import sys
 import stat
 import shlex
+import socket
 import tempfile
 import traceback
 import textwrap
@@ -280,6 +281,7 @@ A plug-in/user might then use them to define a value in the following way::
         try:
             h = hist_model.History.objects.get(id=rowid)
             h.slurm_output = str(self.plugin_output_file)
+            h.host = socket.gethostbyname(socket.gethostname())
             h.status = hist_model.History.processStatus.running
             h.save()
         except hist_model.History.DoesNotExist:

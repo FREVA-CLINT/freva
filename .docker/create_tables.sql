@@ -269,6 +269,7 @@ CREATE TABLE `history_history` (
   `version` varchar(20) NOT NULL,
   `configuration` longtext NOT NULL,
   `slurm_output` longtext NOT NULL,
+  `host` longtext NOT NULL,
   `uid` varchar(30) NOT NULL,
   `status` int(11) NOT NULL,
   `flag` int(11) NOT NULL DEFAULT '0',

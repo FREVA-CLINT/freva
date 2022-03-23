@@ -14,6 +14,7 @@ from datetime import datetime
 import json
 import re
 import pandas as pd
+import socket
 from evaluation_system.misc import config
 from evaluation_system.model.history.models import Configuration
 
@@ -149,6 +150,7 @@ class UserDB(object):
         )
 
         h.slurm_output = slurmFileName
+        h.host = socket.gethostbyname(socket.gethostname())
         h.status = status or hist.History.processStatus.scheduled
 
         h.save()

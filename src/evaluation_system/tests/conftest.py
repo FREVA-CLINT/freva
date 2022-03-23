@@ -5,6 +5,7 @@ from getpass import getuser
 import os
 from pathlib import Path
 import shutil
+import socket
 import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
@@ -282,6 +283,7 @@ def test_user(dummy_env, dummy_settings, config_dict):
         configuration='{"some": "config", "dict": "values"}',
         tool="dummytool",
         slurm_output="/path/to/slurm-44742.out",
+        host=socket.gethostbyname(socket.gethostname()),
     )
     yield user, hist
     user.delete()
@@ -391,6 +393,7 @@ def hist_obj(django_user):
     yield History.objects.create(
         status=History.processStatus.running,
         slurm_output="/some/out.txt",
+        host=socket.gethostbyname(socket.gethostname()),
         timestamp=datetime.now(),
         uid=User.objects.first(),
     )
