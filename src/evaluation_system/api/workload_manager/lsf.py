@@ -1,12 +1,15 @@
+"""Submit jobs to the lsf workload manager."""
 from __future__ import annotations
 from distutils.version import LooseVersion
 
 import logging
 import math
 import os
+from pathlib import Path
 import re
 import subprocess
 import toolz
+from typing import Any, cast, ClassVar, Optional, Coroutine, Union
 
 from .core import Job
 
@@ -14,28 +17,29 @@ logger = logging.getLogger(__name__)
 
 
 class LSFJob(Job):
-    submit_command = "bsub"
-    cancel_command = "bkill"
-    config_name = "lsf"
+    submit_command: ClassVar[str] = "bsub"
+    cancel_command: ClassVar[str] = "bkill"
+    config_name: ClassVar[str] = "lsf"
 
     def __init__(
         self,
-        scheduler=None,
-        name=None,
-        queue=None,
-        project=None,
-        ncpus=None,
-        mem=None,
-        walltime="",
-        job_extra=[],
-        lsf_units=None,
-        use_stdin=None,
+        scheduler: Optional[str] = None,
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        ncpus: Optional[int] = None,
+        mem: Optional[int] = None,
+        walltime: str = "",
+        job_extra: Optional[list[str]] = None,
+        lsf_units: Optional[str] = None,
+        use_stdin: Optional[str] = None,
         **base_class_kwargs,
     ):
         super().__init__(scheduler=scheduler, name=name, **base_class_kwargs)
 
         self.use_stdin = use_stdin
         header_lines = []
+        job_extra = job_extra or []
         # LSF header build
         if self.name is not None:
             header_lines.append("#BSUB -J %s" % self.job_name)
@@ -61,7 +65,7 @@ class LSFJob(Job):
                 header_lines.append('#BSUB -R "span[hosts=1]"')
         if mem is None:
             # Compute default memory specifications
-            mem = self.worker_memory
+            mem = cast(int, self.worker_memory)
             logger.info(
                 "mem specification for LSF not set, initializing it to %s bytes" % mem
             )
@@ -78,7 +82,8 @@ class LSFJob(Job):
 
         logger.debug("Job script: \n %s" % self.job_script())
 
-    async def _submit_job(self, script_filename):
+    async def _submit_job(self, script_filename: Union[Path, str]) -> Any:
+        script_filename = str(script_filename)
         if self.use_stdin:
             piped_cmd = [self.submit_command + "< " + script_filename + " 2> /dev/null"]
             return self._call(piped_cmd, shell=True)
@@ -87,7 +92,7 @@ class LSFJob(Job):
             return result
 
 
-def lsf_format_bytes_ceil(n, lsf_units="mb"):
+def lsf_format_bytes_ceil(n: int, lsf_units: str = "mb") -> str:
     """Format bytes as text
 
     Convert bytes to megabytes which LSF requires.
@@ -109,7 +114,7 @@ def lsf_format_bytes_ceil(n, lsf_units="mb"):
     return "%d" % math.ceil(n / (1000 ** converter[lsf_units]))
 
 
-def lsf_detect_units():
+def lsf_detect_units() -> str:
     """Try to autodetect the unit scaling on an LSF system"""
     # Search for automatically, Using docs from LSF 9.1.3 for search/defaults
     unit = "kb"  # Default fallback unit
@@ -150,7 +155,10 @@ def lsf_detect_units():
 
 
 @toolz.memoize
-def lsf_version():
+def lsf_version() -> Optional[LooseVersion]:
     out, _ = subprocess.Popen("lsid", stdout=subprocess.PIPE).communicate()
-    version = re.search(r"(\d+\.)+\d+", out.decode()).group()
-    return LooseVersion(version)
+    versn: str = out.decode()
+    match = re.search(r"(\d+\.)+\d+", versn)
+    if match is not None:
+        return LooseVersion(match.group())
+    return None

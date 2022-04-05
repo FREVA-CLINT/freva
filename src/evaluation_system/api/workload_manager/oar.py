@@ -1,6 +1,8 @@
+"""Submit jobs using the oar workload manager."""
 from __future__ import annotations
 import logging
 import shlex
+from typing import Optional, Union, ClassVar
 
 from .core import Job
 
@@ -10,24 +12,24 @@ logger = logging.getLogger(__name__)
 class OARJob(Job):
 
     # Override class variables
-    submit_command = "oarsub"
-    cancel_command = "oardel"
-    job_id_regexp = r"OAR_JOB_ID=(?P<job_id>\d+)"
-    config_name = "oar"
+    submit_command: ClassVar[str] = "oarsub"
+    cancel_command: ClassVar[str] = "oardel"
+    job_id_regexp: ClassVar[str] = r"OAR_JOB_ID=(?P<job_id>\d+)"
+    config_name: ClassVar[str] = "oar"
 
     def __init__(
         self,
-        scheduler=None,
-        name=None,
-        queue=None,
-        project=None,
-        resource_spec=None,
-        walltime="",
-        job_extra=[],
+        scheduler: Optional[str] = None,
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        resource_spec: Optional[str] = None,
+        walltime: str = "",
+        job_extra: Optional[list[str]] = None,
         **base_class_kwargs,
     ):
         super().__init__(scheduler=scheduler, name=name, **base_class_kwargs)
-
+        job_extra = job_extra or []
         header_lines = []
         if self.job_name is not None:
             header_lines.append("#OAR -n %s" % self.job_name)

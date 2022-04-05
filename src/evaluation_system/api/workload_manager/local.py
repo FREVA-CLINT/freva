@@ -1,8 +1,10 @@
+"""Run job in the background on the same system."""
 from __future__ import annotations
 import logging
 import os
 from pathlib import Path
 import subprocess
+from typing import ClassVar, Optional
 
 from .core import Job
 
@@ -21,21 +23,22 @@ class LocalJob(Job):
     plugin args
     """
 
-    config_name = "local"
-    cancel_command = "kill -9"
+    config_name: ClassVar[str] = "local"
+    cancel_command: ClassVar[str] = "kill -9"
 
     def __init__(
         self,
-        name=None,
-        queue=None,
-        project=None,
-        resource_spec=None,
-        walltime="",
-        job_extra=[],
-        env_extra=[],
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        resource_spec: Optional[str] = None,
+        walltime: str = "",
+        job_extra: Optional[list[str]] = None,
+        env_extra: Optional[list[str]] = None,
         **kwargs,
     ):
         # Instantiate args and parameters from parent abstract class
+        env_extra = env_extra or []
         env_extra = ["PID=$(pgrep -f $0)", "sleep 3"] + env_extra
         kwargs["memory"] = 1
         super().__init__(
@@ -47,7 +50,7 @@ class LocalJob(Job):
         if self.log_directory:
             out_file = Path(self.log_directory) / f"{self.job_name}-$PID.local"
             self._command_template += f" &> {out_file}"
-        logger.debug("Job script: \n %s" % self.job_script())
+        logger.debug(f"Job script: \n {self.job_script()}")
 
     def _submit_job(self, script_filename):
         # Should we make this async friendly?
@@ -56,7 +59,5 @@ class LocalJob(Job):
         return str(process.pid)
 
     @classmethod
-    def _close_job(self, job_id, cancel_command):
+    def _close_job(cls, job_id, cancel_command):
         os.kill(int(job_id), 9)
-        # from distributed.utils_test import terminate_process
-        # terminate_process(self.process)

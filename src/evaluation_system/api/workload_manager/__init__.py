@@ -1,7 +1,7 @@
 """Collection of methods and classes for submitting plugins to a workload manager."""
 from __future__ import annotations
 from pathlib import Path
-from typing import Union, Type
+from typing import cast, Union, Type, List
 from .core import Job
 from .local import LocalJob
 from .lsf import LSFJob
@@ -50,7 +50,7 @@ def cancel_command(system: str, job_id: int) -> str:
 def schedule_job(
     system: str,
     source: Path,
-    config: dict[str, str],
+    config: dict[str, Union[str, list[str]]],
     log_directory: Union[Path, str],
     delete_job_script: bool = True,
 ) -> tuple[int, str]:
@@ -71,28 +71,28 @@ def schedule_job(
     """
     job_object: Type[Job] = _get_job_object(system)
     source = source.expanduser().absolute()
+    ncpus: int = cast(int, config.get("cpus", 4))
     if source.exists():
         env_extra = [f"\\. {source}"]
     else:
         env_extra = []
     try:
-        options = dict(
-            name=config["name"],
-            memory=config.get("memory", "128GB"),
-            walltime=config.get("walltime", "08:00:00"),
-            job_cpu=int(config.get("cpus", 4)),
+        job = job_object(
+            name=cast(str, config["name"]),
+            memory=cast(str, config.get("memory", "128GB")),
+            walltime=cast(str, config.get("walltime", "08:00:00")),
+            job_cpu=ncpus,
             queue=config["queue"],
             project=config["project"],
             log_directory=log_directory,
             job_extra=config.get("extra_options", []),
-            freva_args=config.get("args"),
+            freva_args=cast(List[str], config.get("args")),
             delete_job_script=delete_job_script,
             env_extra=env_extra,
         )
     except KeyError:
         raise ValueError("Scheduler options not properly configured")
-    job = job_object(**options)
     job.start()
     job_name = job.job_name or "worker"
     job_out = Path(log_directory) / f"{job_name}-{job.job_id}.out"
-    return job.job_id, str(job_out.absolute())
+    return int(job.job_id), str(job_out.absolute())

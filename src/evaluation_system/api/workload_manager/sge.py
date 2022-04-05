@@ -1,28 +1,30 @@
+"""Submit job to the sge workload manager."""
 from __future__ import annotations
 import logging
 
 from .core import Job
+from typing import ClassVar, Optional, Union
 
 logger = logging.getLogger(__name__)
 
 
 class SGEJob(Job):
-    submit_command = "qsub"
-    cancel_command = "qdel"
-    config_name = "sge"
+    submit_command: ClassVar[str] = "qsub"
+    cancel_command: ClassVar[str] = "qdel"
+    config_name: ClassVar[str] = "sge"
 
     def __init__(
         self,
-        name=None,
-        queue=None,
-        project=None,
-        resource_spec=None,
-        walltime=None,
-        job_extra=[],
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        resource_spec: Optional[str] = None,
+        walltime: Optional[str] = None,
+        job_extra: Optional[list[str]] = [],
         **base_class_kwargs,
     ):
         super().__init__(name=name, **base_class_kwargs)
-
+        job_extra = job_extra or []
         header_lines = []
         if self.job_name is not None:
             header_lines.append("#$ -N %(job-name)s")

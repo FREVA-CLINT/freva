@@ -20,7 +20,7 @@ import tempfile
 import traceback
 import textwrap
 from time import time
-from typing import Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
+from typing import cast, Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
 
 from PyPDF2 import PdfFileReader
 
@@ -33,7 +33,8 @@ from evaluation_system.model.solr_core import SolrCore
 from .workload_manager import schedule_job
 
 __version__ = (1, 0, 0)
-config_dict_type = Dict[str, Optional[Union[str, float, int, bool]]]
+
+ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
 class ConfigurationError(Exception):
@@ -236,7 +237,7 @@ A plug-in/user might then use them to define a value in the following way::
         return [""]
 
     @abc.abstractmethod
-    def runTool(self, config_dict: config_dict_type = {}) -> Optional[Any]:
+    def runTool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
         """Method executing the tool.
 
         Starts the tool with the given configuration.
@@ -334,7 +335,7 @@ A plug-in/user might then use them to define a value in the following way::
 
     def _runTool(
         self,
-        config_dict: config_dict_type = {},
+        config_dict: Optional[ConfigDictType] = None,
         unique_output: bool = True,
         is_interactive_job: bool = True,
         rowid: Optional[int] = None,
@@ -347,10 +348,11 @@ A plug-in/user might then use them to define a value in the following way::
             return result
 
     def append_unique_id(
-        self, config_dict: config_dict_type, unique_output: bool
-    ) -> config_dict_type:
+        self, config_dict: Optional[ConfigDictType], unique_output: bool
+    ) -> ConfigDictType:
         from evaluation_system.api.parameters import Directory, CacheDirectory
 
+        config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
             if isinstance(tmp_param, Directory):
@@ -568,7 +570,7 @@ A plug-in/user might then use them to define a value in the following way::
             self.__parameters__.getHelpString(),
         )
 
-    def getCurrentConfig(self, config_dict: config_dict_type = {}) -> str:
+    def getCurrentConfig(self, config_dict: Optional[ConfigDictType] = None) -> str:
         """Retreive the plugin configuration as string representation.
 
         Parameters:
@@ -583,13 +585,13 @@ A plug-in/user might then use them to define a value in the following way::
             The current configuration in a string for displaying.
         """
         max_size = max([len(k) for k in self.__parameters__])
-
+        config_dict = config_dict or {}
         current_conf = []
         config_dict_resolved = self.setupConfiguration(
             config_dict=config_dict, check_cfg=False
         )
-        config_dict_orig = dict(self.__parameters__)
-        config_dict_orig.update(config_dict)
+        config_dict_orig = cast(Dict[str, Any], dict(self.__parameters__))
+        config_dict_orig.update(config_dict or {})
 
         def show_key(key: str) -> str:
             """Format the configuration values.
@@ -631,7 +633,7 @@ A plug-in/user might then use them to define a value in the following way::
         )
 
     def getCurrentUser(self) -> User:
-        """Return the user name for which this instance was generated."""
+        """Return the user class for which this instance was generated."""
         return self._user
 
     def _parseConfigStrValue(
@@ -683,7 +685,7 @@ A plug-in/user might then use them to define a value in the following way::
 
     def setupConfiguration(
         self,
-        config_dict: config_dict_type = None,
+        config_dict: Optional[ConfigDictType] = None,
         check_cfg: bool = True,
         recursion: bool = True,
         substitute: bool = True,
@@ -784,7 +786,7 @@ A plug-in/user might then use them to define a value in the following way::
     def saveConfiguration(
         self,
         fp: Union[TextIO, IO[str]],
-        config_dict: config_dict_type = None,
+        config_dict: Optional[ConfigDictType] = None,
         include_defaults: bool = False,
     ) -> IO[str]:
         """Stores the given configuration to the provided file object.
@@ -874,12 +876,12 @@ A plug-in/user might then use them to define a value in the following way::
 
     def submit_job_script(
         self,
-        config_dict: config_dict_type = {},
+        config_dict: Optional[ConfigDictType] = None,
         user: Optional[User] = None,
         scheduled_id: Optional[int] = None,
         log_directory: Optional[str] = None,
         unique_output: bool = True,
-        extra_options: list[str] = [],
+        extra_options: Optional[list[str]] = None,
     ) -> tuple[int, str]:
         """Create a job script suitable for the configured workload manager.
 
@@ -912,12 +914,12 @@ A plug-in/user might then use them to define a value in the following way::
             )
         else:
             cmd = self.composeCommand(
-                config_dict=config_dict, unique_output=unique_output
+                config_dict=config_dict or {}, unique_output=unique_output
             )
 
         cfg = config.get_section("scheduler_options").copy()
         cfg["args"] = cmd
-        cfg["extra_options"] = extra_options
+        cfg["extra_options"] = extra_options or []
         cfg["name"] = self.__class__.__name__
         return schedule_job(
             config.get("scheduler_system"),
@@ -945,7 +947,7 @@ A plug-in/user might then use them to define a value in the following way::
 
     def composeCommand(
         self,
-        config_dict: config_dict_type = None,
+        config_dict: Optional[ConfigDictType] = None,
         scheduled_id: Optional[int] = None,
         batchmode: bool = False,
         email: Optional[str] = None,
@@ -986,7 +988,6 @@ A plug-in/user might then use them to define a value in the following way::
                 config_dict = self.setupConfiguration(
                     config_dict=config_dict, check_cfg=False, substitute=False
                 )
-
             # compose the parameters preserve order
             for param_name in self.__parameters__:
                 if param_name in config_dict:

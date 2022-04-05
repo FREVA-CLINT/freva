@@ -1,6 +1,8 @@
+"""Submit jobs to the slurm workload manager."""
 from __future__ import annotations
 import logging
 import math
+from typing import Optional, ClassVar, Union
 
 from .core import Job
 
@@ -9,23 +11,23 @@ logger = logging.getLogger(__name__)
 
 class SLURMJob(Job):
     # Override class variables
-    submit_command = "sbatch"
-    cancel_command = "scancel"
-    config_name = "slurm"
+    submit_command: ClassVar[str] = "sbatch"
+    cancel_command: ClassVar[str] = "scancel"
+    config_name: ClassVar[str] = "slurm"
 
     def __init__(
         self,
-        name=None,
-        queue=None,
-        project=None,
-        walltime="",
-        job_cpu=None,
-        job_mem=None,
-        job_extra=[],
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        walltime: str = "",
+        job_cpu: Optional[int] = None,
+        job_mem: Optional[str] = None,
+        job_extra: Optional[list[str]] = None,
         **base_class_kwargs,
     ):
         super().__init__(name=name, **base_class_kwargs)
-
+        job_extra = job_extra or []
         header_lines = []
         # SLURM header build
         if self.job_name is not None:
@@ -61,7 +63,7 @@ class SLURMJob(Job):
         self.job_header = "\n".join(header_lines)
 
 
-def slurm_format_bytes_ceil(n):
+def slurm_format_bytes_ceil(n: Union[int, float]) -> str:
     """Format bytes as text.
 
     SLURM expects KiB, MiB or Gib, but names it KB, MB, GB. SLURM does
@@ -84,4 +86,4 @@ def slurm_format_bytes_ceil(n):
         return "%dM" % math.ceil(n / (1024**2))
     if n >= 1024:
         return "%dK" % math.ceil(n / 1024)
-    return "1K" % n
+    return "1K"

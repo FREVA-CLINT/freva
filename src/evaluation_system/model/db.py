@@ -138,11 +138,17 @@ class UserDB(object):
         return newentry.id
 
     def scheduleEntry(self, row_id, uid, slurmFileName, status=None):
-        """
-        :param row_id: The index in the history table
-        :param uid: the user id
-        :param slurmFileName: The slurm file belonging to the history entry
-        Sets the name of the slurm file
+        """Schedule a tool for a future application
+        Parameter:
+        ----------
+        row_id:
+            The index in the history table
+        uid:
+            the user id
+        slurmFileName:
+            The std out file belonging to the history entry
+        stauts:
+            Overwrite the default status (scheduled) with this status.
         """
 
         h = hist.History.objects.get(

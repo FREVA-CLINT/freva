@@ -1,14 +1,16 @@
+"""Submit jobs to the PBS workload manager."""
 from __future__ import annotations
 import logging
 import math
 import os
+from typing import ClassVar, Optional, Union
 
 from .core import Job
 
 logger = logging.getLogger(__name__)
 
 
-def pbs_format_bytes_ceil(n):
+def pbs_format_bytes_ceil(n: Union[int, float]) -> str:
     """Format bytes as text.
 
     PBS expects KiB, MiB or Gib, but names it KB, MB, GB  KB.
@@ -34,21 +36,22 @@ def pbs_format_bytes_ceil(n):
 
 
 class PBSJob(Job):
-    submit_command = "qsub"
-    cancel_command = "qdel"
-    config_name = "pbs"
+    submit_command: ClassVar[str] = "qsub"
+    cancel_command: ClassVar[str] = "qdel"
+    config_name: ClassVar[str] = "pbs"
 
     def __init__(
         self,
-        scheduler=None,
-        name=None,
-        queue=None,
-        project=None,
-        resource_spec=None,
-        walltime="",
-        job_extra=[],
+        scheduler: Optional[str] = None,
+        name: Optional[str] = None,
+        queue: Optional[str] = None,
+        project: Optional[str] = None,
+        resource_spec: Optional[str] = None,
+        walltime: Optional[str] = "",
+        job_extra: Optional[list[str]] = None,
         **base_class_kwargs,
     ):
+        job_extra = job_extra or []
         super().__init__(scheduler=scheduler, name=name, **base_class_kwargs)
 
         # Try to find a project name from environment variable

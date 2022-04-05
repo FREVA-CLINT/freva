@@ -682,7 +682,7 @@ def run_tool(
     if scheduled_id:
         config_dict = cast(
             Dict[str, str],
-            load_scheduled_conf(plugin_name, scheduled_id, user) or {},
+            load_scheduled_conf(plugin_name, scheduled_id, user),
         )
     if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -820,10 +820,7 @@ def schedule_tool(
     if not complete_conf:
         # at this stage we want to resolve or tokens and perform some kind of sanity
         # check before going further
-        conf = cast(
-            Dict[str, Union[str, int, float, bool, None]],
-            {k: v for (k, v) in config_dict.items()},
-        )
+        conf = cast(Dict[str, Union[str, int, float, bool, None]], config_dict)
         complete_conf = cast(
             Dict[str, Union[str, int, float, bool, None]],
             p.setupConfiguration(conf, recursion=True),
@@ -832,7 +829,7 @@ def schedule_tool(
     version_details = get_version(plugin_name)
     rowid = user.getUserDB().storeHistory(
         p,
-        complete_conf or {},
+        complete_conf,
         user.getName(),
         History.processStatus.not_scheduled,
         version_details=version_details,

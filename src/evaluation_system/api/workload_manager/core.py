@@ -8,16 +8,13 @@ import subprocess
 import sys
 import string
 import tempfile
-import time
 import abc
-from typing import Iterator, Generic, Optional, TypeVar, Union
+import textwrap
+from typing import Any, Iterator, ClassVar, IO, Optional, Union
 from evaluation_system.misc import logger
 
-JobType = TypeVar("JobType")
-"""The type of the Job class."""
 
-
-def parse_bytes(s):
+def parse_bytes(s: Union[str, float, int]) -> int:
     """Parse byte string to numbers
 
     >>> from dask.utils import parse_bytes
@@ -206,42 +203,47 @@ class Job(abc.ABC):
     MoabCluster
     """
 
-    _script_template = """
-%(shebang)s
+    _script_template = textwrap.dedent(
+        """
+        %(shebang)s
 
-%(job_header)s
-%(env_header)s
-%(worker_command)s
-""".lstrip()
+        %(job_header)s
+        %(env_header)s
+        %(worker_command)s
+    """
+    )
 
     # Following class attributes should be overridden by extending classes.
-    submit_command: Optional[str] = None
-    cancel_command: Optional[str] = None
-    config_name: Optional[str] = None
-    job_id_regexp: str = r"(?P<job_id>\d+)"
+    submit_command: ClassVar[str] = ""
+    cancel_command: ClassVar[str] = ""
+    config_name: ClassVar[Optional[str]] = None
+    job_id_regexp: ClassVar[str] = r"(?P<job_id>\d+)"
 
     @abc.abstractmethod
     def __init__(
         self,
-        name=None,
-        processes=None,
-        local_directory=None,
-        env_extra={},
-        header_skip=[],
-        log_directory=None,
-        memory=None,
-        job_cpu=1,
-        cores=2,
-        shebang="#!/usr/bin/env bash",
-        python=sys.executable,
-        scheduler="freva-plugin",
-        freva_args=[],
-        delete_job_script=True,
+        name: Optional[str] = None,
+        processes: Optional[int] = None,
+        local_directory: Optional[Union[str, Path]] = None,
+        env_extra: Optional[list[str]] = None,
+        header_skip: Optional[list[str]] = None,
+        log_directory: Optional[Union[str, Path]] = None,
+        memory: Optional[Union[int, str]] = None,
+        job_cpu: int = 1,
+        cores: int = 2,
+        shebang: str = "#!/usr/bin/env bash",
+        python: str = sys.executable,
+        scheduler: Optional[str] = "freva-plugin",
+        freva_args: Optional[list[str]] = None,
+        delete_job_script: bool = True,
+        **kwargs,
     ):
-        self.job_id = None
-
+        self.job_id = ""
+        self.memory: int = 0
+        env_extra = env_extra or []
+        freva_args = freva_args or []
         super().__init__()
-        self.job_header = None
+        self.job_header = ""
         # Keep information on process, cores, and memory, for use in subclasses
         try:
             self.worker_memory = string_to_bytes(str(memory))
@@ -255,14 +257,14 @@ class Job(abc.ABC):
         self.name = self.job_name = name or "worker"
         self.shebang = shebang
         self._env_header = "\n".join(filter(None, env_extra))
-        self.header_skip = set(header_skip)
+        self.header_skip = set(header_skip or [])
         self.log_directory = log_directory
         if self.log_directory is not None:
             if not os.path.exists(self.log_directory):
                 os.makedirs(self.log_directory)
         self._command_template = self.scheduler + " ".join(map(str, freva_args))
 
-    def job_script(self):
+    def job_script(self) -> str:
         """Construct a job submission script"""
         header = "\n".join(
             [
@@ -280,21 +282,19 @@ class Job(abc.ABC):
         return self._script_template % pieces
 
     @contextmanager
-    def job_file(self):
+    def job_file(self) -> Iterator[Path]:
         """Write job submission script to temporary file"""
         with tmpfile(suffix=".sh", delete=self.delete_job_script) as fn:
             with open(fn, "w") as f:
                 logger.debug("writing job script: \n%s", self.job_script())
                 f.write(self.job_script())
-            yield fn
+            yield Path(fn)
 
-    def _submit_job(self, script_filename):
+    def _submit_job(self, script_filename: Union[str, Path]) -> Any:
         # Should we make this async friendly?
-        return self._call(
-            shlex.split(self.submit_command) + [str(script_filename)], sleep=0
-        )
+        return self._call(shlex.split(self.submit_command) + [str(script_filename)])
 
-    def start(self):
+    def start(self) -> None:
         """Start workers and point them to our local scheduler"""
         logger.debug("Starting worker: %s", self.name)
 
@@ -302,9 +302,9 @@ class Job(abc.ABC):
             out = self._submit_job(fn)
             job_id = self._job_id_from_submit_output(out)
             try:
-                self.job_id = int(job_id)
+                self.job_id = job_id
             except ValueError:
-                self.job_id = 0
+                self.job_id = "0"
         logger.debug("Starting job: %s", self.job_id)
 
     def __enter__(self):
@@ -313,7 +313,7 @@ class Job(abc.ABC):
     def __exit__(self, type, value, tb):
         self.close()
 
-    def _job_id_from_submit_output(self, out):
+    def _job_id_from_submit_output(self, out: str) -> str:
         match = re.search(self.job_id_regexp, out)
         if match is None:
             msg = (
@@ -334,19 +334,19 @@ class Job(abc.ABC):
 
         return job_id
 
-    def close(self):
+    def close(self) -> None:
         logger.debug("Stopping worker: %s job: %s", self.name, self.job_id)
         self._close_job(self.job_id, self.cancel_command)
 
     @classmethod
-    def _close_job(cls, job_id, cancel_command):
+    def _close_job(cls, job_id: str, cancel_command: str) -> None:
         if job_id:
             with suppress(RuntimeError):  # deleting job when job already gone
                 cls._call(shlex.split(cancel_command) + [job_id])
             logger.debug("Closed job %s", job_id)
 
     @staticmethod
-    def _call(command: list[Union[str, int]], **kwargs):
+    def _call(command: list[str], **kwargs) -> str:
         """Call a command using subprocess.Popen.
 
         This centralizes calls out to the command line, providing consistent
@@ -354,7 +354,7 @@ class Job(abc.ABC):
 
         Parameters
         ----------
-        command: List(str))
+        command: List[str]
             A command, each of which is a list of strings to hand to
             subprocess.Popen
 
@@ -366,14 +366,12 @@ class Job(abc.ABC):
         ------
         RuntimeError if the command exits with a non-zero exit code
         """
-        cmd = list(map(str, command))
-        cmd_str = " ".join(map(str, cmd))
+        cmd_str = " ".join(command)
         logger.debug(
             "Executing the following command to command line\n{}".format(cmd_str)
         )
-        time.sleep(kwargs.pop("sleep", 0))
         proc = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
         )
 
         out, err = proc.communicate()

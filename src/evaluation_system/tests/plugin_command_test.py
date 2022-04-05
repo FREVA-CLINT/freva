@@ -55,9 +55,6 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
-    time.sleep(2)
-    with out_f.open() as f:
-        assert "the_number" in f.read()
 
 
 @mock.patch("os.getpid", lambda: 12345)
