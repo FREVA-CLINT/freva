@@ -37,39 +37,52 @@ proc ModulesHelp {{ }} {{
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_fish"
+        puts ". {eval_conf_file.parent}/completions/complete_fish"
     }} elseif {{ $shell == "csh" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_csh"
+        puts ". {eval_conf_file.parent}/completions/complete_csh"
     }} elseif {{ $shell == "sh" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_sh"
+        puts ". {eval_conf_file.parent}/completions/complete_sh"
     }}
 }}
-prepend-path PATH {root_dir}/bin
-setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+append-path PATH {root_dir}/bin
+pushenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
-FISH_SCRIPT = """\\. {root_dir}/etc/fish/conf.d/conda.fish
+FISH_SCRIPT = """
 set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 set -gx PATH {root_dir}/bin $PATH
-\\. {root_dir}/share/fish/completions/freva.fish
+. {completion}
+"""
+FISH_COMPLETION = """
+. {root_dir}/share/fish/completions/freva.fish
 """
 
-SH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.sh
+SH_SCRIPT = """
 export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
 export PATH={root_dir}/bin:$PATH
 shell=$(basename $SHELL)
+. {completion}
+"""
+
+
+SH_COMPLETION = """
 if [ $shell = zsh ];then
-    \\. {root_dir}/share/zsh/site-functions/source.zsh
+    . {root_dir}/share/zsh/site-functions/source.zsh
 elif [ $shell = bash ];then
-    \\. {root_dir}/share/bash-completion/completions/freva
+    . {root_dir}/share/bash-completion/completions/freva
 fi
 """
 
-CSH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.csh
-setenv PATH {root_dir}/bin:\\$PATH
+CSH_SCRIPT = """
+setenv PATH {root_dir}/bin:$PATH
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
+. {completion}
+"""
+
+
+CSH_COMPLETION = """
 if ( `basename $SHELL` == tcsh ) then
-    \\. {root_dir}/share/tcsh-completion/completion/freva
+    . {root_dir}/share/tcsh-completion/completion/freva
 endif
 """
 
@@ -239,7 +252,7 @@ class Installer:
             )
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
-        env_file = (Path(__file__).parent / "dev-environment.yml")
+        env_file = Path(__file__).parent / "dev-environment.yml"
         return f"env create -q -p {self.install_prefix} -f {env_file} --force"
 
     def check_hash(self, filename):
@@ -316,15 +329,22 @@ class Installer:
                         path.mkdir(exist_ok=True, parents=True)
                     except PermissionError:
                         logger.warning(f"Could not create path: {path}")
-        eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
+        (eval_conf_file.parent / "completions").mkdir(parents=True, exist_ok=True)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
+        completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
         for shell in ("fish", "csh", "sh"):
             with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
                 f.write(
                     shell_scripts[shell].format(
-                        root_dir=self.install_prefix, eval_conf_file=eval_conf_file
+                        root_dir=self.install_prefix,
+                        eval_conf_file=eval_conf_file,
+                        completion=completions[shell],
                     )
                 )
+            with (eval_conf_file.parent / "completions" / f"complete_{shell}").open(
+                "w"
+            ) as f:
+                f.write(completions[shell])
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
