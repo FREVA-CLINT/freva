@@ -51,7 +51,7 @@ pushenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 FISH_SCRIPT = """
 set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 set -gx PATH {root_dir}/bin $PATH
-. {completion}
+{completion}
 """
 FISH_COMPLETION = """
 . {root_dir}/share/fish/completions/freva.fish
@@ -61,7 +61,7 @@ SH_SCRIPT = """
 export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
 export PATH={root_dir}/bin:$PATH
 shell=$(basename $SHELL)
-. {completion}
+{completion}
 """
 
 
@@ -76,7 +76,7 @@ fi
 CSH_SCRIPT = """
 setenv PATH {root_dir}/bin:$PATH
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
-. {completion}
+{completion}
 """
 
 
@@ -338,13 +338,15 @@ class Installer:
                     shell_scripts[shell].format(
                         root_dir=self.install_prefix,
                         eval_conf_file=eval_conf_file,
-                        completion=completions[shell],
+                        completion=completions[shell].format(
+                            root_dir=self.install_prefix
+                        ),
                     )
                 )
             with (eval_conf_file.parent / "completions" / f"complete_{shell}").open(
                 "w"
             ) as f:
-                f.write(completions[shell])
+                f.write(completions[shell].format(root_dir=self.install_prefix))
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
