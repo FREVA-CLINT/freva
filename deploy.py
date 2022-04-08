@@ -69,7 +69,7 @@ elif [ $shell = bash ];then
 fi
 """
 
-CSH_SCRIPT = """setenv PATH \$PATH:{root_dir}/bin
+CSH_SCRIPT = """setenv PATH $PATH\:{root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
 {completion}
 """
