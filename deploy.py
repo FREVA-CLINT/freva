@@ -44,19 +44,19 @@ if {{ $curMode eq "load" }} {{
         puts ". {eval_conf_file.parent}/completions/complete_sh"
     }}
 }}
-append-path PATH {root_dir}/bin
+prepend-path PATH {root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
 FISH_SCRIPT = """set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
-set -gx PATH $PATH {root_dir}/bin
+set -gx PATH {root_dir}/bin $PATH
 {completion}
 """
 FISH_COMPLETION = """source {root_dir}/share/fish/completions/freva.fish
 """
 
 SH_SCRIPT = """export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
-export PATH=$PATH:{root_dir}/bin
+export PATH={root_dir}/bin:$PATH
 shell=$(basename $SHELL)
 {completion}
 """
@@ -69,7 +69,7 @@ elif [ $shell = bash ];then
 fi
 """
 
-CSH_SCRIPT = """setenv PATH $PATH\:{root_dir}/bin
+CSH_SCRIPT = """setenv PATH {root_dir}/bin\:$PATH
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
 {completion}
 """
