@@ -22,7 +22,7 @@ CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
 
-MODULE = """#%Module1.0#####################################################################
+MODULE = """#%Module4.0 #######################################################
 ##
 ## FREVA - Free Evaluation System Framework modulefile
 ##
@@ -37,52 +37,46 @@ proc ModulesHelp {{ }} {{
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
-        puts ". {eval_conf_file.parent}/completions/complete_fish"
+        puts "source {eval_conf_file.parent}/completions/complete_fish"
     }} elseif {{ $shell == "csh" }} {{
-        puts ". {eval_conf_file.parent}/completions/complete_csh"
+        puts "source {eval_conf_file.parent}/completions/complete_csh"
     }} elseif {{ $shell == "sh" }} {{
         puts ". {eval_conf_file.parent}/completions/complete_sh"
     }}
 }}
 append-path PATH {root_dir}/bin
-pushenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
-FISH_SCRIPT = """
-set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
-set -gx PATH {root_dir}/bin $PATH
+FISH_SCRIPT = """set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+set -gx PATH $PATH {root_dir}/bin
 {completion}
 """
-FISH_COMPLETION = """
-. {root_dir}/share/fish/completions/freva.fish
+FISH_COMPLETION = """source {root_dir}/share/fish/completions/freva.fish
 """
 
-SH_SCRIPT = """
-export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
-export PATH={root_dir}/bin:$PATH
+SH_SCRIPT = """export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
+export PATH=$PATH:{root_dir}/bin
 shell=$(basename $SHELL)
 {completion}
 """
 
 
-SH_COMPLETION = """
-if [ $shell = zsh ];then
-    . {root_dir}/share/zsh/site-functions/source.zsh
+SH_COMPLETION = """if [ $shell = zsh ];then
+    source {root_dir}/share/zsh/site-functions/source.zsh
 elif [ $shell = bash ];then
-    . {root_dir}/share/bash-completion/completions/freva
+    source {root_dir}/share/bash-completion/completions/freva
 fi
 """
 
-CSH_SCRIPT = """
-setenv PATH {root_dir}/bin:$PATH
+CSH_SCRIPT = """setenv PATH \$PATH:{root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
 {completion}
 """
 
 
-CSH_COMPLETION = """
-if ( `basename $SHELL` == tcsh ) then
-    . {root_dir}/share/tcsh-completion/completion/freva
+CSH_COMPLETION = """if ( `basename $SHELL` == tcsh ) then
+    source {root_dir}/share/tcsh-completion/completion/freva
 endif
 """
 
