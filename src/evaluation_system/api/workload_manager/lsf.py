@@ -82,7 +82,7 @@ class LSFJob(Job):
 
         logger.debug("Job script: \n %s" % self.job_script())
 
-    async def _submit_job(self, script_filename: Union[Path, str]) -> Any:
+    async def _submit_job(self, script_filename: Union[Path, str]) -> str:
         script_filename = str(script_filename)
         if self.use_stdin:
             piped_cmd = [self.submit_command + "< " + script_filename + " 2> /dev/null"]
