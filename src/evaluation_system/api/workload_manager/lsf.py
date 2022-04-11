@@ -32,7 +32,7 @@ class LSFJob(Job):
         walltime: str = "",
         job_extra: Optional[list[str]] = None,
         lsf_units: Optional[str] = None,
-        use_stdin: Optional[str] = None,
+        use_stdin: bool = False,
         **base_class_kwargs,
     ):
         super().__init__(scheduler=scheduler, name=name, **base_class_kwargs)
@@ -82,14 +82,13 @@ class LSFJob(Job):
 
         logger.debug("Job script: \n %s" % self.job_script())
 
-    async def _submit_job(self, script_filename: Union[Path, str]) -> str:
+    def _submit_job(self, script_filename: Union[Path, str]) -> str:
         script_filename = str(script_filename)
         if self.use_stdin:
             piped_cmd = [self.submit_command + "< " + script_filename + " 2> /dev/null"]
             return self._call(piped_cmd, shell=True)
         else:
-            result = await super()._submit_job(script_filename)
-            return result
+            return super()._submit_job(script_filename)
 
 
 def lsf_format_bytes_ceil(n: int, lsf_units: str = "mb") -> str:
