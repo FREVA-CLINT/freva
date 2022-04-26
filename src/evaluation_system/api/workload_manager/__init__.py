@@ -12,8 +12,20 @@ from .sge import SGEJob
 from .slurm import SLURMJob
 
 
-def _get_job_object(system: str) -> Type[Job]:
-    """Get the correct job scheduler object for a given workload manager."""
+def get_job_class(system: str) -> Type[Job]:
+    """Get the correct job scheduler object for a given workload manager.
+
+    Parameters
+    -----------
+    system: str
+        Name of the scheduling system
+
+    Returns
+    -------
+    evaluation_system.api.workload_manager.core:
+        Job class corresponding to the scheuler system.
+
+    """
     job_objects: dict[str, Type[Job]] = dict(
         local=LocalJob,
         lfs=LSFJob,
@@ -43,7 +55,7 @@ def cancel_command(system: str, job_id: int) -> str:
     job_id:
         The job id that is canceled
     """
-    job_object = _get_job_object(system)
+    job_object = get_job_class(system)
     return f"{job_object.cancel_command} {job_id}"
 
 
@@ -69,7 +81,7 @@ def schedule_job(
     ========
     Instance of a workload manager object
     """
-    job_object: Type[Job] = _get_job_object(system)
+    job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
     ncpus: int = cast(int, config.get("cpus", 4))
     if source.exists():
