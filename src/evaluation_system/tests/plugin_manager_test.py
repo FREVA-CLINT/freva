@@ -8,16 +8,13 @@ from pathlib import Path
 import tempfile
 import shutil
 import logging
-import re
 import time
-import datetime
-import getpass
 import textwrap
+import datetime
 from tempfile import TemporaryDirectory
 import pytest
 
 from evaluation_system.api.plugin_manager import PluginMetadata
-from evaluation_system.misc.exceptions import PluginManagerException
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +29,7 @@ def test_modules(dummy_settings):
 
 
 def test_plugins(dummy_settings, temp_user):
-    from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
     import evaluation_system.api.plugin_manager as pm
 
     # force reload to be sure the dummy is loaded
@@ -96,6 +93,7 @@ def test_plugin_config_storage(dummy_settings, temp_user):
         "something": "test",
         "input": None,
         "variable": "tas",
+        "extra_scheduler_options": "",
     }
     assert res["something"] == "test"
 
@@ -122,6 +120,7 @@ def test_parse_arguments(dummy_settings, temp_user):
                 "the_number": 4,
                 "something": "test",
                 "variable": "tas",
+                "extra_scheduler_options": "",
             },
         )
     ]:
@@ -137,6 +136,7 @@ def test_parse_arguments(dummy_settings, temp_user):
                 "the_number": 4,
                 "something": "test",
                 "variable": "tas",
+                "extra_scheduler_options": "",
             },
         )
     ]:
@@ -154,6 +154,7 @@ def test_parse_arguments(dummy_settings, temp_user):
                 other=1.4,
                 input=None,
                 variable="tas",
+                extra_scheduler_options="",
             ),
         )
     ]:
@@ -168,7 +169,6 @@ def test_parse_arguments(dummy_settings, temp_user):
 def test_write_setup(dummy_settings, temp_user):
     import evaluation_system.api.plugin_manager as pm
 
-    home = temp_user.getUserHome()
     f = pm.write_setup(
         "DummyPlugin", dict(number="$the_number", the_number=42), temp_user
     )
@@ -396,4 +396,4 @@ def test_scheduletool(dummy_env, dummy_plugin):
     import evaluation_system.api.plugin_manager as pm
 
     with TemporaryDirectory() as td:
-        pm.schedule_tool("dummyplugin", slurmoutdir=str(Path(td) / "tmp"))
+        pm.schedule_tool("dummyplugin", log_directory=str(Path(td) / "tmp"))

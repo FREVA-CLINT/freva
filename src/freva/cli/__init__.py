@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from .utils import BaseParser, is_admin
+from .utils import BaseParser
 from typing import Optional, List
 
 COMMAND = "freva"

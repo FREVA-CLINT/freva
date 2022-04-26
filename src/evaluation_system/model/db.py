@@ -14,6 +14,7 @@ from datetime import datetime
 import json
 import re
 import pandas as pd
+import socket
 from evaluation_system.misc import config
 from evaluation_system.model.history.models import Configuration
 
@@ -97,10 +98,10 @@ class UserDB(object):
             flag = 0
         if version_details is None:
             version_details = 1
-
         toolname = tool.__class__.__name__.lower()
         version = repr(tool.__version__)
-
+        for key in config.exclude:
+            config_dict.pop(key, "")
         newentry = hist.History(
             timestamp=datetime.now(),
             tool=toolname,
@@ -122,26 +123,32 @@ class UserDB(object):
             newentry.save()
 
             for p in tool.__parameters__._params.values():
-                name = p.name
-                param = Configuration(
-                    history_id_id=newentry.id,
-                    parameter_id_id=p.id,
-                    value=json.dumps(config_dict[name]),
-                    is_default=p.is_default,
-                )
-
-                param.save()
+                if p.name not in config.exclude:
+                    name = p.name
+                    param = Configuration(
+                        history_id_id=newentry.id,
+                        parameter_id_id=p.id,
+                        value=json.dumps(config_dict[name]),
+                        is_default=p.is_default,
+                    )
+                    param.save()
         except Exception as e:
             raise e
 
         return newentry.id
 
-    def scheduleEntry(self, row_id, uid, slurmFileName):
-        """
-        :param row_id: The index in the history table
-        :param uid: the user id
-        :param slurmFileName: The slurm file belonging to the history entry
-        Sets the name of the slurm file
+    def scheduleEntry(self, row_id, uid, slurmFileName, status=None):
+        """Schedule a tool for a future application
+        Parameter:
+        ----------
+        row_id:
+            The index in the history table
+        uid:
+            the user id
+        slurmFileName:
+            The std out file belonging to the history entry
+        stauts:
+            Overwrite the default status (scheduled) with this status.
         """
 
         h = hist.History.objects.get(
@@ -149,7 +156,8 @@ class UserDB(object):
         )
 
         h.slurm_output = slurmFileName
-        h.status = hist.History.processStatus.scheduled
+        h.host = socket.gethostbyname(socket.gethostname())
+        h.status = status or hist.History.processStatus.scheduled
 
         h.save()
 

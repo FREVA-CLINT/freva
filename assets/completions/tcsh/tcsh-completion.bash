@@ -16,7 +16,7 @@ commandToComplete=${@:1:$#}
 
 if [ "${debug}" == "true" ]; then
     echo =====================================
-    echo $0 called towards $completionFunction from $completionScript 
+    echo $0 called towards $completionFunction from $completionScript
     echo with command to complete: $commandToComplete
 fi
 if [ -e ${completionScript} ]; then
@@ -118,7 +118,7 @@ if [ "${debug}" == "true" ]; then
     echo Final completions returned:
 fi
 # tcsh does not automatically remove duplicates, so we do it ourselves
-echo hallo "${COMPREPLY[*]}" | sort | uniq
+echo "${COMPREPLY[*]}" | sort | uniq
 
 # If there is a single completion and it is a directory, we output it
 # a second time to trick tcsh into not adding a space after it.

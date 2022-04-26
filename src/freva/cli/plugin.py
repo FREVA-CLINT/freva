@@ -74,7 +74,7 @@ class PluginCli(BaseParser):
             "--scheduled-id",
             default=None,
             type=int,
-            help="Run a scheduled job from database",
+            help=argparse.SUPPRESS,
         )
         subparser.add_argument(
             "--dry-run",
@@ -127,23 +127,18 @@ class PluginCli(BaseParser):
             action="store_true",
             help="Display plugin documentation",
         )
-        subparser.add_argument(
-            "options",
-            nargs="*",
-            help="Plugin configuration",
-            type=str,
-            metavar="options",
-        )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(
+        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+    ) -> None:
         """Call the databrowser command and print the results."""
         if kwargs.pop("list_tools"):
             print(get_tools_list())
             return
-        options: dict[str, Any] = BaseCompleter.arg_to_dict(kwargs.pop("options", {}))
+        options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
@@ -169,7 +164,6 @@ def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
     args = cli.parse_args(argv or sys.argv[1:])
-    _ = BaseCompleter.arg_to_dict(args.options)
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover

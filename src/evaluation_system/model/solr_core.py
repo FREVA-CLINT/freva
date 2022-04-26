@@ -22,6 +22,7 @@ from typing import Dict, Iterator, Optional, Tuple
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
+from evaluation_system.misc.exceptions import CommandError
 
 
 class SolrCore:
@@ -109,10 +110,13 @@ class SolrCore:
             query = self.solr_url + endpoint
         log.debug(query)
 
-        req = urllib.request.Request(query)
-        response = json.loads(urllib.request.urlopen(req).read())
+        try:
+            req = urllib.request.Request(query)
+            response = json.loads(urllib.request.urlopen(req).read())
+        except urllib.error.HTTPError:
+            raise CommandError("Bad request option")
         if response["responseHeader"]["status"] != 0:
-            raise Exception(
+            raise CommandError(
                 "Error while accessing Core %s. Response: %s" % (self.core, response)
             )
 

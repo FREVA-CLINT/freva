@@ -8,12 +8,14 @@ import os
 import datetime
 from pathlib import Path
 import pytest
+import mock
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 import sys
 
 from evaluation_system.tests import similar_string
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_incomplete_abstract(dummy_plugin):
     # this is an incomplete class not implementing all required fields
     from evaluation_system.api.plugin import PluginAbstract
@@ -25,6 +27,7 @@ def test_incomplete_abstract(dummy_plugin):
         Incomplete()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_complete_abstract(dummy_plugin):
     """Tests the creation of a complete implementation of the Plugin Abstract class"""
     # even though py it's just a stub, it should be complete.
@@ -33,6 +36,7 @@ def test_complete_abstract(dummy_plugin):
     assert type(dummy_plugin) == type(DummyPlugin())
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_setup_configuration(dummy_plugin):
     from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
     from evaluation_system.api.parameters import (
@@ -76,6 +80,7 @@ def test_setup_configuration(dummy_plugin):
         assert "$USER_BASE_DIR" == res["num"]
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_parse_arguments(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -117,6 +122,7 @@ def test_parse_arguments(dummy_plugin):
         assert res == dict(a=parsed_val), "Error when parsing %s, got %s" % (arg, res)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_parse_metadict(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -151,6 +157,7 @@ def test_parse_metadict(dummy_plugin):
         dummy._parseConfigStrValue("b", "1")
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_read_config_parser(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -173,7 +180,7 @@ def test_read_config_parser(dummy_plugin):
     ]:
         dummy.__parameters__ = ParameterDictionary(*d)
         res = dummy.readFromConfigParser(conf)
-        assert res == res_d
+        assert res == {**res_d, **{"extra_scheduler_options": ""}}
     # check errors
     # wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="b"))
@@ -185,9 +192,14 @@ def test_read_config_parser(dummy_plugin):
         dummy.readFromConfigParser(conf)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_save_config(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
     from io import StringIO
+
+    batchmode_options = """#: Set additional options for the job submission to the workload manager (,
+#:  seperated). Note: batchmode and web only.
+#extra_scheduler_options="""
 
     res_str = StringIO()
     dummy = dummy_plugin
@@ -218,7 +230,18 @@ def test_save_config(dummy_plugin):
     dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
     assert (
         res_str.getvalue().strip("\x00").strip()
-        == "[DummyPlugin]\n#: This is\n#: a test\na=1\n\n#: Also\n#: a\n#: test.\n#b=None"
+        == """[DummyPlugin]
+#: This is
+#: a test
+a=1
+
+#: Also
+#: a
+#: test.
+#b=None
+
+"""
+        + batchmode_options
     )
 
     dummy.__parameters__ = ParameterDictionary(
@@ -271,6 +294,7 @@ dj1yfk""",
     dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_read_config(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -302,9 +326,10 @@ def test_read_config(dummy_plugin):
             open(tf.name, "w").write(resource)
             with open(tf.name, "r") as f:
                 conf_dict = dummy.readConfiguration(f)
-                assert conf_dict == expected_dict
+                assert conf_dict == {**expected_dict, **{"extra_scheduler_options": ""}}
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def testSubstitution(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -321,13 +346,11 @@ def testSubstitution(dummy_plugin):
     )
     cfg_str = dummy.getCurrentConfig({"a": 72})
     assert "value:72" in cfg_str
-    assert cfg_str.startswith(
-        """a: 72
-b: - (default: value:$a [value:72])
-c: - (default: $USER_OUTPUT_DIR ["""
-    )
+    assert "b: - (default: value:$a [value:72])" in cfg_str
+    assert "c: - (default: $USER_OUTPUT_DIR [" in cfg_str
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_help(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
 
@@ -357,12 +380,17 @@ a       (default: 1)
 b       (default: <undefined>)
     This is not the value of b
 example (default: test)
-    let's hope people write some useful help..."""
+    let's hope people write some useful help...#
+extra_scheduler_options (default: )
+                        Set additional options for the job submission to the
+                        workload manager (, seperated). Note: batchmode and web
+                        only."""
             % desc[1]
         )
-        assert similar_string(dummy.getHelp().strip(), resource.strip())
+        assert similar_string(dummy.getHelp().strip(), resource.strip(), 0.9)
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_show_config(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -383,28 +411,40 @@ def test_show_config(dummy_plugin):
             default=1.4,
         ),
     )
-    assert (
-        dummy.getCurrentConfig()
-        == "    a: - *MUST BE DEFINED!*\n    b: - (default: test)\nother: - (default: 1.4)"
+    assert similar_string(
+        dummy.getCurrentConfig(),
+        """           a: - *MUST BE DEFINED!*
+                      b: - (default: test)
+                  other: - (default: 1.4)
+extra_scheduler_options: - (default: )""",
     )
-    assert (
-        dummy.getCurrentConfig(config_dict=dict(a=2123123))
-        == "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)"
+    assert similar_string(
+        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+        """           a: 2123123
+                      b: - (default: test)
+                  other: - (default: 1.4)
+extra_scheduler_options: - (default: )""",
     )
-    assert (
-        dummy.getCurrentConfig(config_dict=dict(a=2123123))
-        == "    a: 2123123\n    b: - (default: test)\nother: - (default: 1.4)"
+    assert similar_string(
+        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+        """         a: 2123123
+                   b: - (default: test)
+               other: - (default: 1.4)
+extra_scheduler_options: - (default: )""",
     )
     res = dummy.getCurrentConfig(config_dict=dict(a="/tmp$USER_PLOTS_DIR"))
     cmp_str = (
-        "    a: /tmp$USER_PLOTS_DIR [/tmp"
+        "                          a: /tmp$USER_PLOTS_DIR [/tmp"
         + user.getUserPlotsDir("DummyPlugin")
-        + "]\n    b: - (default: test)\nother: - (default: 1.4)"
+        + "]\n                     b: - (default: test)\n"
+        + "                     other: - (default: 1.4)"
+        + "\nextra_scheduler_options: - (default: )"
     )
     assert similar_string(cmp_str, res)
     user.cleanRandomHome()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_usage(dummy_plugin):
     from evaluation_system.api.parameters import ParameterDictionary, Integer, String
 
@@ -426,6 +466,7 @@ def test_usage(dummy_plugin):
     assert res_str1.strip("\x00") == res_str2.strip("\x00")
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -440,7 +481,7 @@ def test_run(dummy_plugin):
     dummy._runTool()
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
-    assert run is None
+    assert not run
     DummyPlugin._runs = []
 
     # direct config
@@ -452,6 +493,7 @@ def test_run(dummy_plugin):
     DummyPlugin._runs = []
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_get_class_base_dir(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -477,6 +519,7 @@ def test_get_class_base_dir(dummy_plugin):
     assert module_name == "evaluation_system.tests.mocks.dummy"
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_special_variables():
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -518,6 +561,7 @@ def test_special_variables():
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_compose_command():
 
     from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -534,45 +578,15 @@ def test_compose_command():
         config_dict={"the_number": 22}, caption="This is the caption"
     )
     assert similar_string(
-        command,
-        "freva --plugin DummyPlugin --batchmode=False --caption 'This is the caption' --unique_output True the_number=22 something=test other=1.4 variable=tas",
+        " ".join(command),
+        (
+            "dummpyplugin the_number=22 something=test other=1.4 variable=tas "
+            "--caption 'This is the caption' --unique_output True"
+        ),
     )
 
 
-def test_write_slurm_field(dummy_settings_single, temp_script):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-        Directory,
-    )
-    from evaluation_system.tests.mocks.dummy import DummyPlugin
-
-    dummy_plugin = DummyPlugin()
-
-    with open(temp_script, "w") as fp:
-        slurm_file = dummy_plugin.writeSlurmFile(fp, config_dict={"the_number": 22})
-    assert os.path.isfile(temp_script)
-    assert slurm_file._cmdstring == dummy_plugin.composeCommand(
-        config_dict={"the_number": 22}
-    )
-
-
-def test_suggest_slurm_file_name(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-        Directory,
-    )
-
-    dummy_plugin.rowid = 1
-    fn = dummy_plugin.suggestSlurmFileName()
-    date_str = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    assert "DummyPlugin" in fn
-    assert date_str in fn
-
-
+@mock.patch("os.getpid", lambda: 12345)
 def test_append_unique_output():
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -601,6 +615,7 @@ def test_append_unique_output():
         config.reloadConfiguration()
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_tool(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -616,6 +631,7 @@ def test_run_tool(dummy_plugin):
     }
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_prepare_output(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -649,6 +665,7 @@ def test_prepare_output(dummy_plugin):
     assert len(meta_data) == 2
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_call(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -661,6 +678,7 @@ def test_call(dummy_plugin):
     assert res.strip("\n") == "/bin/bash"
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_link_mydata(dummy_plugin, dummy_solr):
     with TemporaryDirectory() as td:
         for file in dummy_solr.files:

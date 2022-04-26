@@ -21,6 +21,7 @@ class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstract one"""
 
     __short_description__ = "A dummy plugin"
+    __long_description__ = ""
     __version__ = (0, 0, 0)
     __tags__ = ["foo"]
     __category__ = "statistical"

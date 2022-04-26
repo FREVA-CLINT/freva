@@ -162,33 +162,33 @@ def test_parameters_dictionary(dummy_env):
         ValidationError,
     )
 
-    p1 = String(name="param1", default="default default 1")
+    p1 = String(name="a_param1", default="default default 1")
     p2 = String(
-        name="param2", default="default default 2", max_items=3, item_separator=":"
+        name="a_param2", default="default default 2", max_items=3, item_separator=":"
     )
     assert p2.parse("a:b:C") == ["a", "b", "C"]
     with pytest.raises(ValueError):
         ParameterDictionary(p1, p2, p2)
     p_dict = ParameterDictionary(p1, p2)
-    assert p_dict.__str__().startswith(
-        "ParameterDictionary(param1<String>: default default 1, param2<String>:"
-    )
-    assert len(p_dict) == 2
+    assert "ParameterDictionary(" in p_dict.__str__()
+    assert "a_param2<String>:" in p_dict.__str__()
+    assert "a_param1<String>:" in p_dict.__str__()
+    assert len(p_dict) == 3
     assert p1.name in p_dict and p_dict[p1.name] == p1.default
     assert p2.name in p_dict and p_dict[p2.name] == p2.default
-    assert len(p_dict.parameters()) == 2
+    assert len(p_dict.parameters()) == 3
     with pytest.raises(ValidationError):
-        p_dict.get_parameter("pram1")
+        p_dict.get_parameter("a_pram1")
     # TODO: Fix error
     # self.assertEquals(p_dict.get_parameter(p1.name), p1)
     # self.assertEquals(p_dict.get_parameter(p2.name), p2)
 
     # Check parameters remain in the order we put them
-    params = []
+    params = [String(name="extra_scheduler_options", default="")]
     for i in range(1000):
         params.append(String(name=str(i), default=i))
     p_dict = ParameterDictionary(*params)
-    assert list(p_dict.keys()) == [p.name for p in params]
+    assert sorted(p_dict.keys()) == sorted([p.name for p in params])
     assert list(p_dict.values()) == [p.default for p in params]
     assert p_dict.parameters() == params
 
@@ -229,7 +229,9 @@ def test_parse_arguments(dummy_env):
     res = p_dict.parseArguments("int=1 date=1 bool=1".split())
     assert res == dict(int=1, date="1", bool=True)
     res = p_dict.parseArguments("int=1 date=1 bool=1".split(), use_defaults=True)
-    assert res == dict(int=1, date="1", bool=True, file="/tmp/file1")
+    assert res == dict(
+        int=1, date="1", bool=True, extra_scheduler_options="", file="/tmp/file1"
+    )
     p_dict2 = ParameterDictionary(
         Bool(name="init"),
         Integer(name="num", default=2, item_separator=",", max_items=1),
@@ -247,6 +249,7 @@ def test_parse_arguments(dummy_env):
         int=1,
         date="1",
         bool=True,
+        extra_scheduler_options="",
         range=list(range(1, 6)),
         file="/tmp/file1",
         float=None,
@@ -304,20 +307,29 @@ def test_complete(dummy_env):
     )
     conf = dict(int=1)
     p_dict.complete(conf)
-    assert conf == {"int": 1, "file": "/tmp/file1"}
+    assert conf == {"int": 1, "extra_scheduler_options": "", "file": "/tmp/file1"}
     p_dict.complete(conf, add_missing_defaults=True)
-    assert conf == {"int": 1, "date": None, "file": "/tmp/file1"}
+    assert conf == {
+        "int": 1,
+        "extra_scheduler_options": "",
+        "date": None,
+        "file": "/tmp/file1",
+    }
 
-    assert p_dict.complete() == {"file": "/tmp/file1"}
+    assert p_dict.complete() == {"extra_scheduler_options": "", "file": "/tmp/file1"}
     assert p_dict.complete(add_missing_defaults=True) == {
         "int": None,
         "date": None,
+        "extra_scheduler_options": "",
         "file": "/tmp/file1",
     }
 
     # assure default value gets parsed (i.e. validated) when creating Parameter
     p = ParameterDictionary(Integer(name="a", default="0"))
-    assert p.complete(add_missing_defaults=True) == {"a": 0}
+    assert p.complete(add_missing_defaults=True) == {
+        "a": 0,
+        "extra_scheduler_options": "",
+    }
 
 
 def test_defaults(dummy_env):
@@ -356,6 +368,7 @@ def test_defaults(dummy_env):
         p_dict.parseArguments(["date=2"], use_defaults=False)
     assert p_dict.parseArguments(["date=2"], use_defaults=True) == {
         "date": "2",
+        "extra_scheduler_options": "",
         "file": ["/tmp/file1"],
     }
 

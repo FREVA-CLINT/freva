@@ -1,16 +1,15 @@
 """
-.. moduleauthor:: Sebastian Illing / estani 
+.. moduleauthor:: Sebastian Illing / estani
 
 This module manages the central configuration of the system.
 """
-from typing import Any, Optional, Sequence
+from __future__ import annotations
+from typing import Optional, Sequence
 
 import os
 import os.path as osp
 from pathlib import Path
-from distutils.sysconfig import get_python_lib
 import hashlib
-import logging
 import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
@@ -22,11 +21,11 @@ from evaluation_system.misc.exceptions import ConfigurationException
 DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch")
 """Type of directory structure that will be used to maintain state::
 
-    local   := <home>/<base_dir>... 
+    local   := <home>/<base_dir>...
     central := <base_dir_location>/<base_dir>/<user>/...
-    scratch := <base_dir_location>/<user>/<base_dir>... 
+    scratch := <base_dir_location>/<user>/<base_dir>...
 
-We only use local at this time, but we'll be migrating to central in 
+We only use local at this time, but we'll be migrating to central in
 the future for the next project phase."""
 # Some defaults in case nothing is defined
 _DEFAULT_CONFIG_FILE_LOCATION = osp.join(
@@ -92,7 +91,7 @@ DATABASE_FILE = "database_file"
 
 # config file section
 CONFIG_SECTION_NAME = "evaluation_system"
-"""This is the name of the section in the configuration file where 
+"""This is the name of the section in the configuration file where
 the central configuration is being stored"""
 
 #: Plugins *******************
@@ -104,7 +103,7 @@ PLUGIN_PATH = "plugin_path"
 """"Path to the plug-in's home"""
 
 PLUGIN_PYTHON_PATH = "python_path"
-"""Path to the plug-in's python sources that should be added to 
+"""Path to the plug-in's python sources that should be added to
 python's path when being run."""
 
 PLUGIN_MODULE = "module"
@@ -146,6 +145,10 @@ SOLR_CORE = "solr.core"
 _config = None
 _drs_config = None
 
+exclude: list[str] = ["extra_scheduler_options"]
+"""This is a list of strings that excludes entries from being saved to
+the history database entries."""
+
 
 def _get_public_key(project_name: str) -> str:
     key_file = os.environ.get("PUBKEY", None) or _PUBLIC_KEY_DIR / f"{project_name}.crt"
@@ -155,7 +158,11 @@ def _get_public_key(project_name: str) -> str:
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
         raise FileNotFoundError(
-            f"{key_file} not found. Secrets are stored in central vault and public key is needed to open the vault. Please deploy the backend again using the vault option."
+            (
+                f"{key_file} not found. Secrets are stored in central vault and "
+                "public key is needed to open the vault. Please deploy the backend"
+                " again using the vault option."
+            )
         )
     return sha
 
@@ -299,7 +306,6 @@ def get_plugin(plugin_name, config_prop, default=_nothing):
     :return: the value associated with the given property, the default one
     if not found
         or an exception is thrown if no default is provided."""
-    _plugin = _config[PLUGINS]
     if plugin_name in _config[PLUGINS]:
         _plugin_config = _config[PLUGINS][plugin_name]
         if config_prop in _plugin_config:

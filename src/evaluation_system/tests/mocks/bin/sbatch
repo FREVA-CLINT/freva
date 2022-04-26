@@ -28,19 +28,24 @@ IFS=$'\n'
 for i in $(sed -n -e '/SBATCH/p' $the_script);do
     if [ "$(echo "$i"|grep '\-D')" ];then
         out_dir=$(echo $i|awk '{print $NF}')
+        slurm_out="${out_dir}/DummyPlugin-${JOB_ID}.out"
+    elif [ "$(echo "$i"|grep '\-o')" ];then
+        slurm_out=$(echo $i|awk '{print $NF}'|sed 's/%J.out//g')
+        slurm_out=${slurm_out}$JOB_ID.out
     fi
+
 done
-slurm_out="${out_dir}/slurm-${JOB_ID}.o"
 cat -> $MOCK_SLURM/wrapper/${JOB_ID}.sh <<EOF
 #!/bin/bash
-echo ${JOB_ID} \$\$ PD > ${id_file}
+# echo ${JOB_ID} \$\$ PD > ${id_file}
 export PATH=$(readlink -f $(dirname $0)):$PATH
 sleep $sleep_time
-echo ${JOB_ID} \$\$ R > ${id_file}
+# echo ${JOB_ID} \$\$ R > ${id_file}
 bash $the_script
-echo "EXIT \$?" >> ${id_file}
+# echo "EXIT \$?" >> ${id_file}
 
 EOF
-bash "nohup bash ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
+chmod +x ${MOCK_SLURM}/wrapper/${JOB_ID}.sh
+bash -c "nohup ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
 echo "Submitted batch job $JOB_ID"
 

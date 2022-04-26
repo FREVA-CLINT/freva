@@ -99,6 +99,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
             "Pillow",
             "PyPDF2",
             "toml",
+            "toolz",
         ],
         extras_require={
             "docs": [

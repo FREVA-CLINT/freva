@@ -91,7 +91,9 @@ class EsgfCli(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(
+        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+    ) -> None:
         """Call the esgf command and print the results."""
         facets: dict[str, Union[list[str], str]] = {}
         _facets = BaseCompleter.arg_to_dict(args.facets)

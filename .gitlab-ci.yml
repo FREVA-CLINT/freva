@@ -59,7 +59,7 @@ test_37:
       PYTHON_VERSION: "3.7"
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
 
 test_38:
     << : *py_test
@@ -67,7 +67,7 @@ test_38:
       PYTHON_VERSION: "3.8"
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
 
 test_39:
     << : *py_test
@@ -75,13 +75,13 @@ test_39:
       PYTHON_VERSION: "3.8"
     script:
         # Do the unit tests
-      - python3 deploy.py /tmp/freva -s --run_tests --packages gitpython pandoc
+      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
 
 test_latest:
     << : *py_test
     script:
       # Install the conda env
-      - python3 deploy.py /tmp/freva -s --packages pip gitpython pandoc
+      - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
       # Do the unit tests with converage reports
       - make test_coverage
     artifacts:

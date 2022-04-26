@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from evaluation_system.misc import config, logger
-from evaluation_system.misc.exceptions import CommandError, hide_exception
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]
@@ -42,6 +41,9 @@ def is_admin(raise_error: bool = False) -> bool:
 class BaseParser:
     """Base class for common command line argument parsers."""
 
+    parser_func = argparse.ArgumentParser.parse_args
+    """Define the standard arparse parsing function"""
+
     def __init__(
         self,
         sub_commands: dict[str, subparser_func_type],
@@ -68,8 +70,9 @@ class BaseParser:
 
     def parse_args(self, argv: Optional[list[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
-        args = self.parser.parse_args(argv)
+        args, other_args = self.parser.parse_known_args(argv)
         self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
+        self.kwargs["other_args"] = other_args
         self.set_debug(self.kwargs.pop("debug", False))
         return args
 
@@ -365,7 +368,9 @@ class BaseCompleter:
             print(line)
 
     @staticmethod
-    def arg_to_dict(args: list[str], append: bool = False) -> dict[str, list[str]]:
+    def arg_to_dict(
+        args: Optional[list[str]], append: bool = False
+    ) -> dict[str, list[str]]:
         """Convert a parsed arguments with key=value pairs to a dictionary.
 
         Parameters:
@@ -382,12 +387,8 @@ class BaseCompleter:
         dict: Dictionariy representation of key=value pairs
         """
         out_dict: dict[str, list[str]] = {}
-        for arg in args:
-            try:
-                key, value = arg.split("=")
-            except ValueError:
-                with hide_exception():
-                    raise CommandError(f"Bad Option: {arg}")
+        for arg in args or []:
+            key, _, value = arg.partition("=")
             if append and key in out_dict:
                 out_dict[key].append(value)
             else:
@@ -401,6 +402,9 @@ class BaseCompleter:
 
         choices = {}
         for action in parser._actions:
+            if action.help == argparse.SUPPRESS:
+                # This is an option that is not exposed to users
+                continue
             action_type = ""
             if action.type == Path:
                 action_type = ":file:_files"

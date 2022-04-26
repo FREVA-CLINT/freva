@@ -6,6 +6,7 @@ Created on 18.05.2016
 import logging
 from functools import partial
 import os
+import mock
 from pathlib import Path
 import pytest
 import mock
@@ -14,6 +15,49 @@ from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
 
+@mock.patch("os.getpid", lambda: 12345)
+def test_cli(dummy_plugin, capsys, dummy_config, caplog):
+
+    from freva.cli.plugin import main as plugin_cli
+    import time
+    from evaluation_system.misc.exceptions import ValidationError
+    from evaluation_system.misc import config
+
+    with pytest.raises(ValidationError):
+        plugin_cli(["dummyplugin"])
+    plugin_cli(["dummyplugin", "the_number=13"])
+    output = capsys.readouterr().out
+    assert "the_number" in output
+    assert "13" in output
+    assert os.getpid() == 12345
+    out_path = (
+        Path(dummy_config.get("scheduler_output_dir"))
+        / "dummyplugin"
+        / "DummyPlugin-12345.local"
+    )
+    try:
+        out_path.unlink()
+    except FileNotFoundError:
+        pass
+    plugin_cli(["dummyplugin", "the_number=13"])
+    interactive = capsys.readouterr().out
+    assert dummy_plugin.plugin_output_file == out_path
+    assert out_path.exists()
+    with out_path.open() as f:
+        assert interactive == f.read()
+    out_path.unlink()
+    plugin_cli(["dummyplugin", "the_number=13", "--batchmode"])
+    output = capsys.readouterr().out
+    _, loglevel, message = caplog.record_tuples[-1]
+    assert loglevel == logging.INFO
+    assert "tail -f" in message
+    out_f = Path(message.split("\n")[-1].split(" ")[-1])
+    assert out_f.exists()
+    with out_f.open() as f:
+        assert "pending" in f.read()
+
+
+@mock.patch("os.getpid", lambda: 12345)
 def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
     cmd = ["doc", "DummyPlugin", "--file-name", str(plugin_doc)]
     with mock.patch.dict(os.environ, admin_env, clear=True):
@@ -27,6 +71,7 @@ def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
             run_cli(cmd[:-2])
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_forbidden_tool_doc(dummy_env):
     from freva.cli.admin import update_tool_doc
 
@@ -36,6 +81,7 @@ def test_forbidden_tool_doc(dummy_env):
         run_cli(["solr", "doc" "--help"])
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_list_tools(capsys, dummy_env):
     from freva.cli.plugin import main as run
 
@@ -50,22 +96,26 @@ def test_list_tools(capsys, dummy_env):
         help_str,
         """DummyPlugin (v0.0.0): A dummy plugin
 Options:
-number     (default: <undefined>)
-       This is just a number, not really important
-the_number (default: <undefined>) [mandatory]
-       This is *THE* number. Please provide it
-something  (default: test)
-       No help available.
-other      (default: 1.4)
-       No help available
-input      (default: <undefined>)
-       An input file
-variable   (default: tas)
-       An input variable
-""",
+number                  (default: <undefined>)
+                        This is just a number, not really important
+the_number              (default: <undefined>) [mandatory]
+                        This is *THE* number. Please provide it
+something               (default: test)
+                        No help available.
+other                   (default: 1.4)
+                        No help available.
+input                   (default: <undefined>)
+                        An input file
+variable                (default: tas)
+                        An input variable
+extra_scheduler_options (default: --qos=test, --array=20)
+                        Set additional options for the job submission to the
+                        workload manager (, seperated). Note: batchmode and web
+                        only.""",
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
@@ -77,7 +127,8 @@ def test_run_pyclientplugin(dummy_history):
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
     assert similar_string(
         res,
-        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas""",
+        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
+extra_scheduler_options: - (default: )""",
     )
     return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
     assert "git" in repo
@@ -107,6 +158,7 @@ def test_run_pyclientplugin(dummy_history):
     )
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_plugin(capsys, dummy_history, dummy_env):
     from evaluation_system.misc import config
 
@@ -141,6 +193,7 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
         assert line in output_str
 
 
+@mock.patch("os.getpid", lambda: 12345)
 def test_handle_pull_request(dummy_env, capsys):
     from evaluation_system.model.plugins.models import ToolPullRequest
 

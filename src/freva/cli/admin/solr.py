@@ -1,7 +1,5 @@
 """Collection of admin commands for apache solr requests."""
-
-__all__ = ["re_index", "del_index"]
-
+from __future__ import annotations
 import argparse
 from pathlib import Path
 from typing import Any, Optional
@@ -10,6 +8,10 @@ from ..utils import BaseParser, is_admin, subparser_func_type
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import config
+
+
+__all__ = ["re_index", "del_index"]
+
 
 CLI = "SolrCli"
 
@@ -117,7 +119,9 @@ class SolrIndex(BaseParser):
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(
+        args: argparse.Namespace, other_args: Optional[list[str]], **kwargs: Any
+    ) -> None:
         """Reindex the data."""
         input_dir = kwargs.pop("input_dir")
         if kwargs.pop("delete"):

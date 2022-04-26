@@ -7,6 +7,7 @@ Created on 23.05.2016
 from datetime import datetime, timedelta
 import os
 import tempfile
+import socket
 import shutil
 from getpass import getuser
 
@@ -31,6 +32,7 @@ def test_schedule_entry(dummy_user, dummy_history):
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.status == dummy_history.processStatus.scheduled
     assert h.slurm_output == "/slurm/output/file.txt"
+    assert h.host == socket.gethostbyname(socket.gethostname())
 
 
 def test_upgrade_status(dummy_user, dummy_history):

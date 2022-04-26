@@ -22,7 +22,7 @@ CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
 
-MODULE = """#%Module1.0#####################################################################
+MODULE = """#%Module4.0 #######################################################
 ##
 ## FREVA - Free Evaluation System Framework modulefile
 ##
@@ -37,39 +37,46 @@ proc ModulesHelp {{ }} {{
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_fish"
+        puts "source {eval_conf_file.parent}/completions/complete_fish"
     }} elseif {{ $shell == "csh" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_csh"
+        puts "source {eval_conf_file.parent}/completions/complete_csh"
     }} elseif {{ $shell == "sh" }} {{
-        puts "\\. {eval_conf_file.parent}/activate_sh"
+        puts ". {eval_conf_file.parent}/completions/complete_sh"
     }}
 }}
 prepend-path PATH {root_dir}/bin
 setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 """
 
-FISH_SCRIPT = """\\. {root_dir}/etc/fish/conf.d/conda.fish
-set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+FISH_SCRIPT = """set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
 set -gx PATH {root_dir}/bin $PATH
-\\. {root_dir}/share/fish/completions/freva.fish
+{completion}
+"""
+FISH_COMPLETION = """source {root_dir}/share/fish/completions/freva.fish
 """
 
-SH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.sh
-export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
+SH_SCRIPT = """export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
 export PATH={root_dir}/bin:$PATH
 shell=$(basename $SHELL)
-if [ $shell = zsh ];then
-    \\. {root_dir}/share/zsh/site-functions/source.zsh
+{completion}
+"""
+
+
+SH_COMPLETION = """if [ $shell = zsh ];then
+    source {root_dir}/share/zsh/site-functions/source.zsh
 elif [ $shell = bash ];then
-    \\. {root_dir}/share/bash-completion/completions/freva
+    source {root_dir}/share/bash-completion/completions/freva
 fi
 """
 
-CSH_SCRIPT = """\\. {root_dir}/etc/profile.d/conda.csh
-setenv PATH {root_dir}/bin:\\$PATH
+CSH_SCRIPT = """setenv PATH {root_dir}/bin\:$PATH
 setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
-if ( `basename $SHELL` == tcsh ) then
-    \\. {root_dir}/share/tcsh-completion/completion/freva
+{completion}
+"""
+
+
+CSH_COMPLETION = """if ( `basename $SHELL` == tcsh ) then
+    source {root_dir}/share/tcsh-completion/completion/freva
 endif
 """
 
@@ -156,6 +163,14 @@ def parse_args(argv=None):
         help="Run unittests after installation",
     )
     ap.add_argument(
+        "--editable",
+        "-e",
+        action="store_true",
+        default=False,
+        help="Apply pip install in editable mode.",
+    )
+
+    ap.add_argument(
         "--silent",
         "-s",
         action="store_true",
@@ -231,7 +246,7 @@ class Installer:
             )
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
-        env_file = (Path(__file__).parent / "dev-environment.yml")
+        env_file = Path(__file__).parent / "dev-environment.yml"
         return f"env create -q -p {self.install_prefix} -f {env_file} --force"
 
     def check_hash(self, filename):
@@ -247,15 +262,14 @@ class Installer:
         if md5_hash.hexdigest() != md5sum:
             raise ValueError("Download failed, md5sum mismatch: {md5sum} ")
 
-    def pip_install(self):
+    def pip_install(self, editable=False):
         """Install additional packages using pip."""
 
-        cmd = f"{self.python_prefix} -m pip install .[test]"
+        if editable:
+            cmd = f"{self.python_prefix} -m pip install -e .[test]"
+        else:
+            cmd = f"{self.python_prefix} -m pip install .[test]"
         logger.info(f"Installing additional packages\n{cmd}")
-        self.run_cmd(cmd)
-        pip_opts = ""
-        cmd = f"{self.python_prefix} -m pip install {pip_opts} ."
-        logger.info("Installing evaluation_system packages")
         self.run_cmd(cmd)
 
     def __init__(
@@ -309,15 +323,24 @@ class Installer:
                         path.mkdir(exist_ok=True, parents=True)
                     except PermissionError:
                         logger.warning(f"Could not create path: {path}")
-        eval_conf_file.parent.mkdir(parents=True, exist_ok=True)
+        (eval_conf_file.parent / "completions").mkdir(parents=True, exist_ok=True)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
+        completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
         for shell in ("fish", "csh", "sh"):
             with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
                 f.write(
                     shell_scripts[shell].format(
-                        root_dir=self.install_prefix, eval_conf_file=eval_conf_file
+                        root_dir=self.install_prefix,
+                        eval_conf_file=eval_conf_file,
+                        completion=completions[shell].format(
+                            root_dir=self.install_prefix
+                        ),
                     )
                 )
+            with (eval_conf_file.parent / "completions" / f"complete_{shell}").open(
+                "w"
+            ) as f:
+                f.write(completions[shell].format(root_dir=self.install_prefix))
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
@@ -357,7 +380,7 @@ if __name__ == "__main__":
     )
     if Inst.conda:
         Inst.create_conda()
-        Inst.pip_install()
+        Inst.pip_install(args.editable)
     Inst.create_loadscript()
     if Inst.run_tests:
         Inst.unittests()
