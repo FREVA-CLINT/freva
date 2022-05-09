@@ -19,8 +19,6 @@ test_coverage:
 		$(PWD)/src/evaluation_system/tests
 
 docs:
-	compose/dummy_plugin_runs.sh
-	python3 compose/solr/ingest_dummy_data.py
 	make -C docs clean
 	make -C docs html
 
