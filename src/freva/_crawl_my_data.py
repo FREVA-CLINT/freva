@@ -1,4 +1,4 @@
-"""Crawl user data and ingest metadata into the solr server."""
+"""Update user data in the apache solr data search server."""
 
 from __future__ import annotations
 from pathlib import Path
@@ -36,12 +36,26 @@ def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") ->
     The data needs to be of a certain strucutre. Please follow the following
     instructions: <URL HERE> on how to be able to ingest your data.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     crawl_dirs:
         The data path(s) that needs to be crawled
     dtype:
         The data type currently only files on the file system are supported.
+
+    Raises
+    ------
+    ValidationError:
+        If crawl_dirs do not belong to current user.
+
+    Example
+    -------
+
+    .. execute_code::
+
+        import freva
+        freva.crawl_my_data()
+
     """
     if dtype not in ("fs",):
         raise NotImplementedError("Only data on POSIX file system is supported")

@@ -1,4 +1,4 @@
-"""Module to query the database for plugin history entries."""
+"""This module queries the database for plugin history entries."""
 from __future__ import annotations
 import json
 from typing import Optional, Union
@@ -20,46 +20,62 @@ def history(
     return_command: bool = False,
     _return_dict: bool = True,
 ) -> Union[list[str], dict[str, str]]:
-    """Get access to the configuration history.
+    """Get access to the configurations of previously applied freva plugins.
 
-    The `.history` mthod displays the entries with a one-line compact description.
+    The `.history` method displays the entries with a one-line compact description.
     The first number you see is the entry id, which you might use to select
     single entries.
 
-    Parameters:
-    -----------
-    full_text: bool, (default False)
+    Parameters
+    ----------
+    full_text: bool, default: False
       Get the full configuration.
-    return_command: bool, (default False)
+    return_command: bool, default: False
       Show freva commands belonging to the history entries instead
       of the entries themself.
-    limit: int, (default 10)
+    limit: int, default: 10
       Limit the number of entires to be displayed.
-    plugin: str, (default None)
+    plugin: str, default: None
       Display only entries from a given plugin name.
-    since: str, datetime.datetime, (default None)
-      Retrieve entries older than date, see DATE FORMAT.
-    until: str, datetime.datetime, (default None)
-      Retrieve entries younger than date, see DATE FORMAT.
-    entry_ids: list (default None)
+    since: str, datetime.datetime, default: None
+      Retrieve entries older than date, see see hint on date format below.
+    until: str, datetime.datetime, default: None
+      Retrieve entries younger than date, see hint on date format below.
+    entry_ids: list, default: None
        Select entries whose ids are in "ids",
-    full_text: bool (default False)
+    full_text: bool, default: False
       Show the complete configuration.
-    return_command: bool (default False)
+    return_command: bool, default: False
       Return the commands instead of history objects
-    _return_dict: bool (default True)
+    _return_dict: bool, default: True
       Return a dictionary representation, this is only for internal use
-    Returns:
-    --------
-      list: collection of freva plugin commands
 
-    DATE FORMAT:
-    ------------
-      Dates can be given in "YYYY-MM-DD HH:mm:ss.n" or any less accurate subset of it.
-      These are all valid: "2012-02-01 10:08:32.1233431", "2012-02-01 10:08:32",
-      "2012-02-01 10:08", "2012-02-01 10", "2012-02-01", "2012-02", "2012".
-      Missing values are assumed to be the minimal allowed value. For example:
-      "2012" = "2012-01-01 00:00:00.0"
+    Returns
+    -------
+      list:
+        freva plugin history
+
+    Example
+    -------
+
+    Get the last three history entries
+
+    .. execute_code::
+
+        import freva
+        hist = freva.history(limit=3)
+        print(type(hist), len(hist))
+        print(hist[-1].keys())
+        config = hist[-1]['configuration']
+        print(config)
+
+
+    .. hint:: Date Format
+        Dates can be given in "YYYY-MM-DD HH:mm:ss.n" or any less accurate subset.
+        These are all valid: "2012-02-01 10:08:32.1233431", "2012-02-01 10:08:32",
+        "2012-02-01 10:08", "2012-02-01 10", "2012-02-01", "2012-02", "2012".
+        Missing values are assumed to be the minimal allowed value. For example:
+        "2012" = "2012-01-01 00:00:00.0"
     """
     if not isinstance(entry_ids, (list, tuple, set)) and entry_ids is not None:
         entry_ids = [entry_ids]
@@ -68,8 +84,11 @@ def history(
     except IndexError:
         command_name = "freva"
     if not return_command:
+        prefix = "history"
+        if plugin:
+            prefix = "history of {plugin}"
         logger.info(
-            f"history of {plugin}, limit={limit}, since={since},"
+            f"{prefix}, limit={limit}, since={since},"
             f" until={until}, entry_ids={entry_ids}"
         )
     rows = pm.get_history(

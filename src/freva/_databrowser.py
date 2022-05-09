@@ -1,4 +1,4 @@
-"""Module to access the apache solr databrowser."""
+"""A Python module to access the apache solr databrowser."""
 from __future__ import annotations
 from pathlib import Path
 
@@ -15,25 +15,16 @@ __all__ = ["databrowser"]
 def databrowser(
     *,
     attributes: Literal[False],
-    all_facets: Literal[False],
     facet: Union[str, list[str]],
-) -> dict[Any, dict[Any, Any]]:
-    ...
-
-
-@overload
-def databrowser(
-    *, attributes: Literal[False], all_facets: Literal[True]
-) -> dict[Any, dict[Any, Any]]:
+) -> dict[Any, dict[str, Any]]:
     ...
 
 
 @overload
 def databrowser(
     *,
-    attributes: Literal[True],
     all_facets: Literal[False],
-    facet: Optional[Union[str, list[str]]],
+    facet: Literal[None],
 ) -> Iterator[str]:
     ...
 
@@ -51,42 +42,71 @@ def databrowser(
 ) -> Union[dict[Any, dict[Any, Any]], Iterator[str]]:
     """Find data in the system.
 
-    The query is of the form key=value. <value> might use *, ? as wildcards or
-    any regular expression.
+    You can either search for files or data facets (variable, model, ...)
+    that are available. The query is of the form key=value. <value> might
+    use *, ? as wildcards or any regular expression.
 
-    ::
-
-        import freva
-        files = freva.databrowser(project='baseline1', model='MPI-ESM-LR',
-                                  experiment='decadal200[0-3]',
-                                  time_frequency='*hr',
-                                  variable='ta|tas|vu')
-
-    Parameters:
-    -----------
-    **search_facets:
+    Parameters
+    ----------
+    **search_facets: Union[str, Path, in, list[str]]
         The searchfacets to be applied in the data search. If not given
         the whole dataset will be queried.
-    multiversion:
-        Select all versions and not just the latest version (default).
-    relevant_only:
-        Show only facets that filter more than one result.
-    batch_size:
-        Size of the search querey.
-    count_facet_values:
-        Show the number of files for each values in each facet.
-    attributes:
+    all_facets: bool, default: False
+        Retrieve all facets (attributes & values) instead of the files.
+    facet: Union[str, list[str]], default: None
+        Retrieve these facets (attributes & values) instead of the files.
+    attributes: bool, default: False
         Retrieve all possible attributes for the current search
         instead of the files.
-    all_facets:
-        Retrieve all facets (attributes & values) instead of the files.
-    facet:
-        Retrieve these facets (attributes & values) instead of the files.
+    multiversion: bool, default: False
+        Select all versions and not just the latest version (default).
+    relevant_only: bool, default: False
+        Show only facets that filter more than one result.
+    batch_size: int, default: 10
+        Size of the search querey.
+    count_facet_values: bool, default: False
+        Display only this amount for search results.
+
+    Returns
+    -------
+    Iterator :
+        If ``all_facets`` is False and ``facet`` is None an
+        iterator with results.
+    dict[Any, dict[str, Any] :
+        dictionary for facet results, if ``all_facets`` is True or ``facet``
+        was given a value (str or list[str])
 
 
-    Returns:
-    --------
-        collection : List, Dict of files, facets or attributes
+    Example
+    -------
+
+    Seach for files in the system:
+
+    .. execute_code::
+
+        import freva
+        files = freva.databrowser(project='obs*', institute='cpc',
+                                  time_frequency='??min',
+                                  variable='pr')
+        print(files)
+        print(next(files))
+        for file in files:
+            print(file)
+            break
+        facets = freva.databrowser(project='obs*', attributes=True)
+        print(list(facets))
+
+
+    Search for facets in the system:
+
+    .. execute_code::
+
+        import freva
+        all_facets = freva.databrowser(project='obs*', all_facets=True)
+        print(all_facets)
+        spec_facets = freva.databrowser(project='obs*',
+                                        facet=["time_frequency", "variable"])
+        print(spec_facets)
 
     """
     facets: list[str] = []
