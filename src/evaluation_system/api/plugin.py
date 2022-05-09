@@ -363,7 +363,7 @@ A plugin/user might then use them to define a value in the following way::
         stderr = [sys.stderr]
         try:
             self.plugin_output_file.touch(mode=0o775)
-        except FileExistsError:
+        except FileNotFoundError:
             self.plugin_output_file.parent.mkdir(parents=True)
             # TODO: the mode argument of mkdir didn't seem to work
             self.plugin_output_file.parent.chmod(0o775)
