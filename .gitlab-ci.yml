@@ -108,7 +108,7 @@ docs:
     artifacts:
       when: always
       paths:
-        - public
+        - sphinx_docs
 
 pages:
   stage: report
@@ -121,11 +121,11 @@ pages:
   before_script:
     - mkdir -p public; cp .docker/index.html public/
     - mv coverage_report public/
+    - mv sphinx_docs public/
   script:
     - /opt/allure/bin/allure generate --clean test_results
   after_script:
     - mv allure-report public/
-    - mv sphinx_docs public/
   artifacts:
     when: always
     paths:
