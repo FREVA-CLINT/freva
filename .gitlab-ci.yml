@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - docs
     - report
 
 variables:
@@ -22,7 +23,7 @@ lint:
 
 dev-obs:
     stage: build
-    image: 
+    image:
         name: gcr.io/kaniko-project/executor:debug
         entrypoint: [""]
     script:
@@ -93,6 +94,23 @@ test_latest:
         - test_results
         - report.xml
 
+docs:
+    << : *py_test
+    variables:
+      EVALUATION_SYSTEM_PLUGINS: "src/evaluation_system/tests/mocks,dummy,/tmp/animator,animator"
+    before_script:
+      - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
+      - /tmp/freva/bin/python3 -m pip install .[docs]
+      - git clone https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
+    script:
+      - make docs
+    after_script:
+      mv docs/_build/html sphinx_docs
+    artifacts:
+      when: always
+      paths:
+        - public
+
 pages:
   stage: report
   image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
@@ -100,6 +118,7 @@ pages:
     - docker, specific
   dependencies:
     - test_latest
+    - docs
   before_script:
     - mkdir -p public; cp .docker/index.html public/
     - mv coverage_report public/
@@ -107,6 +126,7 @@ pages:
     - /opt/allure/bin/allure generate --clean test_results
   after_script:
     - mv allure-report public/
+    - mv sphinx_docs public/
   artifacts:
     when: always
     paths:

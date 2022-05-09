@@ -5,6 +5,7 @@ export PATH := $(FREVA_ENV):$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
 export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 all: install test
 
+.PHONY: docs
 install:
 	python3 -m pip install .[test]
 
@@ -16,6 +17,16 @@ test_coverage:
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
+
+docs:
+	compose/dummy_plugin_runs.sh
+	python3 compose/solr/ingest_dummy_data.py
+	make -C docs clean
+	make -C docs html
+
+
+
+
 
 lint:
 	mypy
