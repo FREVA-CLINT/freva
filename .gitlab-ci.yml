@@ -97,8 +97,8 @@ test_latest:
 docs:
     << : *py_test
     variables:
-      EVALUATION_SYSTEM_PLUGINS: "${PWD}/src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator"
-      EVALUATION_SYSTEM_CONFIG_FILE: "${PWD}/compose/local-eval-system.conf"
+      EVALUATION_SYSTEM_PLUGINS: "src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator"
+      EVALUATION_SYSTEM_CONFIG_FILE: "compose/local-eval-system.conf"
       FREVA_ENV: "/tmp/freva/bin"
     before_script:
       - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime
