@@ -102,12 +102,8 @@ docs:
       FREVA_ENV: "/tmp/freva/bin"
     before_script:
       - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime
-      - /tmp/freva/bin/python3 -m pip install .[docs]
-      - git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
-      - /tmp/freva/bin/python3 -m ipykernel install --user --name freva
     script:
-      - /tmp/freva/bin/freva plugin animator project=observations variable=pr; echo 0
-      - make dummy-data
+      - make prepdocs
       - make docs
     after_script:
       mv docs/_build/html sphinx_docs
