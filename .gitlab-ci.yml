@@ -106,7 +106,7 @@ docs:
       - make prepdocs
       - make docs
     after_script:
-      mv docs/_build/html sphinx_docs
+      mv docs/build/html sphinx_docs
     artifacts:
       when: always
       paths:
