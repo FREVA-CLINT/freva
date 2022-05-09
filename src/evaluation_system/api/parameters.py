@@ -5,7 +5,7 @@ Plugin parameters are defined in the plugin wrapper class please refer to
 plugin wrapper class.
 
 """
-from __futures__ import annotations
+from __future__ import annotations
 from collections import defaultdict
 import json
 import re
