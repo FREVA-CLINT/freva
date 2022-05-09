@@ -76,14 +76,16 @@ __solr() {
     local -a args keys search_keys
     let n=$CURRENT-1
     # Get all facets and entries depending on what has alread been typed
-    if [ $n -ge 3 ];then
-        for i in {3..$n};do
+    if [ $n -ge 2 ];then
+        for i in {2..$n};do
+            echo $n >> zsh_debug
             arg=$(echo ${words[$i]}|cut -c1)
             if [ ! "${arg}" = '-' ];then
                 search_keys+=("${words[$i]}")
             fi
         done
     fi
+    echo ${search_keys[@]} >> zsh_debug
     facets=(${(f)"$(python3 -m freva.cli --shell zsh --strip freva databrowser ${search_keys[@]})"})
     for line in ${facets};do
         facet=$(echo $line|cut -d : -f1)
