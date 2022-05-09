@@ -726,7 +726,7 @@ def run_tool(
             scheduled_id, user.getName(), History.processStatus.running
         )
         rowid = scheduled_id
-        is_interactive_job = False
+        out_file = Path(History.objects.get(pk=scheduled_id).slurm_output)
     elif user:
         version_details = get_version(plugin_name)
         rowid = user.getUserDB().storeHistory(
@@ -739,9 +739,9 @@ def run_tool(
         )
         # follow the notes
         follow_history_tag(rowid, user.getName(), "Owner")
-        is_interactive_job = True
+        out_file = None
     else:
-        is_interactive_job = True
+        out_file = None
     try:
         # we want that the rowid is visible to the tool
         p.rowid = rowid
@@ -749,7 +749,7 @@ def run_tool(
         result: Optional[utils.metadict] = p._run_tool(
             config_dict=complete_conf,
             unique_output=unique_output,
-            is_interactive_job=is_interactive_job,
+            out_file=out_file,
             rowid=rowid,
         )
         # save results when existing

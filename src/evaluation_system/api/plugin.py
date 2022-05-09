@@ -50,6 +50,7 @@ from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.exceptions import (
     ConfigurationException,
     deprication_warning,
+    hide_exception,
 )
 
 from evaluation_system.misc.utils import PIPE_OUT
@@ -304,8 +305,7 @@ A plugin/user might then use them to define a value in the following way::
         """
         raise NotImplementedError("This method must be implemented")
 
-    @staticmethod
-    def _execute(cmd: list[str], check=True, **kwargs):
+    def _execute(self, cmd: list[str], check=True, **kwargs):
         # Do not allow calling shell=True
         kwargs["shell"] = False
         kwargs["stdout"] = sub.PIPE
@@ -314,15 +314,12 @@ A plugin/user might then use them to define a value in the following way::
         kwargs.setdefault("stderr", sub.STDOUT)
         with sub.Popen(cmd, **kwargs) as res:
             stdout = cast(IO[Any], res.stdout)
-            stderr = res.stderr
             for line in iter(stdout.readline, ""):
                 print(line, end="", flush=True)
             return_code = res.wait()
             if return_code and check:
-                if stderr is not None:
-                    log.error(stderr.read())
-                else:
-                    log.error("An error occured calling %s", cmd)
+                log.error("An error occured calling %s", cmd)
+                log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
                     return_code,
                     cmd,
@@ -378,6 +375,8 @@ A plugin/user might then use them to define a value in the following way::
             with PIPE_OUT(*stdout) as p_sto, PIPE_OUT(*stderr) as p_ste:
                 sys.stdout = p_sto
                 sys.stderr = p_ste
+                log_stream_handle = logging.StreamHandler(p_ste)
+                log.addHandler(log_stream_handle)
                 yield
         except Exception as error:
             if is_interactive_job is True:
@@ -388,6 +387,7 @@ A plugin/user might then use them to define a value in the following way::
             sys.stdout = stdout[0]
             sys.stderr = stderr[0]
             if is_interactive_job is True:
+                log.removeHandler(log_stream_handle)
                 f.flush()
                 f.close()
 
@@ -411,10 +411,15 @@ A plugin/user might then use them to define a value in the following way::
         self,
         config_dict: Optional[ConfigDictType] = None,
         unique_output: bool = True,
-        is_interactive_job: bool = True,
+        out_file: Optional[Path] = None,
         rowid: Optional[int] = None,
     ) -> Optional[Any]:
         config_dict = self._append_unique_id(config_dict, unique_output)
+        if out_file is None:
+            is_interactive_job = True
+        else:
+            is_interactive_job = False
+            self._plugin_out = out_file
         for key in config.exclude:
             config_dict.pop(key, "")
         try:
@@ -1216,7 +1221,11 @@ A plugin/user might then use them to define a value in the following way::
         else:
             cmd = cmd_string
         log.debug("Calling: %s", " ".join(cmd))
-        res = self._execute(cmd, check=check, **kwargs)
+        try:
+            res = self._execute(cmd, check=check, **kwargs)
+        except sub.CalledProcessError as cmd_error:
+            with hide_exception():
+                raise cmd_error
         return res
 
     def _split_path(self, path: str) -> list[str]:
