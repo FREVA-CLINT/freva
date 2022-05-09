@@ -97,7 +97,7 @@ test_latest:
 docs:
     << : *py_test
     variables:
-      EVALUATION_SYSTEM_PLUGINS: "src/evaluation_system/tests/mocks,dummy,/tmp/animator,animator"
+      EVALUATION_SYSTEM_PLUGINS: "src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator"
     before_script:
       - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
       - /tmp/freva/bin/python3 -m pip install .[docs]
