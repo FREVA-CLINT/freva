@@ -107,11 +107,14 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
                 "sphinx",
                 "myst-nb",
                 "xarray",
+                "humanize",
+                "cartopy",
                 "pint",
                 "nbsphinx",
                 "recommonmark",
                 "ipython",  # For nbsphinx syntax highlighting
                 "sphinxcontrib_github_alt",
+                "sphinx-execute-code-python3",
                 "sphinx_rtd_theme",
             ],
             "test": [
