@@ -28,6 +28,14 @@ import subprocess
 from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
+os.environ.setdefault(
+    "EVALUATION_SYSTEM_CONFIG_FILE",
+    os.path.abspath(os.path.join("..", "..", "compose", "local-eval-system.conf")),
+)
+os.environ.setdefault(
+    "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
+    os.path.abspath(os.path.join("..", "..", "compose", "drs_config.toml")),
+)
 
 
 # -- General configuration ---------------------------------------------------
