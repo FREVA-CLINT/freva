@@ -22,10 +22,10 @@ class ResultTagTest(PluginAbstract):
     __tags__ = ["foo"]
     __version__ = (0, 0, 2)
 
-    def runTool(self, config_dict=None):
+    def run_tool(self, config_dict=None):
         folder = config_dict.get("folder", None)
         if folder:
             output = folder
         else:
             output = {config_dict["input"]: {"caption": "Manually added result"}}
-        return self.prepareOutput(output)
+        return self.prepare_output(output)

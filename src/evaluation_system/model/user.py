@@ -1,60 +1,61 @@
-"""
-.. moduleauthor:: Sebastian Illing / estani
-
-This module manages the abstraction of a user providing thus all information about him/her that
-might be required anywhere else.
-"""
+"""Manage the abstraction of a system user."""
+from __future__ import annotations
 import pwd
 import os
-import sys
 from configparser import ConfigParser as Config, ExtendedInterpolation
+from typing import Optional, Union
+
 from evaluation_system.misc import config, utils
 from evaluation_system.model.db import UserDB
 
 
-class User(object):
+class User:
     """
     This Class encapsulates a user (configurations, etc).
+
+    Parameters
+    ----------
+    uid: int
+        user id in the local system, if not provided the current user is used.
+    email: str
+        user's email address
     """
 
-    CONFIG_DIR = "config"
-    "The directory name where all plug-in/system configurations will be stored."
+    CONFIG_DIR: str = "config"
+    """The directory name where all plug-in/system configurations will be stored."""
 
-    CACHE_DIR = "cache"
-    "The temporary directory where plug-ins can store files while performing some computation."
+    CACHE_DIR: str = "cache"
+    """The temporary directory where plug-ins can store files while performing some computation."""
 
-    OUTPUT_DIR = "output"
-    "The directory where output files are stored. Intended for files containing data and thus taking much space."
+    OUTPUT_DIR: str = "output"
+    """The directory where output files are stored. Intended for files containing data and thus taking much space."""
 
-    PLOTS_DIR = "plots"
+    PLOTS_DIR: str = "plots"
     """The directory where just plots are stored. Plots are assumed to be much smaller in size than data and might
 therefore live longer"""
 
-    PROCESSES_DIR = "processes"
-    "The directory might handle information required for each running process."
+    PROCESSES_DIR: str = "processes"
+    """The directory might handle information required for each running process."""
 
-    EVAL_SYS_CONFIG = os.path.join(CONFIG_DIR, "evaluation_system.config")
+    EVAL_SYS_CONFIG: str = os.path.join(CONFIG_DIR, "evaluation_system.config")
     """The file containing a central configuration for the whole system (user-wise)"""
 
-    EVAL_SYS_DEFAULT_CONFIG = os.path.normpath(
+    EVAL_SYS_DEFAULT_CONFIG: str = os.path.normpath(
         os.path.dirname(__file__) + "/../../etc/system_default.config"
     )
     """The central default configuration file for all users. It should not be confused with the system configuration
 file that is handled by :class:`evaluation_system.api.config`."""
 
-    def __init__(self, uid=None, email=None):
-        """Creates a user object for the provided id. If no id is given, a user object for
+    def __init__(
+        self, uid: Optional[Union[int, str]] = None, email: Optional[str] = None
+    ):
+        """Creates a user object for the provided id.
+
+        If no id is given, a user object for
         the current user, i.e. the one that started the application, is created instead.
-
-        :type uid: int
-        :param uid: user id in the local system, if not provided the current user is used.
-        :type email: str
-        :param email: user's email address"""
+        """
         self._dir_type = config.get(config.DIRECTORY_STRUCTURE_TYPE)
-
-        if uid is None:
-            uid = os.getuid()
-
+        uid = uid or os.getuid()
         self._userdata = None
         if isinstance(uid, str):
             self._userdata = pwd.getpwnam(uid)
@@ -63,12 +64,7 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         if self._userdata is None:
             raise Exception("Cannot find user %s" % uid)
-
-        if email is None:
-            self._email = ""
-        else:
-            self._email = email
-
+        self._email = email or ""
         self._userconfig = Config(interpolation=ExtendedInterpolation())
         # try to load teh configuration from the very first time.
         self._userconfig.read(
@@ -85,9 +81,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
         if row_id:
             try:
                 self._db.updateUserLogin(row_id, email)
-            except:
-                raise
-                pass
+            except Exception as error:
+                raise error
         else:
             self._db.createUser(self.getName(), email=self._email)
 

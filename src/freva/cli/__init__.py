@@ -20,7 +20,7 @@ class ArgParser(BaseParser):
         argv = argv or sys.argv[1:]
         sub_parsers = self.get_subcommand_parsers()
         try:
-            if argv[0] in sub_parsers:
+            if argv[0].strip("-") in sub_parsers:
                 argv[0] = argv[0].strip("-")
         except IndexError:
             argv.append("-h")

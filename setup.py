@@ -88,6 +88,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
         packages=find_packages("src"),
         package_dir={"": "src"},
         data_files=data_files,
+        setup_requires=["appdirs"],
         install_requires=[
             "Django",
             "humanize",
@@ -104,10 +105,14 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
         extras_require={
             "docs": [
                 "sphinx",
+                "myst-nb",
+                "xarray",
+                "pint",
                 "nbsphinx",
                 "recommonmark",
                 "ipython",  # For nbsphinx syntax highlighting
                 "sphinxcontrib_github_alt",
+                "sphinx_rtd_theme",
             ],
             "test": [
                 "black",

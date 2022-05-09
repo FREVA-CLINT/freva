@@ -50,31 +50,31 @@ def test_setup_configuration(dummy_plugin):
         dummy.__parameters__ = ParameterDictionary(String(name="a", mandatory=True))
         # the default behavior is to check for None values and fail if found
         with pytest.raises(ValidationError):
-            dummy.setupConfiguration()
+            dummy.setup_configuration()
 
         # it can be turned off
-        res = dummy.setupConfiguration(check_cfg=False)
+        res = dummy.setup_configuration(check_cfg=False)
         assert res == {"a": None}
 
         # check template
-        res = dummy.setupConfiguration(dict(num=1), check_cfg=False)
+        res = dummy.setup_configuration(dict(num=1), check_cfg=False)
         assert 1 == res["num"]
 
         # check indirect resolution
-        res = dummy.setupConfiguration(dict(num="${a}x", a=1), check_cfg=False)
+        res = dummy.setup_configuration(dict(num="${a}x", a=1), check_cfg=False)
         assert "1x" == res["num"]
 
         # check indirect resolution can also be turned off
-        res = dummy.setupConfiguration(
+        res = dummy.setup_configuration(
             dict(num="${a}x", a=1), check_cfg=False, recursion=False
         )
         assert "${a}x" == res["num"]
 
         # check user special values work
-        res = dummy.setupConfiguration(dict(num="$USER_BASE_DIR"), check_cfg=False)
+        res = dummy.setup_configuration(dict(num="$USER_BASE_DIR"), check_cfg=False)
         assert user.getUserBaseDir() == res["num"]
 
-        res = dummy.setupConfiguration(
+        res = dummy.setup_configuration(
             dict(num="$USER_BASE_DIR"), check_cfg=False, substitute=False
         )
         assert "$USER_BASE_DIR" == res["num"]
@@ -92,23 +92,23 @@ def test_parse_arguments(dummy_plugin):
 
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(String(name="a"), String(name="b"))
-    res = dummy.__parameters__.parseArguments("a=1 b=2".split())
+    res = dummy.__parameters__.parse_arguments("a=1 b=2".split())
     assert res == dict(a="1", b="2")
     dummy.__parameters__ = ParameterDictionary(
         Integer(name="a", default=0), Integer(name="b", default=0)
     )
-    res = dummy.__parameters__.parseArguments("a=1 b=2".split())
+    res = dummy.__parameters__.parse_arguments("a=1 b=2".split())
     assert res == dict(a=1, b=2)
     # even if the default value is different, the metadata can define the type
     dummy.__parameters__ = ParameterDictionary(
         Integer(name="a", default="1"), Integer(name="b", default=2)
     )
-    res = dummy.__parameters__.parseArguments("a=1 b=2".split())
+    res = dummy.__parameters__.parse_arguments("a=1 b=2".split())
     assert res == dict(a=1, b=2)
     # more arguments than those expected
     dummy.__parameters__ = ParameterDictionary(Integer(name="a", default="1"))
     with pytest.raises(ValidationError):
-        dummy.__parameters__.parseArguments("a=1 b=2".split())
+        dummy.__parameters__.parse_arguments("a=1 b=2".split())
     dummy.__parameters__ = ParameterDictionary(Bool(name="a"))
     for arg, parsed_val in [
         ("a=1", True),
@@ -118,7 +118,7 @@ def test_parse_arguments(dummy_plugin):
         ("a=false", False),
         ("a=False", False),
     ]:
-        res = dummy.__parameters__.parseArguments(arg.split())
+        res = dummy.__parameters__.parse_arguments(arg.split())
         assert res == dict(a=parsed_val), "Error when parsing %s, got %s" % (arg, res)
 
 
@@ -144,17 +144,17 @@ def test_parse_metadict(dummy_plugin):
         (Float(name="a"), float("1")),
     ]:
         dummy.__parameters__ = ParameterDictionary(d)
-        res = dummy._parseConfigStrValue("a", "1")
+        res = dummy.parse_config_strvalue("a", "1")
         assert res == res_d
 
     # check errors
     # Wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="a"))
     with pytest.raises(ValidationError):
-        dummy._parseConfigStrValue("a", "d")
+        dummy.parse_config_strvalue("a", "d")
     # wrong key
     with pytest.raises(ValidationError):
-        dummy._parseConfigStrValue("b", "1")
+        dummy.parse_config_strvalue("b", "1")
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -179,17 +179,13 @@ def test_read_config_parser(dummy_plugin):
         ([Integer(name="a"), String(name="b")], dict(a=42, b="text")),
     ]:
         dummy.__parameters__ = ParameterDictionary(*d)
-        res = dummy.readFromConfigParser(conf)
+        res = dummy.read_from_config_parser(conf)
         assert res == {**res_d, **{"extra_scheduler_options": ""}}
     # check errors
     # wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="b"))
     with pytest.raises(ValidationError):
-        dummy.readFromConfigParser(conf)
-    # wrong regex
-    dummy.__parameters__ = ParameterDictionary(Integer(name="a", regex="14[0-9]*"))
-    with pytest.raises(ValidationError):
-        dummy.readFromConfigParser(conf)
+        dummy.read_from_config_parser(conf)
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -213,7 +209,7 @@ def test_save_config(dummy_plugin):
     ]
     for t, res in tests:
         res_str.truncate(0)
-        dummy.saveConfiguration(res_str, t)
+        dummy.save_configuration(res_str, t)
         assert res_str.getvalue().strip("\x00").strip() == res
 
     dummy.__parameters__ = ParameterDictionary(
@@ -221,13 +217,13 @@ def test_save_config(dummy_plugin):
         Integer(name="b", help="Also\na\ntest."),
     )
     res_str.truncate(0)
-    dummy.saveConfiguration(res_str, {"a": 1})
+    dummy.save_configuration(res_str, {"a": 1})
     assert (
         res_str.getvalue().strip("\x00").strip().strip("\x00")
         == "[DummyPlugin]\n#: This is\n#: a test\na=1"
     )
     res_str.truncate(0)
-    dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
+    dummy.save_configuration(res_str, {"a": 1}, include_defaults=True)
     assert (
         res_str.getvalue().strip("\x00").strip()
         == """[DummyPlugin]
@@ -291,7 +287,7 @@ dj1yfk""",
         ),
     )
     res_str.truncate(0)
-    dummy.saveConfiguration(res_str, {"a": 1}, include_defaults=True)
+    dummy.save_configuration(res_str, {"a": 1}, include_defaults=True)
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -325,7 +321,7 @@ def test_read_config(dummy_plugin):
         with NamedTemporaryFile() as tf:
             open(tf.name, "w").write(resource)
             with open(tf.name, "r") as f:
-                conf_dict = dummy.readConfiguration(f)
+                conf_dict = dummy.read_configuration(f)
                 assert conf_dict == {**expected_dict, **{"extra_scheduler_options": ""}}
 
 
@@ -344,7 +340,7 @@ def testSubstitution(dummy_plugin):
         String(name="b", default="value:$a"),
         Directory(name="c", default="$USER_OUTPUT_DIR"),
     )
-    cfg_str = dummy.getCurrentConfig({"a": 72})
+    cfg_str = dummy.get_current_config({"a": 72})
     assert "value:72" in cfg_str
     assert "b: - (default: value:$a [value:72])" in cfg_str
     assert "c: - (default: $USER_OUTPUT_DIR [" in cfg_str
@@ -387,7 +383,7 @@ extra_scheduler_options (default: )
                         only."""
             % desc[1]
         )
-        assert similar_string(dummy.getHelp().strip(), resource.strip(), 0.9)
+        assert similar_string(dummy.get_help().strip(), resource.strip(), 0.9)
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -412,27 +408,27 @@ def test_show_config(dummy_plugin):
         ),
     )
     assert similar_string(
-        dummy.getCurrentConfig(),
+        dummy.get_current_config(),
         """           a: - *MUST BE DEFINED!*
                       b: - (default: test)
                   other: - (default: 1.4)
 extra_scheduler_options: - (default: )""",
     )
     assert similar_string(
-        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+        dummy.get_current_config(config_dict=dict(a=2123123)),
         """           a: 2123123
                       b: - (default: test)
                   other: - (default: 1.4)
 extra_scheduler_options: - (default: )""",
     )
     assert similar_string(
-        dummy.getCurrentConfig(config_dict=dict(a=2123123)),
+        dummy.get_current_config(config_dict=dict(a=2123123)),
         """         a: 2123123
                    b: - (default: test)
                other: - (default: 1.4)
 extra_scheduler_options: - (default: )""",
     )
-    res = dummy.getCurrentConfig(config_dict=dict(a="/tmp$USER_PLOTS_DIR"))
+    res = dummy.get_current_config(config_dict=dict(a="/tmp$USER_PLOTS_DIR"))
     cmp_str = (
         "                          a: /tmp$USER_PLOTS_DIR [/tmp"
         + user.getUserPlotsDir("DummyPlugin")
@@ -454,14 +450,14 @@ def test_usage(dummy_plugin):
         Integer(name="b", default=2),
         String(name="c", help="Well this is just an x..."),
     )
-    def_config = dummy.setupConfiguration(check_cfg=False)
+    def_config = dummy.setup_configuration(check_cfg=False)
     from io import StringIO
 
     resource = StringIO()
-    dummy.saveConfiguration(resource, def_config)
+    dummy.save_configuration(resource, def_config)
     res_str1 = resource.getvalue()
     resource.truncate(0)
-    dummy.saveConfiguration(resource)
+    dummy.save_configuration(resource)
     res_str2 = resource.getvalue()
     assert res_str1.strip("\x00") == res_str2.strip("\x00")
 
@@ -478,14 +474,14 @@ def test_run(dummy_plugin):
 
     dummy = dummy_plugin
     # no config
-    dummy._runTool()
+    dummy._run_tool()
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
     assert not run
     DummyPlugin._runs = []
 
     # direct config
-    dummy._runTool(config_dict=dict(the_number=42))
+    dummy._run_tool(config_dict=dict(the_number=42))
     assert len(DummyPlugin._runs) == 1
     run = DummyPlugin._runs[0]
     assert "the_number" in run
@@ -507,12 +503,10 @@ def test_get_class_base_dir(dummy_plugin):
     import os
     import re
 
-    assert evaluation_system.tests.mocks.dummy.__file__.startswith(
-        dummy.getClassBaseDir()
-    )
+    assert evaluation_system.tests.mocks.dummy.__file__.startswith(dummy.class_basedir)
     # module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" or ".py"
     module_name = os.path.abspath(evaluation_system.tests.mocks.dummy.__file__)[
-        len(dummy.getClassBaseDir()) + 1 :
+        len(dummy.class_basedir) + 1 :
     ].replace("/", ".")
     print(module_name, "blablabla")
     module_name = re.sub("\\.pyc?$", "", module_name)
@@ -544,7 +538,7 @@ def test_special_variables():
     result = dict(
         [
             (k, v)
-            for k, v in dummy.setupConfiguration(
+            for k, v in dummy.setup_configuration(
                 config_dict=special_vars, check_cfg=False
             ).items()
             if k in special_vars
@@ -574,7 +568,7 @@ def test_compose_command():
         Directory,
     )
 
-    command = dummy_plugin.composeCommand(
+    command = dummy_plugin.compose_command(
         config_dict={"the_number": 22}, caption="This is the caption"
     )
     assert similar_string(
@@ -606,9 +600,9 @@ def test_append_unique_output():
             "directory_structure_type": "scratch",
         }
         dummy_plugin.rowid = 1
-        new_config = dummy_plugin.append_unique_id(config_dict.copy(), True)
+        new_config = dummy_plugin._append_unique_id(config_dict.copy(), True)
         assert new_config["input"] == "/my/input/dir/1"
-        new_config = dummy_plugin.append_unique_id(config_dict.copy(), False)
+        new_config = dummy_plugin._append_unique_id(config_dict.copy(), False)
         assert new_config["input"] == "/my/input/dir"
     finally:
         config._config[config.DIRECTORY_STRUCTURE_TYPE] = "local"
@@ -624,7 +618,7 @@ def test_run_tool(dummy_plugin):
         Directory,
     )
 
-    result = dummy_plugin._runTool({"the_answer": 42})
+    result = dummy_plugin._run_tool({"the_answer": 42})
     assert result == {
         "/tmp/dummyfile1": dict(type="plot"),
         "/tmp/dummyfile2": dict(type="data"),
@@ -653,20 +647,20 @@ def test_prepare_output(dummy_plugin):
         plugin = ResultTagTest()
         if check["suffix"] == ".pdf":
             fn = check.pop("fn")
-            meta_data = plugin._runTool({"input": str(fn)})
+            meta_data = plugin._run_tool({"input": str(fn)})
             meta_data = meta_data[list(meta_data.keys())[0]]
         else:
             with NamedTemporaryFile(mode="wb", suffix=check["suffix"]) as fn:
-                meta_data = plugin._runTool({"input": fn.name})[fn.name]
+                meta_data = plugin._run_tool({"input": fn.name})[fn.name]
         assert meta_data["todo"] == check["todo"]
         assert meta_data["type"] == check["type"]
         assert meta_data["caption"] == "Manually added result"
-    meta_data = plugin._runTool({"folder": str(fn.parent)})
+    meta_data = plugin._run_tool({"folder": str(fn.parent)})
     assert len(meta_data) == 2
 
 
 @mock.patch("os.getpid", lambda: 12345)
-def test_call(dummy_plugin):
+def test_call(dummy_plugin, capsys):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
         Integer,
@@ -674,8 +668,8 @@ def test_call(dummy_plugin):
         Directory,
     )
 
-    res = dummy_plugin.call("echo /bin/bash")  # .strip('\n')
-    assert res.strip("\n") == "/bin/bash"
+    _ = dummy_plugin.call("echo /bin/bash")  # .strip('\n')
+    assert "/bin/bash" in capsys.readouterr().out
 
 
 @mock.patch("os.getpid", lambda: 12345)

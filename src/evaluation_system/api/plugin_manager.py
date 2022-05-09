@@ -21,6 +21,9 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 """
 from __future__ import annotations
 import importlib.machinery
+import importlib.util
+from importlib.machinery import ModuleSpec
+from importlib.abc import Loader
 import inspect
 import json
 import os
@@ -47,18 +50,19 @@ from typing import (
 from typing_extensions import TypedDict
 
 from django.db.models.query import QuerySet
+from PIL import Image
+
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
 from evaluation_system.misc import utils
 from evaluation_system.misc.exceptions import (
+    ConfigurationException,
     PluginManagerException,
     ParameterNotFoundError,
 )
 from evaluation_system.model.history.models import Configuration, History, HistoryTag
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
-from PIL import Image
-
 from .plugin import PluginAbstract
 
 PLUGIN_ENV = "EVALUATION_SYSTEM_PLUGINS"
@@ -180,8 +184,15 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
     # get all modules from the tool directory
     plugins = list(config.get(config.PLUGINS))
     for plugin_name in plugins:
-        py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
-        py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
+        try:
+            py_dir = config.get_plugin(plugin_name, config.PLUGIN_PYTHON_PATH)
+            py_mod = config.get_plugin(plugin_name, config.PLUGIN_MODULE)
+        except ConfigurationException:
+            log.error(
+                f"{config.PLUGIN_PYTHON_PATH} and {config.PLUGIN_MODULE}"
+                f" need to be configured for plugin {plugin_name}, check config."
+            )
+            continue
         if os.path.isdir(py_dir):
             if py_mod in __plugin_modules__:
                 file_path = __plugin_modules__[py_mod] + ".py"
@@ -338,11 +349,14 @@ def get_plugin_instance(
 
     # in case we want to cache the creation of the plugin classes.
     plugin = get_plugin_metadata(plugin_name, user.getName())
-
-    plugin_module = importlib.machinery.SourceFileLoader(
-        "%s" % plugin.plugin_class, plugin.plugin_module + ".py"
+    spec = importlib.util.spec_from_file_location(
+        f"{plugin.plugin_class}", f"{plugin.plugin_module}.py"
     )
-    mod = plugin_module.load_module()
+    spec = cast(ModuleSpec, spec)
+    mod = importlib.util.module_from_spec(spec)
+    spec_loader = cast(Loader, spec.loader)
+    spec_loader.exec_module(mod)
+    sys.modules[spec.name] = mod
     return getattr(mod, plugin.plugin_class)(user=user)
 
 
@@ -365,7 +379,7 @@ def parse_arguments(
         Name of the plugin to search for.
     arguments
         it will be parsed by the plug-in (see
-        :class:`evaluation_system.api.plugin.parseArguments`)
+        :class:`evaluation_system.api.plugin.parse_arguments`)
     use_user_defaults
         If ``True`` and a user configuration is found, this will be used
         as a default for all non set arguments. So the value will be
@@ -387,7 +401,7 @@ def parse_arguments(
     user = user or User()
 
     p = get_plugin_instance(plugin_name, user)
-    complete_conf = p.__parameters__.parseArguments(
+    complete_conf = p.__parameters__.parse_arguments(
         arguments, use_defaults=True, check_errors=False
     )
     # if we are using user defaults then load them first
@@ -395,17 +409,19 @@ def parse_arguments(
         user_config_file = user.getUserToolConfig(plugin_name)
         if os.path.isfile(user_config_file):
             with open(user_config_file, "r") as f:
-                complete_conf.update(p.readConfiguration(f))
+                complete_conf.update(p.read_configuration(f))
     # now if we still have a config file update what the configuration with it
     if isinstance(config_file, str):
         if config_file == "-":
             # reading from stdin
-            complete_conf.update(p.readConfiguration(sys.stdin))
+            complete_conf.update(p.read_configuration(sys.stdin))
         elif config_file is not None:
             with open(config_file, "r") as f:
-                complete_conf.update(p.readConfiguration(f))
+                complete_conf.update(p.read_configuration(f))
     # update with user defaults if desired
-    complete_conf.update(p.__parameters__.parseArguments(arguments, check_errors=False))
+    complete_conf.update(
+        p.__parameters__.parse_arguments(arguments, check_errors=False)
+    )
     # we haven't check for errors because we might have a half implemented
     # configuration some required field might have already been setup
     # (user/system defaults, files, etc)
@@ -452,7 +468,7 @@ def write_setup(
     user = user or User()
     cfg = cast(Dict[str, Union[str, int, float, bool, None]], config_dict or {})
     p = get_plugin_instance(plugin_name, user)
-    complete_conf = p.setupConfiguration(
+    complete_conf = p.setup_configuration(
         config_dict=cfg, check_cfg=False, substitute=False
     )
 
@@ -463,10 +479,10 @@ def write_setup(
         config_file = user.getUserToolConfig(plugin_name, create=True)
 
     if config_file == "-":
-        p.saveConfiguration(sys.stdout, config_dict=complete_conf)
+        p.save_configuration(sys.stdout, config_dict=complete_conf)
     else:
         with open(config_file, "w") as f:
-            p.saveConfiguration(f, config_dict=complete_conf)
+            p.save_configuration(f, config_dict=complete_conf)
     return config_file
 
 
@@ -691,7 +707,7 @@ def run_tool(
             with open(conf_file, "r") as f:
                 complete_conf = cast(
                     Dict[str, Union[str, int, float, bool, None]],
-                    p.readConfiguration(f),
+                    p.read_configuration(f),
                 )
         else:
             log.debug("No config file was found in %s", conf_file)
@@ -702,7 +718,7 @@ def run_tool(
             Dict[str, Union[str, int, float, bool, None]],
             {k: v for (k, v) in config_dict.items()},
         )
-        complete_conf = p.setupConfiguration(cfg, recursion=True)
+        complete_conf = p.setup_configuration(cfg, recursion=True)
     log.debug("Running %s with %s", plugin_name, complete_conf)
     rowid = 0
     if scheduled_id:
@@ -730,7 +746,7 @@ def run_tool(
         # we want that the rowid is visible to the tool
         p.rowid = rowid
         # TODO: not sure if this is really optional, the docs don't say much
-        result: Optional[utils.metadict] = p._runTool(
+        result: Optional[utils.metadict] = p._run_tool(
             config_dict=complete_conf,
             unique_output=unique_output,
             is_interactive_job=is_interactive_job,
@@ -813,7 +829,7 @@ def schedule_tool(
             with open(conf_file, "r") as f:
                 complete_conf = cast(
                     Dict[str, Union[str, int, float, bool, None]],
-                    p.readConfiguration(f),
+                    p.read_configuration(f),
                 )
         else:
             log.debug("No config file was found in %s", conf_file)
@@ -823,7 +839,7 @@ def schedule_tool(
         conf = cast(Dict[str, Union[str, int, float, bool, None]], config_dict)
         complete_conf = cast(
             Dict[str, Union[str, int, float, bool, None]],
-            p.setupConfiguration(conf, recursion=True),
+            p.setup_configuration(conf, recursion=True),
         )
     log.debug("Schedule %s with %s", plugin_name, complete_conf)
     version_details = get_version(plugin_name)
@@ -1090,16 +1106,16 @@ def get_config_name(pluginname: str) -> Optional[str]:
     pluginname
         Name of the plugin to get
     """
-    from inspect import getmodule
+    import inspect
 
     try:
-        plugin = get_plugin_instance(pluginname.lower())
-        modulename = getmodule(plugin)
+        plugin = get_plugin_metadata(pluginname.lower())
+        modulename = inspect.getmodulename(plugin.plugin_module + ".py")
         for name, module in __plugin_modules_user__[User().getName()].items():
-            if modulename == getmodule(module):
-                return name
+            if modulename == inspect.getmodulename(module + ".py"):
+                return pluginname
     except Exception as e:
-        log.debug("[getConfigName] " + str(e))
+        log.debug(e.__str__())
     return None
 
 
@@ -1126,8 +1142,8 @@ def get_error_warning(tool_name: str) -> tuple[str, str]:
         error_message = config.get_plugin(plugin_name, "error_message", "")
         warning_file = config.get_plugin(plugin_name, "warning_file", "")
         warning_message = config.get_plugin(plugin_name, "warning_message", "")
-    except Exception as e:
-        log.error(str(e))
+    except ConfigurationException:
+        pass
     if error_file:
         try:
             f = open(error_file, "r")
@@ -1299,7 +1315,7 @@ def dict2conf(
 
         else:
             paramstring = ["%s=%s" % (key, str(value))]
-            realvalue = tool.__parameters__.parseArguments(
+            realvalue = tool.__parameters__.parse_arguments(
                 paramstring, check_errors=False
             )[key]
             conf_object = Configuration()
