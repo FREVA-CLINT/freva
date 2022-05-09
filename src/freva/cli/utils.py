@@ -31,7 +31,7 @@ def is_admin(raise_error: bool = False) -> bool:
     admin = config.get("admins", [])
     user = getuser()
     if isinstance(admin, str):
-        admin = [admin]
+        admin = [a.strip() for a in admin.split(",") if a.strip()]
     is_admin = user in admin
     if not is_admin and raise_error:
         raise RuntimeError(f"{user} is not in admin list")
