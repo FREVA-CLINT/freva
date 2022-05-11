@@ -2,21 +2,22 @@
 from __future__ import annotations
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Union, Iterator
+import os
+from typing import Iterator
 
-from git import Repo
+import git
 from evaluation_system.misc import logger
 
 __version_cache: dict[str, tuple[str, str]] = {}
 
 
 @contextmanager
-def set_repo_safe(dir_name: Union[str, Path]) -> Iterator[Repo]:
+def set_repo_safe(dir_name: os.PathLike) -> Iterator[git.Repo]:
     """Context manager that sets a given repository dir as temporarly safe.
 
     Parameters
     ----------
-    dir_name: Union[str, Path]
+    dir_name: os.PathLike
         Path to the repository dir that is set to be safe
 
     Returns
@@ -24,7 +25,8 @@ def set_repo_safe(dir_name: Union[str, Path]) -> Iterator[Repo]:
     Iterator[git.Repo]:
         Instance of the gitpython Repo class
     """
-    repo = Repo(dir_name, search_parent_directories=True)
+    repo = git.Repo(dir_name, search_parent_directories=True)
+
     with repo.config_reader("global") as config_r:
         safe_dirs = {}
         if config_r.has_section("safe"):
@@ -58,15 +60,15 @@ def get_version(src_file: str) -> tuple[str, str]:
     """
     retval = __version_cache.get(src_file, None)
     if retval is None:
-        with set_repo_safe(Path(src_file).parent) as repo:
-            try:
+        try:
+            with set_repo_safe(Path(src_file).parent) as repo:
                 repository = next(repo.remote(name="origin").urls)
                 version = repo.head.object.hexsha
-            except Exception as error:
-                logger.error("Could not read git version")
-                logger.error("Error while reading git version:\n%s", str(error))
-                repository = "unknown"
-                version = "unknown"
+        except Exception as error:
+            logger.error("Could not read git version")
+            logger.error("Error while reading git version:\n%s", str(error))
+            repository = "unknown"
+            version = "unknown"
         retval = (repository, version)
         __version_cache[str(src_file)] = retval
     return retval
