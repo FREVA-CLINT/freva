@@ -204,8 +204,7 @@ class Job(abc.ABC):
     """
 
     _script_template = textwrap.dedent(
-        """
-        %(shebang)s
+        """%(shebang)s
 
         %(job_header)s
         %(env_header)s
