@@ -204,12 +204,7 @@ class Job(abc.ABC):
     """
 
     _script_template = textwrap.dedent(
-        """%(shebang)s
-
-        %(job_header)s
-        %(env_header)s
-        %(worker_command)s
-    """
+        "%(shebang)s\n\n%(job_header)s\n%(env_header)s\n\n%(worker_command)s"
     )
 
     # Following class attributes should be overridden by extending classes.
