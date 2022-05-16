@@ -3,10 +3,12 @@ __cmd_query() {
     local query i
     for (( i = 0 ; i < ${#arr[@]} ; i++ )) do
         [[ "${arr[i]}" == -* ]] && continue
-        query="$query ${arr[i]}=${arr[i+2]}"
+        if [ "${arr[i+2]}" ];then
+            query="$query ${arr[i]}=${arr[i+2]}"
+        fi
         ((i+=2))
     done
-    echo "$query" |set 's/=//g'
+    echo "$query"
 }
 
 
