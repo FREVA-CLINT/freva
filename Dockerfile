@@ -1,4 +1,4 @@
-FROM solr:latest
+FROM solr:8.9
 
 LABEL maintainer="DRKZ-CLINT"
 LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
