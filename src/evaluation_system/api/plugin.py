@@ -321,8 +321,7 @@ A plugin/user might then use them to define a value in the following way::
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code,
-                    cmd,
+                    return_code, cmd,
                 )
             return res
 
@@ -333,18 +332,19 @@ A plugin/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(),
-                plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):
         """Set an interactive job as running."""
+        _, _, ips = socket.gethostbyaddr(socket.gethostname())
+        host = socket.getfqdn()
         try:
             hist = hist_model.History.objects.get(id=rowid)
             hist.slurm_output = str(self.plugin_output_file)
-            hist.host = socket.gethostbyname(socket.gethostname())
+            hist.host = host.partition(".")[0]
             hist.status = hist_model.History.processStatus.running
             hist.save()
         except hist_model.History.DoesNotExist:
@@ -1184,10 +1184,7 @@ A plugin/user might then use them to define a value in the following way::
         return tool_param + cmd_param
 
     def call(
-        self,
-        cmd_string: Union[str, list[str]],
-        check: bool = True,
-        **kwargs,
+        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 
