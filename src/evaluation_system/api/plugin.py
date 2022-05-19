@@ -2,10 +2,10 @@
 
 The plugin api is the core of the interface connecting a user plugin code with
 the freva system infrastructure. This interface enables the users to
-conveniently setup, run and keep track of applied plugins. The reference below
-gives an overview of how to setup user defined plugins. For this prupose we
+conveniently set up, run, and keep track of applied plugins. The reference below
+gives an overview of how to set up user defined plugins. For this purpose we
 assume that a plugin core (without freva) already exists - for example as a
-command line interface tool (cli). Once such a cli has been setup a interface
+command line interface tool (cli). Once such a cli has been set up a interface
 to freva must be defined. This reference will introduce the possible definition
 options below.
 
@@ -174,7 +174,7 @@ class PluginAbstract(abc.ABC):
 
     special_variables: Optional[dict[str, str]] = None
     """This dictionary is used to resolve the *special variables* that are available
-to the plugins for defining some values of their parameters in a standardize manner.
+to the plugins for defining some values of their parameters in a standardized manner.
 These are initialized per user and plugin. The variables are:
 
 ================== ============================================================
@@ -198,7 +198,7 @@ A plugin/user might then use them to define a value in the following way::
 """
 
     tool_developer: Optional[str] = None
-    """Name of the developer, how is responsivle for the tool."""
+    """Name of the developer who is responsible for the tool."""
 
     def __init__(self, *args, user: Optional[User] = None, **kwargs) -> None:
         """Plugin main constructor.
@@ -459,7 +459,7 @@ A plugin/user might then use them to define a value in the following way::
     def linkmydata(self, outputdir):  # pragma: no cover
         """Add Plugin output data to the solr database.
 
-        This methods crwals the the plugin output data directory and adds
+        This methods crawls the plugin output data directory and adds
         any files that were found to the apache solr database.
 
         Parameters

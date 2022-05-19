@@ -6,9 +6,9 @@ Freva python module
 
 The section following section gives you an overview over the usage of
 the ``freva`` *python* module. This documentation assumes that you
-either, because you've setup and instance yourself or one has been setup
+either because you've setup an instance yourself or one has been setup
 by the freva *admin* team. Hence this section assumes that you know how to get
-to access to the python environment that has freva installed.If this is not
+to access to the python environment that has freva installed. If this is not
 the case please contact one of your freva *admin* or the `bset practice`
 section for help.
 

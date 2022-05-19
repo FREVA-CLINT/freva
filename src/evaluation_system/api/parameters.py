@@ -1,7 +1,7 @@
 """Definitions of parameters types to configure custom ``freva`` plugins.
 
 Plugin parameters are defined in the plugin wrapper class please refer to
-:class:`evaluation_system.api.plugin` for more information on hwo to setup a
+:class:`evaluation_system.api.plugin` for more information on how to set up a
 plugin wrapper class.
 
 """
@@ -259,7 +259,7 @@ class ParameterType(initOrder):
         Returns
         -------
         str:
-            fromatted string value
+            formatted string value
 
 
         .. note::
@@ -296,7 +296,7 @@ class ParameterType(initOrder):
 class ParameterDictionary(dict):
     """Directory holding all plugin parameters for a ``freva`` plugin.
 
-    This class behabes like a build-in ``dict`` with additional features.
+    This class behaves like a built-in ``dict`` with additional features.
     The most prominent feature is that the order of added items is preseverd,
     as opposed to a normal build-in ``dict``.
 
@@ -322,7 +322,7 @@ class ParameterDictionary(dict):
     """
 
     def __init__(self, *parameters: ParameterType) -> None:
-        """Instanciate ParameterDictionary with the given list of parameter."""
+        """Instantiate ParameterDictionary with the given list of parameters."""
         super().__init__()
         extra = config.get_section("scheduler_options").get("extra_options", "").strip()
         if extra.lower() == "none":

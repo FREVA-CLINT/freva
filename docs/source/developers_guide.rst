@@ -5,7 +5,7 @@ Plugin Developer Guide
    :maxdepth: 3
 
 This documentation helps to get started with creating user defined `freva`
-plugins. The **Plugin API Reference** gives an overview of a plugin should
+plugins. The **Plugin API Reference** gives an overview of how a plugin should
 be setup to be able to interact with freva. It also introduces methods available
 to the API wrapper.
 
@@ -79,7 +79,7 @@ Installing dependencies
 
 Once the git repository has been setup and configured all dependencies the tool
 needs should be installed. Here we assume the analysis tool is based on a gnu-R
-code stack. Therefore gnu-R and certain libraries have to be part of the plugin
+stack. Therefore gnu-R and certain libraries have to be part of the plugin
 environment. This environment will be created using `anaconda <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html>`_.
 To find out what dependencies you should be installing query the `anaconda search page <https://anaconda.org/>`_.
 Once you have found all packages that can be installed via anaconda you can add them

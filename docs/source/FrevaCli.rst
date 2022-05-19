@@ -3,10 +3,10 @@ The freva command line interface
 
 This section introduces the usage of the freva command line interface -
 *cli*. The tutorial assumes that you have already access to ``freva``
-either, because you've installed it yourself an instance has been setup
+either because you've setup an instance yourself or one has been setup
 by the freva *admin* team. Hence it is assumed that you know how to get
 or access freva. If this is not the case please contact one of your
-freva *admin* for help.
+freva *admins* for help.
 
 A general usage overview of the available freva sub-commands is
 available via the ``--help`` option:
@@ -71,9 +71,9 @@ Let’s inspect the help menu of the databrowser sub-command:
 The databrowser expects a list of key=value pairs. The order of the
 pairs doesn’t really matter. Most important is that you don’t need to
 split the search according to the type of data you are searching for.
-You might as well search for files both on observations, reanalysis and
+You can search for files both on observations, reanalysis, and
 model data all at the same time. Also important is that all searches are
-made case *insensitive*. You can also search for attributes themselves
+case *insensitive*. You can also search for attributes themselves
 instead of file paths. For example you can search for the list of
 variables available that satisfies a certain constraint (e.g. sampled
 6hr, from a certain model, etc).
@@ -225,7 +225,7 @@ This means currently we have two plugins available (``animator`` and
 ``freva-plugin <plugin-name> [options]`` for example to inspect the
 documentation of a certain plugin you can use the ``--doc`` option.
 Here we concentrate on the Animator plugin. A simple plugin that creates
-animation of geospatial data. The basic usage of that command can be
+animations of geospatial data. The basic usage of that command can be
 retrieved by:
 
 .. code:: bash
@@ -241,8 +241,8 @@ retrieved by:
 
 
 
-The parameters are also given as key, values pairs. But not all of the
-above parameters are mandatory. Lets use one ``project`` search key and
+The parameters are also given as key=values pairs. But not all of the
+above parameters are mandatory. Let's use one ``project`` search key and
 animate its content.
 
 .. code:: bash
@@ -281,8 +281,8 @@ This plugin will run in so called interactive mode. That means that it
 will run on the login node and block your shell until the command is
 completed. This can be problematic if you have jobs that might take time
 to finish. An alternative is setting the ``-–batchmode`` flag. This flag
-tells the plugin to submit a job to the computing queue. This computing
-nodes are the cores of any high performance computing system. Let’s
+tells the plugin to submit a job to the computing queue. The computing
+nodes are the core of any high performance computing system. Let’s
 submit the previous plugin job to the computing queue:
 
 .. code:: bash

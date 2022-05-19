@@ -12,7 +12,7 @@ def deprication_warning(old_method: str, new_method: str, klass: str) -> None:
     """Show a deprication warning for a depricated module."""
     msg = (
         f"The method `{old_method}` of `{klass}` is depricated, "
-        "and will be subject to removel in future releases, please "
+        "and will be subject to removal in future releases. Please "
         f"instruct your code to call the `{new_method}` method instead."
     )
     if logger.level <= logging.DEBUG:

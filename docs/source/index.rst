@@ -22,13 +22,13 @@ interface for the plugins.
 
 Currently freva comes in three different flavours:
 
-- python module, that allows the usage of freva in python environments, like jupyter notebooks
+- a python module that allows the usage of freva in python environments, like jupyter notebooks
 - a command line interface (cli) that allows using freva from the command lines and shell scripts.
 - a web user interface (web-ui)
 
 This documentation covers the usage of the python module as well the cli. We
 have also added a section on plugin development for users who want to get started
-with developing their own data analysis plugins and provide these to their
+with developing their own data analysis plugins and providing them to their
 community. The last section covers the answers to frequently asked questions
 and best practices when it comes to plugin development.
 
