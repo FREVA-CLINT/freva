@@ -4,23 +4,33 @@ from contextlib import contextmanager
 import logging
 import sys
 import warnings
+from typing import Any, Callable
 
 from evaluation_system.misc import logger
 
 
-def deprication_warning(old_method: str, new_method: str, klass: str) -> None:
-    """Show a deprication warning for a depricated module."""
-    msg = (
-        f"The method `{old_method}` of `{klass}` is depricated, "
-        "and will be subject to removal in future releases. Please "
-        f"instruct your code to call the `{new_method}` method instead."
-    )
-    if logger.level <= logging.DEBUG:
-        raise AttributeError(
-            f"{klass} as no attribute: {old_method}, use {new_method} instead"
-        )
-    warnings.warn(msg, category=DeprecationWarning)
-    logger.warning(msg)
+def deprecated_method(klass: str, new_method: str):
+    """Show a deprication warning for a depricated method."""
+
+    def call_deprecated_method(function: Callable[[Any], Any]) -> Callable[[Any], Any]:
+        def inner(*args: Any, **kwargs: Any) -> Any:
+            if logger.level <= logging.DEBUG:
+                raise AttributeError(
+                    f"{klass} as no attribute: {function.__name__}, use "
+                    f"{new_method} instead"
+                )
+            msg = (
+                f"The `{function.__name__}` of {klass} is deprecated and "
+                "might be subject to removal in the future. Please consider "
+                f"renaming the `{klass}.{function.__name__}` method to "
+                f"`{klass}.{new_method}`"
+            )
+            logger.warning(msg)
+            return function(*args, **kwargs)
+
+        return inner
+
+    return call_deprecated_method
 
 
 class ConfigurationException(Exception):

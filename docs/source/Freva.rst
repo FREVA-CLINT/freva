@@ -9,7 +9,7 @@ the ``freva`` *python* module. This documentation assumes that you
 either because you've setup an instance yourself or one has been setup
 by the freva *admin* team. Hence this section assumes that you know how to get
 to access to the python environment that has freva installed. If this is not
-the case please contact one of your freva *admin* or the `bset practice`
+the case please contact one of your freva admins of the :ref:`FAQ`
 section for help.
 
 The ``databrowser`` module

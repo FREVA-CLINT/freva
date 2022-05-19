@@ -11,10 +11,11 @@ import json
 import re
 import textwrap
 from typing import Any, Optional, Union, Type
+import warnings
 
 from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
 from evaluation_system.misc import config
-from evaluation_system.misc.exceptions import ValidationError, deprication_warning
+from evaluation_system.misc.exceptions import ValidationError, deprecated_method
 from evaluation_system.model.plugins.models import Parameter
 
 ParameterBaseType = Union[str, int, float, bool, PrintableList]
@@ -457,14 +458,14 @@ class ParameterDictionary(dict):
             return dict(missing=missing, too_many_items=too_many_items)
         return {}
 
+    @deprecated_method("ParameterDictionary", "parse_arguments")
     def parseArguments(
         self, *args, **kwargs
     ) -> dict[str, Union[ParameterBaseType, list[ParameterBaseType]]]:
-        """Depricated version of the :class:`parse_arguments` method.
+        """Deprecated version of the :class:`parse_arguments` method.
 
         :meta private:
         """
-        deprication_warning("parseArguments", "parse_arguments", "ParameterDictionary")
         return self.parse_arguments(*args, **kwargs)
 
     def parse_arguments(
@@ -716,12 +717,13 @@ class File(String):
 
 
 class Directory(String):
-    """A parameter representing a directory in the system. Depricated
+    """A parameter representing a directory in the system. Deprecated
 
     :meta private:
     """
 
     def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
+        warnings.warn("The Directory class is deprecated", category=DeprecationWarning)
         super().__init__(impact=impact, **kwargs)
 
 
@@ -779,7 +781,7 @@ class CacheDirectory(Directory):
 
 
 class Date(String):
-    """A date parameter. Depricated.
+    """A date parameter. Deprecated.
 
     Parameters
     ----------
@@ -803,6 +805,11 @@ class Date(String):
 
     :meta private:
     """
+
+    def __init__(self, *args, **kwargs):
+
+        warnings.warn("The Date class is deprecated", category=DeprecationWarning)
+        super().__init__(*args, **kwargs)
 
 
 class Bool(ParameterType):

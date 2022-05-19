@@ -4,10 +4,10 @@ Plugin Developer Guide
 .. toctree::
    :maxdepth: 3
 
-This documentation helps to get started with creating user defined `freva`
+This documentation helps to get started with creating user defined ``freva``
 plugins. The **Plugin API Reference** gives an overview of how a plugin should
 be setup to be able to interact with freva. It also introduces methods available
-to the API wrapper.
+to the wrapper API.
 
 The **Parameter API Reference** introduces the different available options to
 configure the plugin setup.
@@ -34,11 +34,11 @@ Parameter API Reference
    :undoc-members:
    :show-inheritance:
 
-Deploying your new Plugin
-=========================
+Preparing the deploying your new plugin
+=======================================
 
-This section illustrates the steps that are necessary to turn an existing
-data analysis code into a freva plugin - we refer to this step as *deployment*
+This section illustrates the steps that are necessary to turn existing
+data analysis code into a freva plugin - we refer to this step as *deployment preparation*
 Like above we assume that the code is stored in a specific location for example
 ``~/workspace/tracking_tool``. Also let's assume that the analysis tool is written
 in the *R* script language.
@@ -48,16 +48,17 @@ Creating a new repository from a template
 
 
 We have created a `template repository <https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate/>`_ repository that helps
-to help you getting started with the freva plugin development. Therefore we
+you getting started with the freva plugin development. Therefore we
 recommend you to use this repository. Use the following commands to turn this
 template repository into your new freva plugin repository:
 
 .. code-block:: console
 
-    git clone https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate freva_tracking
+    wget https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate/-/archive/main/plugintemplate-main.zip
+    unzip plugintemplate-main.zip
+    mv plugintemplate-main freva_tracking
     cd freva_tracking
-    rm -r .git
-    git init .
+    git init --shared .
     git checkout -b first_attempt
     git add .
     cp -r ~/workspace/tracking_tool src
@@ -65,7 +66,7 @@ template repository into your new freva plugin repository:
 
 You have now created a new freva plugin repository. It is a good idea to use
 some kind of repository server (like `gitlab`) where you make your code accessible.
-Talk to your freva admin to work out a good location for your code. Once you have agreed
+Talk to your freva admins to work out a good location for your code. Once you have agreed
 upon a location you should create a new repository on the server side using the
 web interface of your repository host system (e.g `gitlab`). Once created set
 the remote host address on the locally created repository (the one where you did a `git init`):
@@ -73,6 +74,16 @@ the remote host address on the locally created repository (the one where you did
 .. code-block:: console
 
     git remote set-url origin https://gitlab.com/path/to/the/remote/repo
+
+.. hint::
+
+    In the example above you create a new branch. It is good practice to
+    create new branches and merge these branches back into the ``main`` branch.
+    You should *avoid* directly pushing into the ``main`` branch. By creating
+    different branches and creating so called merge requests you can invite your
+    collogues and freva admins to participate in code reviews. This assures a minimum
+    of code quality standards. If you want to read more on code review you can
+    visit the `gitlab code review guide <https://docs.gitlab.com/ee/development/code_review.html>`_
 
 Installing dependencies
 +++++++++++++++++++++++
@@ -112,7 +123,7 @@ section of the ``Makefile`` in the repository:
 After everything is setup you can build use the ``make`` command to deploy the
 plugin environment.
 
-.. code-block:: bash
+.. code-block:: console
 
    make all
 

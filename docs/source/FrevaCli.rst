@@ -4,8 +4,8 @@ The freva command line interface
 This section introduces the usage of the freva command line interface -
 *cli*. The tutorial assumes that you have already access to ``freva``
 either because you've setup an instance yourself or one has been setup
-by the freva *admin* team. Hence it is assumed that you know how to get
-or access freva. If this is not the case please contact one of your
+by the freva *admin* team. Hence it is assumed that you know how to
+access freva. If this is not the case please contact one of your
 freva *admins* for help.
 
 A general usage overview of the available freva sub-commands is
@@ -50,8 +50,8 @@ option, for example getting help on the ``databrowser usage``:
 Searching for data: the ``freva-databrowser`` command
 -----------------------------------------------------
 
-All files available on in the project are scanned and indexed via a
-special server (apache solr). This allows you to query the server which
+All files available on in the project are scanned and indexed via a data
+search server. This allows you to query the server which
 responds almost immediately. To search for data you can either use the
 ``freva-databrowser`` command or the ``freva databrowser`` sub-command.
 Let’s inspect the help menu of the databrowser sub-command:
@@ -346,7 +346,7 @@ Let’s get the last 3 entries of the ``dummyplugin`` plugin history
 
 
 The entries are sorted by their ``id``. For example you can query the
-full configuratoin by given the id:
+full configuration by given the id:
 
 .. code:: bash
 

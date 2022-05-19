@@ -46,9 +46,7 @@ therefore live longer"""
     """The central default configuration file for all users. It should not be confused with the system configuration
 file that is handled by :class:`evaluation_system.api.config`."""
 
-    def __init__(
-        self, uid: Optional[Union[int, str]] = None, email: Optional[str] = None
-    ):
+    def __init__(self, uid: Optional[Union[int, str]] = None, email: str = ""):
         """Creates a user object for the provided id.
 
         If no id is given, a user object for
@@ -64,7 +62,7 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         if self._userdata is None:
             raise Exception("Cannot find user %s" % uid)
-        self._email = email or ""
+        self._email = email
         self._userconfig = Config(interpolation=ExtendedInterpolation())
         # try to load teh configuration from the very first time.
         self._userconfig.read(
@@ -79,20 +77,13 @@ file that is handled by :class:`evaluation_system.api.config`."""
         row_id = self._db.getUserId(self.getName())
 
         if row_id:
-            try:
-                self._db.updateUserLogin(row_id, email)
-            except Exception as error:
-                raise error
+            self._db.updateUserLogin(row_id, email)
         else:
             self._db.createUser(self.getName(), email=self._email)
 
-        # -------------------------- self._meta = metadict(compact_creation=True,
-        # --------------------------------- USER_BASE_DIR=)
-        # """Expand the user specific values in the given string. Those values might be one of:
-
     # $USER_BASE_DIR := central directory for this user in the evaluation system.
     # $USER_OUTPUT_DIR := directory where the output data for this user is stored.
-    # ------ $USER_PLOT_DIR := directory where the plots for this user is stored.
+    # $USER_PLOT_DIR := directory where the plots for this user is stored.
     # $USER_CACHE_DIR := directory where the cached data for this user is stored."""
 
     def __str__(self):

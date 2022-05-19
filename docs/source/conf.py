@@ -12,16 +12,6 @@
 #
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
-
-# -- Project information -----------------------------------------------------
-
-project = "freva user guide"
-copyright = "2022, CLINT"
-author = "CLINT"
-
-# The full version, including alpha/beta/rc tags
-release = "2022.05.09"
 import os
 import sys
 import subprocess
@@ -37,6 +27,17 @@ os.environ.setdefault(
     os.path.abspath(os.path.join("..", "..", "compose", "drs_config.toml")),
 )
 
+from freva import __version__
+
+
+# -- Project information -----------------------------------------------------
+
+project = "freva user guide"
+copyright = "2022, CLINT"
+author = "CLINT"
+
+# The full version, including alpha/beta/rc tags
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 

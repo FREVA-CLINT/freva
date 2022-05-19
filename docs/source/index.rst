@@ -12,8 +12,8 @@ science community. With help of freva researchers can:
 
 - quickly and intuitively search for data stored at typical data centers that
   host many datasets.
-- provide and apply data analysis tools to and from other researchers in a
-  reproducible manner.
+- provide a common interface of user defined data analysis tools and apply them
+  reproducibly.
 
 Data analysis is realised by user developed data analysis plugins. These plugins
 are code agnostic, meaning that users don't have to rewrite the core of their

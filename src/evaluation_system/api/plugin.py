@@ -49,7 +49,7 @@ from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.exceptions import (
     ConfigurationException,
-    deprication_warning,
+    deprecated_method,
     hide_exception,
 )
 
@@ -321,7 +321,8 @@ A plugin/user might then use them to define a value in the following way::
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code, cmd,
+                    return_code,
+                    cmd,
                 )
             return res
 
@@ -332,7 +333,8 @@ A plugin/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(),
+                plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
@@ -422,13 +424,11 @@ A plugin/user might then use them to define a value in the following way::
             self._plugin_out = out_file
         for key in config.exclude:
             config_dict.pop(key, "")
-        try:
-            run_method = self.runTool  # type: ignore
-            deprication_warning("runTool", "run_tool", "PluginAbstract")
-        except AttributeError:
-            run_method = self.run_tool
         with self._set_environment(rowid, is_interactive_job):
-            result = run_method(config_dict=config_dict)
+            try:
+                result = self.run_tool(config_dict=config_dict)
+            except NotImplementedError:
+                result = deprecated_method("PluginAbstract", "run_tool")(self.runTool)(config_dict=config_dict)  # type: ignore
             return result
 
     def _append_unique_id(
@@ -531,12 +531,12 @@ A plugin/user might then use them to define a value in the following way::
         # hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
         shutil.move(os.path.join(solr_ps, output), os.path.join(solr_bk, output))
 
+    @deprecated_method("PluginAbstract", "prepare_output")
     def prepareOutput(self, *args) -> dict[str, dict[str, str]]:
-        """Depricated method for :class:`prepare_output`.
+        """Deprecated method for :class:`prepare_output`.
 
         :meta private:
         """
-        deprication_warning("prepareOutput", "prepare_output", "PluginAbstract")
         return self.prepare_output(*args)
 
     def prepare_output(
@@ -644,12 +644,12 @@ A plugin/user might then use them to define a value in the following way::
                 elif ext in [".html", ".xhtml"]:
                     metadata["todo"] = "copy"
 
+    @deprecated_method("PluginAbstract", "get_help")
     def getHelp(self, **kwargs) -> str:
-        """Depricated version of the :class:`get_help` method.
+        """Deprecated version of the :class:`get_help` method.
 
         :meta private:
         """
-        deprication_warning("getHelp", "get_help", "PluginAbstract")
         return self.get_help(**kwargs)
 
     def get_help(self, width: int = 80) -> str:
@@ -745,12 +745,12 @@ A plugin/user might then use them to define a value in the following way::
 
         return "\n".join(current_conf)
 
+    @deprecated_method("PluginAbstract", "class_basedir")
     def getClassBaseDir(self) -> Optional[str]:
-        """Depricated method for class_basedir.
+        """Deprecated method for class_basedir.
 
         :meta private:
         """
-        deprication_warning("getClassBaseDir", "class_basedir", "PluginAbstract")
         return self.class_basedir
 
     @property
@@ -813,6 +813,7 @@ A plugin/user might then use them to define a value in the following way::
         else:
             return self.__parameters__.get_parameter(param_name).parse(str_value)
 
+    @deprecated_method("PluginAbstract", "setup_configuration")
     def setupConfiguration(
         self, **kwargs
     ) -> dict[str, Union[str, int, float, bool, None]]:
@@ -820,9 +821,6 @@ A plugin/user might then use them to define a value in the following way::
 
         :meta private:
         """
-        deprication_warning(
-            "setupConfiguration", "setup_configuration", "PluginAbstract"
-        )
         return self.setup_configuration(**kwargs)
 
     def setup_configuration(
@@ -1184,7 +1182,10 @@ A plugin/user might then use them to define a value in the following way::
         return tool_param + cmd_param
 
     def call(
-        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
+        self,
+        cmd_string: Union[str, list[str]],
+        check: bool = True,
+        **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 
