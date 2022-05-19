@@ -95,8 +95,12 @@ test_latest:
         - report.xml
 
 docs:
-    << : *py_test
+    stage: docs
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    tags:
+      - docker, specific
     variables:
+      CONDA: "Miniconda3-latest"
       EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
     before_script:
       - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime
