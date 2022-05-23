@@ -6,7 +6,7 @@
 Welcome to freva's documentation!
 =================================
 
-Freva, the freva evaluation system framework, is a data search and analysis
+Freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric
 science community. With help of freva researchers can:
 
@@ -40,7 +40,9 @@ and best practices when it comes to plugin development.
    Freva
    FrevaCli
    developers_guide
+   plugin_api
    FAQ.ipynb
+
 
 
 Indices and tables
