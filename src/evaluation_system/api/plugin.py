@@ -913,12 +913,12 @@ A plugin/user might then use them to define a value in the following way::
             )
         return result
 
+    @deprecated_method("PluginAbstract", "read_configuration")
     def readConfiguration(self, **kwargs) -> dict[str, str]:
         """Depricated version of the :class:`read_configuration` method.
 
         :meta private:
         """
-        deprication_warning("read_configuration", "readConfiguration", "PluginAbstract")
         return self.read_configuration(**kwargs)
 
     def read_configuration(self, fp: Iterable[str]) -> dict[str, str]:

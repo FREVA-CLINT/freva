@@ -237,7 +237,6 @@ def run_plugin(
         return _return_value(
             0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
         )
-    email = None
     options_str, tool_dict = [], {}
     for k, v in options.items():
         options_str.append(f"{k}={v}")
@@ -285,7 +284,7 @@ def run_plugin(
             [scheduled_id, job_file] = pm.schedule_tool(
                 tool_name,
                 config_dict=tool_dict,
-                user=user.User(email=email),
+                user=user.User(),
                 caption=caption,
                 extra_options=extra_options,
                 unique_output=unique_output,
