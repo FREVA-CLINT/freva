@@ -6,7 +6,6 @@ import hashlib
 import os
 from os import path as osp
 from pathlib import Path
-import re
 import shlex
 import sys
 from subprocess import CalledProcessError, PIPE, run
@@ -94,10 +93,20 @@ def find_files(path, glob_pattern="*"):
 
 
 def find_version(*parts):
+
     vers_file = read(*parts)
-    match = re.search(r'^__version__ = "(\d+.\d+.\d+)"', vers_file, re.M)
-    if match is not None:
-        return match.group(1)
+    old_path = sys.path.copy()
+    with TemporaryDirectory() as td:
+        with open(osp.join(td, "tmp_frevaversion.py"), "w") as f:
+            f.write(vers_file)
+        sys.path.insert(0, td)
+        try:
+            from tmp_frevaversion import __version__
+
+            sys.path = old_path
+            return __version__
+        except ImportError:
+            sys.path = old_path
     raise RuntimeError("Unable to find version string.")
 
 
