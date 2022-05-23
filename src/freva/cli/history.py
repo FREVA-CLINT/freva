@@ -3,9 +3,10 @@ import argparse
 import sys
 from typing import Any, Optional
 
-from .utils import BaseParser
-import freva
+from evaluation_system import __version__
 from evaluation_system.misc import logger
+import freva
+from .utils import BaseParser
 
 CLI = "HistoryCli"
 
@@ -111,6 +112,12 @@ class HistoryCli(BaseParser):
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = HistoryCli("freva")
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = cli.parse_args(argv or sys.argv[1:])
     try:
         cli.run_cmd(args, **cli.kwargs)

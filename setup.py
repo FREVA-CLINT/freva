@@ -78,7 +78,7 @@ with TemporaryDirectory(dir=COMPLETION_DIR) as td:
         entry_points.append(f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main")
     setup(
         name="evaluation_system",
-        version=find_version("src/evaluation_system", "__init__.py"),
+        version=find_version("src", "evaluation_system", "__init__.py"),
         author="German Climate Computing Centre (DKRZ)",
         maintainer="Climate Informatics and Technology (CLINT)",
         description="Free Evaluation and Analysis Framework (Freva) ",

@@ -5,7 +5,7 @@ import sys
 from typing import Any, Optional
 
 
-from .utils import BaseCompleter, BaseParser
+from evaluation_system import __version__
 from evaluation_system.misc.exceptions import (
     PluginNotFoundError,
     ParameterNotFoundError,
@@ -14,6 +14,7 @@ from evaluation_system.misc.exceptions import (
 )
 from evaluation_system.misc import logger
 from freva._plugin import get_tools_list, run_plugin, plugin_doc
+from .utils import BaseCompleter, BaseParser
 
 CLI = "PluginCli"
 
@@ -163,6 +164,12 @@ class PluginCli(BaseParser):
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = PluginCli("freva")
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = cli.parse_args(argv or sys.argv[1:])
     try:
         cli.run_cmd(args, **cli.kwargs)

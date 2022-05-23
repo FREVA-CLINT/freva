@@ -4,8 +4,9 @@ from pathlib import Path
 import sys
 from typing import Optional, Any, cast, Union
 
-from .utils import BaseCompleter, BaseParser
+from evaluation_system import __version__
 import freva
+from .utils import BaseCompleter, BaseParser
 
 CLI = "EsgfCli"
 
@@ -135,6 +136,12 @@ class EsgfCli(BaseParser):
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = EsgfCli("freva")
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = cli.parse_args(argv or sys.argv[1:])
     try:
         cli.run_cmd(args, **cli.kwargs)
