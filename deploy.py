@@ -95,7 +95,7 @@ def find_files(path, glob_pattern="*"):
 
 def find_version(*parts):
     vers_file = read(*parts)
-    match = re.search(r'^__version__ = "(\d+.\d+)"', vers_file, re.M)
+    match = re.search(r'^__version__ = "(\d+.\d+.\d+)"', vers_file, re.M)
     if match is not None:
         return match.group(1)
     raise RuntimeError("Unable to find version string.")
