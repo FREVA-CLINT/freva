@@ -352,9 +352,16 @@ def get_plugin_instance(
     spec = importlib.util.spec_from_file_location(
         f"{plugin.plugin_class}", f"{plugin.plugin_module}.py"
     )
-    spec = cast(ModuleSpec, spec)
+    if spec is None:
+        raise ImportError(
+            "Could not import {plugin.plugin_class} from {plugin.plugin_module}"
+        )
     mod = importlib.util.module_from_spec(spec)
-    spec_loader = cast(Loader, spec.loader)
+    spec_loader = spec.loader
+    if spec_loader is None:
+        raise ImportError(
+            "Could not import {plugin.plugin_class} from {plugin.plugin_module}"
+        )
     spec_loader.exec_module(mod)
     sys.modules[spec.name] = mod
     return getattr(mod, plugin.plugin_class)(user=user)

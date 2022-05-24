@@ -255,7 +255,8 @@ class ParameterType(initOrder):
         Parameters
         ----------
         value: Optional[str], default: None
-            the value to be formated, if is set to None the default
+            the value to be formated, if set to None the default value
+            of this paramter will be used.
 
         Returns
         -------

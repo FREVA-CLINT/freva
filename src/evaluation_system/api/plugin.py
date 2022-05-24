@@ -767,7 +767,7 @@ A plugin/user might then use them to define a value in the following way::
         """Return the user class for which this instance was generated."""
         return self._user
 
-    def parse_config_strvalue(
+    def parse_config_str_value(
         self, param_name: str, str_value: str, fail_on_missing: bool = True
     ) -> Optional[str]:
         """Parse the string in ``str_value`` into the most appropriate value.
@@ -908,7 +908,7 @@ A plugin/user might then use them to define a value in the following way::
         # update values as found in the configuration
         for key in keys:
             # parse the value as good as possible
-            result[key] = self.parse_config_strvalue(
+            result[key] = self.parse_config_str_value(
                 key, config_parser.get(section, key)
             )
         return result

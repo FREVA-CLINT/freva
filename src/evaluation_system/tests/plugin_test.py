@@ -144,17 +144,17 @@ def test_parse_metadict(dummy_plugin):
         (Float(name="a"), float("1")),
     ]:
         dummy.__parameters__ = ParameterDictionary(d)
-        res = dummy.parse_config_strvalue("a", "1")
+        res = dummy.parse_config_str_value("a", "1")
         assert res == res_d
 
     # check errors
     # Wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="a"))
     with pytest.raises(ValidationError):
-        dummy.parse_config_strvalue("a", "d")
+        dummy.parse_config_str_value("a", "d")
     # wrong key
     with pytest.raises(ValidationError):
-        dummy.parse_config_strvalue("b", "1")
+        dummy.parse_config_str_value("b", "1")
 
 
 @mock.patch("os.getpid", lambda: 12345)

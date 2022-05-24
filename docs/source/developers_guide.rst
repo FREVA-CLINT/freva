@@ -21,7 +21,7 @@ Setting up your new plugin
 ===========================
 
 This section illustrates the steps that are necessary to turn existing
-data analysis code into a freva plugin - we refer to this step as *deployment preparation*
+data analysis code into a freva plugin - we refer to this step as *setup preparation*
 Like above we assume that the code is stored in a specific location for example
 ``~/workspace/tracking_tool``. Also let's assume that the analysis tool is written
 in the *R* script language.

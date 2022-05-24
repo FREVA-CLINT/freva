@@ -6,14 +6,14 @@
 Welcome to freva's documentation!
 =================================
 
-Freva, the free evaluation system framework, is a data search and analysis
+freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric
 science community. With help of freva researchers can:
 
 - quickly and intuitively search for data stored at typical data centers that
   host many datasets.
-- provide a common interface of user defined data analysis tools and apply them
-  reproducibly.
+- create a common interface for user defined data analysis tools.
+- apply data analysis tools in a reproducible manner.
 
 Data analysis is realised by user developed data analysis plugins. These plugins
 are code agnostic, meaning that users don't have to rewrite the core of their
