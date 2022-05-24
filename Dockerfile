@@ -47,14 +47,14 @@ RUN set -ex; \
   sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c latest -d /opt/solr/example/files/conf ;\
   sudo -E -u ${NB_USER} /opt/solr/bin/solr create_core -c files -d /opt/solr/example/files/conf ;\
-  sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/latest/conf/managed-schema ; \
-  sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema ${SOLR_HOME}/files/conf/managed-schema; \
+  sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema.xml ${SOLR_HOME}/latest/conf/managed-schema.xml ; \
+  sudo -E -u ${NB_USER} cp /tmp/evaluation_system/.docker/managed-schema.xml ${SOLR_HOME}/files/conf/managed-schema.xml; \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf ; \
   echo "mysqld_safe &" > /tmp/config ; \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
   bash /tmp/config && rm -r /tmp/config ; \
   cp /tmp/evaluation_system/.docker/*.sql\
-    /tmp/evaluation_system/.docker/managed-schema /tmp/evaluation_system/ ;\
+    /tmp/evaluation_system/.docker/managed-schema.xml /tmp/evaluation_system/ ;\
   cd /tmp/evaluation_system ;\
   mysql < /tmp/evaluation_system/create_user.sql ; \
   mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/create_tables.sql ;\
