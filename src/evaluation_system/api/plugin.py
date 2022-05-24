@@ -223,7 +223,7 @@ A plugin/user might then use them to define a value in the following way::
         # and developers
         # self._special_vars = SpecialVariables(self.__class__.__name__, self._user)
 
-        plugin_name, user = self.__class__.__name__, self._user
+        plugin_name, user = self.__class__.__name__.lower(), self._user
         self._special_variables = TemplateDict(
             USER_BASE_DIR=user.getUserBaseDir,
             USER_CACHE_DIR=partial(

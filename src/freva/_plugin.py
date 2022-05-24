@@ -52,7 +52,7 @@ def plugin_doc(tool_name: Optional[str]) -> str:
 
 
     """
-    tool_name = tool_name or ""
+    tool_name = (tool_name or "").lower()
     _check_if_plugin_exists(tool_name)
     return pm.get_plugin_instance(tool_name).get_help()
 
@@ -73,7 +73,7 @@ def list_plugins() -> list[str]:
         import freva
         print(freva.list_plugins())
     """
-    return list(pm.get_plugins().keys())
+    return list([k.lower() for k in pm.get_plugins().keys()])
 
 
 def get_tools_list() -> str:
@@ -227,6 +227,7 @@ def run_plugin(
                          batchmode=True)
 
     """
+    tool_name = tool_name.lower()
     _check_if_plugin_exists(tool_name)
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
