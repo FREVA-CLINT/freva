@@ -9,52 +9,51 @@ ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 
 USER root
-RUN set -ex && \
-  apt-get -y update && apt-get -y upgrade &&\
-  apt-get -y install acl dirmngr gpg lsof procps netcat wget gosu tini \
-             sudo git make vim nano python3 zsh ffmpeg imagemagick\
-             mariadb-server default-libmysqlclient-dev build-essential &&\
-  if [ "$binder" = "true" ]; then\
-    apt-get -y install python3-cartopy python-cartopy-data python3-xarray \
-    python3-h5netcdf libnetcdf-dev python3-dask python3-pip python3-pip-whl;\
-  fi &&\
+RUN set -ex; \
+  apt-get update; apt-get -y upgrade && \
+  apt-get -y install acl dirmngr gpg lsof procps wget netcat gosu tini \
+             mariadb-server default-libmysqlclient-dev build-essential\
+             git make sudo vim python3 zsh ffmpeg imagemagick &&\
   rm -rf /var/lib/apt/lists/*
 
 ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GROUP=${NB_USER} \
     NB_GID=${NB_UID} \
-    SOLR_HOME=/home/${NB_USER}/.solr \
-    SOLR_LOGS_DIR=${SOLR_HOME}/logs \
-    MYSQL_LOGS_DIR=/var/log/freva/mysql \
-    LOG4J_PROPS=${SOLR_HOME}/log4j2.xml\
-    SOLR_PID_DIR=${SOLR_HOME} \
-    IS_BINDER=$binder \
+    SOLR_USER=${NB_USER} \
+    SOLR_HOME=${HOME}/.solr \
+    SOLR_PID_DIR=${HOME}/.solr \
+    SOLR_LOGS_DIR=${HOME}/.logs/solr \
+    MYSQL_LOGS_DIR=${HOME}/.logs/mysql \
+    LOG4J_PROPS=${HOME}/.solr/log4j2.xml \
     PATH="/opt/solr/bin:/opt/solr/docker/scripts:$PATH"
 
 COPY . /tmp/evaluation_system
 
 RUN set -ex; \
-  groupadd -r --gid "$NB_GID" "$NB_GROUP" && \
+  groupadd -r --gid "$NB_GID" "$NB_GROUP"; \
   adduser --uid "$NB_UID" --gid "$NB_GID" --gecos "Default user" \
-  --shell /usr/bin/zsh --disabled-password "$NB_USER" && \
-  usermod -aG solr $NB_USER
+  --shell /usr/bin/zsh --disabled-password "$NB_USER"
 
-RUN set -x;\
-  wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz &&\
-  tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz &&\
-  echo SOLR_HOME=$SOLR_HOME >> /etc/environment;\
-  sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
-  echo "mysqld_safe &" > /tmp/config && \
-  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && \
-  chmod 777 /tmp/config && bash /tmp/config && rm -r /tmp/config && \
-  mysql < /tmp/evaluation_system/compose/db/create_user.sql && \
-  mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/compose/db/create_tables.sql &&\
-  mysqladmin shutdown  &&\
-  chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql &&\
-  mkdir -p ${MYSQL_LOGS_DIR} &&\
-  chown -R ${NB_USER}:${NB_GROUP} ${MYSQL_LOGS_DIR} &&\
-  cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ && \
+
+RUN set -ex; \
+  wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz;\
+  tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz;\
+  echo SOLR_HOME=${SOLR_HOME} >> /etc/environment;\
+  echo SOLR_PID_DIR=${SOLR_PID_DIR} >> /etc/environment;\
+  echo SOLR_LOGS_DIR=${SOLR_LOGS_DIR} >> /etc/environment;\
+  echo LOG4J_PROPS=${LOG4J_PROPS} >> /etc/environment;\
+  echo PATH=$PATH >> /etc/environment;\
+  sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf ; \
+  echo "mysqld_safe &" > /tmp/config ; \
+  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
+  bash /tmp/config && rm -r /tmp/config ; \
+  mysql < /tmp/evaluation_system/compose/db/create_user.sql ; \
+  mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/compose/db/create_tables.sql ;\
+  mysqladmin shutdown;\
+  chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql ;\
+  sudo -u ${NB_USER} mkdir -p ${MYSQL_LOGS_DIR};\
+  cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ ; \
   cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/assets
 
 RUN set -e;\
@@ -66,39 +65,52 @@ RUN set -e;\
   find /var/solr -type d -print0 | xargs -0 chmod 0771 && \
   find /var/solr -type f -print0 | xargs -0 chmod 0661 && \
   cp -r /var/solr ${SOLR_HOME} &&\
-  mkdir -p ${SOLR_LOGS_DIR}
-
+  sudo -u $NB_USER mkdir -p ${SOLR_LOGS_DIR}
 
 
 RUN \
   if [ "$binder" = "true" ]; then\
-    set -e && \
-    sudo -u $NB_USER git config --global init.defaultBranch main && \
-    sudo -u $NB_USER git config --global user.email "freva@my.binder" &&\
-    sudo -u $NB_USER git config --global user.name "Freva" &&\
-    git config --global --add safe.directory /mnt/freva_plugins/dummy &&\
-    git config --global --add safe.directory /mnt/freva_plugins/animator &&\
-    sudo -u $NB_USER cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc &&\
-    cd /tmp/evaluation_system/ &&\
-    /usr/bin/python3 -m pip install --no-cache . \
-    notebook jupyterhub bash_kernel &&\
-    /usr/bin/python3 -m ipykernel install --name freva &&\
-    /usr/bin/python3 -m bash_kernel.install &&\
-    ln -s /usr/bin/python3 /usr/bin/python &&\
-    cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva &&\
-    chmod -R 755 /mnt/data4freva &&\
-    mkdir -p /etc/jupyter && \
-    chmod -R 2777 /usr/freva_output &&\
-    cp /tmp/evaluation_system/.docker/*.ipynb $HOME &&\
-    cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter &&\
-    git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/freva_plugins/animator &&\
-    cp -r /tmp/evaluation_system/src/evaluation_system/tests/mocks /mnt/freva_plugins/dummy &&\
-    cp /tmp/evaluation_system/.docker/ingest_dummy_data.py /tmp/evaluation_system/compose/solr &&\
-    mv /tmp/evaluation_system $HOME/.evaluation_system &&\
-    mv $HOME/.evaluation_system/.git /mnt/freva_plugins/dummy ;\
+    set -ex; \
+    cp /tmp/evaluation_system/.docker/zshrc ${HOME}/.zshrc;\
+    cd /tmp/evaluation_system/;\
+    /usr/bin/python3 deploy.py /opt/evaluation_system ; \
+    /opt/evaluation_system/bin/python3 -m pip install --no-cache notebook jupyterhub;\
+    /opt/evaluation_system/bin/python3 -m pip install bash_kernel;\
+    /opt/evaluation_system/bin/python3 -m bash_kernel.install;\
+    cp -r /tmp/evaluation_system/.docker/data /mnt/data4freva;\
+    mkdir -p /etc/jupyter; mkdir -p ${HOME}/data4freva; mkdir -p /opt/evaluation_system/etc/jupyter;\
+    mkdir -p /mnt/plugin4freva; mkdir /opt/freva-work;\
+    chmod -R 777 /opt/freva-work;\
+    mysqld_safe;\
+    cp /tmp/evaluation_system/.docker/*.ipynb $HOME;\
+    cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /etc/jupyter;\
+    cp /tmp/evaluation_system/.docker/jupyter_notebook_config.py /opt/evaluation_system/etc/jupyter;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME; \
+    sudo -E -u ${NB_USER} /opt/solr/bin/solr stop -all;\
+    sudo -E -u ${NB_USER} /opt/solr/bin/solr start;\
+    echo "sudo -E -u ${NB_USER} mysqld_safe &" > /tmp/config ; \
+    echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
+    bash /tmp/config && rm -r /tmp/config ; \
+    /opt/evaluation_system/sbin/solr_ingest \
+      --debug \
+      --crawl /mnt/data4freva/observations \
+      --output /tmp/dump.gz \
+      --solr-url localhost:8983;\
+    /opt/evaluation_system/sbin/solr_ingest \
+      --debug \
+      --ingest /tmp/dump.gz \
+      --solr-url localhost:8983; \
+    rm /tmp/dump.gz;\
+    cd / && rm -r /tmp/evaluation_system;\
+    git clone https://gitlab.dkrz.de/freva/plugins4freva/animator.git /mnt/plugin4freva/animator;\
+    git clone https://gitlab.dkrz.de/freva/plugins4freva/mapfactory.git /mnt/plugin4freva/animator/mapfactory;\
+    mkdir -p /opt/evaluation_system/share/preview; chown -R 777 /opt/evaluation_system/share/preview;\
+    chown -R ${NB_USER}:${NB_GROUP} /opt/evaluation_system/share;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME/.cache;\
+    chown -R ${NB_USER}:${NB_GROUP} $HOME/.conda;\
   fi
 
-RUN chown -R ${NB_USER}:${NB_GROUP} $HOME  ${SOLR_HOME}
+RUN chown -R ${NB_USER}:${NB_GROUP} $HOME
 COPY .docker/docker-entrypoint.sh /opt/evaluation_system/bin/
 COPY .docker/loadfreva.sh /opt/evaluation_system/bin/
 
@@ -106,5 +118,5 @@ EXPOSE 8888
 WORKDIR ${HOME}
 USER $NB_USER
 
-CMD ["/opt/evaluation_system/bin/loadfreva.sh"]
+CMD /opt/evaluation_system/bin/loadfreva.sh
 ENTRYPOINT ["/opt/evaluation_system/bin/docker-entrypoint.sh"]
