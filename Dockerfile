@@ -39,9 +39,9 @@ RUN set -ex; \
   --shell /usr/bin/zsh --disabled-password "$NB_USER" && \
   usermod -aG solr $NB_USER
 
-RUN set -ex && \
-  #wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz &&\
-  #tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz &&\
+RUN \
+  wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz &&\
+  tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz &&\
   echo PATH=$PATH >> /etc/environment;\
   echo SOLR_HOME=$SOLR_HOME >> /etc/environment;\
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
