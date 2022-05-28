@@ -32,12 +32,8 @@ dev-obs:
         - /kaniko/executor --context $CI_PROJECT_DIR
                        --cleanup
                        --skip-unused-stages=true
-                       --build-arg=CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
-                       --build-arg=IMAGETAG=${IMAGETAG}
-                       --build-arg=branch=${CI_COMMIT_BRANCH}
                        --build-arg=binder="false"
-                       --whitelist-var-run=false
-                       --ignore-var-run=false
+                       --ignore-var-run
                        --dockerfile $CI_PROJECT_DIR/Dockerfile
                        --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
     tags:

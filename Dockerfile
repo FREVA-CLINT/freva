@@ -46,11 +46,11 @@ RUN set -x;\
   echo SOLR_HOME=$SOLR_HOME >> /etc/environment;\
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
   echo "mysqld_safe &" > /tmp/config && \
-  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config ; \
-  chmod 777 /tmp/config && bash /tmp/config && rm -r /tmp/config ; \
-  mysql < /tmp/evaluation_system/compose/db/create_user.sql ; \
-  mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/compose/db/create_tables.sql ;\
-  mysqladmin shutdown ; \
+  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && \
+  chmod 777 /tmp/config && bash /tmp/config && rm -r /tmp/config && \
+  mysql < /tmp/evaluation_system/compose/db/create_user.sql && \
+  mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/compose/db/create_tables.sql &&\
+  mysqladmin shutdown  &&\
   chown -R ${NB_USER}:${NB_GROUP} /var/run/mysqld /var/lib/mysql &&\
   mkdir -p ${MYSQL_LOGS_DIR} &&\
   chown -R ${NB_USER}:${NB_GROUP} ${MYSQL_LOGS_DIR} &&\
