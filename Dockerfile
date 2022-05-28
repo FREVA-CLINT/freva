@@ -24,12 +24,12 @@ ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GROUP=${NB_USER} \
     NB_GID=${NB_UID} \
-    SOLR_HOME /home/${NB_USER}/.solr \
-    SOLR_LOGS_DIR ${SOLR_HOME}/logs \
-    MYSQL_LOGS_DIR /var/log/freva/mysql \
-    LOG4J_PROPS ${SOLR_HOME}/log4j2.xml\
-    SOLR_PID_DIR ${SOLR_HOME} \
-    IS_BINDER $binder \
+    SOLR_HOME=/home/${NB_USER}/.solr \
+    SOLR_LOGS_DIR=${SOLR_HOME}/logs \
+    MYSQL_LOGS_DIR=/var/log/freva/mysql \
+    LOG4J_PROPS=${SOLR_HOME}/log4j2.xml\
+    SOLR_PID_DIR=${SOLR_HOME} \
+    IS_BINDER=$binder \
     PATH="/opt/solr/bin:/opt/solr/docker/scripts:$PATH"
 
 COPY . /tmp/evaluation_system
