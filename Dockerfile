@@ -16,7 +16,7 @@ ENV IS_BINDER $binder
 
 USER root
 RUN set -ex && \
-  apt-get -y update &&\
+  apt-get -y update && apt-get -y upgrade &&\
   apt-get -y install wget sudo git make vim nano python3 zsh ffmpeg imagemagick\
              mariadb-server default-libmysqlclient-dev build-essential &&\
   if [ "$binder" = "true" ]; then\
