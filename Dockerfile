@@ -7,17 +7,12 @@ ARG NB_UID="1000"
 ARG binder="true"
 ENV USER ${NB_USER}
 ENV HOME /home/${NB_USER}
-ENV SOLR_HOME /home/${NB_USER}/.solr
-ENV SOLR_LOGS_DIR ${SOLR_HOME}/logs
-ENV MYSQL_LOGS_DIR /var/log/freva/mysql
-ENV LOG4J_PROPS ${SOLR_HOME}/log4j2.xml
-ENV SOLR_PID_DIR ${SOLR_HOME}
-ENV IS_BINDER $binder
 
 USER root
 RUN set -ex && \
   apt-get -y update && apt-get -y upgrade &&\
-  apt-get -y install wget sudo git make vim nano python3 zsh ffmpeg imagemagick\
+  apt-get -y install acl dirmngr gpg lsof procps netcat wget gosu tini \
+             sudo git make vim nano python3 zsh ffmpeg imagemagick\
              mariadb-server default-libmysqlclient-dev build-essential &&\
   if [ "$binder" = "true" ]; then\
     apt-get -y install python3-cartopy python-cartopy-data python3-xarray \
@@ -29,6 +24,12 @@ ENV NB_USER=${NB_USER} \
     NB_UID=${NB_UID} \
     NB_GROUP=${NB_USER} \
     NB_GID=${NB_UID} \
+    SOLR_HOME /home/${NB_USER}/.solr \
+    SOLR_LOGS_DIR ${SOLR_HOME}/logs \
+    MYSQL_LOGS_DIR /var/log/freva/mysql \
+    LOG4J_PROPS ${SOLR_HOME}/log4j2.xml\
+    SOLR_PID_DIR ${SOLR_HOME} \
+    IS_BINDER $binder \
     PATH="/opt/solr/bin:/opt/solr/docker/scripts:$PATH"
 
 COPY . /tmp/evaluation_system
@@ -42,7 +43,6 @@ RUN set -ex; \
 RUN set -x;\
   wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz &&\
   tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz &&\
-  echo PATH=$PATH >> /etc/environment;\
   echo SOLR_HOME=$SOLR_HOME >> /etc/environment;\
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
   echo "mysqld_safe &" > /tmp/config && \
