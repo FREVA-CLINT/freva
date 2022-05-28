@@ -22,7 +22,7 @@ lint:
 
 dev-obs:
     stage: build
-    image: 
+    image:
         name: gcr.io/kaniko-project/executor:debug
         entrypoint: [""]
     script:
@@ -37,6 +37,7 @@ dev-obs:
                        --build-arg=branch=${CI_COMMIT_BRANCH}
                        --build-arg=binder="false"
                        --whitelist-var-run=false
+                       --ignore-var-run=false
                        --dockerfile $CI_PROJECT_DIR/Dockerfile
                        --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
     tags:
