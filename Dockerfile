@@ -39,7 +39,7 @@ RUN set -ex; \
   --shell /usr/bin/zsh --disabled-password "$NB_USER" && \
   usermod -aG solr $NB_USER
 
-RUN \
+RUN set -x;\
   wget https://github.com/allure-framework/allure2/releases/download/2.14.0/allure-2.14.0.tgz -O allure.tgz &&\
   tar xzf allure.tgz -C /opt; mv /opt/allure-2.14.0 /opt/allure; rm allure.tgz &&\
   echo PATH=$PATH >> /etc/environment;\
@@ -47,7 +47,7 @@ RUN \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
   echo "mysqld_safe &" > /tmp/config && \
   echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && \
-  bash /tmp/config && rm -r /tmp/config && \
+  chmod 777 /tmp/config && bash /tmp/config && rm -r /tmp/config && \
   mysql < /tmp/evaluation_system/compose/db/create_user.sql && \
   mysql -u freva -pT3st -D freva -h 127.0.0.1 < /tmp/evaluation_system/compose/db/create_tables.sql &&\
   mysqladmin shutdown && \
@@ -57,7 +57,7 @@ RUN \
   cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ && \
   cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/assets
 
-RUN \
+RUN set -e;\
   /opt/solr/docker/scripts/init-var-solr && \
   /opt/solr/docker/scripts/precreate-core latest &&\
   /opt/solr/docker/scripts/precreate-core files &&\
@@ -72,7 +72,7 @@ RUN \
 
 RUN \
   if [ "$binder" = "true" ]; then\
-    set -ex && \
+    set -e && \
     sudo -u $NB_USER git config --global init.defaultBranch main && \
     sudo -u $NB_USER git config --global user.email "freva@my.binder" &&\
     sudo -u $NB_USER git config --global user.name "Freva" &&\
