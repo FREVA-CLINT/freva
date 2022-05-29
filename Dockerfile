@@ -56,18 +56,10 @@ RUN set -ex && \
   chmod +x /opt/evaluation_system/bin/* &&\
   chown -R ${NB_USER}:${NB_GROUP} ${HOME} ${MYSQL_HOME} ${SOLR_HOME}
 
-
 # Prepare the mysql server
 RUN set -x;\
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
   cp /tmp/evaluation_system/compose/db/*.sql ${MYSQL_DATA_DIR}/tmpl/ &&\
-  sudo -u ${NB_USER} mkdir -p /tmp/mysqld &&\
-  mysql_install_db --user=$NB_USER --datadir=${MYSQL_DATA_DIR} --tmpdir=/tmp/mysqld/ &&\
-  sudo -E -u ${NB_USER} /opt/evaluation_system/bin/mysqld_safe_user && \
-  cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err  &&\
-  mysqladmin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping &&\
-  mysql --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock -u root -pT3st < ${MYSQL_DATA_DIR}/tmpl/create_user.sql &&\
-  mysql -u freva -pT3st -D freva -h 127.0.0.1 < ${MYSQL_DATA_DIR}/tmpl/create_tables.sql
 
 # Prepare the solr server
 RUN set -e;\
@@ -79,7 +71,6 @@ RUN set -e;\
   find /var/solr -type d -print0 | xargs -0 chmod 0771 && \
   find /var/solr -type f -print0 | xargs -0 chmod 0661 && \
   cp -r /var/solr ${SOLR_HOME}
-
 
 RUN \
   if [ "$binder" = "true" ]; then\

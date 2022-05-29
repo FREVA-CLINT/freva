@@ -1,4 +1,10 @@
+#!/bin/bash
+echo CREATING DATABASE:
 mkdir -p /tmp/mysqld
 SOCK_FILE=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock
-nohup mysqld_safe --datadir=${MYSQL_DATA_DIR} --pid-file=${MYSQL_HOME}/mysql-server.${MYSQL_PORT}.pid --port=${MYSQL_PORT} --socket=${SOCK_FILE} --log-error=${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err --tmpdir=/tmp/mysqld --skip-syslog $@ &> /dev/null &
-sleep 1
+mysql_install_db --datadir=${MYSQL_DATA_DIR} --tmpdir=/tmp/mysqld &> /dev/null
+mysqld_safe --datadir=${MYSQL_DATA_DIR} --pid-file=${MYSQL_HOME}/mysql-server.${MYSQL_PORT}.pid --port=${MYSQL_PORT} --socket=${SOCK_FILE} --log-error=${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err --tmpdir=/tmp/mysqld --skip-syslog &> /dev/null &
+sleep 5
+mysql --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock -u $(whoami) < ${MYSQL_DATA_DIR}/tmpl/create_user.sql
+mysql -u freva -pT3st -D freva -h 127.0.0.1 < ${MYSQL_DATA_DIR}/tmpl/create_tables.sql
+echo DATABASE CREATED!
