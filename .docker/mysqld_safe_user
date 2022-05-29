@@ -7,4 +7,10 @@ mysqld_safe --datadir=${MYSQL_DATA_DIR} --pid-file=${MYSQL_HOME}/mysql-server.${
 sleep 5
 mysql --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock -u $(whoami) < ${MYSQL_DATA_DIR}/tmpl/create_user.sql
 mysql -u freva -pT3st -D freva -h 127.0.0.1 < ${MYSQL_DATA_DIR}/tmpl/create_tables.sql
-echo DATABASE CREATED!
+if [ $? != 0 ];then
+  echo DATABASE CREATION FAILED, LOGS:
+  cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err
+  exit 1
+else
+  echo DATABASE CREATED!
+fi
