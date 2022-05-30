@@ -17,7 +17,7 @@ RUN set -ex && \
   apt-get -y update && apt-get -y upgrade &&\
   apt-get -y install acl dirmngr gpg lsof procps netcat wget gosu tini \
              sudo git make vim python3 ffmpeg imagemagick\
-             mysql-server default-libmysqlclient-dev build-essential &&\
+             mysql-server build-essential &&\
   if [ "$binder" = "true" ]; then\
     apt-get -y install python3-cartopy python-cartopy-data python3-xarray zsh nano\
     python3-h5netcdf libnetcdf-dev python3-dask python3-pip python3-pip-whl;\
