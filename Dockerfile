@@ -17,7 +17,7 @@ RUN set -ex && \
   apt-get -y update && apt-get -y upgrade &&\
   apt-get -y install acl dirmngr gpg lsof procps netcat wget gosu tini \
              sudo git make vim python3 ffmpeg imagemagick\
-             mariadb-server default-libmysqlclient-dev build-essential &&\
+             mysql-server default-libmysqlclient-dev build-essential &&\
   if [ "$binder" = "true" ]; then\
     apt-get -y install python3-cartopy python-cartopy-data python3-xarray zsh nano\
     python3-h5netcdf libnetcdf-dev python3-dask python3-pip python3-pip-whl;\
@@ -50,16 +50,33 @@ RUN set -ex && \
   cp /tmp/evaluation_system/.docker/evaluation_system.conf /tmp/evaluation_system/assets &&\
   ln -s /usr/bin/python3 /usr/bin/python &&\
   mkdir -p /opt/evaluation_system/bin &&\
-  mkdir -p ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR}/tmpl &&\
-  cp /tmp/evaluation_system/.docker/mysqld_safe_user /opt/evaluation_system/bin/ &&\
+  mkdir -p ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR} ${MYSQL_HOME}/tmpl &&\
   cp /tmp/evaluation_system/.docker/*.sh /opt/evaluation_system/bin/ &&\
-  chmod +x /opt/evaluation_system/bin/* &&\
-  chown -R ${NB_USER}:${NB_GROUP} ${HOME} ${MYSQL_HOME} ${SOLR_HOME}
+  chown -R ${NB_USER}:${NB_GROUP} ${HOME} ${MYSQL_HOME} ${SOLR_HOME} &&\
+  chmod +x /opt/evaluation_system/bin/*
 
 # Prepare the mysql server
 RUN set -x;\
-  sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
-  cp /tmp/evaluation_system/compose/db/*.sql ${MYSQL_DATA_DIR}/tmpl/ &&\
+  echo "[mysqld]" > /etc/mysql/my.cnf &&\
+  echo "user            = ${NB_USER}" >> /etc/mysql/my.cnf &&\
+  echo "port            = ${MYSQL_PORT}" >> /etc/mysql/my.cnf &&\
+  echo "datadir         = ${MYSQL_DATA_DIR}" >> /etc/mysql/my.cnf &&\
+  # echo "tmpdir          = /tmp/mysqld" >> /etc/mysql/my.cnf &&\
+  echo "socket          = ${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock" >> /etc/mysql/my.cnf &&\
+  echo "log-error       = ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err" >> /etc/mysql/my.cnf &&\
+  echo "max_connections = 4" >> /etc/mysql/my.cnf &&\
+  echo "key_buffer_size = 8M" >> /etc/mysql/my.cnf &&\
+  echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'T3st';" > /tmp/new_pw &&\
+  cat /etc/mysql/my.cnf &&\
+  cp /tmp/evaluation_system/compose/db/*.sql ${MYSQL_HOME}/tmpl/ &&\
+  echo "mysqld --initialize" > /tmp/mysql_init &&\
+  echo "nohup mysqld --init-file=${MYSQL_HOME}/tmpl/create_user.sql &" >> /tmp/mysql_init &&\
+  echo "mysqladmin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --silent --wait=10 ping || exit 1" >> /tmp/mysql_init &&\
+  sudo -E -u ${NB_USER} bash /tmp/mysql_init && rm /tmp/mysql_init &&\
+  mysql -u freva -pT3st -h 127.0.0.1 -D freva < ${MYSQL_HOME}/tmpl/create_tables.sql &&\
+  cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err &&\
+  mysql -h 127.0.0.1 -u freva -pT3st < ${MYSQL_HOME}/tmpl/create_tables.sql &&\
+
 
 # Prepare the solr server
 RUN set -e;\
