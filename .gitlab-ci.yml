@@ -20,31 +20,10 @@ lint:
   script:
     - conda run -n $CONDA_ENV make lint
 
-dev-obs:
-    stage: build
-    image:
-        name: gcr.io/kaniko-project/executor:debug
-        entrypoint: [""]
-    script:
-        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
-        - echo $CI_COMMIT_BRANCH
-        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-        - /kaniko/executor --context $CI_PROJECT_DIR
-                       --cleanup
-                       --skip-unused-stages=true
-                       --build-arg=binder="false"
-                       --ignore-var-run
-                       --dockerfile $CI_PROJECT_DIR/Dockerfile
-                       --destination $CI_REGISTRY_IMAGE/freva_build:$CI_COMMIT_BRANCH
-    tags:
-        - docker, specific
-    rules:
-        - if: "$CI_COMMIT_BRANCH == 'master'"
-        - if: "$CI_COMMIT_BRANCH != 'master'"
 
 .test_template: &py_test # pytest framework template
     stage: test
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-build:unittest
     variables:
       CONDA: "Miniconda3-latest"
     tags:
@@ -92,7 +71,7 @@ test_latest:
 
 pages:
   stage: report
-  image: registry.gitlab.dkrz.de/freva/evaluation_system/freva_build:$CI_COMMIT_BRANCH
+  image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-build:unittest
   tags:
     - docker, specific
   dependencies:
