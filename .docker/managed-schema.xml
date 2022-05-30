@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="file_system" version="1.6">
+  <uniqueKey>file</uniqueKey>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+  <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+
+  <fieldType name="version" class="solr.TextField" >
+    <analyzer>
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="^v"/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <field name="_version_" type="plong" indexed="true" stored="true"/>
+  <field name="file" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
+  <field name="timestamp" type="pfloat" indexed="false" stored="true"/>
+  <field name="creation_time" type="pdate" indexed="true" stored="false" default="NOW"/>
+
+  <!-- we need this to search for latest version.
+  If not it won't work for entries not being versioned at all -->
+  <field name="version" type="version" stored="false" indexed="true" default="-1"/>
+  <field name="file_no_version" type="string" stored="false" indexed="true"/>
+  <field name="_root_" type="string" indexed="false" stored="false" docValues="false"/>
+  <dynamicField name="*" type="text_general" stored="true" indexed="true" multiValued="true"/>
+</schema>

@@ -3,8 +3,8 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - cdo
   - conda
+  - cartopy
   - configparser
   - distributed
   - django
@@ -18,7 +18,6 @@ dependencies:
   - humanize
   - mamba
   - mysqlclient
-  - nco
   - netcdf4
   - numpy
   - pandas
@@ -32,9 +31,7 @@ dependencies:
   - pypdf2
   - pytest
   - pytest-env
-  - cartopy
   - pytest-cov
   - pytest-html
-  - python-cdo
   - toolz
   - xarray
