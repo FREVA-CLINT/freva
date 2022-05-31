@@ -1,4 +1,4 @@
-"""Definitions of parameters types to configure custom ``freva`` plugins.
+"""Definitions of parameters types to configure custom ``Freva`` plugins.
 
 Plugin parameters are defined in the plugin wrapper class please refer to
 :class:`evaluation_system.api.plugin` for more information on how to set up a
@@ -296,7 +296,7 @@ class ParameterType(initOrder):
 
 
 class ParameterDictionary(dict):
-    """Directory holding all plugin parameters for a ``freva`` plugin.
+    """Directory holding all plugin parameters for a ``Freva`` plugin.
 
     This class behaves like a built-in ``dict`` with additional features.
     The most prominent feature is that the order of added items is preseverd,

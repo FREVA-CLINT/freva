@@ -354,13 +354,13 @@ def get_plugin_instance(
     )
     if spec is None:
         raise ImportError(
-            "Could not import {plugin.plugin_class} from {plugin.plugin_module}"
+            f"Could not import {plugin.plugin_class} from {plugin.plugin_module}"
         )
     mod = importlib.util.module_from_spec(spec)
     spec_loader = spec.loader
     if spec_loader is None:
         raise ImportError(
-            "Could not import {plugin.plugin_class} from {plugin.plugin_module}"
+            f"Could not import {plugin.plugin_class} from {plugin.plugin_module}"
         )
     spec_loader.exec_module(mod)
     sys.modules[spec.name] = mod
@@ -704,8 +704,7 @@ def run_tool(
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = cast(
-            Dict[str, str],
-            load_scheduled_conf(plugin_name, scheduled_id, user),
+            Dict[str, str], load_scheduled_conf(plugin_name, scheduled_id, user),
         )
     if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -1351,8 +1350,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         a 2 element tuple when given a well formed string.
     """
     return map(
-        lambda item: tuple([e.strip() for e in item.split(",")]),
-        envvar.split(":"),
+        lambda item: tuple([e.strip() for e in item.split(",")]), envvar.split(":"),
     )
 
 

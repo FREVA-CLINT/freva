@@ -3,12 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to freva's documentation!
+Welcome to Freva's documentation!
 =================================
 
-freva, the free evaluation system framework, is a data search and analysis
+Freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric
-science community. With help of freva researchers can:
+science community. With help of Freva researchers can:
 
 - quickly and intuitively search for data stored at typical data centers that
   host many datasets.
@@ -17,13 +17,13 @@ science community. With help of freva researchers can:
 
 Data analysis is realised by user developed data analysis plugins. These plugins
 are code agnostic, meaning that users don't have to rewrite the core of their
-plugins to make them work with freva. All that freva does is providing a user
+plugins to make them work with Freva. All that Freva does is providing a user
 interface for the plugins.
 
-Currently freva comes in three different flavours:
+Currently Freva comes in three different flavours:
 
-- a python module that allows the usage of freva in python environments, like jupyter notebooks
-- a command line interface (cli) that allows using freva from the command lines and shell scripts.
+- a python module that allows the usage of Freva in python environments, like jupyter notebooks
+- a command line interface (cli) that allows using Freva from the command lines and shell scripts.
 - a web user interface (web-ui)
 
 This documentation covers the usage of the python module as well the cli. We

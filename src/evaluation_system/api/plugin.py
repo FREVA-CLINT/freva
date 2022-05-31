@@ -1,12 +1,12 @@
 """Definition of the base class that is used to implement user plugins.
 
 The plugin api is the core of the interface connecting a user plugin code with
-the freva system infrastructure. This interface enables the users to
+the Freva system infrastructure. This interface enables the users to
 conveniently set up, run, and keep track of applied plugins. The reference below
 gives an overview of how to set up user defined plugins. For this purpose we
-assume that a plugin core (without freva) already exists - for example as a
+assume that a plugin core (without Freva) already exists - for example as a
 command line interface tool (cli). Once such a cli has been set up a interface
-to freva must be defined. This reference will introduce the possible definition
+to Freva must be defined. This reference will introduce the possible definition
 options below.
 
 Here we assume that the above mentioned cli code is stored in a directory
@@ -16,7 +16,7 @@ excecuted via:
 
         cli/calculate -c 5 -n 6.4 --overwrite --name=Test
 
-With help of this API a freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
+With help of this API a Freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
 
 """
 from __future__ import annotations
@@ -63,8 +63,8 @@ ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
 class PluginAbstract(abc.ABC):
-    """Base class that is used as a template for all freva plugins.
-    Any api wrapper class defining freva plugins must inhert from this class.
+    """Base class that is used as a template for all Freva plugins.
+    Any api wrapper class defining Freva plugins must inhert from this class.
 
     Parameters
     ----------
@@ -89,7 +89,7 @@ class PluginAbstract(abc.ABC):
     Minimal Example
     ---------------
 
-    To be able to configure and call this cli a freva wrapper api class will
+    To be able to configure and call this cli a Freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
     A minimal configuration example would look as follows:
 

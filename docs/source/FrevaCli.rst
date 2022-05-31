@@ -1,14 +1,14 @@
-The freva command line interface
+The Freva command line interface
 ================================
 
-This section introduces the usage of the freva command line interface -
-*cli*. The tutorial assumes that you have already access to ``freva``
+This section introduces the usage of the Freva command line interface -
+*cli*. The tutorial assumes that you have already access to ``Freva``
 either because you've setup an instance yourself or one has been setup
-by the freva *admin* team. Hence it is assumed that you know how to
-access freva. If this is not the case please contact one of your
-freva *admins* for help.
+by the Freva admin team. Hence it is assumed that you know how to
+access Freva. If this is not the case please contact one of your
+Freva admins for help.
 
-A general usage overview of the available freva sub-commands is
+A general usage overview of the available Freva sub-commands is
 available via the ``--help`` option:
 
 .. code:: bash
