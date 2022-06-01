@@ -1249,7 +1249,7 @@ def get_plugin_version(pluginname: str) -> tuple[str, str]:
         else:
             mesg = "Plugin <%s> not found" % pluginname
             raise PluginManagerException(mesg)
-        version = repository.getVersion(srcfile)
+        version = repository.get_version(srcfile)
         __version_cache[pluginname] = version
     return version
 

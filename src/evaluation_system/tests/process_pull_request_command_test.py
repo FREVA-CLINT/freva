@@ -86,13 +86,13 @@ def test_command_success(capsys, dummy_git_path, git_config, admin_env):
 
 
 def test_get_version(admin_env):
-    from evaluation_system.model.repository import getVersion
+    from evaluation_system.model.repository import get_version
 
     # self version test
-    version = getVersion(".")
+    version = get_version(".")
     assert len(version) == 2
 
-    not_versioned = getVersion("/tmp")
+    not_versioned = get_version("/tmp")
     assert not_versioned == ("unknown", "unknown")
 
 
