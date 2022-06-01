@@ -15,6 +15,15 @@ __version_cache: dict[str, tuple[str, str]] = {}
 def set_repo_safe(dir_name: os.PathLike) -> Iterator[git.Repo]:
     """Context manager that sets a given repository dir as temporarly safe.
 
+    This needs to be done to not make git complain about the fact that the
+    repositories directory doesn't belong to the person who is trying to
+    retrieve the repository information. Before we instruct git to read the
+    repo we tell it that his directory is save by temporarly adding a safe
+    flag to the global git settings. After the repo has been processed by git
+    this safe flag is removed again. This is probaply not the best way of
+    dealing with this issue. Still, for example setting repositories to as
+    shared did not solve the issue.
+
     Parameters
     ----------
     dir_name: os.PathLike
