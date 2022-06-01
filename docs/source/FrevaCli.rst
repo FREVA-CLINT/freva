@@ -2,7 +2,7 @@ The Freva command line interface
 ================================
 
 This section introduces the usage of the Freva command line interface -
-*cli*. The tutorial assumes that you have already access to ``Freva``
+cli. The tutorial assumes that you have already access to Freva
 either because you've setup an instance yourself or one has been setup
 by the Freva admin team. Hence it is assumed that you know how to
 access Freva. If this is not the case please contact one of your
