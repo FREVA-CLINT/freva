@@ -83,7 +83,7 @@ def schedule_job(
     """
     job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
-    ncpus = cast(str, config.get("cpus", "4"))
+    ncpus = int(cast(str, config.get("cpus", "4")))
     if source.exists():
         env_extra = [f"\\. {source}"]
     else:
@@ -93,7 +93,7 @@ def schedule_job(
             name=cast(str, config["name"]),
             memory=cast(str, config.get("memory", "128GB")),
             walltime=cast(str, config.get("walltime", "08:00:00")),
-            job_cpu=int(ncpus),
+            job_cpu=ncpus,
             queue=config["queue"],
             project=config["project"],
             log_directory=log_directory,
