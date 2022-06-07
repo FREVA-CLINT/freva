@@ -948,8 +948,8 @@ def get_history(
 def get_command_string(
     entry_id: int,
     user: Optional[User] = None,
-    command_name: str = "freva",
-    command_options: str = "--plugin",
+    command_name: str = "freva-plugin",
+    command_options: str = "",
 ) -> str:
     """Return the parameter string of a history entry.
 
@@ -1019,8 +1019,6 @@ def get_command_config_from_row(
 
 def get_command_string_from_config(
     config: CommandConfig,
-    command_name: str = "analyze",
-    command_options: str = "--tool",
 ) -> str:
     """Get the command string for a command
 
@@ -1028,29 +1026,31 @@ def get_command_string_from_config(
     ----------
     config
         Command config to get the string for.
-    command_name
-        Name of the CLI command
-    command_options
-        Options for the given CLI command
 
     Returns
     -------
     str
         CLI command string to run this command.
     """
-    command_name = config["name"]
-    command_options = config["options"]
-    tool = config["tool"]
-    result = "%s %s %s" % (command_name, command_options, tool)
+    result: list[str] = [
+        cast(str, config.get(a, ""))
+        for a in ("name", "options", "tool")
+        if config.get(a)
+    ]
     for key, value in config["args"].items():
-        result = "%s %s='%s'" % (result, str(key), str(value))
-    return result
+        if isinstance(value, list):
+            result.append(f"{key}={','.join(value)}")
+        elif isinstance(value, bool):
+            result.append(f"{key}=str(value).lower()")
+        else:
+            result.append(f"{key}={value}")
+    return " ".join(result)
 
 
 def get_command_string_from_row(
     history_row: History,
-    command_name: str = "analyze",
-    command_options: str = "--tool",
+    command_name: str = "freva-plugin",
+    command_options: str = "",
 ) -> str:
     """Get the command string for a command
 
@@ -1069,11 +1069,7 @@ def get_command_string_from_row(
         CLI command string to run this command.
     """
     config = get_command_config_from_row(history_row, command_name, command_options)
-    tool = history_row.tool
-    result = "%s %s %s" % (command_name, command_options, tool)
-    for key, value in config["args"].items():
-        result = "%s %s='%s'" % (result, str(key), str(value))
-    return result
+    return get_command_string_from_config(config)
 
 
 def load_scheduled_conf(plugin_name: str, entry_id: int, user: User) -> dict[str, str]:

@@ -357,7 +357,7 @@ def test_get_command_string(dummy_env, django_user):
     )
 
     cmd = pm.get_command_string(h.id)
-    assert "freva --plugin" in cmd
+    assert "freva-plugin" in cmd
     assert h.tool in cmd
 
 

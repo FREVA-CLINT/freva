@@ -79,10 +79,6 @@ def history(
     """
     if not isinstance(entry_ids, (list, tuple, set)) and entry_ids is not None:
         entry_ids = [entry_ids]
-    try:
-        command_name = args[0]
-    except IndexError:
-        command_name = "freva"
     if not return_command:
         prefix = "history"
         if plugin:
@@ -104,8 +100,7 @@ def history(
         if return_command:
             commands = []
             for row in rows:
-                command_options = "plugin"
-                cmd = pm.get_command_string_from_row(row, command_name, command_options)
+                cmd = pm.get_command_string_from_row(row)
                 commands.append(cmd)
             return commands
         else:
