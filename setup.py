@@ -102,7 +102,6 @@ setup(
     license="BSD-3-Clause",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    package_data={"freva": ["package.ini"]},
     cmdclass={"install": InstallCommand},
     install_requires=[
         "appdirs",
