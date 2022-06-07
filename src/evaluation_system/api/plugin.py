@@ -43,6 +43,8 @@ from typing import cast, Any, Dict, IO, Optional, Union, Iterator, Iterable, Tex
 from uuid import uuid4
 
 
+from PyPDF2 import PdfReader
+
 from evaluation_system.model.user import User
 import evaluation_system.model.history.models as hist_model
 from evaluation_system.misc.utils import TemplateDict
@@ -435,12 +437,12 @@ A plugin/user might then use them to define a value in the following way::
     def _append_unique_id(
         self, config_dict: Optional[ConfigDictType], unique_output: bool
     ) -> ConfigDictType:
-        from evaluation_system.api.parameters import Directory, CacheDirectory
+        from evaluation_system.api.parameters import InputDirectory, CacheDirectory
 
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if isinstance(tmp_param, Directory):
+            if isinstance(tmp_param, InputDirectory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
                     if key in config_dict.keys() and config_dict[key] is not None:
                         config_dict[key] = os.path.join(
@@ -622,11 +624,10 @@ A plugin/user might then use them to define a value in the following way::
                     metadata["todo"] = "convert"
 
                 if ext == ".pdf":
-                    from PyPDF2 import PdfFileReader
 
                     # If pdfs have more than one page we don't convert them,
                     # instead we offer a download link
-                    pdf = PdfFileReader(open(file_path, "rb"))
+                    pdf = PdfReader(open(file_path, "rb"))
                     num_pages = pdf.getNumPages()
                     metadata["type"] = "pdf"
                     if num_pages > 1:

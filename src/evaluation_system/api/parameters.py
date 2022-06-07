@@ -782,7 +782,7 @@ class CacheDirectory(Directory):
 
 
 class Date(String):
-    """A date parameter. Deprecated.
+    """A date parameter.
 
     Parameters
     ----------
@@ -804,12 +804,10 @@ class Date(String):
                             ),
             )
 
-    :meta private:
     """
 
     def __init__(self, *args, **kwargs):
 
-        warnings.warn("The Date class is deprecated", category=DeprecationWarning)
         super().__init__(*args, **kwargs)
 
 

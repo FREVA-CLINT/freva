@@ -331,14 +331,14 @@ def testSubstitution(dummy_plugin):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
         Integer(name="a"),
         String(name="b", default="value:$a"),
-        Directory(name="c", default="$USER_OUTPUT_DIR"),
+        InputDirectory(name="c", default="$USER_OUTPUT_DIR"),
     )
     cfg_str = dummy.get_current_config({"a": 72})
     assert "value:72" in cfg_str
@@ -468,7 +468,7 @@ def test_run(dummy_plugin):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
@@ -495,7 +495,7 @@ def test_get_class_base_dir(dummy_plugin):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     dummy = dummy_plugin
@@ -519,7 +519,7 @@ def test_special_variables():
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
@@ -565,7 +565,7 @@ def test_compose_command():
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     command = dummy_plugin.compose_command(
@@ -586,7 +586,7 @@ def test_append_unique_output():
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
     from evaluation_system.misc import config
     from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -615,7 +615,7 @@ def test_run_tool(dummy_plugin):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     result = dummy_plugin._run_tool({"the_answer": 42})
@@ -631,7 +631,7 @@ def test_prepare_output(dummy_plugin):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     fn = Path(__file__).absolute().parent / "test_output" / "vecap_test_output.pdf"
@@ -665,7 +665,7 @@ def test_call(dummy_plugin, capsys):
         ParameterDictionary,
         Integer,
         String,
-        Directory,
+        InputDirectory,
     )
 
     _ = dummy_plugin.call("echo /bin/bash")  # .strip('\n')
