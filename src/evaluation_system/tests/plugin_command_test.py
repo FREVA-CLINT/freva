@@ -131,7 +131,9 @@ def test_run_pyclientplugin(dummy_history):
 extra_scheduler_options: - (default: )""",
     )
     return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
-    assert "git" in repo
+    assert "repository" in repo.lower()
+    assert "version" in repo.lower()
+
     ToolPullRequest.objects.all().delete()
     with pytest.raises(PluginNotFoundError):
         freva.run_plugin("dummyplugin0", pull_request=True, tag="")
