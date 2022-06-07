@@ -1,12 +1,12 @@
 """Definition of the base class that is used to implement user plugins.
 
 The plugin api is the core of the interface connecting a user plugin code with
-the Freva system infrastructure. This interface enables the users to
+the freva system infrastructure. This interface enables the users to
 conveniently set up, run, and keep track of applied plugins. The reference below
 gives an overview of how to set up user defined plugins. For this purpose we
-assume that a plugin core (without Freva) already exists - for example as a
+assume that a plugin core (without freva) already exists - for example as a
 command line interface tool (cli). Once such a cli has been set up a interface
-to Freva must be defined. This reference will introduce the possible definition
+to freva must be defined. This reference will introduce the possible definition
 options below.
 
 Here we assume that the above mentioned cli code is stored in a directory
@@ -16,7 +16,7 @@ excecuted via:
 
         cli/calculate -c 5 -n 6.4 --overwrite --name=Test
 
-With help of this API a Freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
+With help of this API a freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
 
 """
 from __future__ import annotations
@@ -63,8 +63,8 @@ ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
 class PluginAbstract(abc.ABC):
-    """Base class that is used as a template for all Freva plugins.
-    Any api wrapper class defining Freva plugins must inhert from this class.
+    """Base class that is used as a template for all freva plugins.
+    Any api wrapper class defining freva plugins must inhert from this class.
 
     Parameters
     ----------
@@ -89,7 +89,7 @@ class PluginAbstract(abc.ABC):
     Minimal Example
     ---------------
 
-    To be able to configure and call this cli a Freva wrapper api class will
+    To be able to configure and call this cli a freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
     A minimal configuration example would look as follows:
 
@@ -223,7 +223,7 @@ A plugin/user might then use them to define a value in the following way::
         # and developers
         # self._special_vars = SpecialVariables(self.__class__.__name__, self._user)
 
-        plugin_name, user = self.__class__.__name__, self._user
+        plugin_name, user = self.__class__.__name__.lower(), self._user
         self._special_variables = TemplateDict(
             USER_BASE_DIR=user.getUserBaseDir,
             USER_CACHE_DIR=partial(
@@ -321,8 +321,7 @@ A plugin/user might then use them to define a value in the following way::
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code,
-                    cmd,
+                    return_code, cmd,
                 )
             return res
 
@@ -333,15 +332,13 @@ A plugin/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(),
-                plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):
         """Set an interactive job as running."""
-        _, _, ips = socket.gethostbyaddr(socket.gethostname())
         host = socket.getfqdn()
         try:
             hist = hist_model.History.objects.get(id=rowid)
@@ -360,6 +357,7 @@ A plugin/user might then use them to define a value in the following way::
         env_path = os.environ["PATH"]
         stdout = [sys.stdout]
         stderr = [sys.stderr]
+        log_stream_handle: Optional[logging.StreamHandler] = None
         try:
             self.plugin_output_file.touch(mode=0o775)
         except FileNotFoundError:
@@ -1182,10 +1180,7 @@ A plugin/user might then use them to define a value in the following way::
         return tool_param + cmd_param
 
     def call(
-        self,
-        cmd_string: Union[str, list[str]],
-        check: bool = True,
-        **kwargs,
+        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 
