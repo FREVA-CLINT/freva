@@ -37,7 +37,7 @@ prepdocs:
 
 
 lint:
-	mypy
+	mypy --install-types
 	black --check -t py39 src
 
 dummy-data:

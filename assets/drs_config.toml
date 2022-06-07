@@ -19,7 +19,7 @@ data_type = "cmip5"
 project = "cmip5"
 
 [observations]
-root_dir = ".docker/data"
+root_dir = "/mnt/data4freva/"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
@@ -40,7 +40,7 @@ data_type = "observations"
 project = "observations"
 
 [reanalysis]
-root_dir = "/mnt/data4freva"
+root_dir = "/mnt/data4freva/reanalysis"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "variable", "ensemble", "file_name",
@@ -60,7 +60,7 @@ project = "reanalysis"
 product = "reanalysis"
 
 [crawl_my_data]
-root_dir = "~/data4freva"
+root_dir = "/usr/freva_output/data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
@@ -76,4 +76,3 @@ parts_time = "start_time-end_time"
 data_type = "crawl_my_data"
 
 [crawl_my_data.defaults]
-

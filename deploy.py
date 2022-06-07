@@ -80,6 +80,22 @@ endif
 """
 
 
+def get_data_dirs(install_prefix, user):
+
+    install_prefix = Path(install_prefix or sys.prefix)
+    if user:
+        import appdirs
+
+        data_dir = Path(appdirs.user_data_dir()).parent
+        root_dir = Path(appdirs.user_data_dir())
+        config_dir = Path(appdirs.user_config_dir()) / "freva"
+    else:
+        root_dir = data_dir = Path(install_prefix)
+        config_dir = root_dir / "freva"
+    config_dir.mkdir(exist_ok=True, parents=True)
+    return config_dir, data_dir, root_dir
+
+
 def get_script_path():
     return osp.dirname(osp.realpath(sys.argv[0]))
 
@@ -308,30 +324,55 @@ class Installer:
             self.conda_url = MINICONDA_URL
         self.conda = no_conda is False
 
-    def create_loadscript(self):
-        """Create the load-script for this installation."""
+    @staticmethod
+    def create_paths_for_config(install_prefix, user):
+        """Get and prepare the evaluation_system config file."""
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+        asset_conf_file = Path(__file__).parent / "assets" / "evaluation_system.conf"
         eval_conf_file = Path(
-            os.environ.get(
-                "EVALUATION_SYSTEM_CONFIG_FILE",
-                Path(__file__).parent / "assets" / "evaluation_system.conf",
-            )
+            os.environ.get("EVALUATION_SYSTEM_CONFIG_FILE", asset_conf_file)
         )
+        with eval_conf_file.open("r") as fp:
+            config_parser.read_file(fp)
+        config_dir, data_dir, root_dir = get_data_dirs(install_prefix, user)
+        if not config_parser["evaluation_system"]["root_dir"]:
+            config_parser.set("evaluation_system", "root_dir", str(root_dir))
+        if eval_conf_file == asset_conf_file:
+            with asset_conf_file.open() as fobj:
+                tmp_cfg = []
+                for line in fobj.readlines():
+                    if line.strip().startswith("root_dir"):
+                        tmp_cfg.append(f"root_dir={root_dir}\n")
+                    else:
+                        tmp_cfg.append(line)
+            with open(config_dir / "evaluation_system.conf", "w") as fobj:
+                fobj.write("".join(tmp_cfg))
+            eval_conf_file = config_dir / "evaluation_system.conf"
         for key in (
             "preview_path",
             "project_data",
             "base_dir_location",
             "scheduler_output_dir",
         ):
-            with eval_conf_file.open("r") as fp:
-                config_parser.read_file(fp)
-                path = Path(config_parser["evaluation_system"][key])
-                if path:
-                    try:
-                        path.mkdir(exist_ok=True, parents=True)
-                    except PermissionError:
-                        logger.warning(f"Could not create path: {path}")
+            path = Path(config_parser["evaluation_system"][key])
+            if path:
+                try:
+                    path.mkdir(exist_ok=True, parents=True)
+                except PermissionError:
+                    logger.warning(f"Could not create path: {path}")
+        return eval_conf_file, data_dir
+
+    @staticmethod
+    def create_loadscript(install_prefix, user=False):
+        """Create the load-script for this installation."""
+        config_parser = ConfigParser(interpolation=ExtendedInterpolation())
+        install_prefix = Path(install_prefix or sys.prefix)
+        eval_conf_file, root_dir = Installer.create_paths_for_config(
+            install_prefix, user=user
+        )
+        with eval_conf_file.open("r") as fp:
+            config_parser.read_file(fp)
         (eval_conf_file.parent / "completions").mkdir(parents=True, exist_ok=True)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
         completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
@@ -339,22 +380,20 @@ class Installer:
             with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
                 f.write(
                     shell_scripts[shell].format(
-                        root_dir=self.install_prefix,
+                        root_dir=install_prefix,
                         eval_conf_file=eval_conf_file,
-                        completion=completions[shell].format(
-                            root_dir=self.install_prefix
-                        ),
+                        completion=completions[shell].format(root_dir=root_dir),
                     )
                 )
             with (eval_conf_file.parent / "completions" / f"complete_{shell}").open(
                 "w"
             ) as f:
-                f.write(completions[shell].format(root_dir=self.install_prefix))
+                f.write(completions[shell].format(root_dir=install_prefix))
         with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
             f.write(
                 MODULE.format(
                     version=find_version("src/evaluation_system", "__init__.py"),
-                    root_dir=self.install_prefix,
+                    root_dir=install_prefix,
                     eval_conf_file=eval_conf_file,
                     project=config_parser["evaluation_system"]["project_name"],
                 )
@@ -390,6 +429,6 @@ if __name__ == "__main__":
     if Inst.conda:
         Inst.create_conda()
         Inst.pip_install(args.editable)
-    Inst.create_loadscript()
+    Inst.create_loadscript(Inst.install_prefix)
     if Inst.run_tests:
         Inst.unittests()
