@@ -49,7 +49,7 @@ def databrowser(
     Parameters
     ----------
     **search_facets: Union[str, Path, in, list[str]]
-        The searchfacets to be applied in the data search. If not given
+        The facets to be applied in the data search. If not given
         the whole dataset will be queried.
     all_facets: bool, default: False
         Retrieve all facets (attributes & values) instead of the files.

@@ -1,7 +1,7 @@
-"""Module to get information on and run freva plgins.
+"""Module to get information on and run Freva plgins.
 
-To make use of any of the methods ``freva`` plugins have to be setup. Either
-by you, the freva admins or your collegues. If you want to create a plugin
+To make use of any of the methods a Freva plugin has to be set up. Either
+by you, the Freva admins or your collegues. If you want to create a plugin
 pleas refer to the :class:`evaluation_system.api.plugin` section.
 """
 from __future__ import annotations

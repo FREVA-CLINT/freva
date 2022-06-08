@@ -31,14 +31,14 @@ def history(
     full_text: bool, default: False
       Get the full configuration.
     return_command: bool, default: False
-      Show freva commands belonging to the history entries instead
+      Show Freva commands belonging to the history entries instead
       of the entries themself.
     limit: int, default: 10
       Limit the number of entires to be displayed.
     plugin: str, default: None
       Display only entries from a given plugin name.
     since: str, datetime.datetime, default: None
-      Retrieve entries older than date, see see hint on date format below.
+      Retrieve entries older than date, see hint on date format below.
     until: str, datetime.datetime, default: None
       Retrieve entries younger than date, see hint on date format below.
     entry_ids: list, default: None
