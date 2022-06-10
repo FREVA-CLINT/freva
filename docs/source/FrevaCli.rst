@@ -19,7 +19,7 @@ available via the ``--help`` option:
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "--help"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 
@@ -99,30 +99,29 @@ There are many more options for defining a value for a given key:
 |                                             | containing exactly     |
 |                                             | that attribute         |
 +---------------------------------------------+------------------------+
-| attribute=‘val\*’                           | Search for files       |
+| attribute='val\*'                           | Search for files       |
 |                                             | containing a value for |
 |                                             | attribute that starts  |
 |                                             | with the prefix val    |
 +---------------------------------------------+------------------------+
-| attribute=*lue                              | Search for files       |
+| attribute='*lue'                            | Search for files       |
 |                                             | containing a value for |
 |                                             | attribute that ends    |
 |                                             | with the suffix lue    |
 +---------------------------------------------+------------------------+
-| attribute=*alu\*                            | Search for files       |
+| attribute='*alu\*'                          | Search for files       |
 |                                             | containing a value for |
 |                                             | attribute that has alu |
 |                                             | somewhere              |
 +---------------------------------------------+------------------------+
-| attribute=/.*alu.*/                         | Search for files       |
+| attribute='/.*alu.*/'                       | Search for files       |
 |                                             | containing a value for |
 |                                             | attribute that matches |
 |                                             | the given regular      |
 |                                             | expression (yes! you   |
 |                                             | might use any regular  |
 |                                             | expression to find     |
-|                                             | what you want. (See    |
-|                                             | appendix)              |
+|                                             | what you want.         |
 +---------------------------------------------+------------------------+
 | attribute=value1 attribute=value2           | Search for files       |
 |                                             | containing either      |
@@ -139,22 +138,21 @@ There are many more options for defining a value for a given key:
 | attribute_not_=value                        | Search for files NOT   |
 |                                             | containing value       |
 +---------------------------------------------+------------------------+
-| attribute_not_=value1                       | attribute_not_=value2  |
-|                                             | Search for files       |
-|                                             | containing NEITHER     |
-|                                             | value1 or value2       |
+| attribute_not_=value1 attribute_not_=value2 | Search for files       |
+|                                             | containing neither     |
+|                                             | value1 nor value2      |
 +---------------------------------------------+------------------------+
 
 .. note::
 
     When using \* remember that your shell might give it a
     different meaning (normally it will try to match files with that name)
-    to turn that off you can use backslash / in most shells
+    to turn that off you can use backslash \ (key=\*) or use quotes (key='*').
 
 You might as well want to now about possible values that an attribute
 can take after a certain search is done. For this you use the
-``--facet`` flag (facets are the possible attributes that partition the
-result set). For example to see the variables that are available in the
+``--facet`` flag (facets are the attributes used to search for and sub set
+the data). For example to see all facets that are available in the
 ``observations`` project:
 
 .. code:: bash
@@ -169,8 +167,7 @@ result set). For example to see the variables that are available in the
    print(res.stdout.decode())
 
 
-Instead of querying all facet to you get information on certain keys
-(facets) only:
+Instead of querying all facet to you get information on certain facets only:
 
 .. code:: bash
 
@@ -329,7 +326,8 @@ sub-command can do that:
 
 
 
-Let’s get the last 3 entries of the ``dummyplugin`` plugin history
+Let’s get the last 3 entries (default is 10 entries) of the ``dummyplugin``
+plugin history
 
 .. code:: bash
 
@@ -346,7 +344,7 @@ Let’s get the last 3 entries of the ``dummyplugin`` plugin history
 
 
 The entries are sorted by their ``id``. For example you can query the
-full configuration by given the id:
+full configuration by giving the id:
 
 .. code:: bash
 
@@ -362,8 +360,8 @@ full configuration by given the id:
 
 
 
-If you wanted to re-run the command of a certain past configuration you
-can use ``--return-command`` to get the command that was used:
+To re-run a command of a past configuration you
+can use the ``--return-command`` option to get the command that was used:
 
 .. code:: bash
 

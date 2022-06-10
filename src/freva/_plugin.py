@@ -63,7 +63,7 @@ def list_plugins() -> list[str]:
     Returns
     --------
     list[str]:
-            List of available freva plugins
+            List of available Freva plugins
 
     Example
     -------
@@ -82,7 +82,7 @@ def get_tools_list() -> str:
     Returns
     -------
     str:
-        String representation of all available plugis
+        String representation of all available plugins.
 
     :meta private:
     """
@@ -190,7 +190,7 @@ def run_plugin(
     batchmode:
         Create a Batch job and submit it to the scheduling system.
     unique_output:
-        Append a freva run id to every output folder
+        Append a Freva run id to every output folder
     pull_request:
         Issue a new pull request for the tool
     return_result:

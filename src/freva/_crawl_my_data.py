@@ -33,15 +33,14 @@ def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> tuple[Path, 
 def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") -> None:
     """Crawl user output data to reingest it into the solr server.
 
-    The data needs to be of a certain strucutre. Please follow the following
-    instructions: <URL HERE> on how to be able to ingest your data.
+    The data needs to be of a certain strucutre.
 
     Parameters
     ----------
     crawl_dirs:
         The data path(s) that needs to be crawled
     dtype:
-        The data type currently only files on the file system are supported.
+        The data type, currently only files on the file system are supported.
 
     Raises
     ------
