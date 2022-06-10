@@ -48,24 +48,19 @@ def test_freva_esgf_method(dummy_config):
     from freva import esgf
 
     result_to_be = [
-        "http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/\
-cmip5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18500101-18591231.nc",
-        "http://esgf.nci.org.au/thredds/fileServer/replica/CMIP5/output1/\
-MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_\
-historical_r1i1p1_18500101-18591231.nc",
-        "http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/\
-MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18500101-18591231.nc",
-        "http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/\
-cmip5/output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc",
-        "http://esgf.nci.org.au/thredds/fileServer/replica/CMIP5/\
-output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc",
+        "output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/"
+        "tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18500101-18591231.nc",
+        "output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/"
+        "tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc",
     ]
-    res = esgf(
-        project="CMIP5",
-        experiment="historical",
-        variable="tas",
-        institute="MPI-M",
-        time_frequency="day",
+    res = " ".join(
+        esgf(
+            project="CMIP5",
+            experiment="historical",
+            variable="tas",
+            institute="MPI-M",
+            time_frequency="day",
+        )
     )
     for f in result_to_be:
         assert f in res
@@ -89,13 +84,16 @@ output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/tas/tas_day_M
 def test_find_files(capsys, search_dict, dummy_config):
 
     result_to_be = [
-        "http://esgf1.dkrz.de/thredds/fileServer/cmip5/cmip5/output1/\
-MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
-        "http://aims3.llnl.gov/thredds/fileServer/cmip5_css02_data/\
-cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
-        "http://esgf-data1.ceda.ac.uk/thredds/fileServer/esg_dataroot/\
-cmip5/output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
+        "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/"
+        "tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
+        "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/"
+        "tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
+        "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/"
+        "tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
+        "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/"
+        "tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
     ]
+
     run_cli("esgf --show-facet=blabla")
     assert not capsys.readouterr().out
     run_cli(["esgf"] + [f"{key}={val}" for key, val in search_dict.items()])

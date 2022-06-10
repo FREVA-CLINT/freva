@@ -53,7 +53,7 @@ def test_parsing(dummy_env):
         Range,
         SelectField,
         SolrField,
-        Directory,
+        InputDirectory,
         Unknown,
         ValidationError,
     )
@@ -131,7 +131,7 @@ def test_parsing(dummy_env):
             [("bad value", "")],
         ),
         (SolrField(facet="variable"), [("tas", "tas"), ("pr", "pr")], []),
-        (Directory(), [("/home/user", "/home/user")], []),
+        (InputDirectory(), [("/home/user", "/home/user")], []),
         (Unknown(), [("test", "test")], []),
     ]
     for case_type, positive_cases, negative_cases in test_cases:
