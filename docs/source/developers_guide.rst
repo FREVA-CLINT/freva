@@ -5,8 +5,8 @@ Plugin Developer Guide
    :maxdepth: 3
 
 This documentation helps to get started with creating user defined ``Freva``
-plugins. This section provides a minimal example of a make your *existing* data
-analysis code a Freva plugin. Detailed usage information can be found in the
+plugins. This section provides a minimal example to turn your *existing* data
+analysis code into a Freva plugin. Detailed usage information can be found in the
 :ref:`APIReference`.
 
 A Minimal Example
@@ -22,15 +22,15 @@ Setting up your new plugin
 
 This section illustrates the steps that are necessary to turn existing
 data analysis code into a Freva plugin.
-Like above we assume that the code is stored in a specific location for example
-``~/workspace/tracking_tool``. Also let's assume that the analysis tool is written
+Like above, we assume that the code is stored in a specific location for example
+``~/workspace/tracking_tool``. Also, let's assume that the analysis tool is written
 in the *R* script language.
 
 Creating a new repository from a template
 ++++++++++++++++++++++++++++++++++++++++++
 
 
-We have created a `template repository <https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate/>`_ repository that helps
+We have created a `template repository <https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate/>`_ that helps
 you getting started with the Freva plugin development. Therefore we
 recommend you to use this repository. Use the following commands to turn this
 template repository into your new Freva plugin repository:
@@ -65,7 +65,7 @@ the remote host address on the locally created repository (the one where you did
 Installing dependencies
 +++++++++++++++++++++++
 
-Once the git repository has been set up and configured all dependencies the tool
+Once the git repository has been set up and configured, all dependencies the tool
 needs should be installed. Here we assume the analysis tool is based on a gnu-R
 stack. Therefore gnu-R and certain libraries have to be part of the plugin
 environment. This environment will be created using

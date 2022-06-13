@@ -1,13 +1,13 @@
 """Definition of the base class that is used to implement user plugins.
 
-The plugin api is the core of the interface connecting a user plugin code with
-the freva system infrastructure. This interface enables the users to
-conveniently set up, run, and keep track of applied plugins. The reference below
-gives an overview of how to set up user defined plugins. For this purpose we
-assume that a plugin core (without freva) already exists - for example as a
-command line interface tool (cli). Once such a cli has been set up a interface
-to freva must be defined. This reference will introduce the possible definition
-options below.
+The plugin API (Application Program Interface) is the central connection
+of a user plugin code and the Freva system infrastructure. The API
+enables the users to conveniently set up, run, and keep track of applied plugins.
+The reference below gives an overview of how to set up user defined plugins.
+For this purpose we assume that a plugin core (without freva) already exists
+- for example as a command line interface tool (cli). Once such a cli has been
+set up a interface to freva must be defined. This reference will introduce
+the possible definition options below.
 
 Here we assume that the above mentioned cli code is stored in a directory
 name ``/mnt/freva/plugins/new_plugin`` furthermore the actual cli code can be
@@ -65,14 +65,14 @@ ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
 class PluginAbstract(abc.ABC):
-    """Base class that is used as a template for all freva plugins.
-    Any api wrapper class defining freva plugins must inhert from this class.
+    """Base class that is used as a template for all Freva plugins.
+    Any api wrapper class defining freva plugins must inherit from this class.
 
     Parameters
     ----------
     user : evaluation_system.model.user.User, default None
-          Pre defined evalu system user object, if None given (default) a new
-          instance of a user object for the current user will be created.
+          Pre defined evaluation system user object, if None given (default)
+          a new instance of a user object for the current user will be created.
 
 
     The following attributes are mandatory and have to be set:
@@ -91,7 +91,7 @@ class PluginAbstract(abc.ABC):
     Minimal Example
     ---------------
 
-    To be able to configure and call this cli a freva wrapper api class will
+    In order to configure and call this cli, a freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
     A minimal configuration example would look as follows:
 
@@ -108,7 +108,7 @@ class PluginAbstract(abc.ABC):
                                     default=1,
                                     help=("This is an optional configurable "
                                           "int variable named number without "
-                                          default value and this description")
+                                          "default value and this description")
                                 ),
                                 parameters.Float(
                                     name="number",
@@ -131,7 +131,7 @@ class PluginAbstract(abc.ABC):
                 Parameters:
                 -----------
                 config_dict: dict
-                    Plugin configurtion stored in a dictionary
+                    Plugin configuration stored in a dictionary
                 '''
 
                 self.call(
@@ -153,7 +153,7 @@ class PluginAbstract(abc.ABC):
     For example assuming you have the source code in ``/mnt/freva/plugins``
     and the package holding the class implementing
     :class:`evaluation_system.api.plugin` is
-    ``my_plugion.plugin`` (i.e. its absolute file path is
+    ``my_plugin.plugin`` (i.e. its absolute file path is
     ``/mnt/freva/plugins/my_plugin/plugin_module.py``), you would tell the system
     how to find the plugin by issuing the following command (bash & co)::
 
@@ -175,29 +175,30 @@ class PluginAbstract(abc.ABC):
     """
 
     special_variables: Optional[dict[str, str]] = None
-    """This dictionary is used to resolve the *special variables* that are available
-to the plugins for defining some values of their parameters in a standardized manner.
-These are initialized per user and plugin. The variables are:
+    """This dictionary resolves the *special variables* that are available
 
-================== ============================================================
-Variables          Description
-================== ============================================================
-USER_BASE_DIR      Absolute path to the central directory for this user.
-USER_OUTPUT_DIR    Absolute path to where the output data for this user.
-USER_PLOTS_DIR     Absolute path to where the plots for this user is stored.
-USER_CACHE_DIR     Absolute path to to the cached data for this user.
-USER_UID           The users UID
-SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
-SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
-SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
-SYSTEM_RANDOM_UUID A random UUID string (e.g. 912cca21-6364-4f46-9b03-4263410c9899).
-================== ============================================================
+    to the plugins in a standardized manner. These variables are initialized per user and
+    plugin. They go as follow:
 
-A plugin/user might then use them to define a value in the following way::
+    ================== ==================================================================
+    Variables          Description
+    ================== ==================================================================
+    USER_BASE_DIR      Absolute path to the central directory for this user.
+    USER_OUTPUT_DIR    Absolute path to where the plugin outputs for this user are stored.
+    USER_PLOTS_DIR     Absolute path to where the plugin plots for this user are stored.
+    USER_CACHE_DIR     Absolute path to the cached data (temp data) for this user.
+    USER_UID           The users' User IDentifier
+    SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
+    SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
+    SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
+    SYSTEM_RANDOM_UUID A random Universal Unique Identifier (e.g. 912cca21-6364-4f46-9b03-4263410c9899).
+    ================== ==================================================================
 
-    output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
+    A plugin/user might then use them to define a value in the following way::
 
-"""
+        output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
+
+    """
 
     tool_developer: Optional[str] = None
     """Name of the developer who is responsible for the tool."""
@@ -292,7 +293,7 @@ A plugin/user might then use them to define a value in the following way::
     def run_tool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
         """Method executing the tool.
 
-        The method should be overwirtten by the custom plugin tool method.
+        The method should be overidden by the custom plugin tool method.
 
         Parameters
         ----------
@@ -547,7 +548,8 @@ A plugin/user might then use them to define a value in the following way::
     ) -> dict[str, dict[str, str]]:
         """Prepare output for files supposedly created.
 
-        This method checks the files exist and returns a dictionary with
+
+        This method checks if the files exist and returns a dictionary with
         information about them::
 
             { <absolute_path_to_file>: {

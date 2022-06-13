@@ -1,6 +1,6 @@
 """Definitions of parameters types to configure custom ``Freva`` plugins.
 
-Plugin parameters are defined in the plugin wrapper class please refer to
+Plugin parameters are defined in the plugin wrapper class. Please refer to
 :class:`evaluation_system.api.plugin` for more information on how to set up a
 plugin wrapper class.
 
@@ -46,7 +46,7 @@ class ParameterType(initOrder):
          The string used to separate multiple values for this
          parameter. In some cases (at the shell, web interface, etc) the user have
          always the option to provide multiple values by re-using the same parameter
-         name (e.g. @param1=a param1=b@ produces @{'param1': ['a', 'b']}@). But the
+         name (e.g. ``param1=a param1=b`` produces ``{'param1': ['a', 'b']}``). But the
          configuration file does not allow this at this time. Therefore is better
          to setup a separator, even though the user might not use it while giving
          input. It must not be a character, it can be any string
@@ -60,7 +60,7 @@ class ParameterType(initOrder):
      help: str, default: No help available
          The help string describing what this parameter is good for.
      print_format: str, default %s
-         String format utilised to display parameter values, e.g. @%.2f@ to
+         String format used to display parameter values, e.g. ``%.2f`` to
          display always 2 decimals for floats
      impact:
          The impact of the parameter to the output, possible values are
@@ -220,7 +220,7 @@ class ParameterType(initOrder):
         Returns
         -------
         ParameterBaseType:
-            Parsed paramter value
+            Parsed parameter value
         """
         if self.max_items > 1:
             if isinstance(value, str):
@@ -385,7 +385,7 @@ class ParameterDictionary(dict):
         return self._params[param_name]
 
     def parameters(self) -> list[ParameterType]:
-        """All parameters arameters stored in :class:`ParameterDictionary`"""
+        """All parameters stored in :class:`ParameterDictionary`"""
         return list(self._params.values())
 
     def _complete(
@@ -425,7 +425,7 @@ class ParameterDictionary(dict):
         Raises
         ------
         ValidationError:
-            If parameters are missing/duplcated and a `raise_exception` flag is
+            If parameters are missing/duplicated and a `raise_exception` flag is
             set to `True`.
         """
         missing: list[tuple[str, int]] = []
@@ -577,7 +577,7 @@ class ParameterDictionary(dict):
         Parameters
         ----------
         tool: str
-            Name of the tool this is to be synced
+            Name of the tool to be synced
         """
 
         for entry in self._params.values():
@@ -704,7 +704,7 @@ class File(String):
             __parameters__ = parameters.ParameterDictionary(
                 parameters.File(
                             name="input_file",
-                            file_extension="goejson",
+                            file_extension="geojson",
                             mandatory=False,
                             help="Select a geojson file.",
                             ),
@@ -772,7 +772,7 @@ class CacheDirectory(Directory):
         class MyPlugin(plugin.PluginAbstract):
             __parameters__ = parameters.ParameterDictionary(
                 parameters.CacheDirectory(
-                            name="chech_directory",
+                            name="cache_directory",
                             default="/scratch",
                             help="Set the path to a temporary directory",
                             ),
@@ -812,7 +812,7 @@ class Date(String):
 
 
 class Bool(ParameterType):
-    """A boolean paramter.
+    """A boolean parameter.
 
     Parameters
     ----------
@@ -850,7 +850,7 @@ class Bool(ParameterType):
         Parameters
         ----------
 
-        vlaue: Union[str, int, bool]
+        value: Union[str, int, bool]
             Input representation of the boolean such as
             true, false, t, y, f, ...
 
@@ -883,7 +883,7 @@ given parameter default."""
 
 class Range(String):
     """
-    A range parameter. I.e passing experiment lists (1970,1975,...,2000).
+    A range parameter, e.g passing experiment lists (1970,1975,...,2000).
 
     Parameters
     ---------
