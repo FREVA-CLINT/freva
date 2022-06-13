@@ -463,7 +463,7 @@ A plugin/user might then use them to define a value in the following way::
 
     @deprecated_method("PluginAbstract", "add_output_to_solr")
     def linkmydata(self, *args, **kwargs):  # pragma: no cover
-        """Depricated version of the :class:`add_output_to_solr` method.
+        """Deprecated version of the :class:`add_output_to_solr` method.
 
         :meta private:
         """
@@ -835,7 +835,7 @@ A plugin/user might then use them to define a value in the following way::
     def setupConfiguration(
         self, **kwargs
     ) -> dict[str, Union[str, int, float, bool, None]]:  # pragma: no cover
-        """Depricated version of the :class:`setup_configuration` method.
+        """Deprecated version of the :class:`setup_configuration` method.
 
         :meta private:
         """
@@ -933,7 +933,7 @@ A plugin/user might then use them to define a value in the following way::
 
     @deprecated_method("PluginAbstract", "read_configuration")
     def readConfiguration(self, **kwargs) -> dict[str, str]:  # pragma: no cover
-        """Depricated version of the :class:`read_configuration` method.
+        """Deprecated version of the :class:`read_configuration` method.
 
         :meta private:
         """
