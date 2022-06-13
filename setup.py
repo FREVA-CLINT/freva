@@ -106,6 +106,7 @@ setup(
     install_requires=[
         "appdirs",
         "GitPython",
+        "dask",
         "Django",
         "humanize",
         "h5netcdf",
