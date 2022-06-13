@@ -78,12 +78,13 @@ class DataReader:
         """Tranlatetion from seconds to cmor frequency."""
         return {
             315360000: "dec",
-            31536000: "yr",
+            31104000: "yr",
             2538000: "mon",
             1296000: "sem",
             84600: "day",
             21600: "6h",
-            3600: "3h",
+            10800: "3h",
+            3600: "hr",
             1: "subhr",
         }
 
@@ -138,8 +139,8 @@ class DataReader:
                 data_vars = map(str, dset.data_vars)
                 coords = map(str, dset.coords)
                 try:
-                    times = dset["time"].values
-                except KeyError:
+                    times = dset["time"].values[:]
+                except (KeyError, IndexError, TypeError):
                     times = []
         except Exception as error:
             raise ValueError(
@@ -152,7 +153,7 @@ class DataReader:
         else:
             time_str = "fx"
         if len(times) > 1:
-            dt = abs((times[-1] - times[0]).total_seconds())
+            dt = abs((times[1] - times[0]).total_seconds())
         else:
             dt = 0
         variables: list[str] = []
@@ -173,7 +174,7 @@ class DataReader:
                 continue
             variables.append(var)
         if len(variables) != 1:
-            raise ValueError("Only one data variable allowed found: {variables}")
+            raise ValueError(f"Only one data variable allowed found: {variables}")
         _data = self.defaults.copy()
         _data.setdefault("variable", variables[0])
         _data.setdefault("time_frequency", self.get_time_frequency(dt, time_freq))

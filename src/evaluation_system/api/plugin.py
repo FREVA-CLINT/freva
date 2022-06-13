@@ -325,7 +325,8 @@ A plugin/user might then use them to define a value in the following way::
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code, cmd,
+                    return_code,
+                    cmd,
                 )
             return res
 
@@ -336,7 +337,8 @@ A plugin/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(),
+                plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
@@ -459,7 +461,15 @@ A plugin/user might then use them to define a value in the following way::
         self.call(f'setsid nohup bash -c "kill -9 -- -{PID}"  </dev/null &>/dev/null &')
         raise SystemExit
 
-    def linkmydata(
+    @deprecated_method("PluginAbstract", "add_output_to_solr")
+    def linkmydata(self, *args, **kwargs):  # pragma: no cover
+        """Depricated version of the :class:`add_output_to_solr` method.
+
+        :meta private:
+        """
+        return self.add_output_to_solr(**args, **kwargs)
+
+    def add_output_to_solr(
         self,
         plugin_output: os.PathLike,
         *,
@@ -468,7 +478,7 @@ A plugin/user might then use them to define a value in the following way::
         ensemble: str = "r0i0p0",
         time_frequency: Optional[str] = None,
         variable: Optional[str] = None,
-    ) -> None:  # pragma: no cover
+    ) -> None:
         """Add Plugin output data to the solr database.
 
         This methods crawls the plugin output data directory and adds
@@ -538,6 +548,7 @@ A plugin/user might then use them to define a value in the following way::
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=509)
             shutil.copy(str(output_file), str(new_file))
         SolrCore.load_fs(root_dir / product_dir, drs_type=user_data.drs_specification)
+        return root_dir / product_dir
 
     @deprecated_method("PluginAbstract", "prepare_output")
     def prepareOutput(self, *args) -> dict[str, dict[str, str]]:
@@ -823,7 +834,7 @@ A plugin/user might then use them to define a value in the following way::
     @deprecated_method("PluginAbstract", "setup_configuration")
     def setupConfiguration(
         self, **kwargs
-    ) -> dict[str, Union[str, int, float, bool, None]]:
+    ) -> dict[str, Union[str, int, float, bool, None]]:  # pragma: no cover
         """Depricated version of the :class:`setup_configuration` method.
 
         :meta private:
@@ -921,7 +932,7 @@ A plugin/user might then use them to define a value in the following way::
         return result
 
     @deprecated_method("PluginAbstract", "read_configuration")
-    def readConfiguration(self, **kwargs) -> dict[str, str]:
+    def readConfiguration(self, **kwargs) -> dict[str, str]:  # pragma: no cover
         """Depricated version of the :class:`read_configuration` method.
 
         :meta private:
@@ -1189,7 +1200,10 @@ A plugin/user might then use them to define a value in the following way::
         return tool_param + cmd_param
 
     def call(
-        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
+        self,
+        cmd_string: Union[str, list[str]],
+        check: bool = True,
+        **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 
