@@ -25,7 +25,7 @@ lint:
     stage: test
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
     variables:
-      CONDA: "Miniconda3-latest"
+      #      CONDA: "Miniconda3-latest"
     tags:
       - docker, specific
 
@@ -48,7 +48,7 @@ test_38:
 test_39:
     << : *py_test
     variables:
-      PYTHON_VERSION: "3.8"
+      PYTHON_VERSION: "3.9"
     script:
         # Do the unit tests
       - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
@@ -75,7 +75,7 @@ docs:
     tags:
       - docker, specific
     variables:
-      CONDA: "Miniconda3-latest"
+      #      CONDA: "Miniconda3-latest"
       EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
     before_script:
       - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime
