@@ -29,11 +29,11 @@ import logging
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess as sub
 import sys
 import stat
 import shlex
+import shutil
 import socket
 import tempfile
 import traceback
@@ -47,6 +47,7 @@ from PyPDF2 import PdfReader
 
 from evaluation_system.model.user import User
 import evaluation_system.model.history.models as hist_model
+import evaluation_system.model.repository as repository
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.exceptions import (
@@ -58,6 +59,7 @@ from evaluation_system.misc.exceptions import (
 from evaluation_system.misc.utils import PIPE_OUT
 from evaluation_system.model.solr_core import SolrCore
 from .workload_manager import schedule_job
+from .user_data import DataReader
 
 __version__ = (1, 0, 0)
 
@@ -323,8 +325,7 @@ A plugin/user might then use them to define a value in the following way::
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code,
-                    cmd,
+                    return_code, cmd,
                 )
             return res
 
@@ -335,8 +336,7 @@ A plugin/user might then use them to define a value in the following way::
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(),
-                plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
@@ -459,80 +459,85 @@ A plugin/user might then use them to define a value in the following way::
         self.call(f'setsid nohup bash -c "kill -9 -- -{PID}"  </dev/null &>/dev/null &')
         raise SystemExit
 
-    def linkmydata(self, outputdir):  # pragma: no cover
+    def linkmydata(
+        self,
+        plugin_output: os.PathLike,
+        *,
+        model: str = "freva",
+        institute: Optional[str] = None,
+        ensemble: str = "r0i0p0",
+        time_frequency: Optional[str] = None,
+        variable: Optional[str] = None,
+    ) -> None:  # pragma: no cover
         """Add Plugin output data to the solr database.
 
         This methods crawls the plugin output data directory and adds
         any files that were found to the apache solr database.
 
+        ..note::
+            Use the ``ensemble`` and ``model``
+            arguments to specify the search facets that are going to be
+            added to the solr server for this pluign run. This will help
+            users better to better distinguish their plugin result search.
+
+        The following facets are fixed:
+
+        - project: ``<project_name>-plugin-ouput``
+        - product: ``user-<user_name>``
+        - experiment: ``<plugin_name>``
+        - dataset version: ``<history_id>``
+        - realm: ``plugins``
+        - cmor_table: ``<plugin_version>``
+
         Parameters
         ----------
-        outputdir: str,
-            cmor outputdir that where created by the tool.
+        plugin_output: os.PathLike
+            Plugin output directory or file created by the files. If a
+            directory is given all data files within the sub directories
+            will be collected for ingestion.
+        model: str, default: None
+            Default model facet. If None is given (default) the model name will
+            be set to ``freva``. The model argument can be used to distinguish
+            plugin results for different setups.
+        institute: str, default: None
+            Default institute facet. Use the argument to make plugin results
+            from various setups better distinguishable. If None given (default)
+            the institute will be set the the freva project name.
+        ensemble: str, default: r0i0p0
+            Default ensemble facet. Like for model the ensemble argument should
+            be used to distinguish plugins results with different setups.
+        time_frequency: str, default: None
+            Default time frequency facet. If None is given (default) the time
+            frequency will be retrieved from the output files.
+        variable: str, default: None
+            Default variable facet. If None is given (default) the variable
+            will be retrieved from the output files.
         """
-        user = self._user
-        workpath = os.path.join(user.getUserBaseDir(), "CMOR4LINK")
-        rootpath = config.get("project_data")
-        solr_in = config.get("solr.incoming")
-        solr_bk = config.get("solr.backup")
-        solr_ps = config.get("solr.processing")
-
-        # look for tool in tool
-        toolintool = re.compile(
-            r"^((?P<tool>[\w%]+)%(\d+|none)%(?P<project>[\w_]+)%(?P<product>[\w_]+)$)"
+        _, plugin_version = repository.get_version(self.class_basedir)
+        plugin_version = plugin_version or "no_plugin_version"
+        root_dir = DataReader.get_output_directory()
+        product_dir = "user-" + self._user.getName()
+        drs_config = dict(
+            project=root_dir.name,
+            product=product_dir,
+            model=model,
+            experiment=self.__class__.__name__.lower(),
+            realm="plugins",
+            institute=institute or root_dir.name,
+            ensemble=ensemble,
+            cmor_table=plugin_version,
+            version=f"v{self.rowid}",
         )
-        # Maybe os.walk for multiple projects or products
-        if len(os.listdir(outputdir)) == 1:
-            project = os.listdir(outputdir)[0]
-            # link?
-        if len(os.listdir(os.path.join(outputdir, project))) == 1:
-            product = os.listdir(os.path.join(outputdir, project))[0]
-        new_product = "%s.%s.%s.%s" % (
-            self.__class__.__name__.lower(),
-            self.rowid,
-            project,
-            product,
-        )
-        if re.match(toolintool, product):
-            nproduct = re.match(toolintool, product).group("product")
-            nproject = re.match(toolintool, product).group("project")
-            ntool = ".%s" % re.match(toolintool, product).group("tool")
-            new_product = "%s.%s.%s.%s.%s" % (
-                self.__class__.__name__.lower(),
-                ntool,
-                self.rowid,
-                nproject,
-                nproduct,
-            )
-
-        # Link section
-        link_path = os.path.join(rootpath, "user-" + user.getName())
-        if os.path.islink(link_path):
-            if not os.path.exists(link_path):
-                os.unlink(link_path)
-                os.symlink(workpath, os.path.join(link_path))
-                if not os.path.isdir(workpath):
-                    os.makedirs(workpath)
-            workpath = os.path.join(os.path.dirname(link_path), os.readlink(link_path))
-        else:
-            if not os.path.isdir(workpath):
-                os.makedirs(workpath)
-            os.symlink(workpath, link_path)
-        os.symlink(
-            os.path.join(outputdir, project, product),
-            os.path.join(workpath, new_product),
-        )
-
-        # Prepare for solr
-        crawl_dir = os.path.join(link_path, new_product)
-        now = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        output = os.path.join(solr_in, "solr_crawl_%s.csv.gz" % (now))
-
-        # Solr part with move orgy
-        SolrCore.dump_fs_to_file(crawl_dir, output)
-        shutil.move(os.path.join(solr_in, output), os.path.join(solr_ps, output))
-        # hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
-        shutil.move(os.path.join(solr_ps, output), os.path.join(solr_bk, output))
+        if time_frequency:
+            drs_config["time_frequency"] = time_frequency
+        if variable:
+            drs_config["variable"] = variable
+        user_data = DataReader(plugin_output, **drs_config)
+        for output_file in user_data:
+            new_file = user_data.file_name_from_metdata(output_file)
+            new_file.parent.mkdir(exist_ok=True, parents=True, mode=509)
+            shutil.copy(str(output_file), str(new_file))
+        SolrCore.load_fs(root_dir / product_dir, drs_type=user_data.drs_specification)
 
     @deprecated_method("PluginAbstract", "prepare_output")
     def prepareOutput(self, *args) -> dict[str, dict[str, str]]:
@@ -756,7 +761,7 @@ A plugin/user might then use them to define a value in the following way::
         return self.class_basedir
 
     @property
-    def class_basedir(self) -> Optional[str]:
+    def class_basedir(self) -> str:
         """Get absolute path to the module defining the plugin class."""
         module_path: Optional[str] = sys.modules[self.__module__].__file__
         subclass_file = os.path.abspath(module_path or "")
@@ -1184,10 +1189,7 @@ A plugin/user might then use them to define a value in the following way::
         return tool_param + cmd_param
 
     def call(
-        self,
-        cmd_string: Union[str, list[str]],
-        check: bool = True,
-        **kwargs,
+        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 

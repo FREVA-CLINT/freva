@@ -1,19 +1,10 @@
 [cmip5]
 root_dir = "/mnt/data4freva/model/global"
 parts_dir = [ "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
-]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "", "variable",
-]
-parts_versioned_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable",
 ]
 parts_file_name = [ "variable", "cmor_table", "model", "experiment", "ensemble", "time", ]
 parts_time = "start_time-end_time"
-data_type = "cmip5"
 
 [cmip5.defaults]
 project = "cmip5"
@@ -22,11 +13,7 @@ project = "cmip5"
 root_dir = ".docker/data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
-]
-parts_dataset = [
-    "projectproduct", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "", "variable",
+    "realm", "cmor_table", "ensemble", "version", "variable",
 ]
 parts_versioned_dataset = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
@@ -34,7 +21,6 @@ parts_versioned_dataset = [
 ]
 parts_file_name = ["variable", "experiment", "level", "version", "time"]
 parts_time = "start_time-end_time"
-data_type = "observations"
 
 [observations.defaults]
 project = "observations"
@@ -43,17 +29,12 @@ project = "observations"
 root_dir = "/mnt/data4freva"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "variable", "ensemble", "file_name",
-]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "variable",
+    "realm", "variable", "ensemble",
 ]
 parts_file_name = [
     "variable", "cmor_table", "project", "experiment", "ensemble", "time",
 ]
 parts_time = "start_time-end_time"
-data_type = "reanalysis"
 
 [reanalysis.defaults]
 project = "reanalysis"
@@ -63,17 +44,11 @@ product = "reanalysis"
 root_dir = "~/data4freva"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
-]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable",
+    "realm", "cmor_table", "ensemble", "version", "variable"
 ]
 parts_file_name = [
     "variable", "cmor_table", "model", "experiment", "ensemble", "time",
 ]
 parts_time = "start_time-end_time"
-data_type = "crawl_my_data"
 
 [crawl_my_data.defaults]
-

@@ -400,7 +400,7 @@ class SolrCore:
             )
         else:
             metadata["file_no_version"] = metadata["file"]
-        metadata["data_type"] = drs_file.drs_structure
+        metadata["dataset"] = drs_file.drs_structure
         return metadata
 
 

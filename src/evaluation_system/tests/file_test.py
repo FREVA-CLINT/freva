@@ -79,6 +79,15 @@ def test_from_json(dummy_solr):
     assert dummy_solr.drs.to_path() == t.to_path()
 
 
-def test_to_dataset(dummy_solr):
-    res = dummy_solr.drs.to_dataset_path(versioned=True)
-    assert "/".join(dummy_solr.files[0].split("/")[:-1]) in res
+def test_to_dataset(dummy_solr, dummy_crawl):
+    from evaluation_system.model.file import DRSFile
+
+    res = Path(dummy_solr.drs.to_dataset_path(versioned=True))
+    root_dir = Path(dummy_solr.drs.dict["root_dir"])
+    file = root_dir / Path(dummy_solr.files[0]).parent
+    assert file == res
+    drs = DRSFile.from_path(dummy_crawl[0])
+    res = Path(drs.to_dataset_path(versioned=False))
+    assert Path(dummy_crawl[0]).parent == res
+    with pytest.raises(ValueError):
+        drs.to_dataset_path(versioned=True)
