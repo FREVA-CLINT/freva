@@ -15,11 +15,7 @@ parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable",
 ]
-parts_versioned_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable",
-]
-parts_file_name = ["variable", "experiment", "level", "version", "time"]
+parts_file_name = ["variable", "time_frequency", "model", "experiment", "ensemble", "time"]
 parts_time = "start_time-end_time"
 
 [observations.defaults]
