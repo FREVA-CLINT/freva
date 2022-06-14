@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   db:
-    image: mariadb:latest
+    image: registry.gitlab.dkrz.de/freva/freva-service-config/freva-db:latest
     environment:
       MYSQL_USER: freva
       MYSQL_PASSWORD: T3st
@@ -9,11 +9,9 @@ services:
       MYSQL_ROOT_PASSWORD: test_password_please_ignore
     ports:
       - "3306:3306"
-    volumes:
-      - ./compose/db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
   solr:
-    build: compose/solr
+    image: registry.gitlab.dkrz.de/freva/freva-service-config/freva-solr:latest
+    environment:
+      CORE: files
     ports:
       - "8983:8983"
-    volumes:
-      - ./compose/solr/init.sh:/docker-entrypoint-initdb.d/init.sh
