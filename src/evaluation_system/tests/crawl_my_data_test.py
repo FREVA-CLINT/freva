@@ -181,7 +181,7 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files):
     from evaluation_system.model.solr import SolrFindFiles
 
     input_files = list(valid_data_files.rglob("*.nc"))
-    dummy_plugin.add_output_to_solr(valid_data_files)
+    dummy_plugin.add_output_to_databrowser(valid_data_files)
     assert len(list(SolrFindFiles.search(latest_version=False))) == len(
         input_files
     ) + len(dummy_crawl)

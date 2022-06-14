@@ -467,9 +467,9 @@ A plugin/user might then use them to define a value in the following way::
 
         :meta private:
         """
-        return self.add_output_to_solr(**args, **kwargs)
+        return self.add_output_to_databrowser(**args, **kwargs)
 
-    def add_output_to_solr(
+    def add_output_to_databrowser(
         self,
         plugin_output: os.PathLike,
         *,
