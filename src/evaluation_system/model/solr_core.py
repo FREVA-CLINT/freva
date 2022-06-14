@@ -254,7 +254,7 @@ class SolrCore:
                 continue
             timestamp = file.stat().st_mtime
             try:
-                drs_file = DRSFile.from_path(str(file), activity=drs_type)
+                drs_file = DRSFile.from_path(file, activity=drs_type)
             except (ValueError, FileNotFoundError) as e:
                 if abort_on_errors:
                     raise e
@@ -400,7 +400,7 @@ class SolrCore:
             )
         else:
             metadata["file_no_version"] = metadata["file"]
-        metadata["data_type"] = drs_file.drs_structure
+        metadata["dataset"] = drs_file.drs_structure
         return metadata
 
 

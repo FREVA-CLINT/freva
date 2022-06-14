@@ -5,9 +5,10 @@ import sys
 from typing import Any, Optional
 
 
-from .utils import BaseParser
+from evaluation_system import __version__
 from evaluation_system.misc.exceptions import ValidationError
 import freva
+from .utils import BaseParser
 
 CLI = "CrawlDataCli"
 
@@ -72,6 +73,12 @@ class CrawlDataCli(BaseParser):
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = CrawlDataCli("freva")
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = cli.parse_args(argv or sys.argv[1:])
     try:
         cli.run_cmd(args, **cli.kwargs)

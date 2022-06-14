@@ -83,7 +83,7 @@ def schedule_job(
     """
     job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
-    ncpus: int = cast(int, config.get("cpus", 4))
+    ncpus = int(cast(str, config.get("cpus", "4")))
     if source.exists():
         env_extra = [f"\\. {source}"]
     else:

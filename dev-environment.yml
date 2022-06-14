@@ -12,6 +12,7 @@ dependencies:
   - git
   - gitpython
   - dask
+  - h5netcdf
   - ipython
   - imagemagick
   - libnetcdf

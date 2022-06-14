@@ -32,8 +32,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import importlib
+from evaluation_system import __version__
 
-__version__ = "2021.5"
 __all__ = [
     "crawl_my_data",
     "databrowser",

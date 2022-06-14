@@ -3,8 +3,11 @@
 #
 export PATH := $(FREVA_ENV):$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
 export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
+export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy
+export EVALUATION_SYSTEM_CONFIG_FILE := $(PWD)/compose/local-eval-system.conf
 all: install test
 
+.PHONY: docs
 install:
 	python3 -m pip install .[test]
 
@@ -17,8 +20,24 @@ test_coverage:
 	    --alluredir=test_results  --junitxml=report.xml \
 		$(PWD)/src/evaluation_system/tests
 
+docs:
+	make -C docs clean
+	make -C docs html
+
+prepdocs:
+	rm -rf /tmp/animator
+	python3 -m pip install -e .[docs]
+	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
+	python3 -m ipykernel install --user --name freva
+	make dummy-data
+	freva plugin animator project=observations variable=pr; echo 0
+
+
+
+
+
 lint:
-	mypy --install-types
+	mypy --install-types --non-interactive
 	black --check -t py39 src
 
 dummy-data:

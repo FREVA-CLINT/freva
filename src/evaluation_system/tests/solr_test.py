@@ -32,7 +32,7 @@ def test_facet_search(dummy_solr):
         "cmor_table": ["aero", 1, "amon", 2],
         "product": ["output1", 3],
         "realm": ["aerosol", 1, "atmos", 2],
-        "data_type": ["cmip5", 3],
+        "dataset": ["cmip5", 3],
         "institute": ["mohc", 3],
         "project": ["cmip5", 3],
         "time_frequency": ["mon", 3],

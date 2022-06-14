@@ -10,7 +10,7 @@ from evaluation_system.api.parameters import (
     Integer,
     Float,
     String,
-    Directory,
+    InputDirectory,
 )
 
 from evaluation_system.model.user import User
@@ -35,14 +35,14 @@ class DummyPlugin(PluginAbstract):
         ),
         String(name="something", default="test"),
         Float(name="other", default=1.4),
-        Directory(name="input", help="An input file"),
+        InputDirectory(name="input", help="An input file"),
         String(name="variable", default="tas", help="An input variable"),
     )
     _runs = []
     _template = "${number} - $something - $other"
     tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}
 
-    def runTool(self, config_dict=None):
+    def run_tool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)

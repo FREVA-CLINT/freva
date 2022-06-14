@@ -9,8 +9,7 @@ import sys
 import string
 import tempfile
 import abc
-import textwrap
-from typing import Any, Iterator, ClassVar, IO, Optional, Union
+from typing import Any, Iterator, ClassVar, Optional, Union
 from evaluation_system.misc import logger
 
 
@@ -203,14 +202,8 @@ class Job(abc.ABC):
     MoabCluster
     """
 
-    _script_template = textwrap.dedent(
-        """
-        %(shebang)s
-
-        %(job_header)s
-        %(env_header)s
-        %(worker_command)s
-    """
+    _script_template = (
+        "%(shebang)s\n\n%(job_header)s\n%(env_header)s\n\n%(worker_command)s"
     )
 
     # Following class attributes should be overridden by extending classes.

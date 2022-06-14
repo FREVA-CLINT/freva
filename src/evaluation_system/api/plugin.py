@@ -1,113 +1,165 @@
-"""
-This module defines the basic objects for implementing a plug-in.
+"""Definition of the base class that is used to implement user plugins.
+
+The plugin API (Application Program Interface) is the central connection
+of a user plugin code and the Freva system infrastructure. The API
+enables the users to conveniently set up, run, and keep track of applied plugins.
+The reference below gives an overview of how to set up user defined plugins.
+For this purpose we assume that a plugin core (without freva) already exists
+- for example as a command line interface tool (cli). Once such a cli has been
+set up a interface to freva must be defined. This reference will introduce
+the possible definition options below.
+
+Here we assume that the above mentioned cli code is stored in a directory
+name ``/mnt/freva/plugins/new_plugin`` furthermore the actual cli code can be
+excecuted via:
+    .. code-block:: console
+
+        cli/calculate -c 5 -n 6.4 --overwrite --name=Test
+
+With help of this API a freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
+
 """
 from __future__ import annotations
 import abc
 from configparser import ConfigParser, ExtendedInterpolation
 from contextlib import contextmanager
 from datetime import datetime
+from functools import partial
 import logging
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess as sub
 import sys
 import stat
 import shlex
+import shutil
 import socket
 import tempfile
 import traceback
 import textwrap
 from time import time
 from typing import cast, Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
+from uuid import uuid4
 
-from PyPDF2 import PdfFileReader
+
+from PyPDF2 import PdfReader
 
 from evaluation_system.model.user import User
 import evaluation_system.model.history.models as hist_model
+import evaluation_system.model.repository as repository
 from evaluation_system.misc.utils import TemplateDict
 from evaluation_system.misc import config, logger as log
+from evaluation_system.misc.exceptions import (
+    ConfigurationException,
+    deprecated_method,
+    hide_exception,
+)
+
 from evaluation_system.misc.utils import PIPE_OUT
 from evaluation_system.model.solr_core import SolrCore
 from .workload_manager import schedule_job
+from .user_data import DataReader
 
 __version__ = (1, 0, 0)
 
 ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 
-class ConfigurationError(Exception):
-    """Signals the configuration failed somehow."""
+class PluginAbstract(abc.ABC):
+    """Base class that is used as a template for all Freva plugins.
+    Any api wrapper class defining freva plugins must inherit from this class.
 
-    pass
+    Parameters
+    ----------
+    user : evaluation_system.model.user.User, default None
+          Pre defined evaluation system user object, if None given (default)
+          a new instance of a user object for the current user will be created.
 
 
-# TODO: I don't really see why we would need a metaclass here. Simple base.
-class PluginAbstract(metaclass=abc.ABCMeta):
-    """This is the base class for all plug-ins.
+    The following attributes are mandatory and have to be set:
+        * :class:`__short_description__`
+        * :class:`__version__`
+        * :class:`__parameters__`
+        * :class:`run_tool`
 
-    It is the only class that needs to be inherited from when implementing a plug-in.
-    From it, you'll need to implement the few attributes and/or methods marked
-    as abstract with the decorator ``@abc.abstractproperty`` or
-    ``@abc.abstractmethod``. If you don't you'll get a message informing you
-    which methods and or variables need to be implemented. Refer to their
-    documentation to know what they should do.
+    Whereas the following properties can be optionally set:
+        * :class:`__long_description__`
+        * :class:`__tags__`
+        * :class:`__category__`
 
-    As usual, you may overwrite all methods and properties defined in here,
-    but you'll be breaking the contract between the methods so you'll have to
-    make sure it doesn't break anything else. Please write some tests
-    for your own class that checks it is working as expected. The best
-    practice is to use what is provided as is and only
-    implement what is required (and more, if you need, just don't overwrite
-    any methods/variable if you don't need to)
 
-    This very short example shows a complete plug-in. Although it does nothing
-    it already show the most important part,
-    the :class:`evaluation_system.api.parameters.ParameterDictionary` used
-    for defining meta-data on the parameters::
 
-    Example:
-    --------
+    Minimal Example
+    ---------------
+
+    In order to configure and call this cli, a freva wrapper api class will
+    have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
+    A minimal configuration example would look as follows:
+
+    .. code-block:: python
+
         from evaluation_system.api import plugin, parameters
-
         class MyPlugin(plugin.PluginAbstract):
-            __short_description__ = "MyPlugin short description"
-            __version__ = (0,0,1)
+            __short_description__ = "Short plugin description"
+            __long_description__ = "Optional longer description"
+            __version__ = (2022, 1, 1)
             __parameters__ =  parameters.ParameterDictionary(
                                 parameters.Integer(
-                                    name="number",
+                                    name="count",
+                                    default=1,
                                     help=("This is an optional configurable "
                                           "int variable named number without "
-                                          default value and this description")
+                                          "default value and this description")
                                 ),
                                 parameters.Float(
-                                    name="the_number",
+                                    name="number",
                                     mandatory=True,
                                     help="Required float value without default"
                                 ),
                                 parameters.Bool(
-                                    name="really",
+                                    name="overwrite",
                                     default=False,
-                                    help=("a boolean parameter named really "
+                                    help=("a boolean parameter "
                                           "with default value of false")
                                 ),
                                 parameters.String(name='str')
                               )
+            def run_tool(
+                self, config_dict: dict[str, str|int|bool]
+            ) -> None:
+                '''Definition of the tool the is running the cli.
 
-            def runTool(self, config_dict=None):
-                print("MyPlugin", config_dict)
+                Parameters:
+                -----------
+                config_dict: dict
+                    Plugin configuration stored in a dictionary
+                '''
 
-    If you need to test it use the ``EVALUATION_SYSTEM_PLUGINS`` environmental
+                self.call(
+                    (
+                      f"cli/calculate -c {config_dict['count']} "
+                      f"-n {config_dict['number']} --name={config_dict['name']}
+                    )
+                )
+                print("MyPlugin was run with", config_dict)
+
+    .. note::
+        The actual configuration is defined by the :class:`__parameters__`
+        property, which is of type
+        :class:`evaluation_system.api.parameters.ParameterDictionary`.
+
+
+    If you need to test it use the ``EVALUATION_SYSTEM_PLUGINS`` environment
     variable to point to the source directory and package.
-    For example assuming you have th source code in ``/path/to/source`` and
-    the package holding the class implementing
+    For example assuming you have the source code in ``/mnt/freva/plugins``
+    and the package holding the class implementing
     :class:`evaluation_system.api.plugin` is
-    ``package.plugin_module`` (i.e. its absolute file path is
-    ``/path/to/source/package/plugin_module.py``), you would tell the system
-    how to find the plug-in by issuing the following command (bash & co)::
+    ``my_plugin.plugin`` (i.e. its absolute file path is
+    ``/mnt/freva/plugins/my_plugin/plugin_module.py``), you would tell the system
+    how to find the plugin by issuing the following command (bash & co)::
 
-        export EVALUATION_SYSTEM_PLUGINS=/path/to/source,package.plugin_module
+        export EVALUATION_SYSTEM_PLUGINS=/mnt/freva/plugins/my_plugin,plugin
 
     Use a colon to separate multiple items::
 
@@ -125,62 +177,58 @@ class PluginAbstract(metaclass=abc.ABCMeta):
     """
 
     special_variables: Optional[dict[str, str]] = None
-    """This dictionary is used to resolve the *special variables* that are available
-to the plug-ins for defining some values of their parameters in a standardize manner.
-These are initialized per user and plug-in. The variables are:
+    """This dictionary resolves the *special variables* that are available
 
-================== ============================================================
-Variables          Description
-================== ============================================================
-USER_BASE_DIR      Absolute path to the central directory for this user.
-USER_OUTPUT_DIR    Absolute path to where the output data for this user.
-USER_PLOTS_DIR     Absolute path to where the plots for this user is stored.
-USER_CACHE_DIR     Absolute path to to the cached data for this user.
-USER_UID           The users UID
-SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
-SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
-SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
-SYSTEM_RANDOM_UUID A random UUID string (e.g. 912cca21-6364-4f46-9b03-4263410c9899).
-================== ============================================================
+    to the plugins in a standardized manner. These variables are initialized per user and
+    plugin. They go as follow:
 
-A plug-in/user might then use them to define a value in the following way::
+    ================== ==================================================================
+    Variables          Description
+    ================== ==================================================================
+    USER_BASE_DIR      Absolute path to the central directory for this user.
+    USER_OUTPUT_DIR    Absolute path to where the plugin outputs for this user are stored.
+    USER_PLOTS_DIR     Absolute path to where the plugin plots for this user are stored.
+    USER_CACHE_DIR     Absolute path to the cached data (temp data) for this user.
+    USER_UID           The users' User IDentifier
+    SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
+    SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
+    SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
+    SYSTEM_RANDOM_UUID A random Universal Unique Identifier (e.g. 912cca21-6364-4f46-9b03-4263410c9899).
+    ================== ==================================================================
 
-    output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
+    A plugin/user might then use them to define a value in the following way::
 
-"""
+        output_file='$USER_OUTPUT_DIR/myfile_${SYSTEM_DATETIME}blah.nc'
+
+    """
 
     tool_developer: Optional[str] = None
+    """Name of the developer who is responsible for the tool."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user: Optional[User] = None, **kwargs) -> None:
         """Plugin main constructor.
 
         It is designed to catch all calls. It accepts a ``user``
         argument containing an :class:`evaluation_system.model.user.User`
-        representing the user for which this plug-in will be created.
+        representing the user for which this plugin will be created.
         It is used here for setting up the user-defined configuration but
-        the implementing plug-in will also have access to it. If no user
+        the implementing plugin will also have access to it. If no user
         is provided an object representing the current user, i.e. the user
         that started this program, is created.
         """
-        if "user" in kwargs:
-            self._user = kwargs.pop("user")
-        else:
-            self._user = User()
+        self._user = user or User()
         # id of row in history table I think
-        # this was being spontaneously created when running the plugin which works
-        # for now because it creates a new instance on every run
+        # this was being spontaneously created when running the plugin which
+        # works for now because it creates a new instance on every run
         self.rowid = 0
         self._plugin_out: Optional[Path] = None
 
-        # this construct fixes some values but allow others to be computed on demand
-        # it holds the special variables that are accessible to both users
+        # this construct fixes some values but allow others to be computed on
+        # demand it holds the special variables that are accessible to both users
         # and developers
         # self._special_vars = SpecialVariables(self.__class__.__name__, self._user)
 
-        from functools import partial
-        from uuid import uuid4
-
-        plugin_name, user = self.__class__.__name__, self._user
+        plugin_name, user = self.__class__.__name__.lower(), self._user
         self._special_variables = TemplateDict(
             USER_BASE_DIR=user.getUserBaseDir,
             USER_CACHE_DIR=partial(
@@ -199,74 +247,93 @@ A plug-in/user might then use them to define a value in the following way::
             SYSTEM_RANDOM_UUID=lambda: str(uuid4()),
         )
 
-    @abc.abstractproperty
-    def __version__(self):
+    @property
+    @abc.abstractmethod
+    def __version__(self) -> tuple[int, int, int]:
         """3-value tuple representing the plugin version.
 
-        Example:
-        --------
-            verion = (1, 0, 3)
+        Example
+        -------
+
+        >>>    verion = (1, 0, 3)
         """
         raise NotImplementedError("This attribute must be implemented")
 
     @property
-    def __long_description__(self):
-        """Long description of the plugion."""
+    def __long_description__(self) -> str:
+        """Long description of the plugin.
+
+        This property is not mandatory"""
         return ""
 
-    @abc.abstractproperty
-    def __short_description__(self):
-        """A short description of this plug-in.
+    @property
+    @abc.abstractmethod
+    def __short_description__(self) -> str:
+        """Mandatory short description of this plugin.
 
         It will be displayed to the user in the help and
-        when listing all plug-ins.
+        when listing all plugins.
         """
         raise NotImplementedError("This attribute must be implemented")
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def __parameters__(self):
-        """The the definitions of all known configurable parameters."""
+        """Mandatory definitions of all known configurable parameters."""
         raise NotImplementedError("This attribute must be implemented")
 
     @property
     def __category__(self) -> str:
+        """Optional category this plugin belongs to."""
         return ""
 
     @property
     def __tags__(self) -> list[str]:
+        """Optional tags, that are the plugin can be described with."""
         return [""]
 
-    @abc.abstractmethod
-    def runTool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
+    def run_tool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
         """Method executing the tool.
 
-        Starts the tool with the given configuration.
+        The method should be overidden by the custom plugin tool method.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config_dict:
             A dict with the current configuration (param name, value)
             which the tool will be run with
 
-        Returns:
-        --------
-        see and use self.prepareOutput([<list_of_created_files>])
+        Returns
+        -------
+        list[str]:
+            Return values of :class:`prepare_output([<list_of_created_files>])` method
         """
         raise NotImplementedError("This method must be implemented")
 
-    @staticmethod
-    def _execute(cmd):
-        res = sub.Popen(cmd, stdout=sub.PIPE, universal_newlines=True)
-        for stdout_line in iter(res.stdout.readline, ""):
-            yield stdout_line
-        res.stdout.close()
-        return_code = res.wait()
-        if return_code:
-            raise sub.CalledProcessError(return_code, cmd)
+    def _execute(self, cmd: list[str], check=True, **kwargs):
+        # Do not allow calling shell=True
+        kwargs["shell"] = False
+        kwargs["stdout"] = sub.PIPE
+        kwargs["stdin"] = None
+        kwargs["universal_newlines"] = True
+        kwargs.setdefault("stderr", sub.STDOUT)
+        with sub.Popen(cmd, **kwargs) as res:
+            stdout = cast(IO[Any], res.stdout)
+            for line in iter(stdout.readline, ""):
+                print(line, end="", flush=True)
+            return_code = res.wait()
+            if return_code and check:
+                log.error("An error occured calling %s", cmd)
+                log.error("Check also %s", self.plugin_output_file)
+                raise sub.CalledProcessError(
+                    return_code,
+                    cmd,
+                )
+            return res
 
     @property
     def plugin_output_file(self) -> Path:
-        """Define a plugin output file."""
+        """Filename where stdout is written to."""
         if self._plugin_out is None:
             pid = os.getpid()
             plugin_name = self.__class__.__name__
@@ -279,25 +346,33 @@ A plug-in/user might then use them to define a value in the following way::
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):
         """Set an interactive job as running."""
+        host = socket.getfqdn()
         try:
-            h = hist_model.History.objects.get(id=rowid)
-            h.slurm_output = str(self.plugin_output_file)
-            h.host = socket.gethostbyname(socket.gethostname())
-            h.status = hist_model.History.processStatus.running
-            h.save()
+            hist = hist_model.History.objects.get(id=rowid)
+            hist.slurm_output = str(self.plugin_output_file)
+            hist.host = host.partition(".")[0]
+            hist.status = hist_model.History.processStatus.running
+            hist.save()
         except hist_model.History.DoesNotExist:
             pass
 
     @contextmanager
-    def set_environment(
+    def _set_environment(
         self, rowid: Optional[int], is_interactive_job: bool
     ) -> Iterator[None]:
         """Set the environement."""
         env_path = os.environ["PATH"]
         stdout = [sys.stdout]
         stderr = [sys.stderr]
+        log_stream_handle: Optional[logging.StreamHandler] = None
         try:
-            self.plugin_output_file.parent.mkdir(exist_ok=True, parents=True)
+            self.plugin_output_file.touch(mode=0o775)
+        except FileNotFoundError:
+            self.plugin_output_file.parent.mkdir(parents=True)
+            # TODO: the mode argument of mkdir didn't seem to work
+            self.plugin_output_file.parent.chmod(0o775)
+            self.plugin_output_file.touch(mode=0o775)
+        try:
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
             if is_interactive_job is True:
                 f = self.plugin_output_file.open("w")
@@ -307,22 +382,29 @@ A plug-in/user might then use them to define a value in the following way::
             with PIPE_OUT(*stdout) as p_sto, PIPE_OUT(*stderr) as p_ste:
                 sys.stdout = p_sto
                 sys.stderr = p_ste
+                log_stream_handle = logging.StreamHandler(p_ste)
+                log.addHandler(log_stream_handle)
                 yield
-        except Exception as e:
+        except Exception as error:
             if is_interactive_job is True:
                 traceback.print_exc(file=f)
-            raise e
+            raise error
         finally:
             os.environ["PATH"] = env_path
             sys.stdout = stdout[0]
             sys.stderr = stderr[0]
             if is_interactive_job is True:
+                if log_stream_handle is not None:
+                    log.removeHandler(log_stream_handle)
                 f.flush()
                 f.close()
 
     @property
     def conda_path(self) -> str:
-        """Add the conda env path of the plugin to the environment."""
+        """Add the conda env path of the plugin to the environment.i
+
+        :meta private:
+        """
 
         from evaluation_system.api import plugin_manager as pm
 
@@ -333,29 +415,37 @@ A plug-in/user might then use them to define a value in the following way::
             return ""
         return f"{plugin_path.parent / 'plugin_env' / 'bin'}"
 
-    def _runTool(
+    def _run_tool(
         self,
         config_dict: Optional[ConfigDictType] = None,
         unique_output: bool = True,
-        is_interactive_job: bool = True,
+        out_file: Optional[Path] = None,
         rowid: Optional[int] = None,
     ) -> Optional[Any]:
-        config_dict = self.append_unique_id(config_dict, unique_output)
+        config_dict = self._append_unique_id(config_dict, unique_output)
+        if out_file is None:
+            is_interactive_job = True
+        else:
+            is_interactive_job = False
+            self._plugin_out = out_file
         for key in config.exclude:
             config_dict.pop(key, "")
-        with self.set_environment(rowid, is_interactive_job):
-            result = self.runTool(config_dict=config_dict)
+        with self._set_environment(rowid, is_interactive_job):
+            try:
+                result = self.run_tool(config_dict=config_dict)
+            except NotImplementedError:
+                result = deprecated_method("PluginAbstract", "run_tool")(self.runTool)(config_dict=config_dict)  # type: ignore
             return result
 
-    def append_unique_id(
+    def _append_unique_id(
         self, config_dict: Optional[ConfigDictType], unique_output: bool
     ) -> ConfigDictType:
-        from evaluation_system.api.parameters import Directory, CacheDirectory
+        from evaluation_system.api.parameters import InputDirectory, CacheDirectory
 
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if isinstance(tmp_param, Directory):
+            if isinstance(tmp_param, InputDirectory):
                 if isinstance(tmp_param, CacheDirectory) or unique_output:
                     if key in config_dict.keys() and config_dict[key] is not None:
                         config_dict[key] = os.path.join(
@@ -364,87 +454,118 @@ A plug-in/user might then use them to define a value in the following way::
         return config_dict
 
     def quitnkill(self):
-        """If error occurs quit python and kill child processes by group ID"""
+        """If error occurs quit python and kill child processes by group ID
+
+        :meta private:
+        """
         PID = os.getpid()
         self.call(f'setsid nohup bash -c "kill -9 -- -{PID}"  </dev/null &>/dev/null &')
         raise SystemExit
 
-    def linkmydata(self, outputdir=None):  # pragma: no cover
-        """Link the CMOR Data Structure of any output created by a tool
-        crawl the directory and ingest the directory with solr::
-         :param outputdir: cmor outputdir that where created by the tool.
-         :return: nothing
+    @deprecated_method("PluginAbstract", "add_output_to_solr")
+    def linkmydata(self, *args, **kwargs):  # pragma: no cover
+        """Deprecated version of the :class:`add_output_to_solr` method.
+
+        :meta private:
         """
-        user = self._user
-        workpath = os.path.join(user.getUserBaseDir(), "CMOR4LINK")
-        rootpath = config.get("project_data")
-        solr_in = config.get("solr.incoming")
-        solr_bk = config.get("solr.backup")
-        solr_ps = config.get("solr.processing")
+        return self.add_output_to_databrowser(**args, **kwargs)
 
-        # look for tool in tool
-        toolintool = re.compile(
-            r"^((?P<tool>[\w%]+)%(\d+|none)%(?P<project>[\w_]+)%(?P<product>[\w_]+)$)"
+    def add_output_to_databrowser(
+        self,
+        plugin_output: os.PathLike,
+        *,
+        model: str = "freva",
+        institute: Optional[str] = None,
+        ensemble: str = "r0i0p0",
+        time_frequency: Optional[str] = None,
+        variable: Optional[str] = None,
+    ) -> None:
+        """Add Plugin output data to the solr database.
+
+        This methods crawls the plugin output data directory and adds
+        any files that were found to the apache solr database.
+
+        ..note::
+            Use the ``ensemble`` and ``model``
+            arguments to specify the search facets that are going to be
+            added to the solr server for this pluign run. This will help
+            users better to better distinguish their plugin result search.
+
+        The following facets are fixed:
+
+        - project: ``<project_name>-plugin-ouput``
+        - product: ``user-<user_name>``
+        - experiment: ``<plugin_name>``
+        - dataset version: ``<history_id>``
+        - realm: ``plugins``
+        - cmor_table: ``<plugin_version>``
+
+        Parameters
+        ----------
+        plugin_output: os.PathLike
+            Plugin output directory or file created by the files. If a
+            directory is given all data files within the sub directories
+            will be collected for ingestion.
+        model: str, default: None
+            Default model facet. If None is given (default) the model name will
+            be set to ``freva``. The model argument can be used to distinguish
+            plugin results for different setups.
+        institute: str, default: None
+            Default institute facet. Use the argument to make plugin results
+            from various setups better distinguishable. If None given (default)
+            the institute will be set the the freva project name.
+        ensemble: str, default: r0i0p0
+            Default ensemble facet. Like for model the ensemble argument should
+            be used to distinguish plugins results with different setups.
+        time_frequency: str, default: None
+            Default time frequency facet. If None is given (default) the time
+            frequency will be retrieved from the output files.
+        variable: str, default: None
+            Default variable facet. If None is given (default) the variable
+            will be retrieved from the output files.
+        """
+        _, plugin_version = repository.get_version(self.class_basedir)
+        plugin_version = plugin_version or "no_plugin_version"
+        root_dir = DataReader.get_output_directory()
+        product_dir = "user-" + self._user.getName()
+        drs_config = dict(
+            project=root_dir.name,
+            product=product_dir,
+            model=model,
+            experiment=self.__class__.__name__.lower(),
+            realm="plugins",
+            institute=institute or root_dir.name,
+            ensemble=ensemble,
+            cmor_table=plugin_version,
+            version=f"v{self.rowid}",
         )
-        # Maybe os.walk for multiple projects or products
-        if len(os.listdir(outputdir)) == 1:
-            project = os.listdir(outputdir)[0]
-            # link?
-        if len(os.listdir(os.path.join(outputdir, project))) == 1:
-            product = os.listdir(os.path.join(outputdir, project))[0]
-        new_product = "%s.%s.%s.%s" % (
-            self.__class__.__name__.lower(),
-            self.rowid,
-            project,
-            product,
-        )
-        if re.match(toolintool, product):
-            nproduct = re.match(toolintool, product).group("product")
-            nproject = re.match(toolintool, product).group("project")
-            ntool = ".%s" % re.match(toolintool, product).group("tool")
-            new_product = "%s.%s.%s.%s.%s" % (
-                self.__class__.__name__.lower(),
-                ntool,
-                self.rowid,
-                nproject,
-                nproduct,
-            )
+        if time_frequency:
+            drs_config["time_frequency"] = time_frequency
+        if variable:
+            drs_config["variable"] = variable
+        user_data = DataReader(plugin_output, **drs_config)
+        for output_file in user_data:
+            new_file = user_data.file_name_from_metdata(output_file)
+            new_file.parent.mkdir(exist_ok=True, parents=True, mode=509)
+            shutil.copy(str(output_file), str(new_file))
+        SolrCore.load_fs(root_dir / product_dir, drs_type=user_data.drs_specification)
+        return root_dir / product_dir
 
-        # Link section
-        link_path = os.path.join(rootpath, "user-" + user.getName())
-        if os.path.islink(link_path):
-            if not os.path.exists(link_path):
-                os.unlink(link_path)
-                os.symlink(workpath, os.path.join(link_path))
-                if not os.path.isdir(workpath):
-                    os.makedirs(workpath)
-            workpath = os.path.join(os.path.dirname(link_path), os.readlink(link_path))
-        else:
-            if not os.path.isdir(workpath):
-                os.makedirs(workpath)
-            os.symlink(workpath, link_path)
-        os.symlink(
-            os.path.join(outputdir, project, product),
-            os.path.join(workpath, new_product),
-        )
+    @deprecated_method("PluginAbstract", "prepare_output")
+    def prepareOutput(self, *args) -> dict[str, dict[str, str]]:
+        """Deprecated method for :class:`prepare_output`.
 
-        # Prepare for solr
-        crawl_dir = os.path.join(link_path, new_product)
-        now = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        output = os.path.join(solr_in, "solr_crawl_%s.csv.gz" % (now))
+        :meta private:
+        """
+        return self.prepare_output(*args)
 
-        # Solr part with move orgy
-        SolrCore.dump_fs_to_file(crawl_dir, output)
-        shutil.move(os.path.join(solr_in, output), os.path.join(solr_ps, output))
-        # hallo = SolrCore.load_fs_from_file(dump_file=os.path.join(solr_ps, output))
-        shutil.move(os.path.join(solr_ps, output), os.path.join(solr_bk, output))
-
-    def prepareOutput(
+    def prepare_output(
         self, output_files: Union[str, list[str], dict[str, dict[str, str]]]
     ) -> dict[str, dict[str, str]]:
         """Prepare output for files supposedly created.
 
-        This method checks the files exist and returns a dictionary with
+
+        This method checks if the files exist and returns a dictionary with
         information about them::
 
             { <absolute_path_to_file>: {
@@ -453,17 +574,17 @@ A plug-in/user might then use them to define a value in the following way::
                 }
             }
 
-        Use it for the return call of runTool.
+        Use it for the return call of run_tool.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         output_files:
             iterable of strings or single string with paths to all files that
             where created by the tool.
 
-        Returns:
-        --------
-        result: dict
+        Returns
+        -------
+        dict:
             dictionary with the paths to the files that were created as
             key and a dictionary as value.
         """
@@ -521,9 +642,10 @@ A plug-in/user might then use them to define a value in the following way::
                     metadata["todo"] = "convert"
 
                 if ext == ".pdf":
+
                     # If pdfs have more than one page we don't convert them,
                     # instead we offer a download link
-                    pdf = PdfFileReader(open(file_path, "rb"))
+                    pdf = PdfReader(open(file_path, "rb"))
                     num_pages = pdf.getNumPages()
                     metadata["type"] = "pdf"
                     if num_pages > 1:
@@ -542,7 +664,15 @@ A plug-in/user might then use them to define a value in the following way::
                 elif ext in [".html", ".xhtml"]:
                     metadata["todo"] = "copy"
 
-    def getHelp(self, width: int = 80) -> str:
+    @deprecated_method("PluginAbstract", "get_help")
+    def getHelp(self, **kwargs) -> str:
+        """Deprecated version of the :class:`get_help` method.
+
+        :meta private:
+        """
+        return self.get_help(**kwargs)
+
+    def get_help(self, width: int = 80) -> str:
         """Representation of the help string
 
         This method uses the information from the implementing class name,
@@ -550,15 +680,18 @@ A plug-in/user might then use them to define a value in the following way::
         :class:`__config_metadict__` to create a proper help. Since it returns
         a string, the implementing class might use it and extend it if required.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         width:
             Wrap text to this width.
 
-        Returns:
-        --------
-        help_str: str
+        Returns
+        -------
+        str:
             A string containing the help.
+
+
+        :meta private:
         """
         help_txt = self.__long_description__.strip()
         if not help_txt:
@@ -567,27 +700,30 @@ A plug-in/user might then use them to define a value in the following way::
             self.__class__.__name__,
             ".".join([str(i) for i in self.__version__]),
             help_txt,
-            self.__parameters__.getHelpString(),
+            self.__parameters__.get_help(),
         )
 
-    def getCurrentConfig(self, config_dict: Optional[ConfigDictType] = None) -> str:
+    def get_current_config(self, config_dict: Optional[ConfigDictType] = None) -> str:
         """Retreive the plugin configuration as string representation.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
             config_dict:
                 the dict containing the current configuration being displayed.
                 This info will update the default values.
 
-        Returns:
-        --------
-        current_conf: str
+        Returns
+        -------
+        str:
             The current configuration in a string for displaying.
+
+
+        :meta private:
         """
         max_size = max([len(k) for k in self.__parameters__])
         config_dict = config_dict or {}
         current_conf = []
-        config_dict_resolved = self.setupConfiguration(
+        config_dict_resolved = self.setup_configuration(
             config_dict=config_dict, check_cfg=False
         )
         config_dict_orig = cast(Dict[str, Any], dict(self.__parameters__))
@@ -597,11 +733,16 @@ A plug-in/user might then use them to define a value in the following way::
             """Format the configuration values.
             This functions formats the configuration depending on whether the
             configuration values contain variables or not.
+
+            Returns
+            -------
+            str
+
+            :meta private:
             """
             if config_dict_resolved[key] == config_dict_orig[key]:
                 return config_dict_orig[key]
-            else:
-                return f"{config_dict_orig[key]} [{config_dict_resolved[key]}]"
+            return f"{config_dict_orig[key]} [{config_dict_resolved[key]}]"
 
         for key in self.__parameters__:
             line_format = "%%%ss: %%s" % max_size
@@ -624,19 +765,29 @@ A plug-in/user might then use them to define a value in the following way::
 
         return "\n".join(current_conf)
 
+    @deprecated_method("PluginAbstract", "class_basedir")
     def getClassBaseDir(self) -> Optional[str]:
+        """Deprecated method for class_basedir.
+
+        :meta private:
+        """
+        return self.class_basedir
+
+    @property
+    def class_basedir(self) -> str:
         """Get absolute path to the module defining the plugin class."""
         module_path: Optional[str] = sys.modules[self.__module__].__file__
         subclass_file = os.path.abspath(module_path or "")
         return os.path.join(
-            *self._splitPath(subclass_file)[: -len(self.__module__.split("."))]
+            *self._split_path(subclass_file)[: -len(self.__module__.split("."))]
         )
 
-    def getCurrentUser(self) -> User:
+    @property
+    def user(self) -> User:
         """Return the user class for which this instance was generated."""
         return self._user
 
-    def _parseConfigStrValue(
+    def parse_config_str_value(
         self, param_name: str, str_value: str, fail_on_missing: bool = True
     ) -> Optional[str]:
         """Parse the string in ``str_value`` into the most appropriate value.
@@ -645,8 +796,8 @@ A plug-in/user might then use them to define a value in the following way::
         On the other hand the quoted word *"None"* will remain as the string
         ``"None"`` without any quotes.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         param_name:
             Parameter name to which the string belongs.
         str_value:
@@ -655,22 +806,21 @@ A plug-in/user might then use them to define a value in the following way::
             If the an exception should be risen in case the param_name is not
             found in :class:`__parameters__`
 
-        Returns:
-        --------
-        str_values: str
+        Returns
+        -------
+        str:
             the parsed string, or the string itself if it couldn't be parsed,
             but no exception was thrown.
 
-        Raises:
-        -------
-        ( :class:`ConfigurationError` ) if parsing couldn't succeed.
+        Raises
+        ------
+        ( :class:`ConfigurationException` ) if parsing couldn't succeed.
 
+        :meta private:
         """
 
-        if str_value == "None":
+        if str_value == "None" or str_value == '"None"':
             return None
-        elif str_value == '"None"':
-            str_value = "None"
 
         if self.__parameters__ is None or (
             not fail_on_missing and param_name not in self.__parameters__
@@ -683,21 +833,31 @@ A plug-in/user might then use them to define a value in the following way::
         else:
             return self.__parameters__.get_parameter(param_name).parse(str_value)
 
+    @deprecated_method("PluginAbstract", "setup_configuration")
     def setupConfiguration(
+        self, **kwargs
+    ) -> dict[str, Union[str, int, float, bool, None]]:  # pragma: no cover
+        """Deprecated version of the :class:`setup_configuration` method.
+
+        :meta private:
+        """
+        return self.setup_configuration(**kwargs)
+
+    def setup_configuration(
         self,
         config_dict: Optional[ConfigDictType] = None,
         check_cfg: bool = True,
         recursion: bool = True,
         substitute: bool = True,
     ) -> dict[str, Union[str, int, float, bool, None]]:
-        """Defines the configuration required for running this plug-in.
+        """Defines the configuration required for running this plugin.
 
         Basically the default values from :class:`__parameters__` will be
         updated with the values from ``config_dict``.
         There are some special values pointing to user-related managed by the
         system defined in :class:`evaluation_system.model.user.User.getUserVarDict` .
 
-        Parameters:
+        Parameters
         ----------
         config_dict:
             dictionary with the configuration to be used when generating the
@@ -711,11 +871,14 @@ A plug-in/user might then use them to define a value in the following way::
             i.e. variables can be set with the values of other variables,
             e.g. ``recursion && a==1 && b=="x${a}x" => f(b)=="x1x"``
 
-        Returns:
-        --------
-        results : dict
+        Returns
+        -------
+        dict:
             a copy of self.self.__config_metadict__ with all defaults values
             plus those provided here.
+
+
+        :meta private:
         """
         config_dict = config_dict or {}
         if config_dict:
@@ -736,19 +899,23 @@ A plug-in/user might then use them to define a value in the following way::
 
         return results
 
-    def readFromConfigParser(self, config_parser: ConfigParser) -> dict[str, str]:
+    def read_from_config_parser(self, config_parser: ConfigParser) -> dict[str, str]:
         """Reads a configuration from a config parser object.
 
         The values are assumed to be in a section named just like the
         class implementing this method.
 
+        Parameters
+        ----------
         config_parser:
             From where the configuration is going to be read.
 
-        Returns:
-        --------
-        result: dict
+        Returns
+        -------
+        dict[str, str]:
             Updated copy of :class:`__config_metadict__`
+
+        :meta private:
         """
 
         section = self.__class__.__name__
@@ -761,29 +928,38 @@ A plug-in/user might then use them to define a value in the following way::
         # update values as found in the configuration
         for key in keys:
             # parse the value as good as possible
-            result[key] = self._parseConfigStrValue(
+            result[key] = self.parse_config_str_value(
                 key, config_parser.get(section, key)
             )
         return result
 
-    def readConfiguration(self, fp: Iterable[str]) -> dict[str, str]:
+    @deprecated_method("PluginAbstract", "read_configuration")
+    def readConfiguration(self, **kwargs) -> dict[str, str]:  # pragma: no cover
+        """Deprecated version of the :class:`read_configuration` method.
+
+        :meta private:
+        """
+        return self.read_configuration(**kwargs)
+
+    def read_configuration(self, fp: Iterable[str]) -> dict[str, str]:
         """Read the configuration from a file object using a ConfigParser.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         fp:
             File descriptor pointing to the file where the configuration is stored.
 
-        Returns:
-        --------
-        result : dcit
-            Updated copy of :class:`__config_metadict__`
+        Returns
+        -------
+        dict : Updated copy of :class:`__config_metadict__`
+
+        :meta private:
         """
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
         config_parser.read_file(fp)
-        return self.readFromConfigParser(config_parser)
+        return self.read_from_config_parser(config_parser)
 
-    def saveConfiguration(
+    def save_configuration(
         self,
         fp: Union[TextIO, IO[str]],
         config_dict: Optional[ConfigDictType] = None,
@@ -793,21 +969,28 @@ A plug-in/user might then use them to define a value in the following way::
 
         If no configuration is provided the default one will be used.
 
-        Parameters:
+        Parameters
         ----------
         fp:
             File descriptor pointing to the file where the configuration is stored.
         config_dict:
             a metadict with the configuration to be stored. If none is provided
-            the result from :class:`setupConfiguration`
+            the result from :class:`setup_configuration`
             with ``check_cfg=False`` will be used.
         include_defaults:
             include the default parameters.
+
+        Returns
+        -------
+        typing.IO: Open file descriptor, pointing to the file where the config
+                   is stored
+
+        :meta private:
         """
         # store the section header
         if config_dict is None:
             # a default incomplete one
-            config_dict = self.setupConfiguration(check_cfg=False, substitute=False)
+            config_dict = self.setup_configuration(check_cfg=False, substitute=False)
         fp.write("[%s]\n" % self.__class__.__name__)
         wrapper = textwrap.TextWrapper(
             width=80,
@@ -856,14 +1039,20 @@ A plug-in/user might then use them to define a value in the following way::
                     else:
                         value = ""
                         param_name = "#" + param_name
-                fp.write("%s=%s\n\n" % (param_name, param.str(value)))
+                fp.write("%s=%s\n\n" % (param_name, param.to_str(value)))
                 fp.flush()  # in case we want to stream this
         return fp
 
     def suggest_batchscript_name(self) -> str:
         """
         Return a suggestion for the batch script file name
-        :return: file name
+
+        Returns
+        -------
+        str:
+            file name of the batch mode script
+
+        :meta private:
         """
 
         filename = (
@@ -885,8 +1074,8 @@ A plug-in/user might then use them to define a value in the following way::
     ) -> tuple[int, str]:
         """Create a job script suitable for the configured workload manager.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
 
         config_dict:
             Dictionary holding the plugin config setup
@@ -899,21 +1088,22 @@ A plug-in/user might then use them to define a value in the following way::
         extra_options:
             Extra options passed to the workload manager, batchmode only
 
-        Returns:
-        --------
-        job_id, stdout_file: int, str
+        Returns
+        -------
+        tuple[int, str]:
             The workload manager job id, the file containing the std out.
+
+        :meta private:
         """
         log_directory = log_directory or tempfile.mkdtemp()
         if user is None:
-            user = self.getCurrentUser()
-
+            user = self.user
         if scheduled_id:
-            cmd = self.composeCommand(
+            cmd = self.compose_command(
                 scheduled_id=scheduled_id, unique_output=unique_output
             )
         else:
-            cmd = self.composeCommand(
+            cmd = self.compose_command(
                 config_dict=config_dict or {}, unique_output=unique_output
             )
 
@@ -932,20 +1122,22 @@ A plug-in/user might then use them to define a value in the following way::
     class ExceptionMissingParam(Exception):
         """
         An exception class if a mandatory parameter has not been set
+
+        :meta private:
         """
 
         def __init__(self, param: str):
             """
             Exceptions constructor
 
-            Parameters:
+            Parameters
             -----------
             param:
                 The missing parameter
             """
             Exception.__init__(self, "Parameter %s has to be set" % param)
 
-    def composeCommand(
+    def compose_command(
         self,
         config_dict: Optional[ConfigDictType] = None,
         scheduled_id: Optional[int] = None,
@@ -954,7 +1146,10 @@ A plug-in/user might then use them to define a value in the following way::
         caption: Optional[str] = None,
         unique_output: bool = True,
     ) -> list[str]:
-        """Create the plugin command that is submitted."""
+        """Create the plugin command that is submitted.
+
+        :meta private:
+        """
         logging.debug("config dict:" + str(config_dict))
         logging.debug("scheduled_id:" + str(scheduled_id))
         tool_param = [self.__class__.__name__.lower()]
@@ -983,11 +1178,14 @@ A plug-in/user might then use them to define a value in the following way::
             # store the section header
             if config_dict is None:
                 # a default incomplete one
-                config_dict = self.setupConfiguration(check_cfg=False, substitute=False)
+                config_dict = self.setup_configuration(
+                    check_cfg=False, substitute=False
+                )
             else:
-                config_dict = self.setupConfiguration(
+                config_dict = self.setup_configuration(
                     config_dict=config_dict, check_cfg=False, substitute=False
                 )
+
             # compose the parameters preserve order
             for param_name in self.__parameters__:
                 if param_name in config_dict:
@@ -999,49 +1197,56 @@ A plug-in/user might then use them to define a value in the following way::
                     if isMandatory:
                         raise self.ExceptionMissingParam(param_name)
                 elif param_name not in config.exclude:
-                    tool_param.append(f"{param_name}={param.str(value)}")
+                    tool_param.append(f"{param_name}={param.to_str(value)}")
         logging.debug(f"Execute command: {' '.join(tool_param+cmd_param)}")
         return tool_param + cmd_param
 
     def call(
         self,
         cmd_string: Union[str, list[str]],
-        verbose: bool = True,
-        return_stdout: bool = True,
+        check: bool = True,
         **kwargs,
-    ) -> Optional[str]:
-        """Simplify the interaction with the shell.
+    ) -> sub.Popen[Any]:
+        """Run command with arguments and return a CompletedProcess instance.
 
-        It calls a bash shell so it's **not** secure.
-        It means, **never** start a plug-in comming from unknown sources.
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those
+        attributes will be None. Pass stdout=PIPE and/or stderr=PIPE in order
+        to capture them.
 
-        Parameters:
-        -----------
+        Please refer to the ``subprocess.Popen`` python build in module for
+        more details.
+
+        Parameters
+        ----------
         cmd_string:
-            the command to be issued in a string.
-        return_stdout:
-            return the stdout of the sub-process
+            the command to be submitted.
+        check:
+            If check is True and the exit code was non-zero, it raises a
+            CalledProcessError. The CalledProcessError object will have the
+            return code in the returncode attribute, and output & stderr
+            attributes if those streams were captured.
+        kwargs:
+            Additional arguments passed to ``subprocess.Popen``
 
-        Returns:
-        --------
-        stdout:
-            Stdout of the sub-process if return_stdout was set to true
+        Returns
+        -------
+        subprocess.Popen:
+            sub-process return value
         """
-        log.debug("Calling: %s", cmd_string)
-        # if you enter -x to the bash options the validation algorithm
-        # after calling SLURM fails. Use -x temporary for debugging only
         if isinstance(cmd_string, str):
             cmd = shlex.split(cmd_string)
-        out = ""
-        for line in self._execute(cmd):
-            if verbose:
-                print(line, end="", flush=True)
-            out += line
-        if return_stdout:
-            return out
-        return None
+        else:
+            cmd = cmd_string
+        log.debug("Calling: %s", " ".join(cmd))
+        try:
+            res = self._execute(cmd, check=check, **kwargs)
+        except sub.CalledProcessError as cmd_error:
+            with hide_exception():
+                raise cmd_error
+        return res
 
-    def _splitPath(self, path: str) -> list[str]:
+    def _split_path(self, path: str) -> list[str]:
         """Help function to split a path"""
         rest_path = os.path.normpath(path)
         result: list[str] = []

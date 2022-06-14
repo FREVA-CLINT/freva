@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+from evaluation_system import __version__
 from .utils import BaseParser
 from typing import Optional, List
 
@@ -20,7 +21,7 @@ class ArgParser(BaseParser):
         argv = argv or sys.argv[1:]
         sub_parsers = self.get_subcommand_parsers()
         try:
-            if argv[0] in sub_parsers:
+            if argv[0].strip("-") in sub_parsers:
                 argv[0] = argv[0].strip("-")
         except IndexError:
             argv.append("-h")
@@ -29,6 +30,12 @@ class ArgParser(BaseParser):
             epilog=epilog,
             description="Free EVAluation sysystem framework (freva)",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
+        parser.add_argument(
+            "-V",
+            "--version",
+            action="version",
+            version="%(prog)s {version}".format(version=__version__),
         )
         super().__init__(sub_parsers, parser)
         args = self.parse_args(argv)

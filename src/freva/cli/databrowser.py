@@ -3,9 +3,9 @@ import argparse
 import sys
 from typing import Any, Optional
 
-
-from .utils import BaseCompleter, BaseParser
+from evaluation_system import __version__
 from freva import databrowser
+from .utils import BaseCompleter, BaseParser
 
 CLI = "DataBrowserCli"
 
@@ -140,6 +140,12 @@ class DataBrowserCli(BaseParser):
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
     cli = DataBrowserCli("freva")
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=__version__),
+    )
     args = cli.parse_args(argv or sys.argv[1:])
     try:
         cli.run_cmd(args, **cli.kwargs)

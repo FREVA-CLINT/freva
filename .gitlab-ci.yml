@@ -1,91 +1,107 @@
 stages:
     - build
     - test
+    - docs
     - report
 
 variables:
-  CONDA_ENV: "freva-dev"
-  PYTHON_VERSION: "3.10"
-  FREVA_ENV: "/tmp/freva/bin"
-  EVALUATION_SYSTEM_CONFIG_FILE: ".docker/evaluation_system.conf"
+    CONDA_ENV: "freva-dev"
+    PYTHON_VERSION: "3.10"
+    FREVA_ENV: "/tmp/freva/bin"
+    EVALUATION_SYSTEM_CONFIG_FILE: ".docker/evaluation_system.conf"
 
 lint:
-  image: continuumio/anaconda3
-  stage: build
-  tags:
-    - docker, specific
-  before_script:
-    - conda env create -q -f dev-environment.yml
-    - apt update && apt install make
-  script:
-    - conda run -n $CONDA_ENV make lint
+    image: python
+    stage: build
+    tags:
+        - docker, specific
+    before_script:
+        - pip install . black mypy
+    script:
+        - make lint
 
-
-.test_template: &py_test # pytest framework template
+.test_template: &py_test  # pytest framework template
     stage: test
+    needs: ["lint"]
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
     variables:
-      CONDA: "Miniconda3-latest"
+        CONDA: "Miniconda3-latest"
     tags:
-      - docker, specific
+        - docker, specific
+    before_script:   # Do the unit tests
+        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
+    script:
+        - make test
 
-test_37:
-    << : *py_test
+test:37:
+    <<: *py_test
     variables:
-      PYTHON_VERSION: "3.7"
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
-
-test_38:
-    << : *py_test
+        PYTHON_VERSION: "3.7"
+test:38:
+    <<: *py_test
     variables:
-      PYTHON_VERSION: "3.8"
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
+        PYTHON_VERSION: "3.8"
 
-test_39:
-    << : *py_test
+test:39:
+    <<: *py_test
     variables:
-      PYTHON_VERSION: "3.8"
-    script:
-        # Do the unit tests
-      - python3 deploy.py /tmp/freva -e -s --run_tests --packages gitpython pandoc
+        PYTHON_VERSION: "3.9"
 
-test_latest:
-    << : *py_test
-    script:
-      # Install the conda env
-      - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
-      # Do the unit tests with converage reports
-      - make test_coverage
+test:latest:
+    <<: *py_test
+    script:  # Do the unit tests with converage reports
+        - make test_coverage
     artifacts:
-      when: always
-      reports:
-        junit: report.xml
-      paths:
-        - coverage_report
-        - test_results
-        - report.xml
+        when: always
+        reports:
+            junit: report.xml
+        paths:
+            - coverage_report
+            - test_results
+            - report.xml
+
+docs:
+    stage: docs
+    needs: ["lint"]
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
+    tags:
+        - docker, specific
+    variables:
+        CONDA: "Miniconda3-latest"
+        EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
+    before_script:
+        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime
+        - 'git config --global --add safe.directory $PWD'
+    script:
+        - make prepdocs
+        - make docs
+    after_script:
+        - mv docs/build/html sphinx_docs
+    artifacts:
+        when: always
+        paths:
+            - sphinx_docs
 
 pages:
-  stage: report
-  image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
-  tags:
-    - docker, specific
-  dependencies:
-    - test_latest
-  before_script:
-    - mkdir -p public; cp .docker/index.html public/
-    - mv coverage_report public/
-  script:
-    - /opt/allure/bin/allure generate --clean test_results
-  after_script:
-    - mv allure-report public/
-  artifacts:
-    when: always
-    paths:
-      - public/
-    reports:
-      junit: report.xml
+    stage: report
+    needs: ["test:latest", "docs"]
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
+    tags:
+        - docker, specific
+    dependencies:
+        - test:latest
+        - docs
+    before_script:
+        - mkdir -p public; cp .docker/index.html public/
+        - mv coverage_report public/
+        - mv sphinx_docs public/
+    script:
+        - /opt/allure/bin/allure generate --clean test_results
+    after_script:
+        - mv allure-report public/
+    artifacts:
+        when: always
+        paths:
+            - public/
+        reports:
+            junit: report.xml

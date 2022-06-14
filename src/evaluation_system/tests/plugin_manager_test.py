@@ -64,7 +64,7 @@ def test_plugin_config_storage(dummy_settings, temp_user):
     home = temp_user.getUserHome()
     assert os.path.isdir(home)
 
-    res = pm.get_plugin_instance("dummyplugin").setupConfiguration(
+    res = pm.get_plugin_instance("dummyplugin").setup_configuration(
         config_dict=dict(the_number=42)
     )
     assert res["something"] == "test"
@@ -357,7 +357,7 @@ def test_get_command_string(dummy_env, django_user):
     )
 
     cmd = pm.get_command_string(h.id)
-    assert "freva --plugin" in cmd
+    assert "freva-plugin" in cmd
     assert h.tool in cmd
 
 

@@ -1,3 +1,9 @@
+"""Module to get information on and run Freva plgins.
+
+To make use of any of the methods a Freva plugin has to be set up. Either
+by you, the Freva admins or your collegues. If you want to create a plugin
+pleas refer to the :class:`evaluation_system.api.plugin` section.
+"""
 from __future__ import annotations
 import logging
 from pathlib import Path
@@ -19,19 +25,67 @@ __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
 
 def plugin_doc(tool_name: Optional[str]) -> str:
-    """Display the documentation of a given plugin."""
-    tool_name = tool_name or ""
+    """Display the documentation of a given plugin.
+
+    Parameters
+    ----------
+    tool_name:
+        The name of the tool that should be documented
+
+    Returns
+    -------
+    str:
+        plugin help string.
+
+    Raises
+    ------
+    PluginNotFoundError:
+        if the plugin name does not exist.
+
+    Example
+    -------
+
+    .. execute_code::
+
+        import freva
+        print(freva.plugin_doc("animator"))
+
+
+    """
+    tool_name = (tool_name or "").lower()
     _check_if_plugin_exists(tool_name)
-    return pm.get_plugin_instance(tool_name).getHelp()
+    return pm.get_plugin_instance(tool_name).get_help()
 
 
 def list_plugins() -> list[str]:
-    """Get the plugins that are available on the system."""
-    return list(pm.get_plugins().keys())
+    """Get the plugins that are available on the system.
+
+    Returns
+    --------
+    list[str]:
+            List of available Freva plugins
+
+    Example
+    -------
+
+    .. execute_code::
+
+        import freva
+        print(freva.list_plugins())
+    """
+    return list([k.lower() for k in pm.get_plugins().keys()])
 
 
 def get_tools_list() -> str:
-    """Get a list of plugins with their description."""
+    """Get a list of plugins with their short description.
+
+    Returns
+    -------
+    str:
+        String representation of all available plugins.
+
+    :meta private:
+    """
     env = utils.get_console_size()
     # we just have to show the list and stop processing
     name_width = 0
@@ -55,6 +109,8 @@ def get_tools_list() -> str:
 def handle_pull_request(
     tag: Optional[str], tool_name: Optional[str]
 ) -> tuple[int, str]:
+    """:meta private:"""
+    # TODO: This method should go
     if not tag:
         return 1, 'Missing required option "--tag"'
     # create new entry in
@@ -115,12 +171,10 @@ def run_plugin(
 ) -> tuple[int, Any]:
     """Apply an available data analysis plugin.
 
-    Parameters:
-    ===========
+    Parameters
+    ----------
     tool_name:
         The name of the plugin that is to be applied.
-    repo_version:
-        show the version number from the repository.
     caption:
         Set a caption for the results.
     save:
@@ -136,18 +190,44 @@ def run_plugin(
     batchmode:
         Create a Batch job and submit it to the scheduling system.
     unique_output:
-        Append a freva run id to every output folder
+        Append a Freva run id to every output folder
     pull_request:
         Issue a new pull request for the tool
     return_result:
         Return the plugin result, this can be useful for pipelining.
+    repo_version:
+        show the version number from the repository.
     tag:
-       Use git commit hash
+       Use git commit hash to specify a specific versrion of this tool.
 
-    Returns:
-    ========
+    Returns
+    -------
+    tuple:
+        Return code, and the return value of the plugin
+
+
+    Example
+    -------
+
+    Run a plugin in the foreground.
+
+    .. execute_code::
+
+        import freva
+        freva.run_plugin("animator", variable="pr", project="obs*")
+
+    Run a plugin in the background
+
+    .. execute_code::
+
+        import freva
+        freva.run_plugin("animator",
+                         variable="pr",
+                         project="observations",
+                         batchmode=True)
 
     """
+    tool_name = tool_name.lower()
     _check_if_plugin_exists(tool_name)
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
@@ -158,7 +238,6 @@ def run_plugin(
         return _return_value(
             0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
         )
-    email = None
     options_str, tool_dict = [], {}
     for k, v in options.items():
         options_str.append(f"{k}={v}")
@@ -174,7 +253,8 @@ def run_plugin(
         logger.info("Configuration file saved in %s", save_in)
     elif show_config:
         return _return_value(
-            0, pm.get_plugin_instance(tool_name).getCurrentConfig(config_dict=tool_dict)
+            0,
+            pm.get_plugin_instance(tool_name).get_current_config(config_dict=tool_dict),
         )
     if scheduled_id and not dry_run:
         logger.info(
@@ -205,15 +285,15 @@ def run_plugin(
             [scheduled_id, job_file] = pm.schedule_tool(
                 tool_name,
                 config_dict=tool_dict,
-                user=user.User(email=email),
+                user=user.User(),
                 caption=caption,
                 extra_options=extra_options,
                 unique_output=unique_output,
             )
-            logger.info(f"Scheduled job with history id: {scheduled_id}")
+            logger.info("Scheduled job with history id: %s", scheduled_id)
             logger.info("You can view the job's status with the command squeue")
             logger.info("Your job's progress will be shown with the command")
-            logger.info(f"tail -f {job_file}")
+            logger.info("tail -f %s", job_file)
             return 0, ""
         results = pm.run_tool(
             tool_name,

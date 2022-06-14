@@ -83,7 +83,8 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     assert output_str.count("dummyplugin") == 3
     assert output_str.count("\n") == 3
     # test no result
-    run_cli(["history", "--plugin=blabla"])
+    output_str = capsys.readouterr().out
+    run_cli(["history", "--plugin", "blabla"])
     output_str = capsys.readouterr().out
     assert len(output_str) < 2
     # test return_command option
@@ -92,12 +93,12 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     check_string = [
         "plugin",
         "dummyplugin",
-        "something='else'",
-        "input='/folder'",
-        "other='value'",
-        "number='12'",
-        "the_number='42'",
-        "variable='pr'",
+        "something=else",
+        "input=/folder",
+        "other=value",
+        "number=12",
+        "the_number=42",
+        "variable=pr",
     ]
     for string in check_string:
         assert string in output_str

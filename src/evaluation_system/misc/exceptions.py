@@ -1,31 +1,52 @@
-"""Definitions of custom exections."""
+"""Definitions of custom exections and warnings."""
 
 from contextlib import contextmanager
+import logging
 import sys
+import warnings
+from typing import Any, Callable
+
+from evaluation_system.misc import logger
+
+
+def deprecated_method(klass: str, new_method: str):
+    """Show a deprication warning for a depricated method."""
+
+    def call_deprecated_method(function: Callable[[Any], Any]) -> Callable[[Any], Any]:
+        def inner(*args: Any, **kwargs: Any) -> Any:
+            if logger.level <= logging.DEBUG:
+                raise AttributeError(
+                    f"{klass} as no attribute: {function.__name__}, use "
+                    f"{new_method} instead"
+                )
+            msg = (
+                f"The `{function.__name__}` of {klass} is deprecated and "
+                "might be subject to removal in the future. Please consider "
+                f"renaming the `{klass}.{function.__name__}` method to "
+                f"`{klass}.{new_method}`"
+            )
+            logger.warning(msg)
+            return function(*args, **kwargs)
+
+        return inner
+
+    return call_deprecated_method
 
 
 class ConfigurationException(Exception):
     """Mark exceptions thrown in this package"""
 
-    pass
-
 
 class PluginNotFoundError(Exception):
     """Exeption Definition for missing Plugins."""
-
-    pass
 
 
 class ValidationError(Exception):
     """Thrown if some variable contains an improper value."""
 
-    pass
-
 
 class ParameterNotFoundError(Exception):
     """Thrown if some parameter is not in the database."""
-
-    pass
 
 
 class CommandError(Exception):
@@ -43,8 +64,6 @@ class CommandError(Exception):
 
 class PluginManagerException(Exception):
     """For all problems generating while using the plugin manager."""
-
-    pass
 
 
 @contextmanager

@@ -6,23 +6,24 @@ import os
 from pathlib import Path
 import shutil
 import socket
-import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
 
 import django
 from django.conf import settings
 import pytest
+import toml
 import mock
 
 from evaluation_system.misc import config
 
 
 def get_config(admin=False):
-    from .mocks import TEST_EVAL
+    from .mocks import TEST_EVAL, TEST_DRS
 
     test_cfg = ConfigParser(interpolation=ExtendedInterpolation())
     test_cfg.read_string(TEST_EVAL)
+    drs_cfg = toml.loads(TEST_DRS)
     cfg_p = ConfigParser(interpolation=ExtendedInterpolation())
     if admin:
         test_cfg["evaluation_system"].setdefault("admins", getuser())
@@ -41,23 +42,27 @@ def get_config(admin=False):
     for key in items_to_overwrite:
         value = test_cfg["evaluation_system"].get(key)
         test_cfg.set("evaluation_system", key, cfg.get(key, value))
-    return test_cfg
+    return test_cfg, drs_cfg
 
 
 def mock_config(keyfile, admin=False, patch_env=True):
-    config = get_config(admin)
-    with NamedTemporaryFile(suffix=".conf") as tf:
+    cfg, drs_config = get_config(admin)
+    with TemporaryDirectory() as temp_dir:
+        eval_config = Path(temp_dir) / "evaluation_system.conf"
+        drs_conf_path = Path(temp_dir) / "drs_config.toml"
+        crawl_data_dir = Path(temp_dir) / "data" / "crawl_my_data"
+        drs_config["crawl_my_data"]["root_dir"] = str(crawl_data_dir)
         PATH = (Path(__file__).parent / "mocks" / "bin").absolute()
         env = dict(
-            EVALUATION_SYSTEM_CONFIG_FILE=tf.name,
-            EVALUATION_SYSTEM_DRS_CONFIG_FILE=os.environ[
-                "EVALUATION_SYSTEM_DRS_CONFIG_FILE"
-            ],
+            EVALUATION_SYSTEM_CONFIG_FILE=str(eval_config),
+            EVALUATION_SYSTEM_DRS_CONFIG_FILE=str(drs_conf_path),
             PUBKEY=str(keyfile),
             PATH=str(PATH) + ":" + os.environ["PATH"],
         )
-        with open(tf.name, "w") as f:
-            config.write(f)
+        with open(eval_config, "w") as f:
+            cfg.write(f)
+        with open(drs_conf_path, "w") as f:
+            toml.dump(drs_config, f)
         if not patch_env:
             yield env
         else:
@@ -145,18 +150,18 @@ def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
     [getattr(dummy_solr, key).delete("*") for key in ("all_files", "latest")]
     from evaluation_system.misc import config
 
-    root_path = Path(config.get("project_data")).absolute()
-    crawl_dir = root_path / f"user-{getuser()}"
+    root_path = Path(config.get_drs_config()["crawl_my_data"]["root_dir"])
+    crawl_dir = root_path / "freva-ces-plugin-results" / f"user-{getuser()}"
     user_files = []
-    orig_dir = dummy_solr.DRSFile.DRS_STRUCTURE["crawl_my_data"].root_dir
-    dummy_solr.DRSFile.DRS_STRUCTURE["crawl_my_data"].root_dir = str(crawl_dir)
-    for file in dummy_solr.files:
-        (crawl_dir / file).parent.mkdir(exist_ok=True, parents=True)
-        (crawl_dir / file).touch()
-        user_files.append(crawl_dir / file)
+    for file in map(Path, dummy_solr.files):
+        # Drop the version from the files
+        file_parts = file.parts[2:-2] + (file.parts[-1],)
+        crawl_file = crawl_dir.joinpath(*file_parts)
+        crawl_file.parent.mkdir(exist_ok=True, parents=True)
+        crawl_file.touch()
+        user_files.append(crawl_file)
     yield user_files
     [getattr(dummy_solr, key).delete("*") for key in ("all_files", "latest")]
-    dummy_solr.DRSFile.DRS_STRUCTURE["crawl_my_data"].root_dir = orig_dir
     shutil.rmtree(root_path)
 
 
@@ -377,9 +382,10 @@ def dummy_settings(dummy_env):
 def root_path_with_empty_config(dummy_env):
     from evaluation_system.misc import config
 
-    root_path = Path(config.get("project_data")).absolute()
+    root_path = Path(config.get_drs_config()["crawl_my_data"]["root_dir"])
+    crawl_dir = root_path / "freva-ces-plugin-results" / f"user-{getuser()}"
     config._config = {}
-    yield root_path / f"user-{getuser()}"
+    yield crawl_dir
     config.reloadConfiguration()
 
 

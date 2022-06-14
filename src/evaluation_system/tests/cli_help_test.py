@@ -28,13 +28,17 @@ def test_subcommand_help(dummy_env, capsys):
     for subcommand, func in dict(zip(SUBCOMMANDS, functions)).items():
         with pytest.raises(SystemExit):
             func(["--help"])
-        doc_string1 = capsys.readouterr().out
+        doc_string1 = " ".join(capsys.readouterr().out.replace(" [-V]", "").split())
         with pytest.raises(SystemExit):
             main_cli([subcommand, "--help"])
-        doc_string2 = capsys.readouterr().out
-        assert doc_string1 == doc_string2.replace(
-            f"freva {subcommand}", f"freva-{subcommand}"
+        doc_string2 = " ".join(
+            capsys.readouterr()
+            .out.replace(f"freva {subcommand}", f"freva-{subcommand}")
+            .split()
         )
+        for line in doc_string2.split("\n"):
+            print(line)
+            assert line.strip() in doc_string1
         with pytest.raises(SystemExit):
             main_cli([subcommand[:-1]])
         doc_string3 = capsys.readouterr().err

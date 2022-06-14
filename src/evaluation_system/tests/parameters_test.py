@@ -35,10 +35,10 @@ def test_parameter_type(dummy_env):
     s_type = String(
         name="foo", default="foo;bar", mandatory=True, max_items=2, item_separator=";"
     )
-    assert s_type.str("foo;bar") == "foo;bar"
-    assert s_type.str(["foo", "bar"]) == "foo;bar"
+    assert s_type.to_str("foo;bar") == "foo;bar"
+    assert s_type.to_str(["foo", "bar"]) == "foo;bar"
     s_type.item_separator = None
-    assert s_type.str(["foo", "bar"]) == '["foo", "bar"]'
+    assert s_type.to_str(["foo", "bar"]) == '["foo", "bar"]'
     assert s_type.parse('["foo"]') == ["foo"]
     assert s_type.parse("foo") == ["foo"]
     assert s_type.__str__() == s_type.get_type() == "String"
@@ -53,7 +53,7 @@ def test_parsing(dummy_env):
         Range,
         SelectField,
         SolrField,
-        Directory,
+        InputDirectory,
         Unknown,
         ValidationError,
     )
@@ -131,7 +131,7 @@ def test_parsing(dummy_env):
             [("bad value", "")],
         ),
         (SolrField(facet="variable"), [("tas", "tas"), ("pr", "pr")], []),
-        (Directory(), [("/home/user", "/home/user")], []),
+        (InputDirectory(), [("/home/user", "/home/user")], []),
         (Unknown(), [("test", "test")], []),
     ]
     for case_type, positive_cases, negative_cases in test_cases:
@@ -208,15 +208,15 @@ def test_parse_arguments(dummy_env):
     )
 
     p_dict = ParameterDictionary(String(name="a"), String(name="b"))
-    res = p_dict.parseArguments("a=1 b=2".split())
+    res = p_dict.parse_arguments("a=1 b=2".split())
     assert res == dict(a="1", b="2")
     p_dict = ParameterDictionary(Integer(name="a"), Integer(name="b"))
-    res = p_dict.parseArguments("a=1 b=2".split())
+    res = p_dict.parse_arguments("a=1 b=2".split())
     assert res == dict(a=1, b=2)
     # more arguments than those expected
     p_dict = ParameterDictionary(Integer(name="a"))
     with pytest.raises(ValidationError):
-        p_dict.parseArguments("a=1 b=2".split())
+        p_dict.parse_arguments("a=1 b=2".split())
     p_dict = ParameterDictionary(
         Integer(name="int"),
         Float(name="float"),
@@ -226,9 +226,9 @@ def test_parse_arguments(dummy_env):
         Date(name="date"),
         Range(name="range"),
     )
-    res = p_dict.parseArguments("int=1 date=1 bool=1".split())
+    res = p_dict.parse_arguments("int=1 date=1 bool=1".split())
     assert res == dict(int=1, date="1", bool=True)
-    res = p_dict.parseArguments("int=1 date=1 bool=1".split(), use_defaults=True)
+    res = p_dict.parse_arguments("int=1 date=1 bool=1".split(), use_defaults=True)
     assert res == dict(
         int=1, date="1", bool=True, extra_scheduler_options="", file="/tmp/file1"
     )
@@ -236,11 +236,11 @@ def test_parse_arguments(dummy_env):
         Bool(name="init"),
         Integer(name="num", default=2, item_separator=",", max_items=1),
     )
-    assert p_dict2.parseArguments("init=0") == dict(init=False)
-    assert p_dict2.parseArguments(
+    assert p_dict2.parse_arguments("init=0") == dict(init=False)
+    assert p_dict2.parse_arguments(
         ["num=0", "num=1", "init=0"], check_errors=False
     ) == dict(num=[0, 1], init=False)
-    res = p_dict.parseArguments(
+    res = p_dict.parse_arguments(
         "int=1 date=1 bool=1 range=1:5".split(),
         use_defaults=True,
         complete_defaults=True,
@@ -273,7 +273,7 @@ def test_parse_arguments(dummy_env):
         ("string=1", "1"),
         ("string=ä", "ä"),
     ]:
-        res = p_dict.parseArguments(arg.split())
+        res = p_dict.parse_arguments(arg.split())
         assert res == {
             arg.split("=")[0]: parsed_val
         }, "Error when parsing %s, got %s" % (arg, res)
@@ -283,15 +283,15 @@ def test_parse_arguments(dummy_env):
         File(name="file", default="/tmp/file1", max_items=2, item_separator=":"),
         Date(name="date", item_separator="/"),
     )
-    assert p_dict.parseArguments(["file=a:b"]) == dict(file=["a", "b"])
+    assert p_dict.parse_arguments(["file=a:b"]) == dict(file=["a", "b"])
     with pytest.raises(ValidationError):
-        p_dict.parseArguments(["file=a:b:c"])
+        p_dict.parse_arguments(["file=a:b:c"])
     with pytest.raises(ValidationError):
-        p_dict.parseArguments(["file=a", "file=b", "file=c"])
+        p_dict.parse_arguments(["file=a", "file=b", "file=c"])
     # this should still work since max_items defaults to 1
     # and in that case no splitting happens
-    assert p_dict.parseArguments(["date=a/b"]) == dict(date="a/b")
-    assert p_dict.parseArguments(["file=a", "file=b"]) == dict(file=["a", "b"])
+    assert p_dict.parse_arguments(["date=a/b"]) == dict(date="a/b")
+    assert p_dict.parse_arguments(["file=a", "file=b"]) == dict(file=["a", "b"])
 
 
 def test_complete(dummy_env):
@@ -306,9 +306,9 @@ def test_complete(dummy_env):
         Integer(name="int"), File(name="file", default="/tmp/file1"), Date(name="date")
     )
     conf = dict(int=1)
-    p_dict.complete(conf)
+    p_dict._complete(conf)
     assert conf == {"int": 1, "extra_scheduler_options": "", "file": "/tmp/file1"}
-    p_dict.complete(conf, add_missing_defaults=True)
+    p_dict._complete(conf, add_missing_defaults=True)
     assert conf == {
         "int": 1,
         "extra_scheduler_options": "",
@@ -316,8 +316,8 @@ def test_complete(dummy_env):
         "file": "/tmp/file1",
     }
 
-    assert p_dict.complete() == {"extra_scheduler_options": "", "file": "/tmp/file1"}
-    assert p_dict.complete(add_missing_defaults=True) == {
+    assert p_dict._complete() == {"extra_scheduler_options": "", "file": "/tmp/file1"}
+    assert p_dict._complete(add_missing_defaults=True) == {
         "int": None,
         "date": None,
         "extra_scheduler_options": "",
@@ -326,7 +326,7 @@ def test_complete(dummy_env):
 
     # assure default value gets parsed (i.e. validated) when creating Parameter
     p = ParameterDictionary(Integer(name="a", default="0"))
-    assert p.complete(add_missing_defaults=True) == {
+    assert p._complete(add_missing_defaults=True) == {
         "a": 0,
         "extra_scheduler_options": "",
     }
@@ -353,7 +353,7 @@ def test_defaults(dummy_env):
     Integer(name="a", default="1232")
     Range(name="a", default="1:5:100")
     ra = Range(name="a", default="1, 2")
-    assert ra.str([1, 2]) == "[1, 2]"
+    assert ra.to_str([1, 2]) == "[1, 2]"
     p_dict = ParameterDictionary(
         File(
             name="file",
@@ -365,8 +365,8 @@ def test_defaults(dummy_env):
         Date(name="date", item_separator="/"),
     )
     with pytest.raises(ValidationError):
-        p_dict.parseArguments(["date=2"], use_defaults=False)
-    assert p_dict.parseArguments(["date=2"], use_defaults=True) == {
+        p_dict.parse_arguments(["date=2"], use_defaults=False)
+    assert p_dict.parse_arguments(["date=2"], use_defaults=True) == {
         "date": "2",
         "extra_scheduler_options": "",
         "file": ["/tmp/file1"],
@@ -386,19 +386,19 @@ def test_validate_errors(dummy_env):
         File(name="file", max_items=2, item_separator=":"),
         Float(name="float", mandatory=True, max_items=2),
     )
-    assert p_dict.validate_errors(dict(int=1, float=2.0)) is None
+    assert p_dict.validate_errors(dict(int=1, float=2.0)) == {}
     assert p_dict.validate_errors({"int": None}) == {
         "too_many_items": [],
-        "missing": ["int", "float"],
+        "missing": [("int", 1), ("float", 2)],
     }
 
     assert p_dict.validate_errors({"int": [1, 2, 3, 4, 5]}) == {
         "too_many_items": [("int", 1)],
-        "missing": ["float"],
+        "missing": [("float", 2)],
     }
     assert p_dict.validate_errors({"int": [1, 2, 3, 4, 5]}) == {
         "too_many_items": [("int", 1)],
-        "missing": ["float"],
+        "missing": [("float", 2)],
     }
 
 
@@ -436,13 +436,13 @@ def test_parameter_options(dummy_env):
     from evaluation_system.api.parameters import SelectField, SolrField
 
     # Arguments of SelectField
-    with pytest.raises(KeyError):
+    with pytest.raises(TypeError):
         SelectField()
     opts = {"key": "val"}
     p = SelectField(options=opts)
     assert opts == p.options
     # Arguments of SolrField
-    with pytest.raises(KeyError):
+    with pytest.raises(TypeError):
         SolrField()
     p = SolrField(facet="variable")
     # defaults:
