@@ -106,9 +106,12 @@ setup(
     install_requires=[
         "appdirs",
         "GitPython",
+        "dask",
         "Django",
         "humanize",
+        "h5netcdf",
         "mysqlclient",
+        "netCDF4",
         "numpy",
         "pymysql",
         "pandas",
@@ -117,6 +120,7 @@ setup(
         "toml",
         "toolz",
         "typing_extensions",
+        "xarray",
     ],
     setup_requires=["appdirs"],
     extras_require={

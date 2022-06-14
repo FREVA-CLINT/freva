@@ -45,7 +45,7 @@ def test_freva_databrowser_method(dummy_solr):
             "cmor_table",
             "product",
             "realm",
-            "data_type",
+            "dataset",
             "institute",
             "project",
             "time_frequency",
@@ -115,7 +115,7 @@ def test_search_facets(dummy_solr, capsys):
         for f in """cmor_table: aero,amon
 product: output1
 realm: aerosol,atmos
-data_type: cmip5
+dataset: cmip5
 institute: mohc
 project: cmip5
 time_frequency: mon
@@ -135,7 +135,7 @@ ensemble: r2i1p1,r7i2p1,r9i3p1
     all_facets = {
         "product": ["output1"],
         "realm": ["aerosol", "atmos"],
-        "data_type": ["cmip5"],
+        "dataset": ["cmip5"],
         "institute": ["mohc"],
         "project": ["cmip5"],
         "time_frequency": ["mon"],
@@ -169,7 +169,7 @@ def test_show_attributes(dummy_solr, capsys):
             "cmor_table",
             "product",
             "realm",
-            "data_type",
+            "dataset",
             "institute",
             "project",
             "time_frequency",
@@ -196,7 +196,7 @@ def test_solr_backwards(dummy_solr, capsys):
         for f in """cmor_table: amon
 product: output1
 realm: atmos
-data_type: cmip5
+dataset: cmip5
 institute: mohc
 project: cmip5
 time_frequency: mon

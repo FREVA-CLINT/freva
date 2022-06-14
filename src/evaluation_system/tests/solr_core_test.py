@@ -68,7 +68,7 @@ def test_ingest(dummy_solr):
         "product",
         "realm",
         "version",
-        "data_type",
+        "dataset",
         "institute",
         "file_name",
         "creation_time",

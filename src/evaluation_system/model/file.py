@@ -46,33 +46,54 @@ class DRSStructure:
     """List of subdirectory category names the values they refer to
         (e.g. ['model', 'experiment']).
     """
-    parts_dataset: list[str]
-    """The components of a dataset name (this data should also be found in parts_dir)."""
     parts_file_name: list[str]
     """Elements composing the file name (no ".nc" though)."""
     parts_time: str
     """Describes how the time part of the filename is formed."""
-    data_type: Activity
+    dataset: Activity
     """same value as this key structure (for reverse traverse)"""
     defaults: dict[str, str] = field(default_factory=dict)
     """list with values that "shouldn't" be required to be changed (e.g. for
         observations, project=obs4MIPS)
     """
-    parts_versioned_dataset: Optional[list[str]] = None
-    """If this datasets are versioned then define the version structure of them
-        (i.e. include the version number in the dataset name).
-    """
 
     def __post_init__(self) -> None:
         self.root_dir = str(Path(self.root_dir).expanduser().absolute())
+        self.parts_dataset: list[str] = [
+            "project",
+            "product",
+            "institute",
+            "model",
+            "experiment",
+            "time_frequency",
+            "realm",
+            "cmor_table",
+            "ensemble",
+            "variable",
+        ]
+        self.parts_versioned_dataset: list[str] = [
+            "project",
+            "product",
+            "institute",
+            "model",
+            "experiment",
+            "time_frequency",
+            "realm",
+            "cmor_table",
+            "ensemble",
+            "version",
+            "variable",
+        ]
 
     @classmethod
-    def from_dict(cls, drs_dict: dict[str, Any]) -> DRSStructure:
+    def from_dict(cls, dataset: str, drs_dict: dict[str, Any]) -> DRSStructure:
         """Creates a DRSStructure from the given dict
 
         Parameters
         ----------
-        drs_dict
+        dataset:
+            Name of the DRSStructure (key in the drs_config.toml file)
+        drs_dict:
             Dictionary containing all DRSStructure fields
 
         Returns
@@ -83,16 +104,12 @@ class DRSStructure:
         d = cls(
             root_dir=drs_dict["root_dir"],
             parts_dir=drs_dict["parts_dir"],
-            parts_dataset=drs_dict["parts_dataset"],
             parts_file_name=drs_dict["parts_file_name"],
-            parts_time=drs_dict["parts_time"],
-            data_type=drs_dict["data_type"],
+            parts_time=drs_dict.get("parts_time", ""),
+            dataset=dataset,
         )
-        if "parts_versioned_dataset" in drs_dict:
-            d.parts_versioned_dataset = drs_dict["parts_versioned_dataset"]
         if "defaults" in drs_dict:
             d.defaults = drs_dict["defaults"]
-
         return d
 
 
@@ -144,8 +161,10 @@ class DRSFile:
             }
         self.dict = file_dict
         # trim the last slash if present in root_dir
-        if "root_dir" in self.dict and self.dict["root_dir"][-1] == "/":
-            self.dict["root_dir"] = self.dict["root_dir"][:-1]
+        if self.dict["root_dir"]:
+            self.dict["root_dir"] = str(
+                Path(self.dict["root_dir"]).expanduser().absolute()
+            )
 
     def __repr__(self) -> str:  # pragma: no cover
         """Get the JSON representation.
@@ -208,7 +227,7 @@ class DRSFile:
             if key not in self.dict["parts"]:
                 raise KeyError("Can't construct path as key %s is missing." % key)
             result = os.path.join(result, self.dict["parts"][key])
-        return result
+        return os.path.join(result, self.dict["parts"]["file_name"])
 
     def to_dataset(self, versioned: bool = False, to_path: bool = False) -> str:
         """Returns dataset information.
@@ -239,12 +258,10 @@ class DRSFile:
         """
         result = []
         structure = self.get_drs_structure()
-        if versioned:
+        if versioned and self.versioned:
             iter_parts = structure.parts_versioned_dataset
-            # checking this way as opposed to `if self.is_versioned()` appeases
-            # mypy's null check
-            if iter_parts is None:
-                raise ValueError(f"{self.drs_structure} is not versioned!")
+        elif versioned:
+            raise ValueError(f"{self.drs_structure} is not versioned!")
         else:
             iter_parts = structure.parts_dataset
 
@@ -286,7 +303,7 @@ class DRSFile:
         bool
             True is the dataset is versioned, False otherwise
         """
-        return self.get_drs_structure().parts_versioned_dataset is not None
+        return self.dict["parts"].get("version") is not None
 
     @property
     def version(self) -> Optional[str]:
@@ -302,10 +319,7 @@ class DRSFile:
         Optional[str]
             The version of the dataset or None if not versioned
         """
-        if "version" in self.dict["parts"]:
-            return self.dict["parts"]["version"]
-        else:
-            return None
+        return self.dict["parts"].get("version")
 
     @staticmethod
     def _get_structure_prefix_map() -> dict[str, Activity]:
@@ -403,7 +417,7 @@ class DRSFile:
             return structures
 
     @staticmethod
-    def from_path(path: str, activity: Optional[Activity] = None) -> DRSFile:
+    def from_path(path: os.PathLike, activity: Optional[Activity] = None) -> DRSFile:
         """Extract a DRSFile object out of a path.
 
         Parameters
@@ -424,16 +438,17 @@ class DRSFile:
             If the given path cannot be used in the given DRS Structure
             or any configured structure if `activity` is None.
         """
+        path = Path(path).expanduser().absolute()
         if activity is None:
-            activity = DRSFile.find_structure_from_path(path)[0]
-        path = os.path.abspath(path)
+            activity = DRSFile.find_structure_from_path(str(path))[0]
         structure = DRSFile._get_drs_structure(activity)
 
-        # trim root_dir
-        if not path.startswith(structure.root_dir + os.sep):
-            raise ValueError(f"File {path} does not correspond to {activity}")
-
-        parts = path[len(structure.root_dir) + 1 :].split(os.sep)
+        try:
+            parts = path.parent.relative_to(structure.root_dir).parts
+        except ValueError as error:
+            raise ValueError(
+                f"File {path} does not correspond to {activity}"
+            ) from error
 
         # check the number of parts
         if len(parts) != len(structure.parts_dir):
@@ -447,36 +462,25 @@ class DRSFile:
         # first the dir
         result: FileComponents = {
             "root_dir": structure.root_dir,
-            "parts": {},
+            "parts": dict(zip(structure.parts_dir, parts)),
         }
-        for i in range(len(structure.parts_dir)):
-            result["parts"][structure.parts_dir[i]] = parts[i]
-
+        result["parts"]["file_name"] = path.name
         # split file name
         # (extract .nc before splitting)
-        file_name_parts = cast(
-            List[Optional[str]], result["parts"]["file_name"][:-3].split("_")
-        )
+        file_name_parts: list[str] = path.with_suffix("").name.split("_")
         if (
             len(file_name_parts) == len(structure.parts_file_name) - 1
             and "fx" in file_name_parts
         ):
             # no time
-            file_name_parts.append(None)
-
-        try:
-            for i in range(len(structure.parts_file_name)):
-                if structure.parts_file_name[i] not in result["parts"]:
-                    result["parts"][structure.parts_file_name[i]] = file_name_parts[i]  # type: ignore [assignment]
-
-        except IndexError:
+            file_name_parts.append("")
+        if len(file_name_parts) != len(structure.parts_file_name):
             raise ValueError(
                 f"File {path} does not follow the expected naming scheme for {activity}"
             )
-
-        bl_file = DRSFile(result, drs_structure=activity)
-
-        return bl_file
+        for key, value in dict(zip(structure.parts_file_name, file_name_parts)).items():
+            result["parts"].setdefault(key, value)
+        return DRSFile(result, drs_structure=activity)
 
     def get_drs_structure(self) -> DRSStructure:
         """Returns the DRS structure used by this file.
@@ -591,7 +595,7 @@ class DRSFile:
         from evaluation_system.model.solr import SolrFindFiles
 
         if drs_structure is not None:
-            partial_dict["data_type"] = drs_structure
+            partial_dict["dataset"] = drs_structure
         if path_only:
             for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
                 yield path
@@ -613,7 +617,7 @@ class DRSFile:
 
         for a, structure in conf.items():
             activity = Activity(a)
-            ds = DRSStructure.from_dict(structure)
+            ds = DRSStructure.from_dict(activity, structure)
             DRSFile.DRS_STRUCTURE[activity] = ds
 
             path_prefix = ds.root_dir
@@ -624,7 +628,7 @@ class DRSFile:
                     [char not in ds.defaults[part] for char in "*?"]
                 ):
                     # but only use it if it's a plain string, no globing.
-                    path_prefix += "/" + ds.defaults[part]
+                    path_prefix += os.sep + ds.defaults[part]
                 else:
                     break
             DRSFile.DRS_STRUCTURE_PATH_TYPE[path_prefix] = activity
