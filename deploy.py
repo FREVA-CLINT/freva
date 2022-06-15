@@ -346,9 +346,10 @@ class Installer:
                         tmp_cfg.append(f"root_dir={root_dir}\n")
                     else:
                         tmp_cfg.append(line)
-            with open(config_dir / "evaluation_system.conf", "w") as fobj:
-                fobj.write("".join(tmp_cfg))
             eval_conf_file = config_dir / "evaluation_system.conf"
+            if not eval_conf_file.exists():
+                with open(eval_conf_file, "w") as fobj:
+                    fobj.write("".join(tmp_cfg))
         for key in (
             "preview_path",
             "project_data",
@@ -373,31 +374,37 @@ class Installer:
         )
         with eval_conf_file.open("r") as fp:
             config_parser.read_file(fp)
-        (eval_conf_file.parent / "completions").mkdir(parents=True, exist_ok=True)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
         completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
         for shell in ("fish", "csh", "sh"):
-            with (eval_conf_file.parent / f"activate_{shell}").open("w") as f:
+            activate_file = eval_conf_file.parent / f"activate_{shell}"
+            source_file = eval_conf_file.parent / "completions" / f"complete_{shell}"
+            try:
+                source_file.parent.mkdir(parents=True, exist_ok=True)
+                with (activate_file).open("w") as f:
+                    f.write(
+                        shell_scripts[shell].format(
+                            root_dir=install_prefix,
+                            eval_conf_file=eval_conf_file,
+                            completion=completions[shell].format(root_dir=root_dir),
+                        )
+                    )
+                with (source_file).open("w") as f:
+                    f.write(completions[shell].format(root_dir=install_prefix))
+            except Exception as error:
+                logging.warning("Could not create loadscripts: %s", str(error))
+        try:
+            with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
                 f.write(
-                    shell_scripts[shell].format(
+                    MODULE.format(
+                        version=find_version("src/evaluation_system", "__init__.py"),
                         root_dir=install_prefix,
                         eval_conf_file=eval_conf_file,
-                        completion=completions[shell].format(root_dir=root_dir),
+                        project=config_parser["evaluation_system"]["project_name"],
                     )
                 )
-            with (eval_conf_file.parent / "completions" / f"complete_{shell}").open(
-                "w"
-            ) as f:
-                f.write(completions[shell].format(root_dir=install_prefix))
-        with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
-            f.write(
-                MODULE.format(
-                    version=find_version("src/evaluation_system", "__init__.py"),
-                    root_dir=install_prefix,
-                    eval_conf_file=eval_conf_file,
-                    project=config_parser["evaluation_system"]["project_name"],
-                )
-            )
+        except Exception as error:
+            logging.warning("Could not create modulefile: %s", str(error))
 
     def unittests(self):
         """Run unittests."""
