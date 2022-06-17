@@ -6,10 +6,11 @@ import os
 from pathlib import Path
 from typing import Any, Generator, Iterator, Union
 
-
+import lazy_import
 from evaluation_system.misc import config
 from evaluation_system.misc.exceptions import ConfigurationException
-import xarray as xr
+
+xr = lazy_import.lazy_module("xarray")
 
 
 class DataReader:
@@ -51,12 +52,7 @@ class DataReader:
             .expanduser()
             .absolute()
         )
-        try:
-            project_name = config.get("project_name")
-        except ConfigurationException:
-            config.reloadConfiguration()
-            project_name = config.get("project_name")
-        return root_dir / f"{project_name}-plugin-results"
+        return root_dir
 
     def __iter__(self) -> Generator[Path, None, None]:
         """Iterate over all found data files."""

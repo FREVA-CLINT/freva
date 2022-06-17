@@ -526,8 +526,8 @@ class PluginAbstract(abc.ABC):
         """
         _, plugin_version = repository.get_version(self.class_basedir)
         plugin_version = plugin_version or "no_plugin_version"
-        root_dir = DataReader.get_output_directory()
-        product_dir = "user-" + self._user.getName()
+        product_dir = f"{config.get('project_name')}-plugin-results"
+        root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
         drs_config = dict(
             project=root_dir.name,
             product=product_dir,

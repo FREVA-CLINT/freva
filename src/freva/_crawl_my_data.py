@@ -1,11 +1,12 @@
 """Update user data in the apache solr data search server."""
 
 from __future__ import annotations
+import logging
 from pathlib import Path
 from typing import Optional, Union
 
 from evaluation_system.model.user import User
-from evaluation_system.misc import config
+from evaluation_system.misc import config, logger
 from evaluation_system.misc.exceptions import ValidationError, ConfigurationException
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.api.user_data import DataReader
@@ -15,13 +16,16 @@ __all__ = ["crawl_my_data"]
 
 def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> tuple[Path, ...]:
 
-    root_path = DataReader.get_output_directory()
-    user_root_path = root_path / f"user-{User().getName()}"
+    try:
+        root_path = DataReader.get_output_directory() / f"user-{User().getName()}"
+    except ConfigurationException:
+        config.reloadConfiguration()
+        root_path = DataReader.get_output_directory() / f"user-{User().getName()}"
     user_paths: tuple[Path, ...] = ()
-    for crawl_dir in crawl_dirs or (user_root_path,):
-        crawl_dir = Path(crawl_dir or user_root_path).expanduser().absolute()
+    for crawl_dir in crawl_dirs or (root_path,):
+        crawl_dir = Path(crawl_dir or root_path).expanduser().absolute()
         try:
-            _ = crawl_dir.relative_to(root_path)
+            cr_dir = crawl_dir.relative_to(root_path)
         except ValueError as error:
             raise ValidationError(
                 f"You are only allowed to crawl data in {root_path}"
@@ -58,9 +62,17 @@ def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") ->
     """
     if dtype not in ("fs",):
         raise NotImplementedError("Only data on POSIX file system is supported")
-    print("Status: crawling ...", end="")
-    for crawl_dir in _validate_user_dirs(*crawl_dirs):
-        SolrCore.load_fs(
-            crawl_dir, chunk_size=200, abort_on_errors=True, drs_type="crawl_my_data"
-        )
-    print("ok", flush=True)
+    log_level = logger.level
+    try:
+        logger.setLevel(logging.ERROR)
+        print("Status: crawling ...", end="", flush=True)
+        for crawl_dir in _validate_user_dirs(*crawl_dirs):
+            SolrCore.load_fs(
+                crawl_dir,
+                chunk_size=1000,
+                abort_on_errors=True,
+                drs_type=DataReader.drs_specification,
+            )
+        print("ok", flush=True)
+    finally:
+        logger.setLevel(log_level)
