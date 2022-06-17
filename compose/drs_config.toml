@@ -1,3 +1,7 @@
+[cmip6]
+root_dir = "/not/a/dir"
+drs_format = "cmip6"
+
 [cmip5]
 root_dir = "/mnt/data4freva/model/global"
 parts_dir = [ "project", "product", "institute", "model", "experiment", "time_frequency",
@@ -37,7 +41,7 @@ project = "reanalysis"
 product = "reanalysis"
 
 [crawl_my_data]
-root_dir = "~/data4freva"
+root_dir = "/tmp/user_data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable"
