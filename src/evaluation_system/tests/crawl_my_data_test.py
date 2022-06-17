@@ -146,17 +146,6 @@ def test_get_file_name_from_metadata(valid_data_files: Path) -> None:
         data_reader.file_name_from_metdata(in_file)
 
 
-def test_get_ouput_directory(dummy_config):
-    from evaluation_system.api.user_data import DataReader
-    from evaluation_system.misc import config
-
-    old_config = config._config.copy()
-    name = f"{config.get('project_name')}-plugin-results"
-    config._config = {}
-    assert DataReader.get_output_directory().name == name
-    config._config = old_config
-
-
 def test_iter_data_files(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
@@ -182,9 +171,7 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files):
 
     input_files = list(valid_data_files.rglob("*.nc"))
     dummy_plugin.add_output_to_databrowser(valid_data_files)
-    assert len(list(SolrFindFiles.search(latest_version=False))) == len(
-        input_files
-    ) + len(dummy_crawl)
+    assert len(list(SolrFindFiles.search(latest_version=False))) == len(input_files)
 
 
 def test_crawl_my_data(dummy_crawl, capsys, dummy_env, valid_data_files):
@@ -195,14 +182,11 @@ def test_crawl_my_data(dummy_crawl, capsys, dummy_env, valid_data_files):
     from evaluation_system.model.solr import SolrFindFiles
 
     run(["--data-type=fs"])
-    input_files = list(valid_data_files.rglob("*.nc"))
     captured = capsys.readouterr()
     assert "Status: crawling ..." in captured.out
     assert "ok" in captured.out
-    assert len(list(SolrFindFiles.search())) == len(dummy_crawl) + len(input_files)
-    assert len(list(SolrFindFiles.search(latest_version=False))) == len(
-        dummy_crawl
-    ) + len(input_files)
+    assert len(list(SolrFindFiles.search())) == len(dummy_crawl)
+    assert len(list(SolrFindFiles.search(latest_version=False))) == len(dummy_crawl)
     with pytest.raises(NotImplementedError):
         crawl_my_data(dtype="something")
     with pytest.raises(SystemExit):
@@ -232,4 +216,5 @@ def test_validate_path(root_path_with_empty_config):
     from freva._crawl_my_data import _validate_user_dirs
 
     root_path_str = str(root_path_with_empty_config)
+    print(root_path_str)
     assert _validate_user_dirs(root_path_str) == (root_path_with_empty_config,)

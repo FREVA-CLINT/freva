@@ -142,7 +142,7 @@ def temp_dir():
         yield Path(td)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
 
     # At this point files have been ingested into the server already,
@@ -151,11 +151,11 @@ def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
     from evaluation_system.misc import config
 
     root_path = Path(config.get_drs_config()["crawl_my_data"]["root_dir"])
-    crawl_dir = root_path / "freva-ces-plugin-results" / f"user-{getuser()}"
+    crawl_dir = root_path / f"user-{getuser()}"
     user_files = []
     for file in map(Path, dummy_solr.files):
         # Drop the version from the files
-        file_parts = file.parts[2:-2] + (file.parts[-1],)
+        file_parts = file.parts[1:-2] + (file.parts[-1],)
         crawl_file = crawl_dir.joinpath(*file_parts)
         crawl_file.parent.mkdir(exist_ok=True, parents=True)
         crawl_file.touch()
@@ -383,7 +383,7 @@ def root_path_with_empty_config(dummy_env):
     from evaluation_system.misc import config
 
     root_path = Path(config.get_drs_config()["crawl_my_data"]["root_dir"])
-    crawl_dir = root_path / "freva-ces-plugin-results" / f"user-{getuser()}"
+    crawl_dir = root_path / f"user-{getuser()}" / "freva-ces-plugin-results"
     config._config = {}
     yield crawl_dir
     config.reloadConfiguration()
