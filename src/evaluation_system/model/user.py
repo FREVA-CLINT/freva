@@ -152,13 +152,7 @@ file that is handled by :class:`evaluation_system.api.config`."""
     def _getUserBaseDir(self):
         if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
             return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))
-        elif self._dir_type == config.DIRECTORY_STRUCTURE.CENTRAL:
-            return os.path.join(
-                config.get(config.BASE_DIR_LOCATION),
-                config.get(config.BASE_DIR),
-                str(self.getName()),
-            )
-        elif self._dir_type == config.DIRECTORY_STRUCTURE.SCRATCH:
+        else:
             return os.path.join(
                 config.get(config.BASE_DIR_LOCATION),
                 str(self.getName()),
