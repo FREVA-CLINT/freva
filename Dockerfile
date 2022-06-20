@@ -55,15 +55,6 @@ RUN set -ex && \
   chown -R ${NB_USER}:${NB_GROUP} ${HOME} ${MYSQL_HOME} ${SOLR_HOME} &&\
   chmod +x /opt/evaluation_system/bin/*
 
-# Get the configuration from the config repo
-RUN set -e &&\
-    wget https://gitlab.dkrz.de/freva/freva-service-config/-/archive/main/freva-service-config-main.tar.gz -O freva-config.tar.gz &&\
-    tar xzf freva-config.tar.gz -C /tmp &&\
-    mv /tmp/freva-service-config-init /tmp/freva-config &&\
-    rm freva-config.tar.gz
-
-
-
 # Prepare the mysql server
 RUN set -x &&\
   echo "[mysqld]" > /etc/mysql/my.cnf &&\
@@ -75,7 +66,7 @@ RUN set -x &&\
   echo "max_connections = 4" >> /etc/mysql/my.cnf &&\
   echo "key_buffer_size = 8M" >> /etc/mysql/my.cnf &&\
   cp /tmp/evaluation_system/.docker/*.sql ${MYSQL_HOME}/tmpl/ &&\
-  cp /tmp/freva-config/mysql/*.sql ${MYSQL_HOME}/tmpl/ &&\
+  cp /tmp/evaluation_system/compose/config/mysql/*.sql ${MYSQL_HOME}/tmpl/ &&\
   echo "mysqld --initialize" > /tmp/mysql_init &&\
   echo "nohup mysqld --init-file=${MYSQL_HOME}/tmpl/create_user.sql &" >> /tmp/mysql_init &&\
   echo "mysqladmin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --silent --wait=10 ping || exit 1" >> /tmp/mysql_init &&\
@@ -89,8 +80,8 @@ RUN set -e &&\
   /opt/solr/docker/scripts/init-var-solr && \
   /opt/solr/docker/scripts/precreate-core latest &&\
   /opt/solr/docker/scripts/precreate-core files &&\
-  cp /tmp/freva-config/solr/managed-schema.xml /var/solr/data/latest/conf/managed-schema.xml &&\
-  cp /tmp/freva-config/solr/managed-schema.xml /var/solr/data/files/conf/managed-schema.xml &&\
+  cp /tmp/evaluation_system/compose/config/solr/managed-schema.xml /var/solr/data/latest/conf/managed-schema.xml &&\
+  cp /tmp/evaluation_system/compose/config/solr/managed-schema.xml /var/solr/data/files/conf/managed-schema.xml &&\
   find /var/solr -type d -print0 | xargs -0 chmod 0771 && \
   find /var/solr -type f -print0 | xargs -0 chmod 0661 && \
   cp -r /var/solr ${SOLR_HOME}
