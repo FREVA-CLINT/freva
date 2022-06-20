@@ -57,7 +57,7 @@ RUN set -ex && \
 
 # Get the configuration from the config repo
 RUN set -e &&\
-    wget https://gitlab.dkrz.de/freva/freva-service-config/-/archive/init/freva-service-config-init.tar.gz -O freva-config.tar.gz &&\
+    wget https://gitlab.dkrz.de/freva/freva-service-config/-/archive/main/freva-service-config-main.tar.gz -O freva-config.tar.gz &&\
     tar xzf freva-config.tar.gz -C /tmp &&\
     mv /tmp/freva-service-config-init /tmp/freva-config &&\
     rm freva-config.tar.gz
