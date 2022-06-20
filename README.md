@@ -17,15 +17,18 @@ interface for the plugins.
 
 Currently Freva comes in three different flavours:
 
-- a python module that allows the usage of Freva in python environments, like jupyter notebooks
-- a command line interface (cli) that allows using Freva from the command lines and shell scripts.
+- a python module that allows the usage of Freva in python environments, like
+  jupyter notebooks
+- a command line interface (cli) that allows using Freva from the command
+  lines and shell scripts.
 - a web user interface (web-ui)
 
 
 You can play with a test version on binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/freva-dev)
 
 ## Where can I find the Freva user documentation?
-A more detailed overview on the usage of freva can be found on the [freva user documentation page](https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html)
+A more detailed overview on the usage of freva can be found on the
+[freva user documentation page](https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html)
 
 
 
@@ -44,8 +47,10 @@ To start development with freva clone the repository and its submodules:
 git clone --recursive https://gitlab.dkrz.de/freva/evaluation_system.git
 ```
 
-A basic local development setup can be created using [Docker](https://docs.docker.com/engine/install/) and
-[`docker-compose`](https://docs.docker.com/compose/install/) (Linux users need to install it separately).
+A basic local development setup can be created using
+[Docker](https://docs.docker.com/engine/install/) and
+[`docker-compose`](https://docs.docker.com/compose/install/)
+(Linux users need to install it separately).
 
 This also requires that the `.envrc` file is sourced.
 
@@ -53,8 +58,9 @@ This also requires that the `.envrc` file is sourced.
 docker-compose up -d
 ```
 
-Dummy data can be injected into a running `docker-compose` environment with `make dummy-data`. This will add some example
-files into Solr and run an example plugin a few times to add some history data.
+Dummy data can be injected into a running `docker-compose` environment with
+`make dummy-data`. This will add some example files into solr and run an
+example plugin a few times to add some history data.
 
 When finished, tear down the environment with
 
@@ -81,9 +87,11 @@ The conda environment can be deactivated using the following command:
 ```
 conda deactivate
 ```
-_Note_: The conda install command can be slow. If you want to speed up the installation
-        of the environment we recommend to install the `mamba` package in the
-        anaconda `base` environment and use the `mamba` command to create the environment:
+_Note_: The conda install command can be slow. If you want to speed up the
+installation of the environment we recommend to install the `mamba` package in
+the anaconda `base` environment and use the `mamba` command to create the
+environment:
+
 ```
 conda install mamba
 mamba env create -f dev-environment.yml
@@ -92,17 +100,20 @@ source .envrc
 
 ### Installing the python package
 
-Use the `pip install` command to install the actual python core packages into your activated environment:
+Use the `pip install` command to install the actual python core packages into
+your activated environment:
 
 ```bash
 pip install -e .[test]
 ```
 
-The `-e` flag will link the source code into your python environment, which can be useful for development purpose.
+The `-e` flag will link the source code into your python environment, which
+can be useful for development purpose.
 
 ### Running tests and creating a test coverage report
 
-The system can be tested with a `Makefile`. To run the tests and generate a simple test coverage report simply use the make command:
+The system can be tested with a `Makefile`. To run the tests and generate a
+simple test coverage report simply use the make command:
 
 ```bash
 make test
