@@ -1,4 +1,4 @@
 [submodule "compose/config"]
 	path = compose/config
 	url = https://gitlab.dkrz.de/freva/freva-service-config.git
-	branch = init
+	branch = main
