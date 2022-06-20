@@ -13,7 +13,7 @@ ENV SOLR_HOME=${HOME}/.solr \
 
 ## Install Packages
 USER root
-RUN set -ex && \
+RUN set -x && \
   apt-get -y update && apt-get -y upgrade &&\
   apt-get -y install acl dirmngr gpg lsof procps netcat wget gosu tini \
              sudo git make vim python3 ffmpeg imagemagick\
@@ -41,7 +41,7 @@ ENV NB_USER=${NB_USER} \
 COPY . /tmp/evaluation_system
 
 # Setup users/groups and create directory structure
-RUN set -ex && \
+RUN set -x && \
   groupadd -r --gid "$NB_GID" "$NB_GROUP" && \
   adduser --uid "$NB_UID" --gid "$NB_GID" --gecos "Default user" \
   --shell /usr/bin/zsh --disabled-password "$NB_USER" && \
@@ -76,7 +76,7 @@ RUN set -x &&\
 
 
 # Prepare the solr server
-RUN set -e &&\
+RUN \
   /opt/solr/docker/scripts/init-var-solr && \
   /opt/solr/docker/scripts/precreate-core latest &&\
   /opt/solr/docker/scripts/precreate-core files &&\
@@ -88,7 +88,6 @@ RUN set -e &&\
 
 RUN \
   if [ "$binder" = "true" ]; then\
-    set -e && \
     sudo -u $NB_USER git config --global init.defaultBranch main && \
     sudo -u $NB_USER git config --global user.email "freva@my.binder" &&\
     sudo -u $NB_USER git config --global user.name "Freva" &&\
