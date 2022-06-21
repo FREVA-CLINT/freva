@@ -110,6 +110,7 @@ setup(
         "Django",
         "humanize",
         "h5netcdf",
+        "lazy-import",
         "mysqlclient",
         "netCDF4",
         "numpy",

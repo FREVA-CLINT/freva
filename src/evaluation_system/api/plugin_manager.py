@@ -144,7 +144,6 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
     __plugins_meta_user[user_name] = {}
     extra_plugins = []
     if os.environ.get(PLUGIN_ENV):
-        print("blabla", os.environ[PLUGIN_ENV])
         # now get all modules loaded from the environment
         for path, module_name in plugin_env_iter(os.environ[PLUGIN_ENV]):
             # extend path to be exact by resolving all

@@ -71,7 +71,7 @@ class HistoryCli(BaseParser):
             default=None,
             type=str,
             nargs="+",
-            help="Select entry id(s) (e.g. entry_ids=1,2 or entry_ids=5)",
+            help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 )",
         )
         subparser.add_argument(
             "--debug",

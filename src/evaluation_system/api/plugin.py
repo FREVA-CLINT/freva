@@ -479,7 +479,7 @@ class PluginAbstract(abc.ABC):
         ensemble: str = "r0i0p0",
         time_frequency: Optional[str] = None,
         variable: Optional[str] = None,
-    ) -> None:
+    ) -> Path:
         """Add Plugin output data to the solr database.
 
         This methods crawls the plugin output data directory and adds
@@ -523,11 +523,15 @@ class PluginAbstract(abc.ABC):
         variable: str, default: None
             Default variable facet. If None is given (default) the variable
             will be retrieved from the output files.
+
+        Returns
+        -------
+            Path: Path to the new directory that containes the data.
         """
         _, plugin_version = repository.get_version(self.class_basedir)
         plugin_version = plugin_version or "no_plugin_version"
-        root_dir = DataReader.get_output_directory()
-        product_dir = "user-" + self._user.getName()
+        product_dir = f"{config.get('project_name')}-plugin-results"
+        root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
         drs_config = dict(
             project=root_dir.name,
             product=product_dir,

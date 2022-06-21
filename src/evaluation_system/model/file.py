@@ -617,7 +617,11 @@ class DRSFile:
 
         for a, structure in conf.items():
             activity = Activity(a)
-            ds = DRSStructure.from_dict(activity, structure)
+            try:
+                ds = DRSStructure.from_dict(activity, structure)
+            except KeyError:
+                # Missing information, skip this entry
+                continue
             DRSFile.DRS_STRUCTURE[activity] = ds
 
             path_prefix = ds.root_dir
