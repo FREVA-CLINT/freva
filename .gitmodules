@@ -1,15 +1,4 @@
-[submodule "tools/movieplotter"]
-	path = tools/movieplotter
-	url = ssh://miklip.dkrz.de/miklip/integration/repositories/movie_plotter
-[submodule "tools/monsoon"]
-	path = tools/monsoon
-	url = /miklip/integration/repositories/monsoon.git
-[submodule "tools/movie_plotter"]
-	path = tools/movie_plotter
-	url = ssh://u290038@miklip.dkrz.de/miklip/integration/repositories/movie_plotter.git
-[submodule "tools/stormtrack"]
-	path = tools/stormtrack
-	url = /miklip/integration/repositories/stormtrack.git
-[submodule "tools/integ_vecap"]
-	path = tools/integ_vecap
-	url = /miklip/integration/repositories/integ_vecap.git
+[submodule "compose/config"]
+	path = compose/config
+	url = https://gitlab.dkrz.de/freva/freva-service-config.git
+	branch = main

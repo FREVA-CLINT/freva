@@ -143,22 +143,12 @@ file that is handled by :class:`evaluation_system.api.config`."""
     def getUserScratch(self):
         """:returns: the path to the user's scratch directory.
         :rtype: str"""
-        path = config.get(config.SCRATCH_DIR)
-
-        path = path.replace("$USER", self.getName())
-
-        return path
+        return self._getUserBaseDir()
 
     def _getUserBaseDir(self):
         if self._dir_type == config.DIRECTORY_STRUCTURE.LOCAL:
             return os.path.join(self.getUserHome(), config.get(config.BASE_DIR))
-        elif self._dir_type == config.DIRECTORY_STRUCTURE.CENTRAL:
-            return os.path.join(
-                config.get(config.BASE_DIR_LOCATION),
-                config.get(config.BASE_DIR),
-                str(self.getName()),
-            )
-        elif self._dir_type == config.DIRECTORY_STRUCTURE.SCRATCH:
+        else:
             return os.path.join(
                 config.get(config.BASE_DIR_LOCATION),
                 str(self.getName()),

@@ -9,6 +9,8 @@ variables:
     PYTHON_VERSION: "3.10"
     FREVA_ENV: "/tmp/freva/bin"
     EVALUATION_SYSTEM_CONFIG_FILE: ".docker/evaluation_system.conf"
+    GIT_SUBMODULE_STRATEGY: recursive
+
 
 lint:
     image: python
