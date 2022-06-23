@@ -4,9 +4,9 @@ The plugin API (Application Program Interface) is the central connection
 of a user plugin code and the Freva system infrastructure. The API
 enables the users to conveniently set up, run, and keep track of applied plugins.
 The reference below gives an overview of how to set up user defined plugins.
-For this purpose we assume that a plugin core (without freva) already exists
+For this purpose we assume that a plugin core (without Freva) already exists
 - for example as a command line interface tool (cli). Once such a cli has been
-set up a interface to freva must be defined. This reference will introduce
+set up a interface to Freva must be defined. This reference will introduce
 the possible definition options below.
 
 Here we assume that the above mentioned cli code is stored in a directory
@@ -16,7 +16,7 @@ excecuted via:
 
         cli/calculate -c 5 -n 6.4 --overwrite --name=Test
 
-With help of this API a freva plugin can be creted in ``/mnt/freva/plugin/new_plugin/plugin.py``
+With help of this API a Freva plugin can be created in ``/mnt/freva/plugin/new_plugin/plugin.py``
 
 """
 from __future__ import annotations
@@ -68,7 +68,7 @@ ConfigDictType = Dict[str, Optional[Union[str, float, int, bool]]]
 
 class PluginAbstract(abc.ABC):
     """Base class that is used as a template for all Freva plugins.
-    Any api wrapper class defining freva plugins must inherit from this class.
+    Any api wrapper class defining Freva plugins must inherit from this class.
 
     Parameters
     ----------
@@ -174,6 +174,7 @@ class PluginAbstract(abc.ABC):
     Another approach would be forcing self-registration of a
     class in the :ref:`__metaclass__ <python:datamodel>` attribute when the
     class is implemented.
+    
     """
 
     special_variables: Optional[dict[str, str]] = None
@@ -261,9 +262,7 @@ class PluginAbstract(abc.ABC):
 
     @property
     def __long_description__(self) -> str:
-        """Long description of the plugin.
-
-        This property is not mandatory"""
+        """Optional long description of this plugin."""
         return ""
 
     @property
@@ -462,9 +461,9 @@ class PluginAbstract(abc.ABC):
         self.call(f'setsid nohup bash -c "kill -9 -- -{PID}"  </dev/null &>/dev/null &')
         raise SystemExit
 
-    @deprecated_method("PluginAbstract", "add_output_to_solr")
+    @deprecated_method("PluginAbstract", "add_output_to_databrowser")
     def linkmydata(self, *args, **kwargs):  # pragma: no cover
-        """Deprecated version of the :class:`add_output_to_solr` method.
+        """Deprecated version of the :class:`add_output_to_databrowser` method.
 
         :meta private:
         """

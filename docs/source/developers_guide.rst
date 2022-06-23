@@ -118,7 +118,7 @@ plugin environment.
 .. note::
 
     The ``Makefile`` will use the ``conda`` command. If anaconda is not available
-    by default on your system you can load the freva environment, which ships
+    by default on your system you can load the Freva environment, which ships
     anaconda.
 
 Afterwards you can refer to the :ref:`PluginAPI` and :ref:`ParameterAPI` docs to
