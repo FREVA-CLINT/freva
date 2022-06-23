@@ -93,7 +93,7 @@ class PluginAbstract(abc.ABC):
     Minimal Example
     ---------------
 
-    In order to configure and call this cli, a freva wrapper api class will
+    In order to configure and call this cli, a Freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
     A minimal configuration example would look as follows:
 
@@ -174,7 +174,7 @@ class PluginAbstract(abc.ABC):
     Another approach would be forcing self-registration of a
     class in the :ref:`__metaclass__ <python:datamodel>` attribute when the
     class is implemented.
-    
+
     """
 
     special_variables: Optional[dict[str, str]] = None
