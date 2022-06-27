@@ -14,10 +14,10 @@ New Features
     - ``freva --databrowser`` → ``freva databrowser``,
     - ``freva --plugin`` → ``freva plugin``
     - ``freva --history`` → ``freva history``
-    - ``freva --esgf`` → ``freva history``
+    - ``freva --esgf`` → ``freva esgf``
     - ``freva --crawl_my_data`` → ``freva crawl-my-data``
 - Add new commands as alternative for freva sub commands
-    - ``freva-databrowser`` = ``freva databrowser`` ...
+    - ``freva-databrowser`` = ``freva databrowser`` etc
 - Argument completion works for all sub commands, including plugin setup.
 - Interactive jobs can be controlled from the web user interface
 - Output of interactive jobs can be displayed in the web user interface
@@ -37,7 +37,8 @@ Breaking changes
 - The following methods in the :ref:`ParameterAPI` have been renamed:
     - :py:meth:`parseArguments` → :py:meth:`parse_arguments`
 - `add_output_to_databrowser` formerly `linkmydata` does not infer meta data
-  from file and directory structure anymore
+  from file and directory structure anymore (i.e., does not need to
+  follow a particular folder path and naming convention)
 
 Deprecations
 ~~~~~~~~~~~~
@@ -53,3 +54,5 @@ Documentations
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Add support for different workload managers
+- Install ``freva`` in dedicated anaconda environment
+- Install each Freva plugin in dedicated anaconda environment
