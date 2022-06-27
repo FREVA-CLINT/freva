@@ -42,6 +42,8 @@ and best practices when it comes to plugin development.
    developers_guide
    plugin_api
    FAQ.ipynb
+   whats-new
+
 
 
 
