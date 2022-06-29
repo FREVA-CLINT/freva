@@ -121,7 +121,7 @@ There are many more options for defining a value for a given key:
 |                                             | expression (yes! you   |
 |                                             | might use any regular  |
 |                                             | expression to find     |
-|                                             | what you want.         |
+|                                             | what you want.)        |
 +---------------------------------------------+------------------------+
 | attribute=value1 attribute=value2           | Search for files       |
 |                                             | containing either      |
@@ -326,7 +326,7 @@ sub-command can do that:
 
 
 
-Let’s get the last 3 entries (default is 10 entries) of the ``dummyplugin``
+Let’s get the last entry (default is 10 entries) of the ``dummyplugin``
 plugin history
 
 .. code:: bash
@@ -373,3 +373,42 @@ can use the ``--return-command`` option to get the command that was used:
    from subprocess import run, PIPE
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
+
+Adding own datasets: the ``crawl-my-data`` command
+----------------------------------------------------------------
+
+Freva also offers the possibility to the user to share own generated datasets 
+with the rest of the project making them searchable via ``freva-databrowser``.
+These datasets must be placed under a particular project folder, following a faceted 
+structure so Freva can recognise it (e.g., ``$ROOT_PATH/$FACETED_PATH/$FILENAME.nc``). 
+Although this structure can be personalised by the Freva administrators according to the necessities of each project, by default is set up as:
+
+.. code:: bash
+
+   ROOT_PATH = {FREVA_INSTANCE}/crawl_my_data
+   FACETED_PATH = {project}/{product}/{institute}/{model}/{experiment}/{time_frequency}/{realm}/{variable}/{ensemble}
+   FILENAME = {variable}_{cmor_table}_{model}_{experiment}_{ensemble}_{time}
+   
+
+For this special type of data ``project=user-$USER``. Let’s inspect the help menu 
+of the ``freva-crawl-my-data`` or ``freva crawl-my-data`` command:
+
+.. code:: bash
+
+    freva-crawl-my-data --help
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "crawl-my-data", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+
+Currently, only files on the file system (``--data-type {fs}``) are supported.
+
+.. note::
+   Freva allows plugins to directly index output datasets via  
+   :class:`add_output_to_databrowser` method (``linkmydata`` is the deprecated
+   method of former Freva versions). For more information please
+   take a look at :ref:`PluginAPI`.
