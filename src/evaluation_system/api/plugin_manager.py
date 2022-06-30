@@ -52,6 +52,7 @@ from typing_extensions import TypedDict
 from django.db.models.query import QuerySet
 from PIL import Image
 
+from evaluation_system import __version__ as version_api
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
 from evaluation_system.misc import utils
@@ -704,8 +705,7 @@ def run_tool(
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = cast(
-            Dict[str, str],
-            load_scheduled_conf(plugin_name, scheduled_id, user),
+            Dict[str, str], load_scheduled_conf(plugin_name, scheduled_id, user),
         )
     if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -1017,9 +1017,7 @@ def get_command_config_from_row(
     return result
 
 
-def get_command_string_from_config(
-    config: CommandConfig,
-) -> str:
+def get_command_string_from_config(config: CommandConfig,) -> str:
     """Get the command string for a command
 
     Parameters
@@ -1048,9 +1046,7 @@ def get_command_string_from_config(
 
 
 def get_command_string_from_row(
-    history_row: History,
-    command_name: str = "freva-plugin",
-    command_options: str = "",
+    history_row: History, command_name: str = "freva-plugin", command_options: str = "",
 ) -> str:
     """Get the command string for a command
 
@@ -1269,21 +1265,16 @@ def get_version(pluginname: str) -> tuple[int, int, int]:
     p = get_plugin_instance(pluginname)
     version = repr(p.__version__)
     (repos_tool, version_tool) = get_plugin_version(pluginname)
-    (repos_api, version_api) = get_plugin_version("self")
     version_id = (
         User()
         .getUserDB()
-        .getVersionId(
-            tool_name, version, repos_api, version_api, repos_tool, version_tool
-        )
+        .getVersionId(tool_name, version, "", version_api, repos_tool, version_tool)
     )
     if version_id is None:
         version_id = (
             User()
             .getUserDB()
-            .newVersion(
-                tool_name, version, repos_api, version_api, repos_tool, version_tool
-            )
+            .newVersion(tool_name, version, "", version_api, repos_tool, version_tool)
         )
     return version_id
 
@@ -1347,8 +1338,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         a 2 element tuple when given a well formed string.
     """
     return map(
-        lambda item: tuple([e.strip() for e in item.split(",")]),
-        envvar.split(":"),
+        lambda item: tuple([e.strip() for e in item.split(",")]), envvar.split(":"),
     )
 
 
