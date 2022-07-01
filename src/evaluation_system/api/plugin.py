@@ -528,7 +528,7 @@ class PluginAbstract(abc.ABC):
         -------
             Path: Path to the new directory that containes the data.
         """
-        _, plugin_version = repository.get_version(self.class_basedir)
+        _, plugin_version = repository.get_version(self.wrapper_file)
         plugin_version = plugin_version or "no_plugin_version"
         product_dir = f"{config.get('project_name')}-plugin-results"
         root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
@@ -780,11 +780,15 @@ class PluginAbstract(abc.ABC):
     @property
     def class_basedir(self) -> str:
         """Get absolute path to the module defining the plugin class."""
-        module_path: Optional[str] = sys.modules[self.__module__].__file__
-        subclass_file = os.path.abspath(module_path or "")
         return os.path.join(
-            *self._split_path(subclass_file)[: -len(self.__module__.split("."))]
+            *self._split_path(self.wrapper_file)[: -len(self.__module__.split("."))]
         )
+
+    @property
+    def wrapper_file(self) -> str:
+        """Get the location of the wrapper file."""
+        module_path: Optional[str] = sys.modules[self.__module__].__file__
+        return os.path.abspath(module_path or "")
 
     @property
     def user(self) -> User:
