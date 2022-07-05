@@ -25,9 +25,7 @@ class PluginCli(BaseParser):
     desc = "Apply data analysis plugin."
 
     def __init__(
-        self,
-        command: str = "freva",
-        parser: Optional[argparse.ArgumentParser] = None,
+        self, command: str = "freva", parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the plugin sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
@@ -49,9 +47,7 @@ class PluginCli(BaseParser):
             help="Show the version number from the repository",
         )
         subparser.add_argument(
-            "--caption",
-            default="",
-            help="Set a caption for the results",
+            "--caption", default="", help="Set a caption for the results",
         )
         subparser.add_argument(
             "--save",
@@ -72,10 +68,7 @@ class PluginCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-            "--scheduled-id",
-            default=None,
-            type=int,
-            help=argparse.SUPPRESS,
+            "--scheduled-id", default=None, type=int, help=argparse.SUPPRESS,
         )
         subparser.add_argument(
             "--dry-run",
@@ -149,7 +142,7 @@ class PluginCli(BaseParser):
             if tool_args.pop("doc"):
                 print(plugin_doc(tool_name))
                 return
-            value, out = run_plugin(tool_name, **tool_args)
+            value, out = run_plugin(tool_name or "", **tool_args)
         except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
             if args.debug:
                 raise e
