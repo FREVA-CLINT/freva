@@ -1,19 +1,6 @@
 [cmip5]
 root_dir = "/mnt/data4freva/model/global"
-parts_dir = [ "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
-]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "", "variable",
-]
-parts_versioned_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable",
-]
-parts_file_name = [ "variable", "cmor_table", "model", "experiment", "ensemble", "time", ]
-parts_time = "start_time-end_time"
-data_type = "cmip5"
+drs_format = "cmip6"
 
 [cmip5.defaults]
 project = "cmip5"
@@ -24,36 +11,16 @@ parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
 ]
-parts_dataset = [
-    "projectproduct", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "", "variable",
-]
-parts_versioned_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable",
-]
 parts_file_name = ["variable", "experiment", "level", "version", "time"]
 parts_time = "start_time-end_time"
-data_type = "observations"
+drs_format = "custom"
 
 [observations.defaults]
 project = "observations"
 
 [reanalysis]
 root_dir = "/mnt/data4freva/reanalysis"
-parts_dir = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "variable", "ensemble", "file_name",
-]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "variable",
-]
-parts_file_name = [
-    "variable", "cmor_table", "project", "experiment", "ensemble", "time",
-]
-parts_time = "start_time-end_time"
-data_type = "reanalysis"
+drs_format = "cmip5"
 
 [reanalysis.defaults]
 project = "reanalysis"
@@ -65,14 +32,10 @@ parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
 ]
-parts_dataset = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable",
-]
 parts_file_name = [
     "variable", "cmor_table", "model", "experiment", "ensemble", "time",
 ]
 parts_time = "start_time-end_time"
-data_type = "crawl_my_data"
+drs_format = "custom"
 
 [crawl_my_data.defaults]
