@@ -326,7 +326,8 @@ class PluginAbstract(abc.ABC):
                 log.error("An error occured calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
-                    return_code, cmd,
+                    return_code,
+                    cmd,
                 )
             return res
 
@@ -337,7 +338,8 @@ class PluginAbstract(abc.ABC):
             pid = os.getpid()
             plugin_name = self.__class__.__name__
             log_directory = os.path.join(
-                self._user.getUserSchedulerOutputDir(), plugin_name.lower(),
+                self._user.getUserSchedulerOutputDir(),
+                plugin_name.lower(),
             )
             self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
@@ -443,12 +445,11 @@ class PluginAbstract(abc.ABC):
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if isinstance(tmp_param, (Directory,)):
-                if isinstance(tmp_param, (Directory, CacheDirectory)) or unique_output:
-                    if key in config_dict.keys() and config_dict[key] is not None:
-                        config_dict[key] = os.path.join(
-                            str(config_dict[key]), str(self.rowid)
-                        )
+            if isinstance(tmp_param, (Directory, CacheDirectory)) or unique_output:
+                if key in config_dict.keys() and config_dict[key] is not None:
+                    config_dict[key] = os.path.join(
+                        str(config_dict[key]), str(self.rowid)
+                    )
         return config_dict
 
     def quitnkill(self):
@@ -1208,7 +1209,10 @@ class PluginAbstract(abc.ABC):
         return tool_param + cmd_param
 
     def call(
-        self, cmd_string: Union[str, list[str]], check: bool = True, **kwargs,
+        self,
+        cmd_string: Union[str, list[str]],
+        check: bool = True,
+        **kwargs,
     ) -> sub.Popen[Any]:
         """Run command with arguments and return a CompletedProcess instance.
 

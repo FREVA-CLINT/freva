@@ -25,7 +25,9 @@ class PluginCli(BaseParser):
     desc = "Apply data analysis plugin."
 
     def __init__(
-        self, command: str = "freva", parser: Optional[argparse.ArgumentParser] = None,
+        self,
+        command: str = "freva",
+        parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the plugin sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
@@ -47,7 +49,9 @@ class PluginCli(BaseParser):
             help="Show the version number from the repository",
         )
         subparser.add_argument(
-            "--caption", default="", help="Set a caption for the results",
+            "--caption",
+            default="",
+            help="Set a caption for the results",
         )
         subparser.add_argument(
             "--save",
@@ -68,7 +72,10 @@ class PluginCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-            "--scheduled-id", default=None, type=int, help=argparse.SUPPRESS,
+            "--scheduled-id",
+            default=None,
+            type=int,
+            help=argparse.SUPPRESS,
         )
         subparser.add_argument(
             "--dry-run",
