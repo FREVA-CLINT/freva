@@ -150,10 +150,7 @@ class ParameterType(initOrder):
             self.id = tool_obj[0].id
         return self.id
 
-    def _verified(
-        self,
-        orig_values: Any,
-    ) -> Any:
+    def _verified(self, orig_values: Any,) -> Any:
         """Check if given values are valid."""
 
         if not isinstance(orig_values, list):
@@ -403,9 +400,7 @@ class ParameterDictionary(dict):
         return config_dict
 
     def validate_errors(
-        self,
-        config_dict: dict[str, Any],
-        raise_exception: bool = False,
+        self, config_dict: dict[str, Any], raise_exception: bool = False,
     ) -> dict[str, list[tuple[str, int]]]:
         """Checks if the given configuration dictionary is valied.
 
@@ -675,8 +670,7 @@ class Float(ParameterType):
     base_type = float
 
     def __init__(
-        self,
-        **kwargs,
+        self, **kwargs,
     ):
         kwargs[
             "regex"
@@ -724,7 +718,6 @@ class Directory(String):
     """
 
     def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
-        warnings.warn("The Directory class is deprecated", category=DeprecationWarning)
         super().__init__(impact=impact, **kwargs)
 
 
