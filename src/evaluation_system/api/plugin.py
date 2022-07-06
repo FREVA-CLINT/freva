@@ -445,11 +445,12 @@ class PluginAbstract(abc.ABC):
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if isinstance(tmp_param, (Directory, CacheDirectory)) or unique_output:
-                if key in config_dict.keys() and config_dict[key] is not None:
-                    config_dict[key] = os.path.join(
-                        str(config_dict[key]), str(self.rowid)
-                    )
+            if isinstance(tmp_param, (Directory, CacheDirectory)):
+                if unique_output:
+                    if key in config_dict.keys() and config_dict[key] is not None:
+                        config_dict[key] = os.path.join(
+                            str(config_dict[key]), str(self.rowid)
+                        )
         return config_dict
 
     def quitnkill(self):
