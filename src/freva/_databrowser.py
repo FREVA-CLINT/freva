@@ -113,7 +113,7 @@ def databrowser(
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"]))
-        search_facets["file"] = f'"\\{f.parent}/\\{f.name}"'
+        search_facets["file"] = f'"\{f}"'
     except KeyError:
         pass
     if isinstance(facet, str):
