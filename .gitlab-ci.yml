@@ -3,6 +3,7 @@ stages:
     - test
     - docs
     - report
+    - release
 
 variables:
     CONDA_ENV: "freva-dev"
@@ -107,3 +108,25 @@ pages:
             - public/
         reports:
             junit: report.xml
+release_job:
+    stage: release
+    image: registry.gitlab.com/gitlab-org/release-cli:latest
+    needs: ["test:latest", "docs"]
+    tags:
+        - docker, specific
+    rules:
+        - if: $CI_COMMIT_TAG
+    before_script:
+        - curl --location --output /usr/local/bin/release-cli
+          "https://release-cli-downloads.s3.amazonaws.com/latest/release-cli-linux-amd64"
+        - pip install twine
+        - chmod +x /usr/local/bin/release-cli
+    script:
+        - python setup.py sdist
+        - TWINE_PASSWORD=${CI_JOB_TOKEN}
+          TWINE_USERNAME=gitlab-ci-token
+          python -m twine upload --verbose --repository-url
+          ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    release:
+        tag_name: '$CI_COMMIT_TAG'
+        description: '$CI_COMMIT_TAG'
