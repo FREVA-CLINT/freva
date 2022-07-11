@@ -52,6 +52,7 @@ from typing_extensions import TypedDict
 from django.db.models.query import QuerySet
 from PIL import Image
 
+from evaluation_system import __version__ as version_api
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
 from evaluation_system.misc import utils
@@ -1269,21 +1270,16 @@ def get_version(pluginname: str) -> tuple[int, int, int]:
     p = get_plugin_instance(pluginname)
     version = repr(p.__version__)
     (repos_tool, version_tool) = get_plugin_version(pluginname)
-    (repos_api, version_api) = get_plugin_version("self")
     version_id = (
         User()
         .getUserDB()
-        .getVersionId(
-            tool_name, version, repos_api, version_api, repos_tool, version_tool
-        )
+        .getVersionId(tool_name, version, "", version_api, repos_tool, version_tool)
     )
     if version_id is None:
         version_id = (
             User()
             .getUserDB()
-            .newVersion(
-                tool_name, version, repos_api, version_api, repos_tool, version_tool
-            )
+            .newVersion(tool_name, version, "", version_api, repos_tool, version_tool)
         )
     return version_id
 
