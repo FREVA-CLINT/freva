@@ -80,6 +80,8 @@ docs:
         - make docs
     after_script:
         - mv docs/build/html sphinx_docs
+    rules:
+        - if: $CI_COMMIT_TAG
     artifacts:
         when: always
         paths:
@@ -96,6 +98,7 @@ pages:
         - docs
     before_script:
         - mkdir -p public; cp .docker/index.html public/
+        - mkdir -p sphinx_docs
         - mv coverage_report public/
         - mv sphinx_docs public/
     script:
