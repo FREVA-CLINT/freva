@@ -85,8 +85,6 @@ def test_forbidden_tool_doc(dummy_env):
 def test_list_tools(capsys, dummy_env):
     from freva.cli.plugin import main as run
 
-    with pytest.raises(PluginNotFoundError):
-        run_cli("plugin --doc -d")
     run(["--list-tools"])
     plugin_list = capsys.readouterr().out
     assert "DummyPlugin" in plugin_list
