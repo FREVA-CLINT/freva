@@ -11,7 +11,7 @@ Freva admins for help.
 A general usage overview of the available Freva sub-commands is
 available via the ``--help`` option:
 
-.. code:: bash
+.. code:: console
 
     freva --help
 
@@ -27,7 +27,7 @@ The most common sub-commands are ``databrowser`` and ``plugin``. You can
 get more help on the actual commands using the sub-commands ``--help``
 option, for example getting help on the ``databrowser usage``:
 
-.. code:: bash
+.. code:: console
 
     freva databrowser --help
 
@@ -56,7 +56,7 @@ responds almost immediately. To search for data you can either use the
 ``freva-databrowser`` command or the ``freva databrowser`` sub-command.
 Let’s inspect the help menu of the databrowser sub-command:
 
-.. code:: bash
+.. code:: console
 
     freva-databrowser --help
 
@@ -78,7 +78,7 @@ instead of file paths. For example you can search for the list of
 variables available that satisfies a certain constraint (e.g. sampled
 6hr, from a certain model, etc).
 
-.. code:: bash
+.. code:: console
 
     freva-databrowser project=observations variable=pr model=cp*
 
@@ -155,7 +155,7 @@ can take after a certain search is done. For this you use the
 the data). For example to see all facets that are available in the
 ``observations`` project:
 
-.. code:: bash
+.. code:: console
 
     freva-databrowser project=observations --all-facets
 
@@ -169,7 +169,7 @@ the data). For example to see all facets that are available in the
 
 Instead of querying all facet to you get information on certain facets only:
 
-.. code:: bash
+.. code:: console
 
     freva-databrowser --facet time_frequency --facet variable project=observations
 
@@ -180,6 +180,22 @@ Instead of querying all facet to you get information on certain facets only:
    res = run(["freva", "databrowser", "--facet", "time_frequency", "--facet", "variable", "project=observations"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+In some cases it might be useful to retrieve meta data from a file path this
+can be achieved by using the ``file=`` search facet:
+
+.. code:: console
+
+    freva-databrowser file=.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --all-facets
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   from pathlib import Path
+   file = Path(".") / ".docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
+   res = freva.databrowser(file=file.absolute(), all_facets=True)
+   print(res)
+
 
 Running data analysis plugins: the ``freva-plugin`` command
 -----------------------------------------------------------
@@ -188,7 +204,7 @@ Already defined data analysis tools can be started with the
 ``freva-plugin`` command or the ``freva plugin`` sub-command. Let’s
 inspect the help menu of the ``plugin`` command:
 
-.. code:: bash
+.. code:: console
 
     freva-plugin --help
 
@@ -204,7 +220,7 @@ inspect the help menu of the ``plugin`` command:
 As the help menu suggests you can list all available tools using the
 ``-l`` option (or ``--list``, ``--list-tools``):
 
-.. code:: bash
+.. code:: console
 
     freva-plugin -l
 
@@ -225,7 +241,7 @@ Here we concentrate on the Animator plugin. A simple plugin that creates
 animations of geospatial data. The basic usage of that command can be
 retrieved by:
 
-.. code:: bash
+.. code:: console
 
     freva-plugin --doc animator
 
@@ -242,7 +258,7 @@ The parameters are also given as key=values pairs. But not all of the
 above parameters are mandatory. Let's use one ``project`` search key and
 animate its content.
 
-.. code:: bash
+.. code:: console
 
     freva plugin animator project=observations variable=pr cmap=Blues fps=5 output_unit=mm/h vmin=0 vmax=5 suffix=gif
 
@@ -282,7 +298,7 @@ tells the plugin to submit a job to the computing queue. The computing
 nodes are the core of any high performance computing system. Let’s
 submit the previous plugin job to the computing queue:
 
-.. code:: bash
+.. code:: console
 
     freva plugin animator project=observations variable=pr cmap=Blues fps=5 output_unit=mm/h vmin=0 vmax=5 suffix=gif --batchmode
 
@@ -313,7 +329,7 @@ Sometimes it can be useful to access the status of past plugin
 applications. The ``freva-history`` command or ``freva history``
 sub-command can do that:
 
-.. code:: bash
+.. code:: console
 
     freva-history --help
 
@@ -329,7 +345,7 @@ sub-command can do that:
 Let’s get the last 3 entries (default is 10 entries) of the ``dummyplugin``
 plugin history
 
-.. code:: bash
+.. code:: console
 
     freva-history --limit 1 --plugin dummyplugin
 
@@ -346,7 +362,7 @@ plugin history
 The entries are sorted by their ``id``. For example you can query the
 full configuration by giving the id:
 
-.. code:: bash
+.. code:: console
 
     freva-history --entry-ids 136 --full-text
 
@@ -363,7 +379,7 @@ full configuration by giving the id:
 To re-run a command of a past configuration you
 can use the ``--return-command`` option to get the command that was used:
 
-.. code:: bash
+.. code:: console
 
     freva-history  --entry-ids 136 --return-command
 

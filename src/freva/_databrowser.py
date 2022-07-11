@@ -13,19 +13,13 @@ __all__ = ["databrowser"]
 
 @overload
 def databrowser(
-    *,
-    attributes: Literal[False],
-    facet: Union[str, list[str]],
+    *, attributes: Literal[False], facet: Union[str, list[str]],
 ) -> dict[Any, dict[str, Any]]:
     ...
 
 
 @overload
-def databrowser(
-    *,
-    all_facets: Literal[False],
-    facet: Literal[None],
-) -> Iterator[str]:
+def databrowser(*, all_facets: Literal[False], facet: Literal[None],) -> Iterator[str]:
     ...
 
 
@@ -108,11 +102,21 @@ def databrowser(
                                         facet=["time_frequency", "variable"])
         print(spec_facets)
 
+    Reverse search: retrieving meta data from a knwon file
+
+    .. execute_code::
+
+        import freva
+        from pathlib import Path
+        file = ".docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
+        res = freva.databrowser(file=file, all_facets=True)
+        print(res)
+
     """
     facets: list[str] = []
     try:
         # If we don't convert a str to a str mypy will complain.
-        f = Path(str(search_facets["file"]))
+        f = Path(str(search_facets["file"])).expanduser().absolute()
         search_facets["file"] = f'"\{f}"'
     except KeyError:
         pass
