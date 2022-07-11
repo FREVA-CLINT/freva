@@ -13,13 +13,19 @@ __all__ = ["databrowser"]
 
 @overload
 def databrowser(
-    *, attributes: Literal[False], facet: Union[str, list[str]],
+    *,
+    attributes: Literal[False],
+    facet: Union[str, list[str]],
 ) -> dict[Any, dict[str, Any]]:
     ...
 
 
 @overload
-def databrowser(*, all_facets: Literal[False], facet: Literal[None],) -> Iterator[str]:
+def databrowser(
+    *,
+    all_facets: Literal[False],
+    facet: Literal[None],
+) -> Iterator[str]:
     ...
 
 
