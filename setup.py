@@ -99,6 +99,7 @@ setup(
     description="Free Evaluation and Analysis Framework (Freva) ",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
+    include_package_data=True,
     license="BSD-3-Clause",
     packages=find_packages("src"),
     package_dir={"": "src"},
