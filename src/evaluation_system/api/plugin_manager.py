@@ -1042,7 +1042,7 @@ def get_command_string_from_config(
         if isinstance(value, list):
             result.append(f"{key}={','.join(value)}")
         elif isinstance(value, bool):
-            result.append(f"{key}=str(value).lower()")
+            result.append(f"{key}={str(value).lower()}")
         else:
             result.append(f"{key}={value}")
     return " ".join(result)
