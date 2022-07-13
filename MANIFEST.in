@@ -1,1 +1,4 @@
 graft ./assets/*
+include ./assets/drs_config.toml
+include ./assets/evaluation_system.conf
+include ./deploy.py
