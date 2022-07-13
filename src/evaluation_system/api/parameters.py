@@ -724,7 +724,6 @@ class Directory(String):
     """
 
     def __init__(self, impact=Parameter.Impact.no_effects, **kwargs):
-        warnings.warn("The Directory class is deprecated", category=DeprecationWarning)
         super().__init__(impact=impact, **kwargs)
 
 

@@ -365,12 +365,12 @@ class PluginAbstract(abc.ABC):
         stderr = [sys.stderr]
         log_stream_handle: Optional[logging.StreamHandler] = None
         try:
-            self.plugin_output_file.touch(mode=0o775)
+            self.plugin_output_file.touch(mode=0o2775)
         except FileNotFoundError:
             self.plugin_output_file.parent.mkdir(parents=True)
             # TODO: the mode argument of mkdir didn't seem to work
-            self.plugin_output_file.parent.chmod(0o775)
-            self.plugin_output_file.touch(mode=0o775)
+            self.plugin_output_file.parent.chmod(0o2775)
+            self.plugin_output_file.touch(mode=0o2775)
         try:
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
             if is_interactive_job is True:
@@ -439,17 +439,16 @@ class PluginAbstract(abc.ABC):
     def _append_unique_id(
         self, config_dict: Optional[ConfigDictType], unique_output: bool
     ) -> ConfigDictType:
-        from evaluation_system.api.parameters import InputDirectory, CacheDirectory
+        from evaluation_system.api.parameters import Directory, CacheDirectory
 
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if isinstance(tmp_param, InputDirectory):
-                if isinstance(tmp_param, CacheDirectory) or unique_output:
-                    if key in config_dict.keys() and config_dict[key] is not None:
-                        config_dict[key] = os.path.join(
-                            str(config_dict[key]), str(self.rowid)
-                        )
+            if isinstance(tmp_param, (Directory, CacheDirectory)) and unique_output:
+                if key in config_dict.keys() and config_dict[key] is not None:
+                    config_dict[key] = os.path.join(
+                        str(config_dict[key]), str(self.rowid)
+                    )
         return config_dict
 
     def quitnkill(self):
@@ -527,7 +526,7 @@ class PluginAbstract(abc.ABC):
         -------
             Path: Path to the new directory that containes the data.
         """
-        _, plugin_version = repository.get_version(self.class_basedir)
+        _, plugin_version = repository.get_version(self.wrapper_file)
         plugin_version = plugin_version or "no_plugin_version"
         product_dir = f"{config.get('project_name')}-plugin-results"
         root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
@@ -779,11 +778,15 @@ class PluginAbstract(abc.ABC):
     @property
     def class_basedir(self) -> str:
         """Get absolute path to the module defining the plugin class."""
-        module_path: Optional[str] = sys.modules[self.__module__].__file__
-        subclass_file = os.path.abspath(module_path or "")
         return os.path.join(
-            *self._split_path(subclass_file)[: -len(self.__module__.split("."))]
+            *self._split_path(self.wrapper_file)[: -len(self.__module__.split("."))]
         )
+
+    @property
+    def wrapper_file(self) -> str:
+        """Get the location of the wrapper file."""
+        module_path: Optional[str] = sys.modules[self.__module__].__file__
+        return os.path.abspath(module_path or "")
 
     @property
     def user(self) -> User:

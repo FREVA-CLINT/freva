@@ -601,7 +601,7 @@ def test_append_unique_output():
         }
         dummy_plugin.rowid = 1
         new_config = dummy_plugin._append_unique_id(config_dict.copy(), True)
-        assert new_config["input"] == "/my/input/dir/1"
+        assert new_config["input"] == "/my/input/dir"
         new_config = dummy_plugin._append_unique_id(config_dict.copy(), False)
         assert new_config["input"] == "/my/input/dir"
     finally:

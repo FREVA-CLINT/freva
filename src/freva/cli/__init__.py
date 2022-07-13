@@ -28,7 +28,7 @@ class ArgParser(BaseParser):
         parser = argparse.ArgumentParser(
             prog=COMMAND,
             epilog=epilog,
-            description="Free EVAluation sysystem framework (freva)",
+            description="Free EVAluation system framework (freva)",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         parser.add_argument(

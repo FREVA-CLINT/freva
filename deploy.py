@@ -61,7 +61,10 @@ shell=$(basename $SHELL)
 """
 
 
-SH_COMPLETION = """if [ $shell = zsh ];then
+SH_COMPLETION = """if [ -z "$shell" ];then
+    shell=$(basename $SHELL)
+fi
+if [ $shell = zsh ];then
     source {root_dir}/share/zsh/site-functions/source.zsh
 elif [ $shell = bash ];then
     source {root_dir}/share/bash-completion/completions/freva

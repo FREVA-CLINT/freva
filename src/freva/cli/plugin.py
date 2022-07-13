@@ -136,20 +136,20 @@ class PluginCli(BaseParser):
         args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
     ) -> None:
         """Call the databrowser command and print the results."""
-        if kwargs.pop("list_tools"):
+        tool_name = kwargs.pop("tool-name")
+        if kwargs.pop("list_tools") or not tool_name:
             print(get_tools_list())
             return
         options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
-        tool_name = kwargs.pop("tool-name")
         tool_args = {**kwargs, **options}
         try:
             if tool_args.pop("doc"):
                 print(plugin_doc(tool_name))
                 return
-            value, out = run_plugin(tool_name, **tool_args)
+            value, out = run_plugin(tool_name or "", **tool_args)
         except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
             if args.debug:
                 raise e
