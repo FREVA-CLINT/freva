@@ -38,7 +38,7 @@ Deprecations
     - :py:meth:`linkmydata` → :py:meth:`add_output_to_databrowser`
     - :py:meth:`prepareOutput` → :py:meth:`prepare_output`
     - :py:meth:`getHelp` → :py:meth:`get_help`
-    - :py:meth:`getClassBaseDir` → py:attr:`class_basedir`
+    - :py:meth:`getClassBaseDir` → :py:attr:`class_basedir`
     - :py:meth:`setupConfiguration` → :py:meth:`setup_configuration`
     - :py:meth:`readConfiguration` → :py:meth:`read_configuration`
 - The following methods in the :ref:`ParameterAPI` have been renamed:
