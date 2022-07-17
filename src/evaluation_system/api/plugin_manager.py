@@ -20,6 +20,8 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 /tmp/test,some.other.plugin
 """
 from __future__ import annotations
+import atexit
+from contextlib import contextmanager
 import importlib.machinery
 import importlib.util
 from importlib.machinery import ModuleSpec
@@ -29,6 +31,7 @@ import json
 import os
 import random
 import re
+import signal
 import shutil
 import string
 import sys
@@ -94,6 +97,24 @@ class PluginMetadata:
     user_exported: bool
     category: str
     tags: list[str]
+
+
+@dataclass
+class PluginState:
+    status: int
+    rowid: int
+    user: User
+
+    def set_state(self):
+        """Set the state of a plugin in the db."""
+        self.user.getUserDB().upgradeStatus(
+            self.rowid, self.user.getName(), self.status
+        )
+
+    def set_state_and_quit(self, *args):
+        """Set the state of a plugin and quit."""
+        self.set_state()
+        signal.raise_signal(9)
 
 
 T = TypeVar("T")
@@ -666,6 +687,7 @@ def generate_caption(caption: str, toolname: str) -> str:
     return retval
 
 
+@contextmanager
 def run_tool(
     plugin_name: str,
     config_dict: Optional[Union[dict[str, str], utils.metadict]] = None,
@@ -673,7 +695,7 @@ def run_tool(
     scheduled_id: Optional[int] = None,
     caption: Optional[str] = None,
     unique_output: bool = True,
-) -> Optional[utils.metadict]:
+) -> Iterator[Optional[utils.metadict]]:
     """Runs a tool and stores the run information.
 
     Run information is stored in :class:`evaluation_system.model.db.UserDB`.
@@ -705,8 +727,7 @@ def run_tool(
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = cast(
-            Dict[str, str],
-            load_scheduled_conf(plugin_name, scheduled_id, user),
+            Dict[str, str], load_scheduled_conf(plugin_name, scheduled_id, user),
         )
     if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -730,12 +751,9 @@ def run_tool(
     log.debug("Running %s with %s", plugin_name, complete_conf)
     rowid = 0
     if scheduled_id:
-        user.getUserDB().upgradeStatus(
-            scheduled_id, user.getName(), History.processStatus.running
-        )
         rowid = scheduled_id
         out_file = Path(History.objects.get(pk=scheduled_id).slurm_output)
-    elif user:
+    else:
         version_details = get_version(plugin_name)
         rowid = user.getUserDB().storeHistory(
             p,
@@ -745,14 +763,24 @@ def run_tool(
             version_details=version_details,
             caption=caption,
         )
+    plugin_state = PluginState(
+        rowid=rowid, status=History.processStatus.running, user=user
+    )
+    atexit.register(plugin_state.set_state)
+    signal.signal(signal.SIGTERM, plugin_state.set_state_and_quit)
+    signal.signal(signal.SIGHUP, plugin_state.set_state_and_quit)
+    if scheduled_id:
+        plugin_state.set_state()
+    elif user:
         # follow the notes
         follow_history_tag(rowid, user.getName(), "Owner")
         out_file = None
     else:
         out_file = None
+    p.rowid = rowid
+    plugin_state.status = History.processStatus.broken
     try:
         # we want that the rowid is visible to the tool
-        p.rowid = rowid
         # TODO: not sure if this is really optional, the docs don't say much
         result: Optional[utils.metadict] = p._run_tool(
             config_dict=complete_conf,
@@ -762,10 +790,7 @@ def run_tool(
         )
         # save results when existing
         if result is None:
-
-            user.getUserDB().upgradeStatus(
-                rowid, user.getName(), History.processStatus.finished_no_output
-            )
+            plugin_state.status = History.processStatus.finished_no_output
         else:
             # create the preview
             preview_path = config.get(config.PREVIEW_PATH, None)
@@ -778,15 +803,10 @@ def run_tool(
             user.getUserDB().storeResults(rowid, result)
             log.debug("finished")
             # temporary set all processes to finished
-            user.getUserDB().upgradeStatus(
-                rowid, user.getName(), History.processStatus.finished
-            )
-    except Exception as e:
-        user.getUserDB().upgradeStatus(
-            rowid, user.getName(), History.processStatus.broken
-        )
-        raise e
-    return result
+            plugin_state.status = History.processStatus.finished
+        yield result
+    finally:
+        plugin_state.set_state()
 
 
 def schedule_tool(
@@ -1018,9 +1038,7 @@ def get_command_config_from_row(
     return result
 
 
-def get_command_string_from_config(
-    config: CommandConfig,
-) -> str:
+def get_command_string_from_config(config: CommandConfig,) -> str:
     """Get the command string for a command
 
     Parameters
@@ -1049,9 +1067,7 @@ def get_command_string_from_config(
 
 
 def get_command_string_from_row(
-    history_row: History,
-    command_name: str = "freva-plugin",
-    command_options: str = "",
+    history_row: History, command_name: str = "freva-plugin", command_options: str = "",
 ) -> str:
     """Get the command string for a command
 
@@ -1343,8 +1359,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         a 2 element tuple when given a well formed string.
     """
     return map(
-        lambda item: tuple([e.strip() for e in item.split(",")]),
-        envvar.split(":"),
+        lambda item: tuple([e.strip() for e in item.split(",")]), envvar.split(":"),
     )
 
 

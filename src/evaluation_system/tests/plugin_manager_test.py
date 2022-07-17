@@ -184,7 +184,8 @@ def test_get_history(dummy_settings, temp_user):
     import evaluation_system.api.plugin_manager as pm
 
     pm.write_setup("DummyPlugin", dict(the_number=777), temp_user)
-    pm.run_tool("dummyplugin", user=temp_user)
+    with pm.run_tool("dummyplugin", user=temp_user):
+        pass
 
     res = pm.get_history(user=temp_user)
     res = res[0]
