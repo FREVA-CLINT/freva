@@ -128,9 +128,12 @@ setup(
     extras_require={
         "docs": [
             "cartopy",
+            "cftime",
+            "cf_xarray",
             "ipython",
             "nbsphinx",
             "pint",
+            "pint-xarray",
             "recommonmark",
             "sphinx",
             "sphinxcontrib_github_alt",
