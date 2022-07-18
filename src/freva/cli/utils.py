@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 from typing import Callable, Optional
 
-from evaluation_system.misc import logger, CONFIG_FILE
+from evaluation_system.misc import logger, config
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]
@@ -18,8 +18,6 @@ subparser_func_type = Callable[
 representing the description of the sub command as well as the SubParserAction
 this sub command parser is added to.
 """
-
-CP = ConfigParser(interpolation=ExtendedInterpolation())
 
 
 def is_admin(
@@ -32,8 +30,8 @@ def is_admin(
     raise_error:
         Raise a RuntimeError if user is not admin
     """
-    CP.read(CONFIG_FILE)
-    admin = CP[default_section].get("admins", "")
+    config.reloadConfiguration()
+    admin = config.get("admins", "")
     user = getuser()
     is_admin = user in admin
     if not is_admin and raise_error:
