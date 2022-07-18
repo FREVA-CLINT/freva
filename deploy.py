@@ -44,17 +44,20 @@ if {{ $curMode eq "load" }} {{
     }}
 }}
 prepend-path PATH {root_dir}/bin
-setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+setenv EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_dir}/evaluation_system.conf
+setenv EVALUATION_SYSTEM_CONFIG_DIR {eval_conf_dir}
 """
 
-FISH_SCRIPT = """set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_file}
+FISH_SCRIPT = """set -g EVALUATION_SYSTEM_CONFIG_FILE {eval_conf_dir}/evaluation_system.conf
+set -g EVALUATION_SYSTEM_CONFIG_DIR {eval_conf_dir}
 set -gx PATH {root_dir}/bin $PATH
 {completion}
 """
 FISH_COMPLETION = """source {root_dir}/share/fish/completions/freva.fish
 """
 
-SH_SCRIPT = """export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_file}
+SH_SCRIPT = """export EVALUATION_SYSTEM_CONFIG_FILE={eval_conf_dir}/evaluation_system.config
+export EVALUATION_SYSTEM_CONFIG_DIR={eval_conf_dir}
 export PATH={root_dir}/bin:$PATH
 shell=$(basename $SHELL)
 {completion}
@@ -72,7 +75,8 @@ fi
 """
 
 CSH_SCRIPT = """setenv PATH {root_dir}/bin\:$PATH
-setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_file}"
+setenv EVALUATION_SYSTEM_CONFIG_FILE "{eval_conf_dir}/evaluation_system.conf"
+setenv EVALUATION_SYSTEM_CONFIG_DIR "{eval_conf_dir}"
 {completion}
 """
 
@@ -388,7 +392,7 @@ class Installer:
                     f.write(
                         shell_scripts[shell].format(
                             root_dir=install_prefix,
-                            eval_conf_file=eval_conf_file,
+                            eval_conf_dir=eval_conf_file.parent,
                             completion=completions[shell].format(root_dir=root_dir),
                         )
                     )
@@ -402,7 +406,7 @@ class Installer:
                     MODULE.format(
                         version=find_version("src/evaluation_system", "__init__.py"),
                         root_dir=install_prefix,
-                        eval_conf_file=eval_conf_file,
+                        eval_conf_dir=eval_conf_file.parent,
                         project=config_parser["evaluation_system"]["project_name"],
                     )
                 )
