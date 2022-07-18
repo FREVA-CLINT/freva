@@ -138,7 +138,7 @@ class PluginCli(BaseParser):
         """Call the databrowser command and print the results."""
         tool_name = kwargs.pop("tool-name")
         if kwargs.pop("list_tools") or not tool_name:
-            print(ferva.get_tools_list())
+            print(freva.get_tools_list())
             return
         options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
         for key, val in options.items():
