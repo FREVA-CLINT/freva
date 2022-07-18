@@ -727,7 +727,8 @@ def run_tool(
     # check whether a scheduled id is given
     if scheduled_id:
         config_dict = cast(
-            Dict[str, str], load_scheduled_conf(plugin_name, scheduled_id, user),
+            Dict[str, str],
+            load_scheduled_conf(plugin_name, scheduled_id, user),
         )
     if not config_dict:
         conf_file = user.getUserToolConfig(plugin_name)
@@ -749,6 +750,7 @@ def run_tool(
         )
         complete_conf = p.setup_configuration(cfg, recursion=True)
     log.debug("Running %s with %s", plugin_name, complete_conf)
+    out_file: Optional[Path] = None
     rowid = 0
     if scheduled_id:
         rowid = scheduled_id
@@ -774,9 +776,6 @@ def run_tool(
     elif user:
         # follow the notes
         follow_history_tag(rowid, user.getName(), "Owner")
-        out_file = None
-    else:
-        out_file = None
     p.rowid = rowid
     plugin_state.status = History.processStatus.broken
     try:
@@ -1038,7 +1037,9 @@ def get_command_config_from_row(
     return result
 
 
-def get_command_string_from_config(config: CommandConfig,) -> str:
+def get_command_string_from_config(
+    config: CommandConfig,
+) -> str:
     """Get the command string for a command
 
     Parameters
@@ -1067,7 +1068,9 @@ def get_command_string_from_config(config: CommandConfig,) -> str:
 
 
 def get_command_string_from_row(
-    history_row: History, command_name: str = "freva-plugin", command_options: str = "",
+    history_row: History,
+    command_name: str = "freva-plugin",
+    command_options: str = "",
 ) -> str:
     """Get the command string for a command
 
@@ -1359,7 +1362,8 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         a 2 element tuple when given a well formed string.
     """
     return map(
-        lambda item: tuple([e.strip() for e in item.split(",")]), envvar.split(":"),
+        lambda item: tuple([e.strip() for e in item.split(",")]),
+        envvar.split(":"),
     )
 
 
