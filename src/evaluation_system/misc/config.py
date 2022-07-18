@@ -17,7 +17,11 @@ import toml
 
 import appdirs
 from evaluation_system.misc.utils import Struct, TemplateDict
-from evaluation_system.misc import logger as log
+from evaluation_system.misc import (
+    logger as log,
+    CONFIG_FILE,
+    _DEFAULT_CONFIG_FILE_LOCATION,
+)
 from evaluation_system.misc.exceptions import ConfigurationException
 
 DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch")
@@ -30,7 +34,6 @@ DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch"
 We only use local at this time, but we'll be migrating to central in
 the future for the next project phase."""
 # Some defaults in case nothing is defined
-_DEFAULT_CONFIG_FILE_LOCATION = osp.join(sys.prefix, "freva", "evaluation_system.conf")
 USER_CONFIG_FILE_LOC = osp.join(
     appdirs.user_config_dir(), "freva", "evaluation_system.conf"
 )
@@ -39,10 +42,6 @@ if Path(USER_CONFIG_FILE_LOC).exists():
 EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
-# now check if we have a configuration file, and read the defaults from there
-CONFIG_FILE = os.environ.get(
-    "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
-)
 _DEFAULT_DRS_CONFIG_FILE = os.environ.get(
     "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
     osp.abspath(osp.join(CONFIG_FILE, osp.pardir, "drs_config.toml")),

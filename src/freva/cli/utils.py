@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 import argparse
+from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
 from typing import Callable, Optional
 
-from evaluation_system.misc import config, logger
+from evaluation_system.misc import logger, CONFIG_FILE
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]
@@ -18,8 +19,12 @@ representing the description of the sub command as well as the SubParserAction
 this sub command parser is added to.
 """
 
+CP = ConfigParser(interpolation=ExtendedInterpolation())
 
-def is_admin(raise_error: bool = False) -> bool:
+
+def is_admin(
+    raise_error: bool = False, default_section: str = "evaluation_system"
+) -> bool:
     """Check if the user at runtime is one of the admins.
 
     Parameters:
@@ -27,11 +32,9 @@ def is_admin(raise_error: bool = False) -> bool:
     raise_error:
         Raise a RuntimeError if user is not admin
     """
-    config.reloadConfiguration()
-    admin = config.get("admins", [])
+    CP.read(CONFIG_FILE)
+    admin = CP[default_section].get("admins", "")
     user = getuser()
-    if isinstance(admin, str):
-        admin = [a.strip() for a in admin.split(",") if a.strip()]
     is_admin = user in admin
     if not is_admin and raise_error:
         raise RuntimeError(f"{user} is not in admin list")

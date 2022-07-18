@@ -4,7 +4,7 @@ import sys
 from typing import Any, Optional
 
 from evaluation_system import __version__
-from freva import databrowser
+import freva
 from .utils import BaseCompleter, BaseParser
 
 CLI = "DataBrowserCli"
@@ -107,7 +107,7 @@ class DataBrowserCli(BaseParser):
             if len(values) == 1:
                 facets[key] = values[0]
         merged_args: dict[str, Any] = {**kwargs, **facets}
-        out = databrowser(**merged_args)
+        out = freva.databrowser(**merged_args)
         # flush stderr in case we have something pending
         sys.stderr.flush()
         if isinstance(out, dict):
