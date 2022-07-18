@@ -82,9 +82,10 @@ class InstallCommand(install):
                     with full_source.open("w") as target_file:
                         with open(source, "r") as source_file:
                             target_file.write(source_file.read())
-        with (this_dir / "assets" / "drs_config.toml").open() as source_file:
-            with (config_dir / "drs_config.toml").open("w") as target_file:
-                target_file.write(source_file.read())
+        if not (config_dir / "drs_config.toml").exists():
+            with (this_dir / "assets" / "drs_config.toml").open() as source_file:
+                with (config_dir / "drs_config.toml").open("w") as target_file:
+                    target_file.write(source_file.read())
         Installer.create_loadscript(self.prefix, bool(self.user))
 
 
