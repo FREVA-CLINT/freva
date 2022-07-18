@@ -122,4 +122,5 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
+        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
         sys.exit(130)
