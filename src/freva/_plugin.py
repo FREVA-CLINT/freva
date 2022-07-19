@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Union, Optional, NamedTuple
+from typing import Any, Union, List, Optional, NamedTuple, Tuple
 import time
 
 import appdirs
@@ -27,7 +27,7 @@ CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
 
 PluginInfo = NamedTuple(
     "PluginInfo",
-    [("name", str), ("description", str), ("parameters", list[tuple[str, str, Any]])],
+    [("name", str), ("description", str), ("parameters", List[Tuple[str, str, Any]])],
 )
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
