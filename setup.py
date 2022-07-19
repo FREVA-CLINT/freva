@@ -3,6 +3,7 @@
 from pathlib import Path
 from setuptools.command.install import install
 from setuptools import setup, find_packages
+import shutil
 import sys
 from tempfile import TemporaryDirectory
 
@@ -83,9 +84,10 @@ class InstallCommand(install):
                         with open(source, "r") as source_file:
                             target_file.write(source_file.read())
         if not (config_dir / "drs_config.toml").exists():
-            with (this_dir / "assets" / "drs_config.toml").open() as source_file:
-                with (config_dir / "drs_config.toml").open("w") as target_file:
-                    target_file.write(source_file.read())
+            shutil.copy(
+                str(this_dir / "assets" / "drs_config.toml"),
+                str(config_dir / "drs_config.toml"),
+            )
         Installer.create_loadscript(self.prefix, bool(self.user))
 
 

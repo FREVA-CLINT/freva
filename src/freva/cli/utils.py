@@ -21,9 +21,7 @@ this sub command parser is added to.
 """
 
 
-def is_admin(
-    raise_error: bool = False, default_section: str = "evaluation_system"
-) -> bool:
+def is_admin(raise_error: bool = False) -> bool:
     """Check if the user at runtime is one of the admins.
 
     Parameters:
@@ -32,7 +30,7 @@ def is_admin(
         Raise a RuntimeError if user is not admin
     """
     config.reloadConfiguration()
-    admin = config.get("admins", "")
+    admin = [a for a in config.get("admins", "").split(",") if a.strip()]
     user = getuser()
     is_admin = user in admin
     if not is_admin and raise_error:
