@@ -40,7 +40,7 @@ __all__ = [
     "run_plugin",
     "list_plugins",
     "plugin_doc",
-    "esgf",
+    "read_plugin_cache" "esgf",
     "history",
 ]
 
@@ -48,6 +48,12 @@ __all__ = [
 def __getattr__(name):
     if name in ["crawl_my_data", "databrowser", "esgf", "history"]:
         return getattr(importlib.import_module(f"._{name}", __name__), name)
-    elif name in ["run_plugin", "list_plugins", "plugin_doc", "get_tools_list"]:
+    elif name in [
+        "run_plugin",
+        "list_plugins",
+        "plugin_doc",
+        "get_tools_list",
+        "read_plugin_cache",
+    ]:
         return getattr(importlib.import_module(f"._plugin", __name__), name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
