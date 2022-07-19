@@ -26,7 +26,8 @@ pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
 
 PluginInfo = NamedTuple(
-    "PluginInfo", name=str, description=str, parameters=list[tuple[str, str, Any]]
+    "PluginInfo",
+    [("name", str), ("description", str), ("parameters", list[tuple[str, str, Any]])],
 )
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
@@ -34,7 +35,7 @@ __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
 def _write_plugin_cache() -> None:
     """Write all plugins to a file."""
-    out = {}
+    out: dict[str, dict[str, Any]] = {}
     for plugin in pm.get_plugins().keys():
         pm_instance = pm.get_plugin_instance(plugin)
         out[plugin] = {}
@@ -61,7 +62,8 @@ def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
         _write_plugin_cache()
     with CACHE_FILE.open("r") as f_obj:
         cache = json.load(f_obj)
-
+    if not cache:
+        _write_plugin_cache()
     for plugin, plugin_data in cache.items():
         plugin_cache.append(PluginInfo(name=plugin, **plugin_data))
     return plugin_cache

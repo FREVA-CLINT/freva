@@ -85,7 +85,10 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
 def test_plugin(dummy_env, capsys):
 
     from freva.cli.utils import print_choices
+    from freva._plugin import _write_plugin_cache
     from freva.cli import main as main_cli
+
+    _write_plugin_cache()
 
     for shell in ("bash", "zsh", "fish"):
         print_choices(["--shell", shell, "--strip", "freva", "plugin"])
