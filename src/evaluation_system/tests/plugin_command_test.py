@@ -7,6 +7,7 @@ import logging
 from functools import partial
 import os
 import mock
+import multiprocessing as mp
 from pathlib import Path
 import pytest
 import mock
@@ -55,6 +56,21 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
+
+
+def test_killed_jobs_set_to_broken(dummy_plugin):
+    from freva.cli.plugin import main as plugin_cli
+    import freva
+
+    args = (["dummyplugin", "the_number=13", "other=-10"],)
+    proc = mp.Process(target=plugin_cli, args=args)
+    proc.start()
+    time.sleep(0.5)
+    hist = freva.history()[0]
+    assert hist["status_dict"][hist["status"]].lower() == "running"
+    os.kill(proc.pid, 15)
+    hist = freva.history()[0]
+    assert hist["status_dict"][hist["status"]].lower() == "broken"
 
 
 @mock.patch("os.getpid", lambda: 12345)

@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 from subprocess import run, PIPE
 import os
+import time
 
 from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.api.parameters import (
@@ -44,6 +45,10 @@ class DummyPlugin(PluginAbstract):
 
     def run_tool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
+        num = config_dict.get("other", 1.4)
+        print(num)
+        if num < 0:
+            time.sleep(-num)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
         assert "plugin_env" in os.environ["PATH"]
