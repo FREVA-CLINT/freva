@@ -20,15 +20,16 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 /tmp/test,some.other.plugin
 """
 from __future__ import annotations
+import atexit
+from contextlib import contextmanager
 import importlib.machinery
 import importlib.util
-from importlib.machinery import ModuleSpec
-from importlib.abc import Loader
 import inspect
 import json
 import os
 import random
 import re
+import signal
 import shutil
 import string
 import sys
@@ -94,6 +95,62 @@ class PluginMetadata:
     user_exported: bool
     category: str
     tags: list[str]
+
+
+@dataclass
+class _PluginStateHandle:
+    """Provide a handle to set/update the plugin states in the db.
+
+    The handle will be instanciated with a state, a db rowid and a user
+    object to identify the user running the plugin. Furthermore os
+    termination signal will be captured to be able to set the last state
+    of the plugin in the db.
+
+    Parameters
+    ----------
+    status: int
+        Integer representation of the plugin state
+    rowid: int
+        Unique ID of the plugin
+    user: User
+        user object holding all user information.
+    """
+
+    status: int
+    rowid: int
+    user: User
+
+    def __post_init__(self):
+        """Handle various signals and define what to do on exit of this process."""
+        # Make sure the last state of this plugin exist of the process is set
+        #
+        atexit.register(self._update_plugin_state_in_db)
+        # Make sure that the last plugin state gets set during when OS
+        # termination signals are sent to this process.
+        #
+        signal.signal(signal.SIGTERM, self._update_plugin_state_in_db_and_quit)
+        signal.signal(signal.SIGHUP, self._update_plugin_state_in_db_and_quit)
+
+    def __enter__(self):
+
+        # Initialize the plugin state the database
+        self._update_plugin_state_in_db()
+        return self
+
+    def __exit__(self, *args):
+        self._update_plugin_state_in_db()
+
+    def _update_plugin_state_in_db(self):
+        """Update the state of a plugin in the db."""
+        self.user.getUserDB().upgradeStatus(
+            self.rowid, self.user.getName(), self.status
+        )
+
+    def _update_plugin_state_in_db_and_quit(self, *args):
+        """Update the plugin state of a plugin and quit."""
+        self._update_plugin_state_in_db()
+        print("Recieved termination signal: exiting", file=sys.stderr, flush=True)
+        sys.exit(1)
 
 
 T = TypeVar("T")
@@ -728,14 +785,12 @@ def run_tool(
         )
         complete_conf = p.setup_configuration(cfg, recursion=True)
     log.debug("Running %s with %s", plugin_name, complete_conf)
+    out_file: Optional[Path] = None
     rowid = 0
     if scheduled_id:
-        user.getUserDB().upgradeStatus(
-            scheduled_id, user.getName(), History.processStatus.running
-        )
         rowid = scheduled_id
         out_file = Path(History.objects.get(pk=scheduled_id).slurm_output)
-    elif user:
+    else:
         version_details = get_version(plugin_name)
         rowid = user.getUserDB().storeHistory(
             p,
@@ -745,14 +800,19 @@ def run_tool(
             version_details=version_details,
             caption=caption,
         )
-        # follow the notes
-        follow_history_tag(rowid, user.getName(), "Owner")
-        out_file = None
-    else:
-        out_file = None
-    try:
-        # we want that the rowid is visible to the tool
+    with _PluginStateHandle(
+        rowid=rowid, status=History.processStatus.running, user=user
+    ) as plugin_state:
+        if user:
+            # follow the notes
+            follow_history_tag(rowid, user.getName(), "Owner")
         p.rowid = rowid
+        # Set last state to broken, before we start the plugin
+        # in case something goes wrong it will stay in broken because
+        # the PluginStateHandle context manager will set it to the last state
+        # regardless (which would be broken).
+        plugin_state.status = History.processStatus.broken
+        # we want that the rowid to be visible to the tool
         # TODO: not sure if this is really optional, the docs don't say much
         result: Optional[utils.metadict] = p._run_tool(
             config_dict=complete_conf,
@@ -762,10 +822,7 @@ def run_tool(
         )
         # save results when existing
         if result is None:
-
-            user.getUserDB().upgradeStatus(
-                rowid, user.getName(), History.processStatus.finished_no_output
-            )
+            plugin_state.status = History.processStatus.finished_no_output
         else:
             # create the preview
             preview_path = config.get(config.PREVIEW_PATH, None)
@@ -778,15 +835,8 @@ def run_tool(
             user.getUserDB().storeResults(rowid, result)
             log.debug("finished")
             # temporary set all processes to finished
-            user.getUserDB().upgradeStatus(
-                rowid, user.getName(), History.processStatus.finished
-            )
-    except Exception as e:
-        user.getUserDB().upgradeStatus(
-            rowid, user.getName(), History.processStatus.broken
-        )
-        raise e
-    return result
+            plugin_state.status = History.processStatus.finished
+        return result
 
 
 def schedule_tool(

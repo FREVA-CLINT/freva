@@ -58,7 +58,7 @@ class SLURMJob(Job):
         if walltime is not None:
             header_lines.append("#SBATCH -t %s" % walltime)
         header_lines.extend(["#SBATCH %s" % arg for arg in job_extra])
-
+        header_lines.append("#SBATCH --signal=15@10")
         # Declare class attribute that shall be overridden
         self.job_header = "\n".join(header_lines)
 

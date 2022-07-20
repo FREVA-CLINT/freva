@@ -1,6 +1,31 @@
 What's new
 ===========
 
+v2206.0.2 (unreleased)
+----------------------
+
+New Features
+~~~~~~~~~~~~
+
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+Bug fixes
+~~~~~~~~~
+
+- Set plugin status to broken in OS related termination signals that can be
+  handled by python (SIGTERM, SIGINT ...) and any other internal python errors.
+
+Documentations
+~~~~~~~~~~~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
 
 v2206.0.1
 ----------

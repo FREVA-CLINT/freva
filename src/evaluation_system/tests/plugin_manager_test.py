@@ -185,7 +185,6 @@ def test_get_history(dummy_settings, temp_user):
 
     pm.write_setup("DummyPlugin", dict(the_number=777), temp_user)
     pm.run_tool("dummyplugin", user=temp_user)
-
     res = pm.get_history(user=temp_user)
     res = res[0]
     import re

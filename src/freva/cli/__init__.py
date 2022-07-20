@@ -42,6 +42,7 @@ class ArgParser(BaseParser):
         try:
             args.apply_func(args, **self.kwargs)
         except KeyboardInterrupt:
+            print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
             sys.exit(130)
 
 

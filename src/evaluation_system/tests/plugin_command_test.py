@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 import mock
 import time
+from subprocess import Popen
 from evaluation_system.tests import run_cli, similar_string
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 
@@ -55,6 +56,19 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
+
+
+def test_killed_jobs_set_to_broken():
+    from freva.cli.plugin import main as plugin_cli
+    import freva
+
+    cmd = ["freva-plugin", "dummyplugin", "the_number=13", "other=-10"]
+    res = Popen(cmd)
+    time.sleep(3)
+    os.kill(res.pid, 15)
+    time.sleep(2)
+    hist = freva.history()[0]
+    assert hist["status_dict"][hist["status"]].lower() == "broken"
 
 
 @mock.patch("os.getpid", lambda: 12345)
