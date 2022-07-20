@@ -260,10 +260,10 @@ def run_plugin(
         logger.info(
             "Running %s as scheduled in history with ID %i", tool_name, scheduled_id
         )
-        with pm.run_tool(
+        out = pm.run_tool(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
-        ) as out:
-            return _return_value(0, out, return_result)
+        )
+        return _return_value(0, out, return_result)
     extra_options: list[str] = [
         opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
     ]
@@ -295,17 +295,16 @@ def run_plugin(
             logger.info("Your job's progress will be shown with the command")
             logger.info("tail -f %s", job_file)
             return 0, ""
-        with pm.run_tool(
+        results = pm.run_tool(
             tool_name,
             config_dict=tool_dict,
             caption=caption,
             unique_output=unique_output,
-        ) as out:
-            results = out
-            # repeat the warning at the end of the run
-            # for readability don't show the warning in debug mode
-            if warning:
-                logger.warning(warning)
+        )
+        # repeat the warning at the end of the run
+        # for readability don't show the warning in debug mode
+        if warning:
+            logger.warning(warning)
     logger.debug("Arguments: %s", options)
     logger.debug("Current configuration:\n%s", json.dumps(tool_dict, indent=4))
     return _return_value(0, results, return_result)

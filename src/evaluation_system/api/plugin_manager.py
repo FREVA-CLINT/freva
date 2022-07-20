@@ -24,8 +24,6 @@ import atexit
 from contextlib import contextmanager
 import importlib.machinery
 import importlib.util
-from importlib.machinery import ModuleSpec
-from importlib.abc import Loader
 import inspect
 import json
 import os
@@ -100,21 +98,59 @@ class PluginMetadata:
 
 
 @dataclass
-class PluginState:
+class _PluginStateHandle:
+    """Provide a handle to set/update the plugin states in the db.
+
+    The handle will be instanciated with a state, a db rowid and a user
+    object to identify the user running the plugin. Furthermore os
+    termination signal will be captured to be able to set the last state
+    of the plugin in the db.
+
+    Parameters
+    ----------
+    status: int
+        Integer representation of the plugin state
+    rowid: int
+        Unique ID of the plugin
+    user: User
+        user object holding all user information.
+    """
+
     status: int
     rowid: int
     user: User
 
-    def set_state(self):
-        """Set the state of a plugin in the db."""
+    def __post_init__(self):
+        """Handle various signals and define what to do on exit of this process."""
+        # Make sure the last state of this plugin exist of the process is set
+        #
+        atexit.register(self._update_plugin_state_in_db)
+        # Make sure that the last plugin state gets set during when OS
+        # termination signals are sent to this process.
+        #
+        signal.signal(signal.SIGTERM, self._update_plugin_state_in_db_and_quit)
+        signal.signal(signal.SIGHUP, self._update_plugin_state_in_db_and_quit)
+
+    def __enter__(self):
+
+        # Initialize the plugin state the database
+        self._update_plugin_state_in_db()
+        return self
+
+    def __exit__(self, *args):
+        self._update_plugin_state_in_db()
+
+    def _update_plugin_state_in_db(self):
+        """Update the state of a plugin in the db."""
         self.user.getUserDB().upgradeStatus(
             self.rowid, self.user.getName(), self.status
         )
 
-    def set_state_and_quit(self, *args):
-        """Set the state of a plugin and quit."""
-        self.set_state()
-        signal.raise_signal(9)
+    def _update_plugin_state_in_db_and_quit(self, *args):
+        """Update the plugin state of a plugin and quit."""
+        self._update_plugin_state_in_db()
+        print("Recieved termination signal: exiting", file=sys.stderr, flush=True)
+        sys.exit(1)
 
 
 T = TypeVar("T")
@@ -687,7 +723,6 @@ def generate_caption(caption: str, toolname: str) -> str:
     return retval
 
 
-@contextmanager
 def run_tool(
     plugin_name: str,
     config_dict: Optional[Union[dict[str, str], utils.metadict]] = None,
@@ -695,7 +730,7 @@ def run_tool(
     scheduled_id: Optional[int] = None,
     caption: Optional[str] = None,
     unique_output: bool = True,
-) -> Iterator[Optional[utils.metadict]]:
+) -> Optional[utils.metadict]:
     """Runs a tool and stores the run information.
 
     Run information is stored in :class:`evaluation_system.model.db.UserDB`.
@@ -765,21 +800,19 @@ def run_tool(
             version_details=version_details,
             caption=caption,
         )
-    plugin_state = PluginState(
+    with _PluginStateHandle(
         rowid=rowid, status=History.processStatus.running, user=user
-    )
-    atexit.register(plugin_state.set_state)
-    signal.signal(signal.SIGTERM, plugin_state.set_state_and_quit)
-    signal.signal(signal.SIGHUP, plugin_state.set_state_and_quit)
-    if scheduled_id:
-        plugin_state.set_state()
-    elif user:
-        # follow the notes
-        follow_history_tag(rowid, user.getName(), "Owner")
-    p.rowid = rowid
-    plugin_state.status = History.processStatus.broken
-    try:
-        # we want that the rowid is visible to the tool
+    ) as plugin_state:
+        if user:
+            # follow the notes
+            follow_history_tag(rowid, user.getName(), "Owner")
+        p.rowid = rowid
+        # Set last state to broken, before we start the plugin
+        # in case something goes wrong it will stay in broken because
+        # the PluginStateHandle context manager will set it to the last state
+        # regardless (which would be broken).
+        plugin_state.status = History.processStatus.broken
+        # we want that the rowid to be visible to the tool
         # TODO: not sure if this is really optional, the docs don't say much
         result: Optional[utils.metadict] = p._run_tool(
             config_dict=complete_conf,
@@ -803,9 +836,7 @@ def run_tool(
             log.debug("finished")
             # temporary set all processes to finished
             plugin_state.status = History.processStatus.finished
-        yield result
-    finally:
-        plugin_state.set_state()
+        return result
 
 
 def schedule_tool(
