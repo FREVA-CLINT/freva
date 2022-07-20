@@ -13,7 +13,7 @@ from evaluation_system.misc.exceptions import (
     hide_exception,
 )
 from evaluation_system.misc import logger
-from freva._plugin import get_tools_list, run_plugin, plugin_doc
+import freva
 from .utils import BaseCompleter, BaseParser
 
 CLI = "PluginCli"
@@ -138,7 +138,7 @@ class PluginCli(BaseParser):
         """Call the databrowser command and print the results."""
         tool_name = kwargs.pop("tool-name")
         if kwargs.pop("list_tools") or not tool_name:
-            print(get_tools_list())
+            print(freva.get_tools_list())
             return
         options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
         for key, val in options.items():
@@ -147,9 +147,9 @@ class PluginCli(BaseParser):
         tool_args = {**kwargs, **options}
         try:
             if tool_args.pop("doc"):
-                print(plugin_doc(tool_name))
+                print(freva.plugin_doc(tool_name))
                 return
-            value, out = run_plugin(tool_name or "", **tool_args)
+            value, out = freva.run_plugin(tool_name or "", **tool_args)
         except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
             if args.debug:
                 raise e

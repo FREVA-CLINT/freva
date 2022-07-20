@@ -9,19 +9,64 @@ import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Union, Optional
+from typing import Any, Union, List, Optional, NamedTuple, Tuple
 import time
 
+import appdirs
+import lazy_import
 
-import evaluation_system.api.plugin_manager as pm
 from evaluation_system.model import user
 from evaluation_system.misc import config, utils, logger
 from evaluation_system.misc.exceptions import PluginNotFoundError
 from evaluation_system.model.plugins.models import ToolPullRequest
 from django.contrib.auth.models import User
 
+pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+
+CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
+
+PluginInfo = NamedTuple(
+    "PluginInfo",
+    [("name", str), ("description", str), ("parameters", List[Tuple[str, str, Any]])],
+)
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
+
+
+def _write_plugin_cache() -> None:
+    """Write all plugins to a file."""
+    out: dict[str, dict[str, Any]] = {}
+    for plugin in pm.get_plugins().keys():
+        pm_instance = pm.get_plugin_instance(plugin)
+        out[plugin] = {}
+        out[plugin]["description"] = pm_instance.__short_description__
+        out[plugin]["parameters"] = []
+        for key, param in pm_instance.__parameters__._params.items():
+            if param.mandatory:
+                desc = f"{param.help} (mandatory)"
+            else:
+                desc = f"{param.help} (default: {param.default})"
+            out[plugin]["parameters"].append((key, desc, param.default))
+
+    CACHE_FILE.parent.mkdir(exist_ok=True, parents=True)
+    with CACHE_FILE.open("w") as f_obj:
+        json.dump(out, f_obj)
+
+
+def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
+    """Cache plugin list."""
+    CACHE_FILE.parent.mkdir(exist_ok=True, parents=True)
+    CACHE_FILE.touch(exist_ok=True)
+    plugin_cache = []
+    if time.time() - CACHE_FILE.stat().st_mtime > max_mtime:
+        _write_plugin_cache()
+    with CACHE_FILE.open("r") as f_obj:
+        cache = json.load(f_obj)
+    if not cache:
+        _write_plugin_cache()
+    for plugin, plugin_data in cache.items():
+        plugin_cache.append(PluginInfo(name=plugin, **plugin_data))
+    return plugin_cache
 
 
 def plugin_doc(tool_name: Optional[str]) -> str:
@@ -53,6 +98,7 @@ def plugin_doc(tool_name: Optional[str]) -> str:
 
     """
     tool_name = (tool_name or "").lower()
+    _write_plugin_cache()
     _check_if_plugin_exists(tool_name)
     return pm.get_plugin_instance(tool_name).get_help()
 
@@ -73,6 +119,7 @@ def list_plugins() -> list[str]:
         import freva
         print(freva.list_plugins())
     """
+    _write_plugin_cache()
     return list([k.lower() for k in pm.get_plugins().keys()])
 
 
@@ -86,6 +133,7 @@ def get_tools_list() -> str:
 
     :meta private:
     """
+    _write_plugin_cache()
     env = utils.get_console_size()
     # we just have to show the list and stop processing
     name_width = 0

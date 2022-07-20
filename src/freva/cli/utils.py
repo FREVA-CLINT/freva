@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 import argparse
+from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
 from getpass import getuser
 import logging
 from pathlib import Path
 from typing import Callable, Optional
 
-from evaluation_system.misc import config, logger
+import freva
+from evaluation_system.misc import logger, config
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]
@@ -28,10 +30,8 @@ def is_admin(raise_error: bool = False) -> bool:
         Raise a RuntimeError if user is not admin
     """
     config.reloadConfiguration()
-    admin = config.get("admins", [])
+    admin = [a for a in config.get("admins", "").split(",") if a.strip()]
     user = getuser()
-    if isinstance(admin, str):
-        admin = [a.strip() for a in admin.split(",") if a.strip()]
     is_admin = user in admin
     if not is_admin and raise_error:
         raise RuntimeError(f"{user} is not in admin list")
@@ -299,23 +299,18 @@ class BaseCompleter:
 
     def _get_plugin_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for the plugin command."""
-        from freva._plugin import list_plugins
-        from evaluation_system.api import plugin_manager as pm
 
         docs: dict[str, dict[str, str]] = {}
         desc: dict[str, dict[str, str]] = {}
         plugins: dict[str, str] = {}
-        for plugin in list_plugins():
-            pm_instance = pm.get_plugin_instance(plugin)
-            parameters = pm_instance.__parameters__
-            plugins[plugin] = pm_instance.__short_description__
-            docs[plugin] = dict(parameters.items())
-            desc[plugin] = {}
-            for key, param in parameters._params.items():
-                if param.mandatory:
-                    desc[plugin][key] = f"{param.help} (mandatory)"
-                else:
-                    desc[plugin][key] = f"{param.help} (default: {docs[plugin][key]})"
+
+        for plugin in freva.read_plugin_cache():
+            plugins[plugin.name] = plugin.description
+            docs[plugin.name] = {}
+            desc[plugin.name] = {}
+            for param, doc, value in plugin.parameters:
+                desc[plugin.name][param] = doc
+                docs[plugin.name][param] = value
         args = [arg for arg in self.argv if not arg.startswith("-") and arg != "plugin"]
         choices = {}
         if not args:
