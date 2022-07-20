@@ -64,12 +64,10 @@ def test_killed_jobs_set_to_broken():
 
     cmd = ["freva-plugin", "dummyplugin", "the_number=13", "other=-10"]
     res = Popen(cmd)
-    time.sleep(4)
-    hist = freva.history()[0]
-    assert hist["status_dict"][hist["status"]].lower() in ["running", "scheduled"]
+    time.sleep(3)
     os.kill(res.pid, 15)
+    time.sleep(2)
     hist = freva.history()[0]
-    print(hist)
     assert hist["status_dict"][hist["status"]].lower() == "broken"
 
 
