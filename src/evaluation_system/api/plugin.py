@@ -1123,6 +1123,7 @@ class PluginAbstract(abc.ABC):
             cfg,
             delete_job_script=log.root.level <= logging.DEBUG,
             log_directory=log_directory,
+            config_file=Path(config.CONFIG_FILE),
         )
 
     class ExceptionMissingParam(Exception):

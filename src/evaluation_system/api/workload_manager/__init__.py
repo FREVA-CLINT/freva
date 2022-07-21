@@ -1,7 +1,7 @@
 """Collection of methods and classes for submitting plugins to a workload manager."""
 from __future__ import annotations
 from pathlib import Path
-from typing import cast, Union, Type, List
+from typing import cast, Union, Type, List, Optional
 from .core import Job
 from .local import LocalJob
 from .lsf import LSFJob
@@ -65,6 +65,7 @@ def schedule_job(
     config: dict[str, Union[str, list[str]]],
     log_directory: Union[Path, str],
     delete_job_script: bool = True,
+    config_file: Optional[Path] = None,
 ) -> tuple[int, str]:
     """Create a scheduler object from a given scheduler configuration.
 
@@ -85,9 +86,11 @@ def schedule_job(
     source = source.expanduser().absolute()
     ncpus = int(cast(str, config.get("cpus", "4")))
     if source.exists():
-        env_extra = [f"\\. {source}"]
+        env_extra = [f"source {source}"]
     else:
         env_extra = []
+    if config_file:
+        env_extra.append("export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
     try:
         job = job_object(
             name=cast(str, config["name"]),
