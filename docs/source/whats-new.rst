@@ -1,8 +1,31 @@
 What's new
 ===========
 
-v2206.0.2 (unreleased)
+v2206.0.3 (unreleased)
 ----------------------
+
+New Features
+~~~~~~~~~~~~
+
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+Deprecations
+~~~~~~~~~~~~
+
+Bug fixes
+~~~~~~~~~
+
+Documentations
+~~~~~~~~~~~~~~
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+
+v2206.0.2
+---------
 
 New Features
 ~~~~~~~~~~~~
