@@ -26,6 +26,9 @@ Documentations
 Internal Changes
 ~~~~~~~~~~~~~~~~
 
+- Introduce lazy loading to make freva cli a little more responsive
+- Explicitly set EVALUATION_SYSTEM_CONFIG_FILE env variable in workload
+  manager job script.
 
 v2206.0.1
 ----------
