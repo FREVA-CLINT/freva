@@ -161,13 +161,7 @@ def _get_public_key(project_name: str) -> str:
             key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
-        raise FileNotFoundError(
-            (
-                f"{key_file} not found. Secrets are stored in central vault and "
-                "public key is needed to open the vault. Please deploy the backend"
-                " again using the vault option."
-            )
-        )
+        sha = ""
     return sha
 
 
@@ -183,7 +177,7 @@ def _read_secrets(
         url = f"{protocol}://{db_host}:{port}/vault/data/{sha}"
         try:
             req = requests.get(url).json()
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
             req = {}
         try:
             return req[key]
