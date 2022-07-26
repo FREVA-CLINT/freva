@@ -22,9 +22,9 @@ __databrowser() {
     else
         cmd_args="${COMP_WORDS[@]:$1:COMP_CWORD-2}"
     fi
+    query="$(__cmd_query $cmd_args)"
     [[ -z "$cur" ]] && extra=--relevant-only
     if [[ "$cur" == "=" ]]; then
-        query="$(__cmd_query $cmd_args)"
         options="$(freva databrowser --facet $prev $query | sed -e 's/[^:]*: //' -e 's/,/ /g')"
         #don't consider this for selection of possible auto-complete word
     elif [ "$prev" == "=" ]; then
@@ -35,9 +35,9 @@ __databrowser() {
         fi
         query="$(__cmd_query "${cmd_args_prev}")"
         facet="${COMP_WORDS[COMP_CWORD-2]}"
-        options="$(freva databrowser --facet $facet $query $facet=${cur}* | sed -e 's/[^:]*: //' -e 's/,/ /g')"
+        options="$(freva databrowser ${extra} --facet $facet $query $facet=${cur}* | sed -e 's/[^:]*: //' -e 's/,/ /g')"
     elif [ "$prev" == "--facet" ]; then
-        options="$(freva databrowser $extra --attributes $query | sed  -e 's/,//g')"
+        options="$(freva databrowser ${extra} --attributes $query | sed  -e 's/,//g')"
     elif [ "$(echo $cur |cut -c1)" == "-" ]; then
         for arg in ${cmd_args[@]};do
             if [ "$(echo $arg|cut -c1)" = "-" ];then
@@ -46,7 +46,7 @@ __databrowser() {
         done
         options="$(python -m freva.cli --shell bash --flags-only freva databrowser $flags)"
     else
-        options="$(freva databrowser --attributes $query | sed  -e 's/,/=/g')="
+        options="$(freva databrowser ${extra} --attributes $query | sed  -e 's/,/=/g')="
     fi
     echo $options
 }
