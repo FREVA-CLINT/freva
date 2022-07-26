@@ -365,12 +365,12 @@ class PluginAbstract(abc.ABC):
         stderr = [sys.stderr]
         log_stream_handle: Optional[logging.StreamHandler] = None
         try:
-            self.plugin_output_file.touch(mode=0o2775)
+            self.plugin_output_file.touch(mode=0o2777)
         except FileNotFoundError:
             self.plugin_output_file.parent.mkdir(parents=True)
             # TODO: the mode argument of mkdir didn't seem to work
-            self.plugin_output_file.parent.chmod(0o2775)
-            self.plugin_output_file.touch(mode=0o2775)
+            self.plugin_output_file.parent.chmod(0o2777)
+            self.plugin_output_file.touch(mode=0o2777)
         try:
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
             if is_interactive_job is True:

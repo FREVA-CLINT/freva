@@ -644,7 +644,7 @@ def _preview_unique_file(plugin_name: str, ext: str, metadata: dict[str, str]) -
     full_path = os.path.join(path, subdir)
     full_name = os.path.join(full_path, name)
     if path.strip() and not os.path.isdir(full_path):
-        utils.supermakedirs(full_path, 0o0777)
+        utils.supermakedirs(full_path, 0o2777)
     return full_name
 
 
@@ -917,7 +917,7 @@ def schedule_tool(
         log_directory = os.path.join(log_directory, plugin_name)
 
     if not os.path.exists(log_directory):
-        utils.supermakedirs(log_directory, 0o0777)
+        utils.supermakedirs(log_directory, 0o2777)
     # write the std out file
     p.rowid = rowid
     job_id, output_file = p.submit_job_script(
