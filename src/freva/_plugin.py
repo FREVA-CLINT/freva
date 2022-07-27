@@ -33,7 +33,7 @@ PluginInfo = NamedTuple(
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
 
 
-def _write_plugin_cache() -> None:
+def _write_plugin_cache() -> dict[str, dict[str, Any]]:
     """Write all plugins to a file."""
     out: dict[str, dict[str, Any]] = {}
     for plugin in pm.get_plugins().keys():
@@ -51,6 +51,7 @@ def _write_plugin_cache() -> None:
     CACHE_FILE.parent.mkdir(exist_ok=True, parents=True)
     with CACHE_FILE.open("w") as f_obj:
         json.dump(out, f_obj)
+    return out
 
 
 def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
@@ -59,11 +60,15 @@ def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
     CACHE_FILE.touch(exist_ok=True)
     plugin_cache = []
     if time.time() - CACHE_FILE.stat().st_mtime > max_mtime:
-        _write_plugin_cache()
-    with CACHE_FILE.open("r") as f_obj:
-        cache = json.load(f_obj)
+        cache = _write_plugin_cache()
+    else:
+        try:
+            with CACHE_FILE.open("r") as f_obj:
+                cache = json.load(f_obj)
+        except:
+            cache = _write_plugin_cache()
     if not cache:
-        _write_plugin_cache()
+        cache = _write_plugin_cache()
     for plugin, plugin_data in cache.items():
         plugin_cache.append(PluginInfo(name=plugin, **plugin_data))
     return plugin_cache

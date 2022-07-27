@@ -90,7 +90,7 @@ def schedule_job(
     else:
         env_extra = []
     if config_file:
-        env_extra.append("export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
+        env_extra.append(f"export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
     try:
         job = job_object(
             name=cast(str, config["name"]),

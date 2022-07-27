@@ -79,7 +79,7 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
             ["--shell", shell, "--strip", "freva", "databrowser", "time_frequency=mon"]
         )
         choices = capsys.readouterr().out
-        assert choices == facets
+        assert "time_frequency" not in choices
 
 
 def test_plugin(dummy_env, capsys):

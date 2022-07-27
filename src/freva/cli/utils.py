@@ -293,8 +293,9 @@ class BaseCompleter:
         search = databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
         for att, values in search.items():
-            keys = ",".join([v for n, v in enumerate(values)])
-            choices[att] = (keys, "")
+            if att not in facets:
+                keys = ",".join([v for n, v in enumerate(values)])
+                choices[att] = (keys, "")
         return choices
 
     def _get_plugin_choices(self) -> dict[str, tuple[str, str]]:
