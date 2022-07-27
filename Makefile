@@ -38,7 +38,7 @@ prepdocs:
 
 lint:
 	mypy --install-types --non-interactive
-	black --check -t py39 src
+	black --check -t py310 src
 
 dummy-data:
 	compose/dummy_plugin_runs.sh
