@@ -123,7 +123,6 @@ setup(
     cmdclass={"install": InstallCommand},
     install_requires=[
         "appdirs",
-        "backports.zoneinfo",
         "GitPython",
         "dask",
         "Django",
