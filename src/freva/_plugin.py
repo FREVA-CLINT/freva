@@ -300,7 +300,7 @@ def run_plugin(
         tool_dict["debug"] = True
     extra_scheduler_options = tool_dict.pop("extra_scheduler_options", "")
     if caption:
-        caption = pm.generate_caption(caption, tool_name)
+        caption = caption.strip()
     if save_config or save:
         save_in = pm.write_setup(tool_name, tool_dict, config_file=save_config)
         logger.info("Configuration file saved in %s", save_in)
