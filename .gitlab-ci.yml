@@ -19,7 +19,7 @@ lint:
     tags:
         - docker, specific
     before_script:
-        - pip install .[test] black mypy
+        - pip install -e .[test]
     script:
         - make lint
 
