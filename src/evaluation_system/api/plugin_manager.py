@@ -689,40 +689,6 @@ def _preview_create(plugin_name: str, result: utils.metadict) -> list[str]:
     return result_list
 
 
-def generate_caption(caption: str, toolname: str) -> str:
-    """Generates a standardized caption including the toolname.
-
-    Parameters
-    ----------
-    caption
-        The caption to be standardized
-    toolname
-        The plugin name that generated the image
-    :type toolname: str
-    :param toolname: the toolname
-    :return: String containing the standardized caption
-    """
-    import re
-
-    caption = caption.strip()
-    toolname = toolname.strip().upper()
-    retval = toolname
-    if caption.lower() != toolname.lower():
-        pattern = r"^\*"
-        if re.search(pattern, caption, re.IGNORECASE):
-            caption = caption[1:]
-
-        pattern = r"\(" + toolname + r"\)$"
-        if re.search(pattern, caption, re.IGNORECASE) is None:
-            retval = caption + " (" + toolname + ")"
-        else:
-            retval = caption
-    else:
-        # this assures that the toolname appears in the user preferred case
-        retval = caption
-    return retval
-
-
 def run_tool(
     plugin_name: str,
     config_dict: Optional[Union[dict[str, str], utils.metadict]] = None,
