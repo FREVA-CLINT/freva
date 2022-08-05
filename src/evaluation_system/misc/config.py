@@ -13,6 +13,7 @@ import hashlib
 import requests
 from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
+import warnings
 import toml
 
 import appdirs
@@ -156,12 +157,20 @@ the history database entries."""
 
 def _get_public_key(project_name: str) -> str:
     key_file = os.environ.get("PUBKEY", None) or _PUBLIC_KEY_DIR / f"{project_name}.crt"
+    sha = ""
     try:
         with Path(key_file).open() as f:
             key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
-        sha = ""
+        warnings.warn(
+            (
+             f"{key_file} not found. Secrets are stored in central vault and a"
+             "public key is needed to open the vault. Without the public key"
+             " you won't be probaply be able to establish as database "
+             "connection."
+            ), category=Warning
+        )
     return sha
 
 
