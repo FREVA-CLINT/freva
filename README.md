@@ -24,7 +24,6 @@ Currently Freva comes in three different flavours:
 - a web user interface (web-ui)
 
 
-You can play with a test version on binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/freva-dev)
 
 ## Where can I find the Freva user documentation?
 A more detailed overview on the usage of freva can be found on the

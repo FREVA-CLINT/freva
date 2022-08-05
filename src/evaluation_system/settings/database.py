@@ -12,6 +12,7 @@ SETTINGS["INSTALLED_APPS"] = (
     "django.contrib.flatpages",
     "django.contrib.contenttypes",
     "django.contrib.sites",
+    "django_dbconn_retry",
 )
 SETTINGS["DATABASES"] = {
     "default": {

@@ -19,14 +19,14 @@ lint:
     tags:
         - docker, specific
     before_script:
-        - pip install . black mypy
+        - pip install -e .[test]
     script:
         - make lint
 
 .test_template: &py_test  # pytest framework template
     stage: test
     needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     variables:
         CONDA: "Miniconda3-latest"
     tags:
@@ -66,7 +66,7 @@ test:latest:
 docs:
     stage: docs
     needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     tags:
         - docker, specific
     variables:
@@ -88,7 +88,7 @@ docs:
 pages:
     stage: report
     needs: ["test:latest", "docs"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:unittest
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     tags:
         - docker, specific
     dependencies:
@@ -124,10 +124,9 @@ release_job:
         - chmod +x /usr/local/bin/release-cli
     script:
         - python setup.py sdist
-        - TWINE_PASSWORD=${CI_JOB_TOKEN}
-          TWINE_USERNAME=gitlab-ci-token
-          python -m twine upload --verbose --repository-url
-          ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+        - TWINE_PASSWORD=${PIPY_TOKEN}
+          TWINE_USERNAME=__token__
+          python -m twine upload --verbose dist/*
     release:
         tag_name: '$CI_COMMIT_TAG'
         description: '$CI_COMMIT_TAG'

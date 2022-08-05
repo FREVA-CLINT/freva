@@ -646,7 +646,7 @@ class PluginAbstract(abc.ABC):
                     # If pdfs have more than one page we don't convert them,
                     # instead we offer a download link
                     pdf = PdfReader(open(file_path, "rb"))
-                    num_pages = pdf.getNumPages()
+                    num_pages = len(pdf.pages)
                     metadata["type"] = "pdf"
                     if num_pages > 1:
                         metadata["todo"] = "copy"

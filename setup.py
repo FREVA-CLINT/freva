@@ -91,11 +91,25 @@ class InstallCommand(install):
         Installer.create_loadscript(self.prefix, bool(self.user))
 
 
+def get_data_files():
+    this_dir = Path(__file__).parent
+    asset_dir = this_dir / "assets"
+    dirs = [d for d in asset_dir.rglob("*") if d.is_dir()]
+    files = []
+    for d in dirs:
+        target_dir = d.relative_to(this_dir)
+        add_files = [str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()]
+        if add_files:
+            files.append((str(target_dir), add_files))
+    files.append(("", ["deploy.py"]))
+    return files
+
+
 entry_points = ["freva = freva.cli:main"]
 for cmd in COMMANDS:
     entry_points.append(f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main")
 setup(
-    name="evaluation_system",
+    name="freva",
     version=find_version("src/evaluation_system", "__init__.py"),
     author="German Climate Computing Centre (DKRZ)",
     maintainer="Climate Informatics and Technology (CLINT)",
@@ -112,6 +126,7 @@ setup(
         "GitPython",
         "dask",
         "Django",
+        "django-dbconn-retry",
         "humanize",
         "h5netcdf",
         "lazy-import",
@@ -122,6 +137,7 @@ setup(
         "pandas",
         "Pillow",
         "PyPDF2",
+        "requests",
         "toml",
         "toolz",
         "typing_extensions",
@@ -164,12 +180,15 @@ setup(
             "types-mock",
             "types-requests",
             "types-toml",
+            "types-urllib3",
+            "types-toml",
+            "types-requests",
         ],
     },
     entry_points={"console_scripts": entry_points},
     python_requires=">=3.7",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
@@ -180,7 +199,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Topic :: Scientific/Engineering :: Data Analysis",
-        "Topic :: Scientific/Engineering :: Earth Sciences",
+        "Topic :: Scientific/Engineering :: Physics",
+        "Topic :: Scientific/Engineering :: Atmospheric Science",
     ],
 )
