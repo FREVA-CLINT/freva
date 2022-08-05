@@ -1,7 +1,7 @@
 What's new
 ===========
 
-v2206.0.8 (unreleased)
+v2206.0.9 (unreleased)
 ----------------------
 
 New Features
@@ -24,7 +24,7 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 
 
-v2206.0.7
+v2206.0.8
 ---------
 
 New Features
