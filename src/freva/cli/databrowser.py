@@ -40,7 +40,7 @@ class DataBrowserCli(BaseParser):
         )
         subparser.add_argument(
             "--batch-size",
-            default=10,
+            default=5000,
             type=int,
             help="Number of files to retrieve",
         )

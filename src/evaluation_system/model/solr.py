@@ -72,8 +72,6 @@ class SolrFindFiles(object):
         known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
         implement a result set object. But that would break the find_files compatibility."""
         offset = partial_dict.pop("start", 0)
-        # value retrieved from sys.maxint and == 2**31-1
-        max_rows = partial_dict.pop("rows", 2147483647)
 
         if "text" in partial_dict:
             partial_dict.update({"q": partial_dict.pop("text")})
@@ -84,40 +82,28 @@ class SolrFindFiles(object):
             partial_dict.update({"fl": "file"})
 
         query = self._to_solr_query(partial_dict)
-        # DEPRECATED:
-        # This is not used anymore, because we have 2 different cores now
-        if latest_version:  # pragma: no cover
-            query += "&group=true&group.field=file_no_version&group.sort=version+desc&group.ngroups=true&group.format=simple"
-
-        while True:
-            if max_rows < batch_size:
-                batch_size = max_rows
-            answer = self.solr.get_json(
-                "select?start=%s&rows=%s&%s" % (offset, batch_size, query)
-            )
+        answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
+        results_to_visit = answer["response"]["numFound"]
+        while results_to_visit > 0:
+            batch_size = min(batch_size, results_to_visit)
+            try:
+                answer = self.solr.get_json(
+                    "select?start=%s&rows=%s&%s" % (offset, batch_size, query)
+                )
+            except Exception as error:
+                print("select?start=%s&rows=%s&%s" % (offset, batch_size, query))
+                raise error
             if _retrieve_metadata:
                 meta = answer["response"].copy()
                 del meta["docs"]
                 yield meta
                 _retrieve_metadata = False
-            # Not used anymore (see above)
-            if latest_version:  # pragma: no cover
-                offset = answer["grouped"]["file_no_version"]["doclist"]["start"]
-                total = answer["grouped"]["file_no_version"]["ngroups"]
-                iter_answer = answer["grouped"]["file_no_version"]["doclist"]["docs"]
-            else:
-                offset = answer["response"]["start"]
-                total = answer["response"]["numFound"]
-                iter_answer = answer["response"]["docs"]
-
+            offset = answer["response"]["start"]
+            iter_answer = answer["response"]["docs"]
             for item in iter_answer:
                 yield item["file"]
-
-            max_rows -= total
-            if total - offset <= batch_size or max_rows <= 0:
-                break  # we are done
-            else:
-                offset += batch_size
+                results_to_visit -= 1
+            offset += batch_size
 
     @staticmethod
     def search(latest_version=True, **partial_dict):
