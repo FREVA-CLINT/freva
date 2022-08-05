@@ -86,13 +86,9 @@ class SolrFindFiles(object):
         results_to_visit = answer["response"]["numFound"]
         while results_to_visit > 0:
             batch_size = min(batch_size, results_to_visit)
-            try:
-                answer = self.solr.get_json(
-                    "select?start=%s&rows=%s&%s" % (offset, batch_size, query)
-                )
-            except Exception as error:
-                print("select?start=%s&rows=%s&%s" % (offset, batch_size, query))
-                raise error
+            answer = self.solr.get_json(
+                "select?start=%s&rows=%s&%s" % (offset, batch_size, query)
+            )
             if _retrieve_metadata:
                 meta = answer["response"].copy()
                 del meta["docs"]
