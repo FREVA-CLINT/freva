@@ -126,6 +126,7 @@ setup(
         "GitPython",
         "dask",
         "Django",
+        "django-dbconn-retry",
         "humanize",
         "h5netcdf",
         "lazy-import",
