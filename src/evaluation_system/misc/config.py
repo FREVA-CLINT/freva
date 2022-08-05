@@ -165,11 +165,12 @@ def _get_public_key(project_name: str) -> str:
     except FileNotFoundError:
         warnings.warn(
             (
-             f"{key_file} not found. Secrets are stored in central vault and a"
-             "public key is needed to open the vault. Without the public key"
-             " you won't be probaply be able to establish as database "
-             "connection."
-            ), category=Warning
+                f"{key_file} not found. Secrets are stored in central vault and a"
+                "public key is needed to open the vault. Without the public key"
+                " you won't be probaply be able to establish as database "
+                "connection."
+            ),
+            category=Warning,
         )
     return sha
 
