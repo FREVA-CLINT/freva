@@ -36,7 +36,7 @@ def databrowser(
     facet: Optional[Union[str, list[str]]] = None,
     multiversion: bool = False,
     relevant_only: bool = False,
-    batch_size: int = 10,
+    batch_size: int = 5000,
     count_facet_values: bool = False,
     **search_facets: Union[str, Path, int, list[str]],
 ) -> Union[dict[Any, dict[Any, Any]], Iterator[str]]:
