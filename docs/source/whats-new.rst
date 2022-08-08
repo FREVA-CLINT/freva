@@ -42,8 +42,7 @@ Bug fixes
 
 - Set plugin status to broken in OS related termination signals that can be
   handled by python (SIGTERM, SIGINT ...) and any other internal python errors.
-- Update databrowser query mechanism to be able to loop through all solr results
-  that were found.
+- Update databrowser query algorithm.
 
 Documentations
 ~~~~~~~~~~~~~~
@@ -54,7 +53,7 @@ Internal Changes
 - Introduce lazy loading to make freva cli a little more responsive
 - Explicitly set EVALUATION_SYSTEM_CONFIG_FILE env variable in workload
   manager job script.
-- Increas batch size to 5000 as default for querying data.
+- Increase batch size to 5000 as default for querying data.
 
 v2206.0.1
 ----------
