@@ -32,7 +32,7 @@ class SolrFindFiles(object):
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
         # these are special Solr keys that we might get and we assume are not meant for the search
-        special_keys = "q fl fq facet.limit".split()
+        special_keys = ("q", "fl",  "fq", "facet.limit", "sort")
 
         for key, value in partial_dict.items():
             if key in special_keys:
@@ -71,16 +71,12 @@ class SolrFindFiles(object):
         :param _retrieve_metadata: if set to true, the first item on the iterator is a metadata one. This is used so it can be
         known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
         implement a result set object. But that would break the find_files compatibility."""
-        offset = partial_dict.pop("start", 0)
-
+        offset = int(partial_dict.pop("start", "0"))
+        for key, value in {"q": "*:*", "fl": "file"}.items():
+            partial_dict.setdefault(key, value)
         if "text" in partial_dict:
-            partial_dict.update({"q": partial_dict.pop("text")})
-        else:
-            partial_dict.update({"q": "*:*"})
-
-        if "fl" not in partial_dict:
-            partial_dict.update({"fl": "file"})
-
+            partial_dict["q"] = partial_dict.pop("text")
+        partial_dict["sort"] = "file desc"
         query = self._to_solr_query(partial_dict)
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
         results_to_visit = answer["response"]["numFound"]
