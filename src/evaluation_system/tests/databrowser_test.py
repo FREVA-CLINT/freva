@@ -63,7 +63,7 @@ def test_freva_databrowser_method(dummy_solr):
     assert sorted(target) == res
     res = sorted(databrowser(attributes=True, relevant_only=True))
     assert relevant == res
-    
+
 
 def test_search_files_cmd(dummy_solr, capsys):
     from evaluation_system.misc.exceptions import CommandError

@@ -10,6 +10,7 @@ from typing_extensions import Literal
 
 __all__ = ["databrowser"]
 
+
 @overload
 def databrowser(
     *,
@@ -49,7 +50,7 @@ def databrowser(
     batch_size: int = 5000,
     count: bool = False,
     **search_facets: Union[str, Path, int, list[str]],
-) -> Union[dict[Any, dict[Any, Any]], Iterator[str]]:
+) -> Union[dict[Any, dict[Any, Any]], Iterator[str], int]:
     """Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -181,8 +182,10 @@ def databrowser(
             return (k for k in results if len(results[k]) > 2)
         return (k for k in results)
     search_results = SolrFindFiles.search(
-        batch_size=batch_size, latest_version=latest, _retrieve_metadata=count, 
-        **search_facets
+        batch_size=batch_size,
+        latest_version=latest,
+        _retrieve_metadata=count,
+        **search_facets,
     )
     if count:
         try:

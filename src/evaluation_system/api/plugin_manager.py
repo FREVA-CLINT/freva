@@ -1334,7 +1334,7 @@ def dict2conf(
                 paramstring, check_errors=False
             )[key]
             conf_object = Configuration()
-            conf_object.parameter_id_id = o[0].id
+            conf_object.parameter_id_id = o[0].id  # Type: Ignore
             conf_object.value = json.dumps(realvalue)
             conf.append(conf_object)
     return conf

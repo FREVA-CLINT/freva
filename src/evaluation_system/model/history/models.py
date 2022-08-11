@@ -432,5 +432,7 @@ class Configuration(models.Model):
     # is the default value used?
     is_default = models.BooleanField()
 
+    parameter_id_id = None
+
     class Meta:
         app_label = "history"
