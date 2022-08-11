@@ -9,6 +9,8 @@ dependencies:
   - mamba
   - pint
   - pip
+  - pip:
+      - -e .[test]
   - freva
   - pytest
   - pytest-env
