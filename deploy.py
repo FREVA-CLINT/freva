@@ -15,7 +15,7 @@ from tempfile import TemporaryDirectory
 DEFAULT_PYTHON = "3.10"
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
-CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2021.11")
+CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2022.05")
 CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 
 logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)

@@ -2,7 +2,7 @@ name: freva-dev
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python
   - conda
   - cartopy
   - ipython
