@@ -270,11 +270,17 @@ class Installer:
     def create_command(self, tmp_dir):
         """Construct the conda create command."""
         # If packages were given, create a conda env from this packages list
+        if not self.python:
+            version_str = ""
+        elif self.python[0] in "<=>":
+            version_str = self.python
+        else:
+            version_str = f"={self.python}"
         if self.packages:
             packages = set(self.packages + ["conda", "pip"])
             return (
                 f"create -c {self.channel} -q -p {self.install_prefix} "
-                f"python={self.python} " + " ".join(packages) + " -y"
+                f"python{version_str} " + " ".join(packages) + " -y"
             )
         # This is awkward, but since we can't guarrantee that we have a yml
         # parser installed we have to do this manually
