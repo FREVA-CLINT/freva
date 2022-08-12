@@ -8,7 +8,7 @@ import os
 from re import split
 import shlex
 from subprocess import run, PIPE
-from string import Template
+from string import ascii_lowercase, Template
 from typing import Any, Dict, Iterable, List, TextIO, IO, Union
 
 
@@ -18,6 +18,98 @@ def run_cmd(cmd: str, **kwargs: Any) -> str:
     kwargs["stdout"] = kwargs["stderr"] = PIPE
     res = run(shlex.split(cmd), **kwargs)
     return res.stdout.decode()
+
+
+def _sanity_check_for_timestamp(time_str: str, alternative: str) -> str:
+    try:
+        list(map(int, time_str.split("-")))
+    except ValueError:
+        return alternative
+    return time_str
+
+
+def convet_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
+    """Convert a string representation of a time step to an iso timestamp
+
+    Parameters
+    ----------
+    time_str: str
+        Representation of the time step usually of form %Y%m%d%H%M or
+        a variant such as %Y%m or %Y%m%dT%H%M
+    alternative: str, default: 0
+        If conversion fails the alternative/default value the time step
+        get's assign to
+
+    Returns
+    -------
+    str: ISO time string representation of the input time step, such as
+         %Y %Y-%m-%d or %Y-%m-%dT%H%M%S
+    """
+
+    time_str = time_str.lower()
+    # Not valid if time repr empty or starts with a letter, such as 'fx'
+    if not time_str or time_str[0] in ascii_lowercase:
+        return alternative
+    # In some cases we do have a str suffix attached to the time repr such as
+    # 19990202-clim
+    time_str = time_str.partition("-")[0]  # Let's delete of those pot. suffixes
+    if len(time_str) <= 4:
+        # Suppose this is a year only
+        return _sanity_check_for_timestamp(time_str.zfill(4), alternative)
+    if len(time_str) <= 6:
+        # Suppose this is %Y%m or %Y%e
+        return _sanity_check_for_timestamp(
+            f"{time_str[:4]}-{time_str[4:].zfill(2)}", alternative
+        )
+    if len(time_str) <= 8:
+        # Suppose this is %Y%m%d
+        return _sanity_check_for_timestamp(
+            f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:].zfill(2)}", alternative
+        )
+    date = _sanity_check_for_timestamp(
+        f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:8]}", alternative
+    )
+    if date == alternative:
+        return alternative
+    time = time_str[8:]
+    if time.startswith("t"):
+        time = time[1:]
+    if len(time) <= 2:
+        time = time.zfill(2)
+    else:
+        # Alsways drop seconds
+        time = time[:2] + time[2 : min(4, len(time))].zfill(2)
+    try:
+        # Smoke test
+        _ = int(time)
+        time = "T" + time
+    except ValueError:
+        # The time could not be converted, instead of dropping the entire
+        # string representation we only drop the time because date is fine
+        time = ""
+
+    return f"{date}{time}"
+
+
+def get_time_range(time: str, sep: str = "-") -> str:
+    """Create a solr time range stamp for ingestion.
+
+    Parameters
+    ----------
+    time: str
+        string representation of the time range
+    sep: str, default: -
+        seperator for start and end time
+
+    Returns
+    -------
+    str: solr time range string representation
+    """
+
+    start, _, end = time.partition(sep)
+    start_str = convet_str_to_timestamp(start, alternative="0")
+    end_str = convet_str_to_timestamp(end, alternative="9999")
+    return f"{start_str} TO {end_str}"
 
 
 def get_console_size() -> Dict[str, int]:
