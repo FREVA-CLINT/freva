@@ -17,7 +17,7 @@ test:
 test_coverage:
 	python3 -m pytest -vv \
 	    --cov=$(PWD)/src --cov-report=html:coverage_report --cov-report term-missing \
-	    --alluredir=test_results  --junitxml=report.xml \
+	    --alluredir=test_results  --junitxml=report.xml --cov-report xml:coverage_report.xml \
 		$(PWD)/src/evaluation_system/tests
 
 docs:

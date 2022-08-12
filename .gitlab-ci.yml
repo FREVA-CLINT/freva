@@ -99,6 +99,7 @@ pages:
         - mkdir -p sphinx_docs
         - mv coverage_report public/
         - mv sphinx_docs public/
+    coverage: '/TOTAL.*\s+(\d+%)$/'
     script:
         - /opt/allure/bin/allure generate --clean test_results
     after_script:
