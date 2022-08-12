@@ -54,6 +54,7 @@ test:latest:
     <<: *py_test
     script:  # Do the unit tests with converage reports
         - make test_coverage
+    coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
     artifacts:
         when: always
         reports:
@@ -99,7 +100,6 @@ pages:
         - mkdir -p sphinx_docs
         - mv coverage_report public/
         - mv sphinx_docs public/
-      coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
     script:
         - /opt/allure/bin/allure generate --clean test_results
     after_script:
