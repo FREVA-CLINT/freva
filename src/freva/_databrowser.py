@@ -49,6 +49,7 @@ def databrowser(
     relevant_only: bool = False,
     batch_size: int = 5000,
     count: bool = False,
+    time: Optional[str] = None,
     **search_facets: Union[str, Path, int, list[str]],
 ) -> Union[dict[Any, dict[Any, Any]], Iterator[str], int]:
     """Find data in the system.
@@ -62,6 +63,15 @@ def databrowser(
     **search_facets: Union[str, Path, in, list[str]]
         The facets to be applied in the data search. If not given
         the whole dataset will be queried.
+    time: str
+        Special search facet to refine/subset search results by time. The time
+        string. This can be a string representation of a time range or a single
+        time step. The time steps have to follow ISO-8601. Valid strings are
+        %Y-%m-%dT%H:%M to %Y-%m-%dT%H:%M for time ranges and
+        %Y-%m-%dT%H:%M. **Note**: You don't have to give the full string format
+        subsets such as %Y or %Y-%m etc are also valid. The `\*` wild card can
+        also be given to select any time steps such as `2000 to \*` for
+        selecting times from 2000 onwards.
     all_facets: bool, default: False
         Retrieve all facets (attributes & values) instead of the files.
     facet: Union[str, list[str]], default: None
@@ -109,6 +119,13 @@ def databrowser(
         facets = freva.databrowser(project='obs*', attributes=True)
         print(list(facets))
 
+    Search for files between a two given time steps:
+
+    .. execute_code::
+
+        import freva
+        file_range = freva.databrowser(project='obs*', time='2016-09-02T01:00 to 2016-09-10T21:00')
+        print(file_range)
 
     Search for facets in the system:
 
@@ -121,7 +138,15 @@ def databrowser(
                                         facet=["time_frequency", "variable"])
         print(spec_facets)
 
-    Reverse search: retrieving meta data from a knwon file
+    Get all models that have a given time step:
+
+    .. execute_code::
+
+        import freva
+        model = freva.databrowser(project='obs*', time='2016-09-02T01:00',  facet="modle")
+        print(model)
+
+    Reverse search: retrieving meta data from a known file
 
     .. execute_code::
 
@@ -141,6 +166,7 @@ def databrowser(
 
     """
     facets: list[str] = []
+    search_facets["time"] = time
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"])).expanduser().absolute()

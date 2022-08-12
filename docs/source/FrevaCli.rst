@@ -165,6 +165,43 @@ the files themselves.
    res = run(["freva", "databrowser", "--count"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+Sometimes it might be useful to subset the data you're interested in by time.
+To do so you can use the `time` search key to subset time steps and whole time
+ranges. For example let's get the for certain time range:
+
+.. code:: console
+
+    freva-databrowser project=observations time=freva databrowser time='2016-09-02T22:00 to 2016-10'
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time='2016-09-02T22:00 to 2016-10'"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Giving single time steps is also possible:
+
+.. code:: console
+
+    freva-databrowser project=observations time=freva databrowser time='2016-09-02T22:00'
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time='2016-09-02T22:00"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+.. note::
+
+    The time format has to follow the
+    [ISO-8601](https://en.wikipedia.og/wiki/ISO_8601) standard. Time *ranges* 
+    are indicated by the `to` keyword such as 2000 to 2100 or 
+    `2000-01 to 2100-12` and alike. Single time steps are given without the `to`
+    keyword. The `*` wildcard can be used to indicate any time steps such as
+    `2000-01-01 to \*` for all time steps from 1st Jan 2000 onwards.
+
 
 You might as well want to know about possible values that an attribute
 can take after a certain search is done. For this you use the

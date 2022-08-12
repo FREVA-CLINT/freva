@@ -8,6 +8,7 @@ New Features
 ~~~~~~~~~~~~
 - `count` keyword/flag for the databrowser counts also the number of files
   found by the databrowser, not only the facet counts.
+- databrowser can subset results by time.
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
