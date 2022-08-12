@@ -177,7 +177,7 @@ ranges. For example let's get the for certain time range:
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "time='2016-09-02T22:00 to 2016-10'"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "time=2016-09-02T22:00 to 2016-10"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 Giving single time steps is also possible:
@@ -190,7 +190,7 @@ Giving single time steps is also possible:
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "time='2016-09-02T22:00"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "time=2016-09-02T22:00"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 .. note::

@@ -124,7 +124,7 @@ def databrowser(
     .. execute_code::
 
         import freva
-        file_range = freva.databrowser(project='obs*', time='2016-09-02T01:00 to 2016-09-10T21:00')
+        file_range = list(freva.databrowser(project="obs*", time="2016-09-02T22:00 to 2016-10"))
         print(file_range)
 
     Search for facets in the system:
@@ -143,7 +143,7 @@ def databrowser(
     .. execute_code::
 
         import freva
-        model = freva.databrowser(project='obs*', time='2016-09-02T01:00',  facet="modle")
+        model = list(freva.databrowser(project="obs*", time="2016-09-02T22:10"))
         print(model)
 
     Reverse search: retrieving meta data from a known file
