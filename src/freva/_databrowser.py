@@ -64,8 +64,8 @@ def databrowser(
         The facets to be applied in the data search. If not given
         the whole dataset will be queried.
     time: str
-        Special search facet to refine/subset search results by time. The time
-        string. This can be a string representation of a time range or a single
+        Special search facet to refine/subset search results by time.
+        This can be a string representation of a time range or a single
         time step. The time steps have to follow ISO-8601. Valid strings are
         ``%Y-%m-%dT%H:%M`` to ``%Y-%m-%dT%H:%M`` for time ranges and
         ``%Y-%m-%dT%H:%M``. **Note**: You don't have to give the full string
