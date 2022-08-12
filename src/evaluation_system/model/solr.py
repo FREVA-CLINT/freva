@@ -6,10 +6,13 @@ Created on 11.03.2013
 This package encapsulate access to a solr instance
 """
 
+from __future__ import annotations
 import urllib
+from typing import cast, Union
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger
+
 
 class SolrFindFiles(object):
     """Encapsulate access to Solr like the find files command"""
@@ -28,7 +31,7 @@ class SolrFindFiles(object):
     def __str__(self):  # pragma: no cover
         return "<SolrFindFiles %s>" % self.solr
 
-    def _to_solr_query(self, partial_dict: dict[str, str]) -> str:
+    def _to_solr_query(self, partial_dict: dict[str, Union[str, list[str]]]) -> str:
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
         partial_dict = self._add_time_query(partial_dict)
@@ -99,20 +102,21 @@ class SolrFindFiles(object):
             offset += batch_size
 
     @staticmethod
-    def _add_time_query(search_dict: dict[str, str]) -> dict[str, str]:
+    def _add_time_query(
+        search_dict: dict[str, Union[str, list[str]]]
+    ) -> dict[str, Union[list[str], str]]:
         """Add a potential time query string to the search dict."""
-        time_subset = search_dict.pop("time", None)
+        time_subset = cast(str, search_dict.pop("time", ""))
         if time_subset:
             start, _, end = time_subset.lower().partition("to")
             start = start.strip().upper() or "0"
             end = end.strip().upper() or ""
             if not end:
-                time = "{!field f=time op=Contains}"+f"[{start} TO {start}]"
+                time = "{!field f=time op=Contains}" + f"[{start} TO {start}]"
             else:
-                time = "{!field f=time op=Intersects}"+f"[{start} TO {end}]"
+                time = "{!field f=time op=Intersects}" + f"[{start} TO {end}]"
             search_dict["fq"] = time
         return search_dict
-
 
     @staticmethod
     def search(latest_version=True, **partial_dict):

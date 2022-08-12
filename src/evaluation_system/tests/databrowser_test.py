@@ -8,8 +8,10 @@ def test_index_len(dummy_solr):
     assert dummy_solr.all_files.status()["index"]["numDocs"] == 5
     assert dummy_solr.latest.status()["index"]["numDocs"] == 3
 
+
 def test_time_subsets(dummy_solr):
     from freva import databrowser
+
     files = list(databrowser(project="cmip5"))
     subset_1 = databrowser(project="cmip5", time="2000-12 to 2012-12", count=True)
     subset_2 = databrowser(project="cmip5", time="1918", count=True)
@@ -17,6 +19,7 @@ def test_time_subsets(dummy_solr):
     assert subset_1 == 2
     assert subset_2 == 1
     assert subset_3 == 0
+
 
 def test_freva_databrowser_method(dummy_solr):
     from freva import databrowser

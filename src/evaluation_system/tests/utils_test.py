@@ -10,7 +10,10 @@ import os
 
 
 def test_time_ranges():
-    from evaluation_system.misc.utils import get_solr_time_range, convet_str_to_timestamp
+    from evaluation_system.misc.utils import (
+        get_solr_time_range,
+        convet_str_to_timestamp,
+    )
 
     assert get_solr_time_range("fx") == "[0 TO 9999]"
     times = datetime(1999, 1, 31, 12, 55, 12, 20)

@@ -49,7 +49,7 @@ def databrowser(
     relevant_only: bool = False,
     batch_size: int = 5000,
     count: bool = False,
-    time: Optional[str] = None,
+    time: str = "",
     **search_facets: Union[str, Path, int, list[str]],
 ) -> Union[dict[Any, dict[Any, Any]], Iterator[str], int]:
     """Find data in the system.
