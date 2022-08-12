@@ -102,7 +102,6 @@ class HistoryCli(BaseParser):
         if args.return_command:
             result = "\n".join(commands)
         else:
-            print(commands)
             result = "\n".join(
                 [c.__str__(compact=not args.full_text) for c in commands]
             )
