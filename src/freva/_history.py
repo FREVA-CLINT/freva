@@ -72,11 +72,11 @@ def history(
 
 
     .. hint:: Date Format
-        Dates can be given in "YYYY-MM-DD HH:mm:ss.n" or any less accurate subset.
-        These are all valid: "2012-02-01 10:08:32.1233431", "2012-02-01 10:08:32",
-        "2012-02-01 10:08", "2012-02-01 10", "2012-02-01", "2012-02", "2012".
-        Missing values are assumed to be the minimal allowed value. For example:
-        "2012" = "2012-01-01 00:00:00.0"
+        Dates are given in the ISO-8601 fromat and can be "YYYY-MM-DDTHH:mm:ss.n"
+        or any less accurate subset. These are all valid: "2012-02-01T10:08:32.1233431",
+        "2012-02-01T10:08:32", "2012-02-01T10:08", "2012-02-01T10", "2012-02-01",
+        "2012-02", "2012". Missing values are assumed to be the minimal allowed value.
+        For example: "2012" = "2012-01-01T00:00:00.0"
     """
     if not isinstance(entry_ids, (list, tuple, set)) and entry_ids is not None:
         entry_ids = [entry_ids]

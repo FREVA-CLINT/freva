@@ -196,11 +196,11 @@ Giving single time steps is also possible:
 .. note::
 
     The time format has to follow the
-    [ISO-8601](https://en.wikipedia.og/wiki/ISO_8601) standard. Time *ranges*
-    are indicated by the ``to`` keyword such as 2000 to 2100 or
+    `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ standard. Time *ranges*
+    are indicated by the ``to`` keyword such as ``2000 to 2100`` or
     ``2000-01 to 2100-12`` and alike. Single time steps are given without the
-    ``to``keyword. The ``*`` wildcard can be used to indicate any time steps 
-    such as ``2000-01-01 to \*`` for all time steps from 1st Jan 2000 onwards.
+    ``to`` keyword. The ``*`` wildcard can be used to indicate any time steps
+    such as ``2000-01-01 to *`` for all time steps from 1st Jan 2000 onwards.
 
 
 You might as well want to know about possible values that an attribute
@@ -410,8 +410,7 @@ sub-command can do that:
 
 
 
-Let’s get the last entry (default is 10 entries) of the ``dummyplugin``
-plugin history
+Let’s get the last entry (default is 10 entries) of the ``dummyplugin`` plugin history
 
 .. code:: console
 
@@ -426,6 +425,8 @@ plugin history
    print(res.stdout.decode())
 
 
+Dates are given using the `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ 
+format.
 
 The entries are sorted by their ``id``. For example you can query the
 full configuration by giving the id:

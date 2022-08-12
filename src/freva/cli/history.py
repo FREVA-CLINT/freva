@@ -98,11 +98,11 @@ class HistoryCli(BaseParser):
             pass
         commands = freva.history(_return_dict=False, **kwargs)
         if not commands:
-            logger.error("No results. Check query.")
             return
         if args.return_command:
             result = "\n".join(commands)
         else:
+            print(commands)
             result = "\n".join(
                 [c.__str__(compact=not args.full_text) for c in commands]
             )
