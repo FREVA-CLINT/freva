@@ -22,7 +22,7 @@ from typing import Dict, Iterator, Optional, Tuple
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
-from evaluation_system.misc.utils import get_time_range
+from evaluation_system.misc.utils import get_solr_time_range
 from evaluation_system.misc.exceptions import CommandError
 
 
@@ -262,7 +262,7 @@ class SolrCore:
                 continue
             metadata = SolrCore.to_solr_dict(drs_file)
             metadata["timestamp"] = timestamp
-            metadata["time"] = get_time_range(metadata.pop("time", ""))
+            metadata["time"] = get_solr_time_range(metadata.pop("time", ""))
             yield drs_file, metadata
 
     def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:

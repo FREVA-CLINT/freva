@@ -9,7 +9,7 @@ This package encapsulate access to a solr instance
 import urllib
 
 from evaluation_system.model.solr_core import SolrCore
-
+from evaluation_system.misc import logger
 
 class SolrFindFiles(object):
     """Encapsulate access to Solr like the find files command"""
@@ -28,12 +28,13 @@ class SolrFindFiles(object):
     def __str__(self):  # pragma: no cover
         return "<SolrFindFiles %s>" % self.solr
 
-    def _to_solr_query(self, partial_dict):
+    def _to_solr_query(self, partial_dict: dict[str, str]) -> str:
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
+        partial_dict = self._add_time_query(partial_dict)
         # these are special Solr keys that we might get and we assume are not meant for the search
         special_keys = ("q", "fl", "fq", "facet.limit", "sort")
-
+        logger.debug(partial_dict)
         for key, value in partial_dict.items():
             if key in special_keys:
                 params.append((key, value))
@@ -52,6 +53,7 @@ class SolrFindFiles(object):
                         constraint,
                     )
                 )
+        logger.debug(params)
         return urllib.parse.urlencode(params)
 
     def _search(
@@ -95,6 +97,22 @@ class SolrFindFiles(object):
                 yield item["file"]
                 results_to_visit -= 1
             offset += batch_size
+
+    @staticmethod
+    def _add_time_query(search_dict: dict[str, str]) -> dict[str, str]:
+        """Add a potential time query string to the search dict."""
+        time_subset = search_dict.pop("time", None)
+        if time_subset:
+            start, _, end = time_subset.lower().partition("to")
+            start = start.strip().upper() or "0"
+            end = end.strip().upper() or ""
+            if not end:
+                time = "{!field f=time op=Contains}"+f"[{start} TO {start}]"
+            else:
+                time = "{!field f=time op=Intersects}"+f"[{start} TO {end}]"
+            search_dict["fq"] = time
+        return search_dict
+
 
     @staticmethod
     def search(latest_version=True, **partial_dict):

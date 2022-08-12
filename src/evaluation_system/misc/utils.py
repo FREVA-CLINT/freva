@@ -20,9 +20,9 @@ def run_cmd(cmd: str, **kwargs: Any) -> str:
     return res.stdout.decode()
 
 
-def _sanity_check_for_timestamp(time_str: str, alternative: str) -> str:
+def _sanity_check_for_timestamp(time_str: str, alternative: str, sep: str = "-") -> str:
     try:
-        list(map(int, time_str.split("-")))
+        list(map(int, time_str.split(sep)))
     except ValueError:
         return alternative
     return time_str
@@ -78,20 +78,14 @@ def convet_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
         time = time.zfill(2)
     else:
         # Alsways drop seconds
-        time = time[:2] + time[2 : min(4, len(time))].zfill(2)
-    try:
-        # Smoke test
-        _ = int(time)
+        time = time[:2] + ":" + time[2 : min(4, len(time))].zfill(2)
+    time = _sanity_check_for_timestamp(time, "", sep=":")
+    if time:
         time = "T" + time
-    except ValueError:
-        # The time could not be converted, instead of dropping the entire
-        # string representation we only drop the time because date is fine
-        time = ""
-
     return f"{date}{time}"
 
 
-def get_time_range(time: str, sep: str = "-") -> str:
+def get_solr_time_range(time: str, sep: str = "-") -> str:
     """Create a solr time range stamp for ingestion.
 
     Parameters
@@ -109,7 +103,7 @@ def get_time_range(time: str, sep: str = "-") -> str:
     start, _, end = time.partition(sep)
     start_str = convet_str_to_timestamp(start, alternative="0")
     end_str = convet_str_to_timestamp(end, alternative="9999")
-    return f"{start_str} TO {end_str}"
+    return f"[{start_str} TO {end_str}]"
 
 
 def get_console_size() -> Dict[str, int]:
