@@ -171,7 +171,7 @@ ranges. For example let's get the for certain time range:
 
 .. code:: console
 
-    freva-databrowser project=observations time=freva databrowser time='2016-09-02T22:00 to 2016-10'
+    freva-databrowser project=observations time='2016-09-02T22:00 to 2016-10'
 
 .. execute_code::
    :hide_code:
@@ -184,7 +184,7 @@ Giving single time steps is also possible:
 
 .. code:: console
 
-    freva-databrowser project=observations time=freva databrowser time='2016-09-02T22:00'
+    freva-databrowser project=observations time='2016-09-02T22:10'
 
 .. execute_code::
    :hide_code:
@@ -196,11 +196,11 @@ Giving single time steps is also possible:
 .. note::
 
     The time format has to follow the
-    [ISO-8601](https://en.wikipedia.og/wiki/ISO_8601) standard. Time *ranges* 
-    are indicated by the `to` keyword such as 2000 to 2100 or 
-    `2000-01 to 2100-12` and alike. Single time steps are given without the `to`
-    keyword. The `*` wildcard can be used to indicate any time steps such as
-    `2000-01-01 to \*` for all time steps from 1st Jan 2000 onwards.
+    [ISO-8601](https://en.wikipedia.og/wiki/ISO_8601) standard. Time *ranges*
+    are indicated by the ``to`` keyword such as 2000 to 2100 or
+    ``2000-01 to 2100-12`` and alike. Single time steps are given without the
+    ``to``keyword. The ``*`` wildcard can be used to indicate any time steps 
+    such as ``2000-01-01 to \*`` for all time steps from 1st Jan 2000 onwards.
 
 
 You might as well want to know about possible values that an attribute

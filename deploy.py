@@ -442,7 +442,8 @@ if __name__ == "__main__":
     )
     if Inst.conda:
         Inst.create_conda()
-        Inst.pip_install(args.editable)
+        if "freva" not in args.packages:
+            Inst.pip_install(args.editable)
     Inst.create_loadscript(Inst.install_prefix)
     if Inst.run_tests:
         Inst.unittests()
