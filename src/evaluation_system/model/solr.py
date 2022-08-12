@@ -72,7 +72,7 @@ class SolrFindFiles(object):
         known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
         implement a result set object. But that would break the find_files compatibility."""
         offset = int(partial_dict.pop("start", "0"))
-        for key, value in {"q": "*:*", "fl": "file", "sort":"file desc"}.items():
+        for key, value in {"q": "*:*", "fl": "file", "sort": "file desc"}.items():
             partial_dict.setdefault(key, value)
         if "text" in partial_dict:
             partial_dict["q"] = partial_dict.pop("text")
