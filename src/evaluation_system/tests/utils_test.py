@@ -34,7 +34,9 @@ def test_time_ranges():
     assert target_time2 == time2
     wrong_time = convert_str_to_timestamp(times.strftime("%Y%mT"), alternative="1")
     wrong_time2 = convert_str_to_timestamp(times.strftime("%a"), alternative="1")
-    wrong_time3 = convert_str_to_timestamp(times.strftime("%Yb%m%d%HT"), alternative="1")
+    wrong_time3 = convert_str_to_timestamp(
+        times.strftime("%Yb%m%d%HT"), alternative="1"
+    )
     wrong_time4 = convert_str_to_timestamp(times.strftime("%Y%m%d%HT"), alternative="1")
     assert wrong_time2 == "1"
     assert wrong_time4 == wrong_time3 == times.strftime("%Y-%m-%dT%H")

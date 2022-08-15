@@ -109,8 +109,8 @@ class SolrFindFiles(object):
         time_subset = cast(str, search_dict.pop("time", ""))
         if time_subset:
             start, _, end = time_subset.lower().partition("to")
-            start = utils.convert_str_to_timestamp(start.strip() or "0", None)
-            end = utils.convert_str_to_timestamp(end.strip() or start, None)
+            start = utils.convert_str_to_timestamp(start.strip() or "0", "")
+            end = utils.convert_str_to_timestamp(end.strip() or start, "")
             time = "{!field f=time op=Intersects}" + f"[{start} TO {end}]"
             if not time or not end:
                 raise ValueError("Invalid time string")
