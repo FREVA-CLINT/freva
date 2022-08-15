@@ -132,8 +132,9 @@ def databrowser(
     .. execute_code::
 
         import freva
-        file_range = list(freva.databrowser(project="obs*", time="2016-09-02T22:00 to 2016-10"))
-        print(file_range)
+        file_range = freva.databrowser(project="obs*", time="2016-09-02T22:15 to 2016-10")
+        for file in file_range:
+            print(file)
 
     The default method for selecting time periods is ``flexible``, which means
     all files are selected that cover at least start or end date. The
@@ -144,8 +145,9 @@ def databrowser(
     .. execute_code::
 
         import freva
-        file_range = freva.databrowser(project="obs*", time="2016-09-02T22:00 to 2016-10", time_select="strict")
-        print(list(file_range))
+        file_range = freva.databrowser(project="obs*", time="2016-09-02T22:15 to 2016-10", time_select="strict")
+        for file in file_range:
+            print(file)
 
 
     Search for facets in the system:

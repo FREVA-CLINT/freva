@@ -171,13 +171,13 @@ ranges. For example let's get the for certain time range:
 
 .. code:: console
 
-    freva-databrowser project=observations time='2016-09-02T22:00 to 2016-10'
+    freva-databrowser project=observations time='2016-09-02T22:15 to 2016-10'
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "time=2016-09-02T22:00 to 2016-10"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "time=2016-09-02T22:15 to 2016-10"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 The default method for selecting time periods is ``flexible``, which means
@@ -188,13 +188,13 @@ not give any result because we do not have data after September 2016:
 
 .. code:: console
 
-    freva-databrowser project=observations time='2016-09-02T22:00 to 2016-10' --time-select strict
+    freva-databrowser project=observations time='2016-09-02T22:15 to 2016-10' --time-select strict
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "time=2016-09-02T22:00 to 2016-10", "--time-select", "strict"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "time=2016-09-02T22:15 to 2016-10", "--time-select", "strict"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 Giving single time steps is also possible:
