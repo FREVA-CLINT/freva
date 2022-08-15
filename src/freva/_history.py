@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import evaluation_system.api.plugin_manager as pm
 from evaluation_system.misc import logger
+from typing import Any
 
 __all__ = ["history"]
 
@@ -19,7 +20,7 @@ def history(
     full_text: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
-) -> Union[list[str], dict[str, str]]:
+) -> Union[list[Any], dict[str, Any]]:
     """Get access to the configurations of previously applied freva plugins.
 
     The `.history` method displays the entries with a one-line compact description.

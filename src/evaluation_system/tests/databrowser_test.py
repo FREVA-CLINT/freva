@@ -33,6 +33,9 @@ def test_freva_databrowser_method(dummy_solr):
     assert res == target
     res = sorted(databrowser(variable=["ua", "tauu", "wetso2"]))
     assert res == all_files_output
+    res = databrowser(variable=["ua", "tauu", "wetso2"], count=True)
+    assert res == len(all_files_output)
+    assert databrowser(variable="whhoop", count=True) == 0
     v = "v20110419"
     res = sorted(databrowser(variable="ua", version=v))
     assert v in res[0]
@@ -76,8 +79,12 @@ def test_search_files_cmd(dummy_solr, capsys):
     )
     run_cli(cmd)
     res = sorted([f for f in capsys.readouterr().out.split("\n") if f])
-    assert len(res) == len(all_files_output)
     assert res == all_files_output
+    run_cli(["databrowser", "--count"])
+    res = capsys.readouterr().out.split("\n")
+    assert int(res[0]) == len(all_files_output)
+    run(["variable=whooop", "--count"])
+    assert int(capsys.readouterr().out.split("\n")[0]) == 0
     run(["variable=ua"])
     res = capsys.readouterr().out
     assert (
@@ -153,7 +160,7 @@ ensemble: r2i1p1,r7i2p1,r9i3p1
     run_cli(cmd + ["--facet=variable", "--facet-limit=2"])
     res = capsys.readouterr().out
     assert res == "variable: tauu,ua,...\n"
-    run_cli(cmd + ["--facet=variable", "--count-facet-values"])
+    run_cli(cmd + ["--facet=variable", "--count"])
     res = capsys.readouterr().out
     assert res == "variable: tauu (1),ua (1),wetso2 (1)\n"
 

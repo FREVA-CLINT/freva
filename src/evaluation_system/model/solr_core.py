@@ -109,7 +109,6 @@ class SolrCore:
         else:
             query = self.solr_url + endpoint
         log.debug(query)
-
         try:
             req = urllib.request.Request(query)
             response = json.loads(urllib.request.urlopen(req).read())

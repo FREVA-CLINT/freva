@@ -149,7 +149,24 @@ There are many more options for defining a value for a given key:
     different meaning (normally it will try to match files with that name)
     to turn that off you can use backslash \ (key=\*) or use quotes (key='*').
 
-You might as well want to now about possible values that an attribute
+In some cases it might be useful to know how much files are found in the
+databrowser for certain search constraints. In such cases you can use the
+``count`` flag to count the number of *found* files instead of getting
+the files themselves.
+
+.. code:: console
+
+    freva-databrowser project=observations --count
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "--count"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+
+You might as well want to know about possible values that an attribute
 can take after a certain search is done. For this you use the
 ``--facet`` flag (facets are the attributes used to search for and sub set
 the data). For example to see all facets that are available in the
@@ -166,7 +183,6 @@ the data). For example to see all facets that are available in the
    res = run(["freva", "databrowser", "--all-facets"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-
 Instead of querying all facet to you get information on certain facets only:
 
 .. code:: console
@@ -179,6 +195,21 @@ Instead of querying all facet to you get information on certain facets only:
    from subprocess import run, PIPE
    res = run(["freva", "databrowser", "--facet", "time_frequency", "--facet", "variable", "project=observations"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
+
+You can also retrieve information on how many facets are found by the databrowser
+by giving the `count` flag
+
+.. code:: console
+
+    freva-databrowser --facet time_frequency --facet variable project=observations --count
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "--facet", "time_frequency", "--facet", "variable", "project=observations", "--count"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
 
 In some cases it might be useful to retrieve meta data from a file path this
 can be achieved by using the ``file=`` search facet:

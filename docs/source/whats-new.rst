@@ -6,10 +6,13 @@ v2206.0.11 (unreleased)
 
 New Features
 ~~~~~~~~~~~~
-
+- `count` keyword/flag for the databrowser counts also the number of files
+  found by the databrowser, not only the facet counts.
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
+- `count_facet_values` keyword (`count-facet-values` flag in cli)
+   has been renamed to `count`
 
 Deprecations
 ~~~~~~~~~~~~
@@ -22,6 +25,7 @@ Documentations
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
+- Files found by the databrowser are *alphabetically* sorted.
 
 
 v2206.0.10

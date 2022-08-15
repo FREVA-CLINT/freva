@@ -1334,7 +1334,11 @@ def dict2conf(
                 paramstring, check_errors=False
             )[key]
             conf_object = Configuration()
-            conf_object.parameter_id_id = o[0].id
+            # Because django adds attributes with suffix `_id`
+            # to foreign key attribute and mypy doesn't understand this yet
+            # will skip the typ check. Otherwise mypy will complain that we
+            # are trying to access an attribute that doesn't exist.
+            conf_object.parameter_id_id = o[0].id  # type: ignore
             conf_object.value = json.dumps(realvalue)
             conf.append(conf_object)
     return conf

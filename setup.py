@@ -163,6 +163,8 @@ setup(
         "test": [
             "allure-pytest",
             "black",
+            "django-stubs",
+            "django-stubs-ext",
             "h5netcdf",
             "mock",
             "mypy",

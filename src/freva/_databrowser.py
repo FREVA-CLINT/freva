@@ -14,6 +14,16 @@ __all__ = ["databrowser"]
 @overload
 def databrowser(
     *,
+    count: Literal[True],
+    all_facets: Literal[False],
+    facet: Literal[None],
+) -> int:
+    ...
+
+
+@overload
+def databrowser(
+    *,
     attributes: Literal[False],
     facet: Union[str, list[str]],
 ) -> dict[Any, dict[str, Any]]:
@@ -24,6 +34,7 @@ def databrowser(
 def databrowser(
     *,
     all_facets: Literal[False],
+    count: Literal[False],
     facet: Literal[None],
 ) -> Iterator[str]:
     ...
@@ -37,9 +48,9 @@ def databrowser(
     multiversion: bool = False,
     relevant_only: bool = False,
     batch_size: int = 5000,
-    count_facet_values: bool = False,
+    count: bool = False,
     **search_facets: Union[str, Path, int, list[str]],
-) -> Union[dict[Any, dict[Any, Any]], Iterator[str]]:
+) -> Union[dict[Any, dict[Any, Any]], Iterator[str], int]:
     """Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -64,7 +75,7 @@ def databrowser(
         Show only facets that filter more than one result.
     batch_size: int, default: 10
         Size of the search querey.
-    count_facet_values: bool, default: False
+    count: bool, default: False
         Display only this amount for search results.
 
     Returns
@@ -72,6 +83,8 @@ def databrowser(
     Iterator :
         If ``all_facets`` is False and ``facet`` is None an
         iterator with results.
+    int :
+        If ``all_facets`` is False and ``facet`` is None and ``count`` is True
     dict[Any, dict[str, Any] :
         dictionary for facet results, if ``all_facets`` is True or ``facet``
         was given a value (str or list[str])
@@ -118,6 +131,14 @@ def databrowser(
         res = freva.databrowser(file=file, all_facets=True)
         print(res)
 
+    Check the number of files in the system
+
+    .. execute_code::
+
+        import freva
+        num_files = freva.databrowser(experiment="cmorph", count=True)
+        print(num_files)
+
     """
     facets: list[str] = []
     try:
@@ -147,7 +168,7 @@ def databrowser(
             value_count = len(values) // 2
             if relevant_only and value_count < 2:
                 continue
-            if count_facet_values:
+            if count:
                 out[att] = {v: c for v, c in zip(*[iter(values)] * 2)}
             else:
                 out[att] = values[::2]
@@ -160,6 +181,16 @@ def databrowser(
         if relevant_only:
             return (k for k in results if len(results[k]) > 2)
         return (k for k in results)
-    return SolrFindFiles.search(
-        batch_size=batch_size, latest_version=latest, **search_facets
+    search_results = SolrFindFiles.search(
+        batch_size=batch_size,
+        latest_version=latest,
+        _retrieve_metadata=count,
+        **search_facets,
     )
+    if count:
+        try:
+            ne = next(search_results)["numFound"]
+        except (StopIteration, KeyError):
+            ne = 0
+        return ne
+    return search_results

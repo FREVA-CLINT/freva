@@ -2,13 +2,15 @@ name: freva-dev
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python
   - conda
   - cartopy
   - ipython
   - mamba
   - pint
   - pip
+  - pip:
+      - -e .[test]
   - freva
   - pytest
   - pytest-env

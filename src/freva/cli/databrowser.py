@@ -45,10 +45,10 @@ class DataBrowserCli(BaseParser):
             help="Number of files to retrieve",
         )
         subparser.add_argument(
-            "--count-facet-values",
+            "--count",
             default=False,
             action="store_true",
-            help="Show the number of files for each values in each facet.",
+            help="Show the number of files for each search result",
         )
         subparser.add_argument(
             "--attributes",
@@ -133,8 +133,11 @@ class DataBrowserCli(BaseParser):
         if args.attributes:
             print(", ".join(out), flush=True)
             return
-        for key in out:
-            print(str(key), flush=True)
+        if args.count:
+            print(out, flush=True)
+        else:
+            for key in out:
+                print(str(key), flush=True)
 
 
 def main(argv: Optional[list[str]] = None) -> None:
