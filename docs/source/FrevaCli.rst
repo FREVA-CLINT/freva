@@ -199,8 +199,7 @@ Giving single time steps is also possible:
     `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ standard. Time *ranges*
     are indicated by the ``to`` keyword such as ``2000 to 2100`` or
     ``2000-01 to 2100-12`` and alike. Single time steps are given without the
-    ``to`` keyword. The ``*`` wildcard can be used to indicate any time steps
-    such as ``2000-01-01 to *`` for all time steps from 1st Jan 2000 onwards.
+    ``to`` keyword.
 
 
 You might as well want to know about possible values that an attribute

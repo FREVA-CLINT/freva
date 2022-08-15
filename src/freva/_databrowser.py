@@ -70,8 +70,6 @@ def databrowser(
         ``%Y-%m-%dT%H:%M`` to ``%Y-%m-%dT%H:%M`` for time ranges and
         ``%Y-%m-%dT%H:%M``. **Note**: You don't have to give the full string
         format to subset time steps ``%Y``, ``%Y-%m`` etc are also valid.
-        The ``*`` wild card can also be given to select any time steps such
-        as ``2000 to *`` for selecting times from ``2000`` onwards.
     all_facets: bool, default: False
         Retrieve all facets (attributes & values) instead of the files.
     facet: Union[str, list[str]], default: None
