@@ -113,12 +113,12 @@ class SolrCore:
         try:
             req = urllib.request.Request(query)
             response = json.loads(urllib.request.urlopen(req).read())
-        except urllib.error.HTTPError:
-            raise CommandError("Bad request option")
+        except urllib.error.HTTPError as error:
+            raise ValueError("Bad databrowser request") from error
         if response["responseHeader"]["status"] != 0:
-            raise CommandError(
+            raise ValueError(
                 "Error while accessing Core %s. Response: %s" % (self.core, response)
-            )
+            ) from error
 
         return response
 

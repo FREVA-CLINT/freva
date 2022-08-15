@@ -16,6 +16,8 @@ def test_time_subsets(dummy_solr):
     subset_1 = databrowser(project="cmip5", time="2000-12 to 2012-12", count=True)
     subset_2 = databrowser(project="cmip5", time="1918", count=True)
     subset_3 = databrowser(project="cmip5", time="2100", count=True)
+    with pytest.raises(ValueError):
+        databrowser(time="2000-12 to bar", count=True)
     assert subset_1 == 2
     assert subset_2 == 1
     assert subset_3 == 0
@@ -123,7 +125,7 @@ def test_search_files_cmd(dummy_solr, capsys):
     res = capsys.readouterr().out
     assert v in res
     # test bad input
-    with pytest.raises(CommandError):
+    with pytest.raises(ValueError):
         run_cli(cmd + ["badoption"])
 
 

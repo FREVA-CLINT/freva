@@ -11,7 +11,7 @@ import urllib
 from typing import cast, Union
 
 from evaluation_system.model.solr_core import SolrCore
-from evaluation_system.misc import logger
+from evaluation_system.misc import logger, utils
 
 
 class SolrFindFiles(object):
@@ -109,12 +109,11 @@ class SolrFindFiles(object):
         time_subset = cast(str, search_dict.pop("time", ""))
         if time_subset:
             start, _, end = time_subset.lower().partition("to")
-            start = start.strip().upper() or "0"
-            end = end.strip().upper() or ""
-            if not end:
-                time = "{!field f=time op=Contains}" + f"[{start} TO {start}]"
-            else:
-                time = "{!field f=time op=Intersects}" + f"[{start} TO {end}]"
+            start = utils.convert_str_to_timestamp(start.strip() or "0", None)
+            end = utils.convert_str_to_timestamp(end.strip() or start, None)
+            time = "{!field f=time op=Intersects}" + f"[{start} TO {end}]"
+            if not time or not end:
+                raise ValueError("Invalid time string")
             search_dict["fq"] = time
         return search_dict
 

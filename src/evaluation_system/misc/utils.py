@@ -38,7 +38,9 @@ def convert_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
          %Y %Y-%m-%d or %Y-%m-%dT%H%M%S
     """
 
-    # Strip anything that's not a number from the string
+    # Strip anything that's not a number from the stringi
+    if not time_str:
+        return alternative
     time_str = "".join(filter(str.isdigit, time_str))
     # Not valid if time repr empty or starts with a letter, such as 'fx'
     l_times = len(time_str)

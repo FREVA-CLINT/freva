@@ -12,33 +12,33 @@ import os
 def test_time_ranges():
     from evaluation_system.misc.utils import (
         get_solr_time_range,
-        convet_str_to_timestamp,
+        convert_str_to_timestamp,
     )
 
     assert get_solr_time_range("fx") == "[0 TO 9999]"
     times = datetime(1999, 1, 31, 12, 55, 12, 20)
     for num, s in enumerate(["%Y", "%Y%m", "%Y%m%d"]):
-        time_repr = convet_str_to_timestamp(times.strftime(s))
+        time_repr = convert_str_to_timestamp(times.strftime(s))
         target = "%" + "-%".join(s.split("%")[1:])
         assert time_repr == times.strftime(target)
 
-    time1 = convet_str_to_timestamp(times.strftime("%Y%m%dT%H00"))
-    time1_2 = convet_str_to_timestamp(times.strftime("%Y%m%dT%H"))
-    time1_3 = convet_str_to_timestamp(times.strftime("%Y%m%d%H00"))
-    time1_4 = convet_str_to_timestamp(times.strftime("%Y%m%dT%H00%S"))
+    time1 = convert_str_to_timestamp(times.strftime("%Y%m%dT%H00"))
+    time1_2 = convert_str_to_timestamp(times.strftime("%Y%m%dT%H"))
+    time1_3 = convert_str_to_timestamp(times.strftime("%Y%m%d%H00"))
+    time1_4 = convert_str_to_timestamp(times.strftime("%Y%m%dT%H00%S"))
     target_time1 = times.strftime("%Y-%m-%dT%H:00")
     assert time1_2 == time1_2
     assert time1_3 == time1_4
-    time2 = convet_str_to_timestamp(times.strftime("%Y%m%d%H%M"))
+    time2 = convert_str_to_timestamp(times.strftime("%Y%m%d%H%M"))
     target_time2 = times.strftime("%Y-%m-%dT%H:%M")
     assert target_time2 == time2
-    wrong_time = convet_str_to_timestamp(times.strftime("%Y%mT"), alternative="1")
-    wrong_time2 = convet_str_to_timestamp(times.strftime("%a"), alternative="1")
-    wrong_time3 = convet_str_to_timestamp(times.strftime("%Yb%m%d%HT"), alternative="1")
-    wrong_time4 = convet_str_to_timestamp(times.strftime("%Y%m%d%HT"), alternative="1")
-    assert wrong_time == wrong_time2 == "1"
-    assert wrong_time4 == times.strftime("%Y-%m-%d")
-    assert wrong_time3 == "1"
+    wrong_time = convert_str_to_timestamp(times.strftime("%Y%mT"), alternative="1")
+    wrong_time2 = convert_str_to_timestamp(times.strftime("%a"), alternative="1")
+    wrong_time3 = convert_str_to_timestamp(times.strftime("%Yb%m%d%HT"), alternative="1")
+    wrong_time4 = convert_str_to_timestamp(times.strftime("%Y%m%d%HT"), alternative="1")
+    assert wrong_time2 == "1"
+    assert wrong_time4 == wrong_time3 == times.strftime("%Y-%m-%dT%H")
+    assert wrong_time == times.strftime("%Y-%m")
 
 
 def test_struct():
