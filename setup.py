@@ -135,7 +135,7 @@ setup(
         "pymysql",
         "pandas",
         "Pillow",
-        "PyPDF2<=2.10.0",
+        "PyPDF2!=2.10.1",
         "requests",
         "toml",
         "toolz",
