@@ -8,7 +8,7 @@ import os
 from re import split
 import shlex
 from subprocess import run, PIPE
-from string import ascii_lowercase, Template
+from string import Template
 from typing import Any, Dict, Iterable, List, TextIO, IO, Union
 
 
@@ -20,15 +20,7 @@ def run_cmd(cmd: str, **kwargs: Any) -> str:
     return res.stdout.decode()
 
 
-def _sanity_check_for_timestamp(time_str: str, alternative: str, sep: str = "-") -> str:
-    try:
-        list(map(int, time_str.split(sep)))
-    except ValueError:
-        return alternative
-    return time_str
-
-
-def convet_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
+def convert_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
     """Convert a string representation of a time step to an iso timestamp
 
     Parameters
@@ -46,43 +38,29 @@ def convet_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
          %Y %Y-%m-%d or %Y-%m-%dT%H%M%S
     """
 
-    time_str = time_str.lower()
+    # Strip anything that's not a number from the string
+    time_str = "".join(filter(str.isdigit, time_str))
     # Not valid if time repr empty or starts with a letter, such as 'fx'
-    if not time_str or time_str[0] in ascii_lowercase:
+    l_times = len(time_str)
+    if not l_times:
         return alternative
-    # In some cases we do have a str suffix attached to the time repr such as
-    # 19990202-clim
-    time_str = time_str.partition("-")[0]  # Let's delete of those pot. suffixes
-    if len(time_str) <= 4:
+    if l_times <= 4:
         # Suppose this is a year only
-        return _sanity_check_for_timestamp(time_str.zfill(4), alternative)
-    if len(time_str) <= 6:
+        return time_str.zfill(4)
+    if l_times <= 6:
         # Suppose this is %Y%m or %Y%e
-        return _sanity_check_for_timestamp(
-            f"{time_str[:4]}-{time_str[4:].zfill(2)}", alternative
-        )
-    if len(time_str) <= 8:
+        return f"{time_str[:4]}-{time_str[4:].zfill(2)}"
+    if l_times <= 8:
         # Suppose this is %Y%m%d
-        return _sanity_check_for_timestamp(
-            f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:].zfill(2)}", alternative
-        )
-    date = _sanity_check_for_timestamp(
-        f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:8]}", alternative
-    )
-    if date == alternative:
-        return alternative
+        return f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:].zfill(2)}"
+    date = f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:8]}"
     time = time_str[8:]
-    if time.startswith("t"):
-        time = time[1:]
     if len(time) <= 2:
         time = time.zfill(2)
     else:
-        # Alsways drop seconds
+        # Alaways drop seconds
         time = time[:2] + ":" + time[2 : min(4, len(time))].zfill(2)
-    time = _sanity_check_for_timestamp(time, "", sep=":")
-    if time:
-        time = "T" + time
-    return f"{date}{time}"
+    return f"{date}T{time}"
 
 
 def get_solr_time_range(time: str, sep: str = "-") -> str:
@@ -101,8 +79,8 @@ def get_solr_time_range(time: str, sep: str = "-") -> str:
     """
 
     start, _, end = time.partition(sep)
-    start_str = convet_str_to_timestamp(start, alternative="0")
-    end_str = convet_str_to_timestamp(end, alternative="9999")
+    start_str = convert_str_to_timestamp(start, alternative="0")
+    end_str = convert_str_to_timestamp(end, alternative="9999")
     return f"[{start_str} TO {end_str}]"
 
 
