@@ -140,7 +140,8 @@ def databrowser(
     all files are selected that cover at least start or end date. The
     ``strict`` method implies that the *entire* search time period has to be
     covered by the files. Using the ``strict`` method in the example above would
-    not give any result because we do not have data after September 2016:
+    only yield one file because the first file contains time steps prior to the
+    start of the time period:
 
     .. execute_code::
 
