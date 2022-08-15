@@ -10,6 +10,7 @@
 !.coveragerc
 !.docker/
 !.envrc
+coverage_report.xml
 dist/
 coverage_report/*
 public/

@@ -22,6 +22,7 @@ from typing import Dict, Iterator, Optional, Tuple
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
+from evaluation_system.misc.utils import get_solr_time_range
 from evaluation_system.misc.exceptions import CommandError
 
 
@@ -112,12 +113,12 @@ class SolrCore:
         try:
             req = urllib.request.Request(query)
             response = json.loads(urllib.request.urlopen(req).read())
-        except urllib.error.HTTPError:
-            raise CommandError("Bad request option")
+        except urllib.error.HTTPError as error:
+            raise ValueError("Bad databrowser request") from error
         if response["responseHeader"]["status"] != 0:
-            raise CommandError(
+            raise ValueError(
                 "Error while accessing Core %s. Response: %s" % (self.core, response)
-            )
+            ) from error
 
         return response
 
@@ -261,7 +262,7 @@ class SolrCore:
                 continue
             metadata = SolrCore.to_solr_dict(drs_file)
             metadata["timestamp"] = timestamp
-            metadata["creation_time"] = timestamp_to_solr_date(timestamp)
+            metadata["time"] = get_solr_time_range(metadata.pop("time", ""))
             yield drs_file, metadata
 
     def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:
@@ -401,11 +402,6 @@ class SolrCore:
             metadata["file_no_version"] = metadata["file"]
         metadata["dataset"] = drs_file.drs_structure
         return metadata
-
-
-def timestamp_to_solr_date(timestamp):
-    """Transform a timestamp (float) into a string parsable by Solr"""
-    return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def dir_iter(start_dir, abort_on_error=True, followlinks=True):

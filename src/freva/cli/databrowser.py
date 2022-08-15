@@ -79,6 +79,13 @@ class DataBrowserCli(BaseParser):
             default=sys.maxsize,
         )
         subparser.add_argument(
+            "--time-select",
+            type=str,
+            help="Operator that specifies how the time period is selected.",
+            choices=["flexible", "strict", "file"],
+            default="flexible",
+        )
+        subparser.add_argument(
             "--debug",
             "-v",
             "-d",

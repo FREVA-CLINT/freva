@@ -6,9 +6,12 @@ Created on 11.03.2013
 This package encapsulate access to a solr instance
 """
 
+from __future__ import annotations
 import urllib
+from typing import cast, Union
 
 from evaluation_system.model.solr_core import SolrCore
+from evaluation_system.misc import logger, utils
 
 
 class SolrFindFiles(object):
@@ -28,12 +31,13 @@ class SolrFindFiles(object):
     def __str__(self):  # pragma: no cover
         return "<SolrFindFiles %s>" % self.solr
 
-    def _to_solr_query(self, partial_dict):
+    def _to_solr_query(self, partial_dict: dict[str, Union[str, list[str]]]) -> str:
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
+        partial_dict = self._add_time_query(partial_dict)
         # these are special Solr keys that we might get and we assume are not meant for the search
         special_keys = ("q", "fl", "fq", "facet.limit", "sort")
-
+        logger.debug(partial_dict)
         for key, value in partial_dict.items():
             if key in special_keys:
                 params.append((key, value))
@@ -52,6 +56,7 @@ class SolrFindFiles(object):
                         constraint,
                     )
                 )
+        logger.debug(params)
         return urllib.parse.urlencode(params)
 
     def _search(
@@ -95,6 +100,23 @@ class SolrFindFiles(object):
                 yield item["file"]
                 results_to_visit -= 1
             offset += batch_size
+
+    @staticmethod
+    def _add_time_query(
+        search_dict: dict[str, Union[str, list[str]]]
+    ) -> dict[str, Union[list[str], str]]:
+        """Add a potential time query string to the search dict."""
+        time_subset = cast(str, search_dict.pop("time", ""))
+        operator = cast(str, search_dict.pop("time_select", ""))
+        if time_subset:
+            start, _, end = time_subset.lower().partition("to")
+            start = utils.convert_str_to_timestamp(start.strip() or "0", "")
+            end = utils.convert_str_to_timestamp(end.strip() or start, "")
+            if not start or not end:
+                raise ValueError("Invalid time string")
+            time = f"{{!field f=time op={operator}}}[{start} TO {end}]"
+            search_dict["fq"] = time
+        return search_dict
 
     @staticmethod
     def search(latest_version=True, **partial_dict):

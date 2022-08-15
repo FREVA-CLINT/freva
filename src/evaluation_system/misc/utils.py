@@ -20,6 +20,72 @@ def run_cmd(cmd: str, **kwargs: Any) -> str:
     return res.stdout.decode()
 
 
+def convert_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
+    """Convert a string representation of a time step to an iso timestamp
+
+    Parameters
+    ----------
+    time_str: str
+        Representation of the time step usually of form %Y%m%d%H%M or
+        a variant such as %Y%m or %Y%m%dT%H%M
+    alternative: str, default: 0
+        If conversion fails the alternative/default value the time step
+        get's assign to
+
+    Returns
+    -------
+    str: ISO time string representation of the input time step, such as
+         %Y %Y-%m-%d or %Y-%m-%dT%H%M%S
+    """
+
+    # Strip anything that's not a number from the stringi
+    if not time_str:
+        return alternative
+    time_str = "".join(filter(str.isdigit, time_str))
+    # Not valid if time repr empty or starts with a letter, such as 'fx'
+    l_times = len(time_str)
+    if not l_times:
+        return alternative
+    if l_times <= 4:
+        # Suppose this is a year only
+        return time_str.zfill(4)
+    if l_times <= 6:
+        # Suppose this is %Y%m or %Y%e
+        return f"{time_str[:4]}-{time_str[4:].zfill(2)}"
+    if l_times <= 8:
+        # Suppose this is %Y%m%d
+        return f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:].zfill(2)}"
+    date = f"{time_str[:4]}-{time_str[4:6]}-{time_str[6:8]}"
+    time = time_str[8:]
+    if len(time) <= 2:
+        time = time.zfill(2)
+    else:
+        # Alaways drop seconds
+        time = time[:2] + ":" + time[2 : min(4, len(time))].zfill(2)
+    return f"{date}T{time}"
+
+
+def get_solr_time_range(time: str, sep: str = "-") -> str:
+    """Create a solr time range stamp for ingestion.
+
+    Parameters
+    ----------
+    time: str
+        string representation of the time range
+    sep: str, default: -
+        seperator for start and end time
+
+    Returns
+    -------
+    str: solr time range string representation
+    """
+
+    start, _, end = time.partition(sep)
+    start_str = convert_str_to_timestamp(start, alternative="0")
+    end_str = convert_str_to_timestamp(end, alternative="9999")
+    return f"[{start_str} TO {end_str}]"
+
+
 def get_console_size() -> Dict[str, int]:
     """Try getting the size of the current tty."""
     console_size = run_cmd("stty size")

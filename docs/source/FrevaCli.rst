@@ -165,6 +165,60 @@ the files themselves.
    res = run(["freva", "databrowser", "--count"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+Sometimes it might be useful to subset the data you're interested in by time.
+To do so you can use the `time` search key to subset time steps and whole time
+ranges. For example let's get the for certain time range:
+
+.. code:: console
+
+    freva-databrowser project=observations time='2016-09-02T22:15 to 2016-10'
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time=2016-09-02T22:15 to 2016-10"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+The default method for selecting time periods is ``flexible``, which means
+all files are selected that cover at least start or end date. The
+``strict`` method implies that the *entire* search time period has to be
+covered by the files. Using the ``strict`` method in the example above would
+only yield on file because the first file contains time steps prior to the
+start of the time period:
+
+.. code:: console
+
+    freva-databrowser project=observations time='2016-09-02T22:15 to 2016-10' --time-select strict
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time=2016-09-02T22:15 to 2016-10", "--time-select", "strict"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Giving single time steps is also possible:
+
+.. code:: console
+
+    freva-databrowser project=observations time='2016-09-02T22:10'
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time=2016-09-02T22:00"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+.. note::
+
+    The time format has to follow the
+    `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ standard. Time *ranges*
+    are indicated by the ``to`` keyword such as ``2000 to 2100`` or
+    ``2000-01 to 2100-12`` and alike. Single time steps are given without the
+    ``to`` keyword.
+
 
 You might as well want to know about possible values that an attribute
 can take after a certain search is done. For this you use the
@@ -373,8 +427,7 @@ sub-command can do that:
 
 
 
-Let’s get the last entry (default is 10 entries) of the ``dummyplugin``
-plugin history
+Let’s get the last entry (default is 10 entries) of the ``dummyplugin`` plugin history
 
 .. code:: console
 
@@ -389,6 +442,8 @@ plugin history
    print(res.stdout.decode())
 
 
+Dates are given using the `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ 
+format.
 
 The entries are sorted by their ``id``. For example you can query the
 full configuration by giving the id:
