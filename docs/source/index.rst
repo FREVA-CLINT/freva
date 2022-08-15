@@ -34,8 +34,8 @@ and best practices when it comes to plugin development.
 
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:
+   :maxdepth: 2
+   :caption: Content:
 
    Freva
    FrevaCli

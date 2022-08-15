@@ -1,59 +1,63 @@
 What's new
 ===========
 
+.. toctree::
+   :maxdepth: 0
+   :titlesonly:
+
+
 v2206.0.11 (unreleased)
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 New Features
-~~~~~~~~~~~~
+++++++++++++
 - `count` keyword/flag for the databrowser counts also the number of files
   found by the databrowser, not only the facet counts.
 - databrowser can subset results by time.
 
 Breaking changes
-~~~~~~~~~~~~~~~~
-- `count_facet_values` keyword (`count-facet-values` flag in cli)
-   has been renamed to `count`
+++++++++++++++++
+- `count_facet_values` keyword (`count-facet-values` flag in cli) has been renamed to `count`
 
 Deprecations
-~~~~~~~~~~~~
+++++++++++++
 
 Bug fixes
-~~~~~~~~~
++++++++++
 
 Documentations
-~~~~~~~~~~~~~~
+++++++++++++++
 
 Internal Changes
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 - Files found by the databrowser are *alphabetically* sorted.
 
 
 v2206.0.10
-----------
+~~~~~~~~~~
 
 New Features
-~~~~~~~~~~~~
+++++++++++++
 
 
 Breaking changes
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 
 Deprecations
-~~~~~~~~~~~~
+++++++++++++
 
 Bug fixes
-~~~~~~~~~
++++++++++
 
 - Set plugin status to broken in OS related termination signals that can be
   handled by python (SIGTERM, SIGINT ...) and any other internal python errors.
 - Update databrowser query algorithm.
 
 Documentations
-~~~~~~~~~~~~~~
+++++++++++++++
 
 Internal Changes
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 
 - Introduce lazy loading to make freva cli a little more responsive
 - Explicitly set EVALUATION_SYSTEM_CONFIG_FILE env variable in workload
@@ -61,10 +65,10 @@ Internal Changes
 - Increase batch size to 5000 as default for querying data.
 
 v2206.0.1
-----------
+~~~~~~~~~
 
 New Features
-~~~~~~~~~~~~
+++++++++++++
 
 - Add python module for importing :py:meth:`freva` directly in python
   environments
@@ -81,7 +85,7 @@ New Features
 - Output of interactive jobs can be displayed in the web user interface
 
 Breaking changes
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 - Command line arguments taking boolean values do not require True or False:
     - Instead of ``freva plugin animtor --batchmode=True`` → ``freva plugin animtor --batchmode``
 - :py:meth:`add_output_to_databrowser` formerly :py:meth:`linkmydata` does not infer meta data
@@ -89,7 +93,7 @@ Breaking changes
   follow a particular folder path and naming convention)
 
 Deprecations
-~~~~~~~~~~~~
+++++++++++++
  - the `tool-pull-request` sub command has been made deprecated.
 - The following methods in the :ref:`PluginAPI` have been renamed:
     - :py:meth:`runTool` → :py:meth:`run_tool`
@@ -103,14 +107,14 @@ Deprecations
     - :py:meth:`parseArguments` → :py:meth:`parse_arguments`
 
 Bug fixes
-~~~~~~~~~
++++++++++
 
 Documentations
-~~~~~~~~~~~~~~
+++++++++++++++
 - Add user sphinx documentation
 
 Internal Changes
-~~~~~~~~~~~~~~~~
+++++++++++++++++
 - Add support for different workload managers
 - Install ``freva`` in dedicated anaconda environment
 - Install each Freva plugin in dedicated anaconda environment
