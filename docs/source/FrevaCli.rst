@@ -180,6 +180,23 @@ ranges. For example let's get the for certain time range:
    res = run(["freva", "databrowser", "time=2016-09-02T22:00 to 2016-10"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+The default method for selecting time periods is ``flexible``, which means
+all files are selected that cover at least start or end date. The
+``strict`` method implies that the *entire* search time period has to be
+covered by the files. Using the ``strict`` method in the example above would
+not give any result because we do not have data after September 2016:
+
+.. code:: console
+
+    freva-databrowser project=observations time='2016-09-02T22:00 to 2016-10' --time-select strict
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "time=2016-09-02T22:00 to 2016-10", "--time-select", "strict"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
 Giving single time steps is also possible:
 
 .. code:: console

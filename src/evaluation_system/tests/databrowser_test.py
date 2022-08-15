@@ -14,13 +14,19 @@ def test_time_subsets(dummy_solr):
 
     files = list(databrowser(project="cmip5"))
     subset_1 = databrowser(project="cmip5", time="2000-12 to 2012-12", count=True)
-    subset_2 = databrowser(project="cmip5", time="1918", count=True)
+    subset_2 = databrowser(project="cmip5", time="1900 to 1918", count=True)
     subset_3 = databrowser(project="cmip5", time="2100", count=True)
+    subset_4 = databrowser(
+        project="cmip5", time="2000-12 to 2012-12", count=True, time_select="strict"
+    )
     with pytest.raises(ValueError):
         databrowser(time="2000-12 to bar", count=True)
     assert subset_1 == 2
     assert subset_2 == 1
     assert subset_3 == 0
+    assert subset_4 == 0
+    with pytest.raises(ValueError):
+        databrowser(time_select="bar")
 
 
 def test_freva_databrowser_method(dummy_solr):

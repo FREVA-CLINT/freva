@@ -107,13 +107,14 @@ class SolrFindFiles(object):
     ) -> dict[str, Union[list[str], str]]:
         """Add a potential time query string to the search dict."""
         time_subset = cast(str, search_dict.pop("time", ""))
+        operator = cast(str, search_dict.pop("time_select", ""))
         if time_subset:
             start, _, end = time_subset.lower().partition("to")
             start = utils.convert_str_to_timestamp(start.strip() or "0", "")
             end = utils.convert_str_to_timestamp(end.strip() or start, "")
-            time = "{!field f=time op=Intersects}" + f"[{start} TO {end}]"
-            if not time or not end:
+            if not start or not end:
                 raise ValueError("Invalid time string")
+            time = f"{{!field f=time op={operator}}}[{start} TO {end}]"
             search_dict["fq"] = time
         return search_dict
 

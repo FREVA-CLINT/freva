@@ -50,6 +50,7 @@ def databrowser(
     batch_size: int = 5000,
     count: bool = False,
     time: str = "",
+    time_select: str = "flexible",
     **search_facets: Union[str, Path, int, list[str]],
 ) -> Union[dict[Any, dict[Any, Any]], Iterator[str], int]:
     """Find data in the system.
@@ -70,6 +71,15 @@ def databrowser(
         ``%Y-%m-%dT%H:%M`` to ``%Y-%m-%dT%H:%M`` for time ranges and
         ``%Y-%m-%dT%H:%M``. **Note**: You don't have to give the full string
         format to subset time steps ``%Y``, ``%Y-%m`` etc are also valid.
+    time_select: str, default: flexible
+        Operator that specifies how the time period is selected. Choose from
+        flexible (default), strict or file. ``strict`` returns only those files
+        that have the *entire* time period covered. The time search ``2000 to
+        2012`` will not select files containing data from 2010 to 2020 with
+        the ``strict`` method. ``flexible`` will select those files as
+        ``flexible`` returns those files that have either start or end period
+        covered. ``file`` will only return files where the entire time
+        period is contained within *one single* file.
     all_facets: bool, default: False
         Retrieve all facets (attributes & values) instead of the files.
     facet: Union[str, list[str]], default: None
@@ -125,6 +135,19 @@ def databrowser(
         file_range = list(freva.databrowser(project="obs*", time="2016-09-02T22:00 to 2016-10"))
         print(file_range)
 
+    The default method for selecting time periods is ``flexible``, which means
+    all files are selected that cover at least start or end date. The
+    ``strict`` method implies that the *entire* search time period has to be
+    covered by the files. Using the ``strict`` method in the example above would
+    not give any result because we do not have data after September 2016:
+
+    .. execute_code::
+
+        import freva
+        file_range = freva.databrowser(project="obs*", time="2016-09-02T22:00 to 2016-10", time_select="strict")
+        print(list(file_range))
+
+
     Search for facets in the system:
 
     .. execute_code::
@@ -163,7 +186,17 @@ def databrowser(
         print(num_files)
 
     """
+    select_methods: dict[str, str] = {
+        "strict": "Within",
+        "flexible": "Intersects",
+        "file": "Contains",
+    }
     facets: list[str] = []
+    try:
+        search_facets["time_select"] = select_methods[time_select]
+    except KeyError as error:
+        methods = ", ".join(select_methods.keys())
+        raise ValueError(f"Time select method has one of {methods}")
     search_facets["time"] = time
     try:
         # If we don't convert a str to a str mypy will complain.
