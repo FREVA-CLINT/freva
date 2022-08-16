@@ -3,13 +3,20 @@ from __future__ import annotations
 import argparse
 import os
 from typing import Any
-from ..utils import BaseParser, is_admin, subparser_func_type
 
+import lazy_import
+from ..utils import subparser_func_type
 from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import CommandError
-from evaluation_system.model.history.models import History
-from evaluation_system.model.plugins.models import ToolPullRequest
-from evaluation_system.api import plugin_manager as pm
+from ..utils import BaseParser, is_admin
+
+CommandError = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.CommandError"
+)
+History = lazy_import.lazy_class("evaluation_system.model.history.models.History")
+ToolPullRequest = lazy_import.lazy_class(
+    "evaluation_system.model.plugins.models.ToolPullRequest"
+)
+pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 
 
 __all__ = ["check4broken_runs", "check4pull_request"]

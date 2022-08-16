@@ -13,9 +13,8 @@ contact one of your Freva admins or the
 The ``databrowser`` module
 ==========================
 
-.. automodule:: freva._databrowser
-   :members:
-   :undoc-members:
+.. automodule:: freva
+   :members: databrowser
    :show-inheritance:
 
 .. _databrowser:
@@ -24,8 +23,8 @@ The ``databrowser`` module
 The ``plugin`` module
 ======================
 
-.. automodule:: freva._plugin
-   :members:
+.. automodule:: freva
+   :members: list_plugins, plugin_doc, run_plugin
    :undoc-members:
    :show-inheritance:
 
@@ -39,15 +38,15 @@ This specific plugin has created the following output:
 The ``history`` module
 ======================
 
-.. automodule:: freva._history
-   :members:
+.. automodule:: freva
+   :members: history
    :undoc-members:
    :show-inheritance:
 
 The ``crawl_my_data`` module
 ============================
 
-.. automodule:: freva._crawl_my_data
-   :members:
+.. automodule:: freva
+   :members: crawl_my_data
    :undoc-members:
    :show-inheritance:

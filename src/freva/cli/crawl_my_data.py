@@ -4,11 +4,14 @@ from pathlib import Path
 import sys
 from typing import Any, Optional
 
-
+import lazy_import
 from evaluation_system import __version__
-from evaluation_system.misc.exceptions import ValidationError
-import freva
 from .utils import BaseParser
+
+freva = lazy_import.lazy_module("freva")
+ValidationError = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.ValidationError"
+)
 
 CLI = "CrawlDataCli"
 

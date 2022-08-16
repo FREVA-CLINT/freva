@@ -11,12 +11,14 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Any, Optional
 
-from django.contrib.flatpages.models import FlatPage
+import lazy_import
+from evaluation_system.misc import logger
+from ..utils import BaseParser
 
-from ..utils import BaseParser, is_admin
-
-import evaluation_system.api.plugin_manager as pm
-from evaluation_system.misc import config, logger
+FlatPage = lazy_import.lazy_class("django.contrib.flatpages.models.FlatPage")
+is_admin = lazy_import.lazy_function("freva.cli.utils.is_admin")
+pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+config = lazy_import.lazy_module("evaluation_system.misc.config")
 
 __all__ = ["update_tool_doc"]
 CLI = "DocCli"

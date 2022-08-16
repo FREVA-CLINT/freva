@@ -3,18 +3,26 @@ import argparse
 from pathlib import Path
 import sys
 from typing import Any, Optional
+import lazy_import
 
 
 from evaluation_system import __version__
-from evaluation_system.misc.exceptions import (
-    PluginNotFoundError,
-    ParameterNotFoundError,
-    ValidationError,
-    hide_exception,
-)
 from evaluation_system.misc import logger
-import freva
-from .utils import BaseCompleter, BaseParser
+from .utils import BaseParser, BaseCompleter
+
+freva = lazy_import.lazy_module("freva")
+PluginNotFoundError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.PluginNotFoundError"
+)
+ParameterNotFoundError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.ParameterNotFoundError"
+)
+ValidationError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.ValidationError"
+)
+hide_exception = lazy_import.lazy_function(
+    "evaluation_system.misc.exceptions.hide_exception"
+)
 
 CLI = "PluginCli"
 

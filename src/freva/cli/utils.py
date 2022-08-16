@@ -9,8 +9,11 @@ import logging
 from pathlib import Path
 from typing import Callable, Optional
 
-import freva
-from evaluation_system.misc import logger, config
+import lazy_import
+from evaluation_system.misc import logger
+
+freva = lazy_import.lazy_module("freva")
+config = lazy_import.lazy_module("evaluation_system.misc.config")
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]
@@ -280,7 +283,6 @@ class BaseCompleter:
 
     def _get_databrowser_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for databrowser command."""
-        from freva import databrowser
 
         facet_args = []
         for arg in self.argv:
@@ -290,7 +292,7 @@ class BaseCompleter:
                 continue
             facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        search = databrowser(attributes=False, all_facets=True, **facets)
+        search = freva.databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
         for att, values in search.items():
             if att not in facets:

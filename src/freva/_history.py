@@ -1,11 +1,12 @@
 """This module queries the database for plugin history entries."""
 from __future__ import annotations
 import json
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
-import evaluation_system.api.plugin_manager as pm
+import lazy_import
 from evaluation_system.misc import logger
-from typing import Any
+
+pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 
 __all__ = ["history"]
 

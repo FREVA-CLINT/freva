@@ -3,9 +3,11 @@ import argparse
 import sys
 from typing import Any, Optional
 
+import lazy_import
 from evaluation_system import __version__
-import freva
-from .utils import BaseCompleter, BaseParser
+from .utils import BaseParser, BaseCompleter
+
+freva = lazy_import.lazy_module("freva")
 
 CLI = "DataBrowserCli"
 

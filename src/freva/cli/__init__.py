@@ -2,10 +2,10 @@
 
 import argparse
 import sys
+from typing import Optional, List
 
 from evaluation_system import __version__
 from .utils import BaseParser
-from typing import Optional, List
 
 COMMAND = "freva"
 

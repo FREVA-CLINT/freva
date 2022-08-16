@@ -4,10 +4,11 @@ import argparse
 from pathlib import Path
 from typing import Any, Optional
 
-from ..utils import BaseParser, is_admin, subparser_func_type
+import lazy_import
+from ..utils import subparser_func_type, BaseParser, is_admin
 
-from evaluation_system.model.solr_core import SolrCore
-from evaluation_system.misc import config
+SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
+config = lazy_import.lazy_module("evaluation_system.misc.config")
 
 
 __all__ = ["re_index", "del_index"]

@@ -20,5 +20,6 @@ loadfreva.modules
 report.xml
 build/*
 docs/build
+!docs/build/.empty
 docs/source/_static/animator_output.gif
 *.egg-info
