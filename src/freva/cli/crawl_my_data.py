@@ -6,10 +6,12 @@ from typing import Any, Optional
 
 import lazy_import
 from evaluation_system import __version__
+from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
-ValidationError = lazy_import.lazy_callable("evaluation_system.misc.exceptions.ValidationError")
-BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
+ValidationError = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.ValidationError"
+)
 
 CLI = "CrawlDataCli"
 

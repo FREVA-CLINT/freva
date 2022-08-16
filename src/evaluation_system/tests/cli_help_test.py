@@ -8,6 +8,7 @@ SUBCOMMANDS = ("databrowser", "esgf", "crawl-my-data", "history", "plugin")
 def test_main_help(capsys):
 
     from freva.cli import main as main_cli
+
     env = os.environ.copy()
     env.pop("EVALUATION_SYSTEM_CONFIG_FILE", "")
     with mock.patch.dict(os.environ, env, clear=True):

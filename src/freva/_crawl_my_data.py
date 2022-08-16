@@ -10,8 +10,12 @@ from evaluation_system.misc import logger
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
-ConfigurationException = lazy_import.lazy_callable("evaluation_system.misc.exceptions.ConfigurationException")
-ValidationError = lazy_import.lazy_callable("evaluation_system.misc.exceptions.ValidationError")
+ConfigurationException = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.ConfigurationException"
+)
+ValidationError = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.ValidationError"
+)
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
 DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
 

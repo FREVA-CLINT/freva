@@ -283,7 +283,6 @@ class BaseCompleter:
 
     def _get_databrowser_choices(self) -> dict[str, tuple[str, str]]:
         """Get the choices for databrowser command."""
-        from freva import databrowser
 
         facet_args = []
         for arg in self.argv:
@@ -293,7 +292,7 @@ class BaseCompleter:
                 continue
             facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        search = databrowser(attributes=False, all_facets=True, **facets)
+        search = freva.databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
         for att, values in search.items():
             if att not in facets:

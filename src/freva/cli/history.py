@@ -6,9 +6,9 @@ from typing import Any, Optional
 import lazy_import
 from evaluation_system import __version__
 from evaluation_system.misc import logger
+from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
-BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
 
 CLI = "HistoryCli"
 

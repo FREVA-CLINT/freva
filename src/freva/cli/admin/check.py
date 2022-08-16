@@ -7,14 +7,15 @@ from typing import Any
 import lazy_import
 from ..utils import subparser_func_type
 from evaluation_system.misc import logger
+from ..utils import BaseParser, is_admin
 
-
-BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
-is_admin = lazy_import.lazy_function("freva.cli.utils.is_admin")
-
-CommandError = lazy_import.lazy_callable("evaluation_system.misc.exceptions.CommandError")
+CommandError = lazy_import.lazy_callable(
+    "evaluation_system.misc.exceptions.CommandError"
+)
 History = lazy_import.lazy_class("evaluation_system.model.history.models.History")
-ToolPullRequest = lazy_import.lazy_class("evaluation_system.model.plugins.models.ToolPullRequest")
+ToolPullRequest = lazy_import.lazy_class(
+    "evaluation_system.model.plugins.models.ToolPullRequest"
+)
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 
 

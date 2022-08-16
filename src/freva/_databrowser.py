@@ -218,7 +218,7 @@ def databrowser(
         # the speedup is marginal and it might not be what the user expects
         logger.warning("Turning latest off when searching for a specific version.")
         latest = False
-    core = {True:"latest", False:"files"}[latest]
+    core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     solr_core = SolrFindFiles(core=core)
     if (facets or all_facets) and not attributes:

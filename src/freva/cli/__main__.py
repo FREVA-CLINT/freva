@@ -9,7 +9,6 @@ from evaluation_system.misc import logger
 print_choices = lazy_import.lazy_function("freva.cli.utils.print_choices")
 
 
-
 logger.setLevel(logging.ERROR)
 
 try:

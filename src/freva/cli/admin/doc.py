@@ -13,8 +13,9 @@ from typing import Any, Optional
 
 import lazy_import
 from evaluation_system.misc import logger
+from ..utils import BaseParser
+
 FlatPage = lazy_import.lazy_class("django.contrib.flatpages.models.FlatPage")
-BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
 is_admin = lazy_import.lazy_function("freva.cli.utils.is_admin")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 config = lazy_import.lazy_module("evaluation_system.misc.config")

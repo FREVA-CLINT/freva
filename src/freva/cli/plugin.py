@@ -8,14 +8,21 @@ import lazy_import
 
 from evaluation_system import __version__
 from evaluation_system.misc import logger
+from .utils import BaseParser, BaseCompleter
 
 freva = lazy_import.lazy_module("freva")
-BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
-BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
-PluginNotFoundError = lazy_import.lazy_class("evaluation_system.misc.exceptions.PluginNotFoundError")
-ParameterNotFoundError = lazy_import.lazy_class("evaluation_system.misc.exceptions.ParameterNotFoundError")
-ValidationError = lazy_import.lazy_class("evaluation_system.misc.exceptions.ValidationError")
-hide_exception = lazy_import.lazy_function("evaluation_system.misc.exceptions.hide_exception")
+PluginNotFoundError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.PluginNotFoundError"
+)
+ParameterNotFoundError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.ParameterNotFoundError"
+)
+ValidationError = lazy_import.lazy_class(
+    "evaluation_system.misc.exceptions.ValidationError"
+)
+hide_exception = lazy_import.lazy_function(
+    "evaluation_system.misc.exceptions.hide_exception"
+)
 
 CLI = "PluginCli"
 
