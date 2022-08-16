@@ -4,9 +4,12 @@ from pathlib import Path
 import sys
 from typing import Optional, Any, cast, Union
 
+import lazy_import
 from evaluation_system import __version__
-import freva
-from .utils import BaseCompleter, BaseParser
+
+freva = lazy_import.lazy_module("freva")
+BaseParser = lazy_import.lazy_class("freva.cli.utils.BaseParser")
+BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
 
 CLI = "EsgfCli"
 

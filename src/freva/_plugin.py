@@ -14,14 +14,16 @@ import time
 
 import appdirs
 import lazy_import
+from evaluation_system.misc import logger
 
-from evaluation_system.model import user
-from evaluation_system.misc import config, utils, logger
-from evaluation_system.misc.exceptions import PluginNotFoundError
-from evaluation_system.model.plugins.models import ToolPullRequest
-from django.contrib.auth.models import User
-
+django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+user = lazy_import.lazy_module("evaluation_system.model.user")
+config = lazy_import.lazy_module("evaluation_system.misc.config")
+utils = lazy_import.lazy_module("evaluation_system.misc.utils")
+PluginNotFoundError = lazy_import.lazy_callable("evaluation_system.misc.exceptions.PluginNotFoundError")
+ToolPullRequest = lazy_import.lazy_class("evaluation_system.model.plugins.models.ToolPullRequest")
+
 
 CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
 
@@ -329,7 +331,7 @@ def run_plugin(
     logger.debug("Running %s with configuration: %s", tool_name, tool_dict)
     if not dry_run and not error:
         # we check if the user is external and activate batchmode
-        django_user = User.objects.get(username=user.User().getName())
+        django_user = django.contrib.auth.models.User.objects.get(username=user.User().getName())
         if django_user.groups.filter(
             name=config.get("external_group", "noexternalgroupset")
         ).exists():

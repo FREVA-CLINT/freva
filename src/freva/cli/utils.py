@@ -9,8 +9,11 @@ import logging
 from pathlib import Path
 from typing import Callable, Optional
 
-import freva
-from evaluation_system.misc import logger, config
+import lazy_import
+from evaluation_system.misc import logger
+
+freva = lazy_import.lazy_module("freva")
+config = lazy_import.lazy_module("evaluation_system.misc.config")
 
 subparser_func_type = Callable[
     [str, argparse._SubParsersAction], Optional["BaseParser"]

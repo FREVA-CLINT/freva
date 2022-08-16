@@ -1,12 +1,13 @@
 """A Python module to access the apache solr databrowser."""
 from __future__ import annotations
 from pathlib import Path
-
-from evaluation_system.misc import logger
-from evaluation_system.model.solr import SolrFindFiles
-
 from typing import Any, Optional, Union, Iterator, overload
 from typing_extensions import Literal
+
+import lazy_import
+from evaluation_system.misc import logger
+
+SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
 
 __all__ = ["databrowser"]
 
@@ -217,12 +218,14 @@ def databrowser(
         # the speedup is marginal and it might not be what the user expects
         logger.warning("Turning latest off when searching for a specific version.")
         latest = False
+    core = {True:"latest", False:"files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
+    solr_core = SolrFindFiles(core=core)
     if (facets or all_facets) and not attributes:
         out = {}
         search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
-        for att, values in SolrFindFiles.facets(
-            facets=facets or None, latest_version=latest, **search_facets
+        for att, values in solr_core._facets(
+            facets=facets or None, latest_version=False, **search_facets
         ).items():
             # values come in pairs: (value, count)
             value_count = len(values) // 2
@@ -235,13 +238,13 @@ def databrowser(
         return out
     if attributes:
         # select all is none defined but this flag was set
-        results = SolrFindFiles.facets(
-            facets=facets or None, latest_version=latest, **search_facets
+        results = solr_core._facets(
+            facets=facets or None, latest_version=False, **search_facets
         )
         if relevant_only:
             return (k for k in results if len(results[k]) > 2)
         return (k for k in results)
-    search_results = SolrFindFiles.search(
+    search_results = solr_core._search(
         batch_size=batch_size,
         latest_version=latest,
         _retrieve_metadata=count,

@@ -2,7 +2,13 @@
 
 import sys
 import logging
-from .utils import print_choices, logger
+
+import lazy_import
+from evaluation_system.misc import logger
+
+print_choices = lazy_import.lazy_function("freva.cli.utils.print_choices")
+
+
 
 logger.setLevel(logging.ERROR)
 
