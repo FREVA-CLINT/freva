@@ -51,6 +51,8 @@ def test_freva_databrowser_method(dummy_solr):
     )
     res = sorted(databrowser(variable=["ua", "tauu"]))
     assert res == target
+    res = list(databrowser(variable=["ua", "tauu"], rows=1))
+    assert len(res) == 1
     res = sorted(databrowser(variable=["ua", "tauu", "wetso2"]))
     assert res == all_files_output
     res = databrowser(variable=["ua", "tauu", "wetso2"], count=True)

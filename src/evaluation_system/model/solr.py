@@ -64,6 +64,7 @@ class SolrFindFiles(object):
         batch_size=10000,
         latest_version=False,
         _retrieve_metadata=False,
+        rows = None,
         **partial_dict,
     ):
         """This encapsulates the Solr call to get documents and returns an iterator providing the. The special
@@ -83,7 +84,10 @@ class SolrFindFiles(object):
             partial_dict["q"] = partial_dict.pop("text")
         query = self._to_solr_query(partial_dict)
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
-        results_to_visit = answer["response"]["numFound"]
+        if rows:
+            results_to_visit = min(answer["response"]["numFound"], rows)
+        else:
+            results_to_visit = answer["response"]["numFound"]
         while results_to_visit > 0:
             batch_size = min(batch_size, results_to_visit)
             answer = self.solr.get_json(
