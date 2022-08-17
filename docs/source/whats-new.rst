@@ -11,13 +11,13 @@ v2206.0.11 (unreleased)
 
 New Features
 ++++++++++++
-- `count` keyword/flag for the databrowser counts also the number of files
+- ``count`` keyword/flag for the databrowser counts also the number of files
   found by the databrowser, not only the facet counts.
 - databrowser can subset results by time.
 
 Breaking changes
 ++++++++++++++++
-- `count_facet_values` keyword (`count-facet-values` flag in cli) has been renamed to `count`
+- ``count_facet_values`` keyword (``count-facet-values`` flag in cli) has been renamed to ``count``
 
 Deprecations
 ++++++++++++
@@ -27,11 +27,13 @@ Bug fixes
 
 Documentations
 ++++++++++++++
+- Documentation of the python modules has been improved
 
 Internal Changes
 ++++++++++++++++
 - Files found by the databrowser are *alphabetically* sorted.
-
+- ``follow/unfolllow_history_tag`` recieves a user object as argument instead of string
+- lazy loading has been improved
 
 v2206.0.10
 ~~~~~~~~~~
