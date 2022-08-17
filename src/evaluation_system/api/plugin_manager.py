@@ -771,7 +771,7 @@ def run_tool(
     ) as plugin_state:
         if user:
             # follow the notes
-            follow_history_tag(rowid, user.getName(), "Owner")
+            follow_history_tag(rowid, user, "Owner")
         p.rowid = rowid
         # Set last state to broken, before we start the plugin
         # in case something goes wrong it will stay in broken because
@@ -876,7 +876,7 @@ def schedule_tool(
         caption=caption,
     )
     # follow the notes
-    follow_history_tag(rowid, user.getName(), "Owner")
+    follow_history_tag(rowid, user, "Owner")
     # set the output directory
     if log_directory is None:
         log_directory = user.getUserSchedulerOutputDir()
@@ -1187,28 +1187,28 @@ def get_error_warning(tool_name: str) -> tuple[str, str]:
     return error_message, warning_message
 
 
-def follow_history_tag(history_id: int, user_name: str, info: str = "") -> None:
+def follow_history_tag(history_id: int, user: User, info: str = "") -> None:
     """Add the history tag follow
 
     Parameters
     ----------
     history_id
         ID of the history object to tag
-    user_name
-        User that is following the tag
+    user
+        User object holding user information
     info
         information to add to the tag
     """
+    user_name = user.getName()
     tagType = HistoryTag.tagType.follow
     rows = HistoryTag.objects.filter(
         history_id_id=history_id, type=tagType, uid_id=user_name
     )
     if len(rows) == 0:
-        user = User(user_name)
         user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
 
 
-def unfollow_history_tag(history_id: int, user_name: str) -> None:
+def unfollow_history_tag(history_id: int, user: User) -> None:
     """Unfollow a history tag.
 
     Updates all follow history tags to unfollow for the specified history
@@ -1218,14 +1218,14 @@ def unfollow_history_tag(history_id: int, user_name: str) -> None:
     ----------
     history_id
         ID of the history object to unfollow
-    user_name
-        User that is unfollowing the tag
+    user
+        User object holding user information
     """
+    user_name = user.getName()
     tagType = HistoryTag.tagType.follow
     rows = HistoryTag.objects.filter(
         history_id_id=history_id, type=tagType, uid_id=user_name
     )
-    user = User(user_name)
     for row in rows:
         user.getUserDB().updateHistoryTag(
             row.id, HistoryTag.tagType.unfollow, uid=user_name
