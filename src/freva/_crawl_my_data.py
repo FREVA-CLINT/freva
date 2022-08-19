@@ -3,37 +3,39 @@
 from __future__ import annotations
 import logging
 from pathlib import Path
+import os
+import shutil
 from typing import Optional, Union
+import warnings
 
 import lazy_import
 from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
+
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
-ConfigurationException = lazy_import.lazy_callable(
-    "evaluation_system.misc.exceptions.ConfigurationException"
-)
-ValidationError = lazy_import.lazy_callable(
-    "evaluation_system.misc.exceptions.ValidationError"
-)
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
 DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
+get_output_directory = lazy_import.lazy_function(
+    "evaluation_system.api.user_data.get_output_directory"
+)
 
-__all__ = ["crawl_my_data"]
+__all__ = ["index_my_data", "add_my_data", "delete_my_data"]
 
 
-def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> tuple[Path, ...]:
+def _validate_user_dirs(*crawl_dirs: os.PathLike) -> tuple[Path, ...]:
 
     try:
-        root_path = DataReader.get_output_directory() / f"user-{User().getName()}"
+        root_path = get_output_directory() / f"user-{User().getName()}"
     except ConfigurationException:
         config.reloadConfiguration()
-        root_path = DataReader.get_output_directory() / f"user-{User().getName()}"
+        root_path = get_output_directory() / f"user-{User().getName()}"
     user_paths: tuple[Path, ...] = ()
     for crawl_dir in crawl_dirs or (root_path,):
         crawl_dir = Path(crawl_dir or root_path).expanduser().absolute()
         try:
-            cr_dir = crawl_dir.relative_to(root_path)
+            _ = crawl_dir.relative_to(root_path)
         except ValueError as error:
             raise ValidationError(
                 f"You are only allowed to crawl data in {root_path}"
@@ -42,8 +44,130 @@ def _validate_user_dirs(*crawl_dirs: Optional[Union[str, Path]]) -> tuple[Path, 
     return user_paths
 
 
-def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") -> None:
-    """Crawl user output data to reingest it into the solr server.
+def add_my_data(
+    product: str,
+    *paths: os.PathLike,
+    how: str = "copy",
+    override: bool = False,
+    **defaults: str,
+) -> None:
+    """Add custom user files to the databrowser.
+
+    Parameters
+    ----------
+    product: str
+        Product search key the newly added data can be found.
+    *paths: os.PathLike
+        Filename(s) or Directories that are going to be added to the
+        databrowser. The files will be added into the central user
+        directory and named according the CMOR standard. This ensures
+        that the data can be added into the databrowser.
+        **Note:** Once the data has been added into the databrowser it can
+        be found via the ``user-<username>`` project.
+    how: str, default: copy
+        Method of how the data is added into the central freva user directory.
+        Default is copy, which means your data files will be replicated.
+        To avoid a this redundancy you can set the ``how`` keyword to
+        ``symlink`` for symbolic links or ``link`` for creating hard links
+        to create symbolic links or ``move`` to move the data into the central
+        user directory entirely.
+    override: bool, default: False
+        Replace existing files in the user data structre
+    experiment: str, default: None
+        By default the method tries to deduce the *experiment* information from
+        the metadata. To overwrite this information the *experiment* keyword
+        should be set.
+    institute: str, default: None
+        By default the method tries to deduce the *institute* information from
+        the metadata. To overwrite this information the *institute* keyword
+        should be set.
+    model: str, default: None
+        By default the method tries to deduce the *model* information from
+        the metadata. To overwrite this information the *model* keyword
+        should be set.
+    variable: str, default: None
+        By default the method tries to deduce the *variable* information from
+        the metadata. To overwrite this information the *variable* keyword
+        should be set.
+    time_frequency: str, default: None
+        By default the method tries to deduce the *time_frequency* information
+        from the metadata. To overwrite this information the *time_frequency*
+        keyword should be set.
+    ensemble: str, default: None
+        By default the method tries to deduce the *ensemble* information from
+        the metadata. To overwrite this information the *ensemble* keyword
+        should be set.
+
+    Raises
+    ------
+    ValueError: If metadata is insufficient, or product key is empty
+    """
+    try:
+        add_method = {
+            "copy": shutil.copy,
+            "move": shutil.move,
+            "symlink": os.symlink,
+            "link": os.link,
+        }[how]
+    except KeyError as error:
+        raise ValueError(
+            "Invalid method. Valid methods are: copy, move, symlink, link"
+        ) from error
+    crawl_dirs: list[Path] = []
+    facets = (
+        "experiment",
+        "institute",
+        "model",
+        "variable",
+        "time_frequency",
+        "ensemble",
+    )
+    search_keys = {k: defaults[k] for k in facets if defaults.get(k)}
+    search_keys["product"] = product
+    search_keys["project"] = f"user-{User().getName()}"
+    search_keys["realm"] = "user_data"
+    search_keys.setdefault("ensemble", "r0i0p0")
+    for path in paths:
+        p_path = Path(path).expanduser().absolute()
+        u_reader = DataReader(p_path, **search_keys)
+        for file in u_reader:
+            new_file = u_reader.file_name_from_metdata(file, override=override)
+            new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
+            if new_file.exists() and override:
+                new_file.unlink()
+            add_method(file, new_file)
+            if new_file.parent not in crawl_dirs:
+                crawl_dirs.append(new_file.parent)
+    if not crawl_dirs:
+        warnings.warn("No files found", category=UserWarning)
+        return
+    index_my_data(*crawl_dirs)
+
+
+def delete_my_data(*paths: os.PathLike, delete_from_fs: bool = False) -> None:
+    """Delete data from the databrowser
+
+    Parameters
+    ----------
+
+     *paths: os.PathLike
+        Filename(s) or Directories that are going to be from  the
+        databrowser.
+    delete_from_fs: bool, default : False
+        Do not only delete the files from the databrowser but also from file
+        system.
+    """
+    solr_core = SolrCore(core="files")
+    for path in paths:
+        for file in DataReader(Path(path).expanduser().absolute()):
+            _validate_user_dirs(file)
+            solr_core.delete_entries(str(file))
+            if delete_from_fs:
+                file.unlink()
+
+
+def index_my_data(*crawl_dirs: os.PathLike, dtype: str = "fs") -> None:
+    """Crawl and add user output data to the databrowser.
 
     The data needs to be of a certain strucutre.
 
@@ -74,12 +198,14 @@ def crawl_my_data(*crawl_dirs: Optional[Union[str, Path]], dtype: str = "fs") ->
     try:
         logger.setLevel(logging.ERROR)
         print("Status: crawling ...", end="", flush=True)
+        solr_core = SolrCore(core="latest")
         for crawl_dir in _validate_user_dirs(*crawl_dirs):
-            SolrCore.load_fs(
+            data_reader = DataReader(crawl_dir)
+            solr_core.load_fs(
                 crawl_dir,
                 chunk_size=1000,
                 abort_on_errors=True,
-                drs_type=DataReader.drs_specification,
+                drs_type=data_reader.drs_specification,
             )
         print("ok", flush=True)
     finally:
