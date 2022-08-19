@@ -264,12 +264,13 @@ class DRSFile:
             raise ValueError(f"{self.drs_structure} is not versioned!")
         else:
             iter_parts = structure.parts_dataset
-
+        if to_path:
+            iter_parts = structure.parts_dir
         for key in iter_parts:
-            if key in self.dict["parts"]:
-                result.append(self.dict["parts"][key])
-            elif key in structure.defaults:
+            if key in structure.defaults:
                 result.append(structure.defaults[key])
+            elif key in self.dict["parts"]:
+                result.append(self.dict["parts"][key])
         if to_path:
             return os.path.join(structure.root_dir, os.sep.join(result))
         else:
@@ -455,7 +456,7 @@ class DRSFile:
             raise ValueError(
                 (
                     f"Can't parse this path. Expected {len(structure.parts_dir)} "
-                    f"elements but got {len(parts)}."
+                    f"elements but got {len(parts)}. {path}"
                 )
             )
 

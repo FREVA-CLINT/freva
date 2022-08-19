@@ -1,6 +1,6 @@
 from collections import namedtuple
 from configparser import ConfigParser, ExtendedInterpolation
-from datetime import datetime
+import datetime
 from getpass import getuser
 import os
 from pathlib import Path
@@ -15,7 +15,16 @@ import pytest
 import toml
 import mock
 
-from evaluation_system.misc import config
+
+class mock_datetime:
+    def __init__(self, year, month, day):
+
+        self._year = year
+        self._month = month
+        self._day = day
+
+    def today(self):
+        return datetime.datetime(self._year, self._month, self._day)
 
 
 def get_config(admin=False):
@@ -47,6 +56,8 @@ def get_config(admin=False):
 
 def mock_config(keyfile, admin=False, patch_env=True):
     cfg, drs_config = get_config(admin)
+    from evaluation_system.misc import config
+
     with TemporaryDirectory() as temp_dir:
         eval_config = Path(temp_dir) / "evaluation_system.conf"
         drs_conf_path = Path(temp_dir) / "drs_config.toml"
@@ -74,6 +85,18 @@ def mock_config(keyfile, admin=False, patch_env=True):
         pass
 
 
+@pytest.fixture(scope="session")
+def time_mock():
+    with mock.patch("datetime.date", mock_datetime(1999, 9, 9)) as date_mock:
+        import evaluation_system
+
+        try:
+            evaluation_system.api.user_data.date = date_mock
+        except AttributeError:
+            pass
+        yield date_mock
+
+
 @pytest.fixture(scope="function")
 def temp_script():
 
@@ -82,7 +105,7 @@ def temp_script():
 
 
 @pytest.fixture(scope="session")
-def dummy_key():
+def dummy_key(time_mock):
     with NamedTemporaryFile(suffix=".crt") as tf:
         with Path(tf.name).open("w") as f:
             f.write("------ PUBLIC KEY ----\n12345\n---- END PUBLIC KEY ----")
@@ -112,12 +135,12 @@ This is a dummy doc
 
 
 @pytest.fixture(scope="session")
-def admin_env(dummy_key):
+def admin_env(time_mock, dummy_key):
     yield from mock_config(dummy_key, admin=True, patch_env=False)
 
 
 @pytest.fixture(scope="session")
-def dummy_env(dummy_key):
+def dummy_env(time_mock, dummy_key):
     yield from mock_config(dummy_key, admin=False)
 
 
@@ -154,15 +177,41 @@ def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
     crawl_dir = root_path / f"user-{getuser()}"
     user_files = []
     for file in map(Path, dummy_solr.files):
-        # Drop the version from the files
-        file_parts = file.parts[1:-2] + (file.parts[-1],)
-        crawl_file = crawl_dir.joinpath(*file_parts)
+        parts = ("foo",) + file.parts[2:]
+        crawl_file = crawl_dir.joinpath(*parts)
         crawl_file.parent.mkdir(exist_ok=True, parents=True)
         crawl_file.touch()
         user_files.append(crawl_file)
     yield user_files
     [getattr(dummy_solr, key).delete("*") for key in ("all_files", "latest")]
     shutil.rmtree(root_path)
+
+
+@pytest.fixture(scope="module")
+def dummy_reana(dummy_solr, dummy_settings):
+
+    from evaluation_system.model.solr_core import SolrCore
+
+    with TemporaryDirectory(prefix="solr") as td:
+        tmp_files = [
+            "ECMWF/IFS/ERA-Int/3h/atmos/tas/r2i1p1/tas_3h_reana_era-int_r2i1p1_190912-193411.nc",
+            "ECMWF/IFS/ERA5/hr/atmos/pr/r1ip1/pr_hr_reana_era5_r1i1p1_200811-201812.nc",
+            "ECMWF/IFS/ERA5/hr/atmos/pr/r7i2p1/pr_hr_reana_era5_r7i2p1_200911-201912.nc",
+            "ECMWF/IFS/ERA5/hr/atmos/pr/r7i2p1/pr_hr_reana_era5_r7i2p1_202001-202201.nc",
+        ]
+        files = []
+        for f in tmp_files:
+            abs_path = Path(dummy_solr.reana) / f
+            abs_path.parent.mkdir(exist_ok=True, parents=True)
+            abs_path.touch()
+            files.append(str(abs_path))
+        SolrCore.load_fs(
+            Path(dummy_solr.reana),
+            abort_on_errors=True,
+            core_all_files=dummy_solr.all_files,
+            core_latest=dummy_solr.latest,
+        )
+        yield files
 
 
 @pytest.fixture(scope="module")
@@ -180,6 +229,7 @@ def dummy_solr(dummy_env, dummy_settings):
             "drsfile",
             "files",
             "cmd",
+            "reana",
             "DRSFILE",
         ],
     )
@@ -199,12 +249,21 @@ def dummy_solr(dummy_env, dummy_settings):
     server.all_files.delete("*")
     server.latest.delete("*")
     with TemporaryDirectory(prefix="solr") as td:
+
         supermakedirs(str(Path(td) / "solr_core"), 0o0777)
-        server.tmpdir = str(Path(td) / "solr_core")
+        server.tmpdir = str(
+            Path(td) / "solr_core",
+        )
+        reana_dir = str(Path(td) / "reanalysis")
+        supermakedirs(reana_dir, 0o0777)
+        server.reana = reana_dir
         DRSFile._load_structure_definitions()
         orig_dir = DRSFile.DRS_STRUCTURE["cmip5"].root_dir
+        old_reana = DRSFile.DRS_STRUCTURE["reanalysis"].root_dir
         DRSFile.DRS_STRUCTURE["cmip5"].root_dir = server.tmpdir
+        DRSFile.DRS_STRUCTURE["reanalysis"].root_dir = reana_dir
         DRSFile.DRS_STRUCTURE_PATH_TYPE[server.tmpdir] = "cmip5"
+        DRSFile.DRS_STRUCTURE_PATH_TYPE[server.reana] = "reanalysis"
         server.files = [
             "cmip5/output1/MOHC/HadCM3/historical/mon/aerosol/aero/r2i1p1/v20110728/wetso2/wetso2_aero_HadCM3_historical_r2i1p1_190912-193411.nc",
             "cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc",
@@ -232,6 +291,7 @@ def dummy_solr(dummy_env, dummy_settings):
     server.all_files.delete("*")
     server.latest.delete("*")
     DRSFile.DRS_STRUCTURE["cmip5"].root_dir = orig_dir
+    DRSFile.DRS_STRUCTURE["reanalysis"].root_dir = old_reana
 
 
 @pytest.fixture(scope="module")
@@ -282,7 +342,7 @@ def test_user(dummy_env, dummy_settings, config_dict):
 
     user = User.objects.create_user(username="test_user2", password="123")
     hist = History.objects.create(
-        timestamp=datetime.now(),
+        timestamp=datetime.datetime.now(),
         status=History.processStatus.running,
         uid=user,
         configuration='{"some": "config", "dict": "values"}',
@@ -400,7 +460,7 @@ def hist_obj(django_user):
         status=History.processStatus.running,
         slurm_output="/some/out.txt",
         host=socket.gethostbyname(socket.gethostname()),
-        timestamp=datetime.now(),
+        timestamp=datetime.datetime.now(),
         uid=User.objects.first(),
     )
     config.reloadConfiguration()

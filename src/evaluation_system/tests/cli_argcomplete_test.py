@@ -43,7 +43,7 @@ def test_subcommand_help(dummy_env, capsys):
             choices = capsys.readouterr().out.split("\n")
             for choice in [s.strip() for s in choices if s.strip()]:
                 if sep:
-                    cmd, help = choice.split(sep)
+                    cmd, _, help = choice.partition(sep)
                     help = help.rstrip("]")
                 else:
                     cmd = choice
@@ -59,7 +59,7 @@ def test_subcommand_help(dummy_env, capsys):
                     s.strip() for s in capsys.readouterr().out.split("\n") if s.strip()
                 ]
                 if subcmd == "crawl-my-data":
-                    assert len(out) == 1
+                    assert len(out) == 3
                 else:
                     assert len(out) == 0
 
