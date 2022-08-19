@@ -8,10 +8,8 @@ import lazy_import
 from ..utils import subparser_func_type
 from evaluation_system.misc import logger
 from ..utils import BaseParser, is_admin
+from evaluation_system.misc.exceptions import CommandError
 
-CommandError = lazy_import.lazy_callable(
-    "evaluation_system.misc.exceptions.CommandError"
-)
 History = lazy_import.lazy_class("evaluation_system.model.history.models.History")
 ToolPullRequest = lazy_import.lazy_class(
     "evaluation_system.model.plugins.models.ToolPullRequest"
@@ -154,25 +152,21 @@ class CheckCli(BaseParser):
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
-    def parse_pull_request(
-        help: str, subparsers: argparse._SubParsersAction
-    ) -> PullRequest:
+    def parse_pull_request(subparsers: argparse._SubParsersAction) -> PullRequest:
         sub_parser = subparsers.add_parser(
             "pull-request",
-            description=help,
-            help=help,
+            description="Check for incoming pull requests",
+            help="Check for incoming pull requests",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return PullRequest(sub_parser)
 
     @staticmethod
-    def parse_broken_runs(
-        help: str, subparsers: argparse._SubParsersAction
-    ) -> BrokenRun:
+    def parse_broken_runs(subparsers: argparse._SubParsersAction) -> BrokenRun:
         sub_parser = subparsers.add_parser(
             "broken-runs",
-            description=help,
-            help=help,
+            description="Check for broken runs and report them.",
+            help="Check for broken runs and report them.",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return BrokenRun(sub_parser)

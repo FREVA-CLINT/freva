@@ -41,7 +41,8 @@ def re_index(
             The host port number the apache solr server is listinig to.
     """
     is_admin(raise_error=True)
-    SolrCore.load_fs(
+    solr_core = SolrCore(core="files")
+    solr_core.load_fs(
         Path(input_dir).expanduser().absolute(),
         chunk_size=max(1, int(chunk_size)),
         abort_on_errors=abort_on_errors,
@@ -68,7 +69,8 @@ def del_index(
         The host port number the apache solr server is listinig to.
     """
     is_admin(raise_error=True)
-    SolrCore.delete_entries(file_pattern, host=host, port=port, prefix="file")
+    solr_core = SolrCore(core="files")
+    solr_core.delete_entries(file_pattern, host=host, port=port, prefix="file")
 
 
 class SolrIndex(BaseParser):
@@ -145,11 +147,11 @@ class SolrCli(BaseParser):
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
-    def parse_index(help: str, subparsers: argparse._SubParsersAction) -> SolrIndex:
+    def parse_index(subparsers: argparse._SubParsersAction) -> SolrIndex:
         sub_parser = subparsers.add_parser(
             "index",
-            description=help,
-            help=help,
+            description="(Re)-Index data on the apache solr server.",
+            help="(Re)-Index data on the apache solr server.",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         return SolrIndex(sub_parser)

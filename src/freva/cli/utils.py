@@ -57,9 +57,10 @@ class BaseParser:
         self.parser = parser
         self.subparsers = parser.add_subparsers(help="Available sub-commands:")
         self.help = self.get_subcommand_help()
+        subcommands = self.get_subcommand_parsers()
         self.sub_commands = sub_commands
-        for cmd, subparser in self.sub_commands.items():
-            subparser(self.help[cmd], self.subparsers)
+        for cmd, subparser in sub_commands.items():
+            subparser(self.subparsers)
 
     @property
     def logger(self) -> logging.Logger:
@@ -80,105 +81,105 @@ class BaseParser:
         return args
 
     @staticmethod
-    def parse_crawl_my_data(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_crawl_my_data(subparsers: argparse._SubParsersAction) -> None:
         """Parse the user data crawl."""
         from .crawl_my_data import CrawlDataCli
 
         call_parsers = subparsers.add_parser(
             "crawl-my-data",
-            description=help,
-            help=help,
+            help=CrawlDataCli.desc,
+            description=CrawlDataCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         CrawlDataCli("freva", call_parsers)
 
     @staticmethod
-    def parse_history(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_history(subparsers: argparse._SubParsersAction) -> None:
         """Parse the history command."""
         from .history import HistoryCli
 
         call_parser = subparsers.add_parser(
             "history",
-            description=help,
-            help=help,
+            description=HistoryCli.desc,
+            help=HistoryCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         HistoryCli("freva", call_parser)
 
     @staticmethod
-    def parse_plugin(help, subparsers: argparse._SubParsersAction) -> None:
+    def parse_plugin(subparsers: argparse._SubParsersAction) -> None:
         """Parse the plugin command."""
         from .plugin import PluginCli
 
         call_parser = subparsers.add_parser(
             "plugin",
-            description=help,
-            help=help,
+            help=PluginCli.desc,
+            description=PluginCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         PluginCli("freva", call_parser)
 
     @staticmethod
-    def parse_check(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_check(subparsers: argparse._SubParsersAction) -> None:
         """Parse the check command."""
         from .admin.check import CheckCli
 
         call_parser = subparsers.add_parser(
             "check",
-            description=help,
-            help=help,
+            help=CheckCli.desc,
+            description=CheckCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         CheckCli(call_parser)
 
     @staticmethod
-    def parse_solr(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_solr(subparsers: argparse._SubParsersAction) -> None:
         """Parse the solr index command."""
         from .admin.solr import SolrCli
 
         call_parser = subparsers.add_parser(
             "solr",
-            description=help,
-            help=help,
+            help=SolrCli.desc,
+            description=SolrCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         SolrCli(call_parser)
 
     @staticmethod
-    def parse_doc(help: str, subparser: argparse._SubParsersAction) -> None:
+    def parse_doc(subparser: argparse._SubParsersAction) -> None:
         """Parse the docu update command."""
         from .admin.doc import DocCli
 
         call_parser = subparser.add_parser(
             "doc",
-            description=help,
-            help=help,
+            help=DocCli.desc,
+            description=DocCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         DocCli(call_parser)
 
     @staticmethod
-    def parse_esgf(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_esgf(subparsers: argparse._SubParsersAction) -> None:
         """Parse the esgf command."""
         from .esgf import EsgfCli
 
         call_parsers = subparsers.add_parser(
             "esgf",
-            description=help,
-            help=help,
+            help=EsgfCli.desc,
+            description=EsgfCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         EsgfCli("freva", call_parsers)
 
     @staticmethod
-    def parse_databrowser(help: str, subparsers: argparse._SubParsersAction) -> None:
+    def parse_databrowser(subparsers: argparse._SubParsersAction) -> None:
         """Parse the databrowser command."""
         from .databrowser import DataBrowserCli
 
         call_parsers = subparsers.add_parser(
             "databrowser",
-            description=help,
-            help=help,
+            description=DataBrowserCli.desc,
+            help=DataBrowserCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
         DataBrowserCli("freva", call_parsers)
@@ -205,24 +206,17 @@ class BaseParser:
     @classmethod
     def get_subcommand_help(cls) -> dict[str, str]:
         """Create the help strings of the available sub commands."""
-        sub_commands = {
-            "databrowser": "Find data in the system.",
-            "plugin": "Apply data analysis plugin.",
-            "history": "Read the plugin application history.",
-            "crawl-my-data": "Update users project data",
-            "esgf": "Search/Download ESGF the data catalogue.",
+        from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
+
+        help = {}
+        modules = {
+            "plugin": plugin,
+            "databrowser": databrowser,
+            "crawl-my-data": crawl_my_data,
+            "history": history,
+            "esgf": esgf,
         }
-        admin_commands = {
-            "solr": "Apache solr server related sub-commands.",
-            "check": "Perform various checks.",
-            "doc": "Update the plugin documentation.",
-            "index": "(Re)-Index data on the apache solr server.",
-            "broken-runs": "Check for broken runs and report them.",
-            "pull-request": "Check for incoming pull requests.",
-        }
-        if is_admin():
-            return {**sub_commands, **admin_commands}
-        return sub_commands
+        return {h: getattr(mod, mod.CLI).desc for (h, mod) in modules.items()}
 
     def _usage(self, *args: Optional[str], **kwargs: Optional[str]) -> None:
         """Exit with usage message."""
@@ -393,24 +387,40 @@ class BaseCompleter:
                 out_dict[key] = [value]
         return out_dict
 
-    @staticmethod
+    @classmethod
     def _get_choices_from_parser(
+        cls,
         parser: argparse.ArgumentParser,
+        argv: list[str],
     ) -> dict[str, tuple[str, str]]:
-
         choices = {}
         for action in parser._actions:
+            action_type = ""
+            if isinstance(action, argparse._SubParsersAction):
+                if argv:
+                    cmd = argv.pop(0)
+                    sub_parser = action.choices.get(cmd, "")
+                    if sub_parser:
+                        choices.update(cls._get_choices_from_parser(sub_parser, argv))
+                else:
+                    for ch, parser in action.choices.items():
+                        choices[ch] = parser.description, action_type
             if action.help == argparse.SUPPRESS:
                 # This is an option that is not exposed to users
                 continue
-            action_type = ""
             if action.type == Path:
                 action_type = ":file:_files"
             if action.option_strings:
                 choice = action.option_strings[0]
             else:
-                choice = action.dest
-            if choice not in ("facet", "facets", "tool-name", "options"):
+                hoice = action.dest
+            if choice.lower() not in (
+                "facet",
+                "facets",
+                "tool-name",
+                "options",
+                "==suppress==",
+            ):
                 choices[choice] = (action.help or "", action_type)
         return choices
 
@@ -432,7 +442,7 @@ class BaseCompleter:
         except AttributeError:
             return {}
         CliParser = getattr(mod, mod.CLI)()
-        return cls._get_choices_from_parser(CliParser.parser)
+        return cls._get_choices_from_parser(CliParser.parser, argv)
 
     @classmethod
     def parse_choices(cls, argv: list[str]) -> BaseCompleter:
