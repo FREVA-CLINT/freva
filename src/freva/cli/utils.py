@@ -15,9 +15,7 @@ from evaluation_system.misc import logger
 freva = lazy_import.lazy_module("freva")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 
-subparser_func_type = Callable[
-    [str, argparse._SubParsersAction], Optional["BaseParser"]
-]
+subparser_func_type = Callable[[argparse._SubParsersAction], Optional["BaseParser"]]
 """Type for a method that creates a sub-command parser. This method gets a string
 representing the description of the sub command as well as the SubParserAction
 this sub command parser is added to.
@@ -208,7 +206,6 @@ class BaseParser:
         """Create the help strings of the available sub commands."""
         from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
 
-        help = {}
         modules = {
             "plugin": plugin,
             "databrowser": databrowser,
@@ -399,7 +396,7 @@ class BaseCompleter:
         parser: argparse.ArgumentParser,
         argv: list[str],
     ) -> dict[str, tuple[str, str]]:
-        choices = {}
+        choices: dict[str, tuple[str, str]] = {}
         for action in parser._actions:
             action_type = ""
             if isinstance(action, argparse._SubParsersAction):
@@ -410,7 +407,7 @@ class BaseCompleter:
                         choices.update(cls._get_choices_from_parser(sub_parser, argv))
                 else:
                     for ch, parser in action.choices.items():
-                        choices[ch] = parser.description, action_type
+                        choices[ch] = parser.description or "", action_type
             if action.help == argparse.SUPPRESS:
                 # This is an option that is not exposed to users
                 continue

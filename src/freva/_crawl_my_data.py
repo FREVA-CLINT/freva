@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 import os
 import shutil
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 import warnings
 
 import lazy_import
@@ -42,6 +42,20 @@ def _validate_user_dirs(*crawl_dirs: os.PathLike) -> tuple[Path, ...]:
             ) from error
         user_paths += (crawl_dir,)
     return user_paths
+
+
+def _set_add_method(how: str) -> Callable[[os.PathLike, os.PathLike], None]:
+
+    choices = "copy, link, move, symlink, cp, ln, mv"
+    if how in ["copy", "cp"]:
+        return shutil.copy
+    if how in ["symlink", "ln"]:
+        return os.symlink
+    if how in ["move", "mv"]:
+        return shutil.move
+    if how in ["link"]:
+        return os.link
+    raise ValueError(f"Invalid Method: valid methods are {choices}")
 
 
 def add_my_data(
@@ -102,17 +116,6 @@ def add_my_data(
     ------
     ValueError: If metadata is insufficient, or product key is empty
     """
-    try:
-        add_method = {
-            "copy": shutil.copy,
-            "move": shutil.move,
-            "symlink": os.symlink,
-            "link": os.link,
-        }[how]
-    except KeyError as error:
-        raise ValueError(
-            "Invalid method. Valid methods are: copy, move, symlink, link"
-        ) from error
     crawl_dirs: list[Path] = []
     facets = (
         "experiment",
@@ -135,7 +138,7 @@ def add_my_data(
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             if new_file.exists() and override:
                 new_file.unlink()
-            add_method(file, new_file)
+            _set_add_method(how)(file, new_file)
             if new_file.parent not in crawl_dirs:
                 crawl_dirs.append(new_file.parent)
     if not crawl_dirs:

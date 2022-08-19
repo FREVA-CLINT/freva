@@ -244,9 +244,23 @@ def test_add_my_data(valid_data_files, time_mock):
 
     assert freva.databrowser(product="foo-product", count=True) == len(input_files)
     with pytest.raises(ValueError):
-        freva.add_my_data("foo-product", how="foo")
+        freva.add_my_data("foo-product", valid_data_files, how="foo")
     with pytest.warns(UserWarning):
         freva.add_my_data("foo-product")
+
+
+def test_add_methods():
+
+    from freva._crawl_my_data import _set_add_method
+    import shutil
+    import os
+
+    assert _set_add_method("cp") == shutil.copy
+    assert _set_add_method("mv") == shutil.move
+    assert _set_add_method("ln") == os.symlink
+    assert _set_add_method("link") == os.link
+    with pytest.raises(ValueError):
+        _set_add_method("foo")
 
 
 def test_delete_my_data(valid_data_files, time_mock):

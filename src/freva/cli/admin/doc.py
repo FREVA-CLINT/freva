@@ -73,7 +73,7 @@ class Convert2Html:
 def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None) -> None:
     """Update the html files of tool documentation"""
     is_admin(raise_error=True)
-    FlatPage = django.contrib.flatpages.models.FlatPage
+    FlatPage = django.contrib.flatpages.models.FlatPage  # type: ignore
     plugin_path = Path(pm.get_plugin_instance(tool_name).class_basedir or ".")
     doc_file = Path(master_doc or plugin_path / "doc" / "{tool_name}.tex")
     if not doc_file.is_file():

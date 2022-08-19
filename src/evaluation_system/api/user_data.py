@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 import os
 from pathlib import Path
-from typing import Any, Generator, Iterator, Union
+from typing import cast, Any, Collection, Generator, Iterator, Union
 
 import lazy_import
 from evaluation_system.misc import config
@@ -34,9 +34,11 @@ class DataReader:
     drs_specification: str = "crawl_my_data"
     """The drs holding metadata for user data information."""
 
-    def __init__(self, paths: os.PathLike, **defaults: str) -> None:
+    def __init__(
+        self, paths: Union[os.PathLike, Collection[os.PathLike]], **defaults: str
+    ) -> None:
 
-        self.paths = Path(paths)
+        self.paths = paths
         self.defaults = defaults
         drs_config: dict[str, Any] = config.get_drs_config()[self.drs_specification]
         self.root_dir = Path(drs_config["root_dir"]).expanduser().absolute()
@@ -52,21 +54,22 @@ class DataReader:
 
     def __iter__(self) -> Generator[Path, None, None]:
         """Iterate over all found data files."""
-        file_iter: Union[Iterator[Path], list[Path]] = []
+        file_iter: Union[Iterator[os.PathLike], Collection[os.PathLike]] = []
         if isinstance(self.paths, (list, tuple, set)):
             file_iter = self.paths
         else:
-            if self.paths.is_file():
-                file_iter = [self.paths]
-            elif self.paths.is_dir():
-                file_iter = self.paths.rglob("*")
+            paths = Path(cast(os.PathLike, self.paths))
+            if paths.is_file():
+                file_iter = [paths]
+            elif paths.is_dir():
+                file_iter = paths.rglob("*")
             else:
                 # This is a shot into the dark assumes that the paths variable
                 # is a glob pattern
-                file_iter = self.paths.parent.rglob(self.paths.name)
-        for file in file_iter:
+                file_iter = paths.parent.rglob(paths.name)
+        for file in map(Path, file_iter):
             if file.suffix in self.suffixes:
-                yield file
+                yield file.expanduser().absolute()
 
     @property
     def time_table(self) -> dict[int, str]:
@@ -178,7 +181,9 @@ class DataReader:
         _data.setdefault("version", "")
         return _data
 
-    def _create_versioned_path(self, dir_parts: list[str], override: bool = True) -> Path:
+    def _create_versioned_path(
+        self, dir_parts: list[str], override: bool = True
+    ) -> list[str]:
         """Add a version number to a file."""
 
         v_index = self.parts_dir.index("version")
@@ -191,12 +196,9 @@ class DataReader:
         latest_version = [versions[-1]]
         new_dirs = dir_parts[:v_index] + latest_version + dir_parts[v_index:]
         new_path = self.root_dir.joinpath(*new_dirs)
-        print(new_path.is_dir())
         if new_path.is_dir() and not override:
             new_dirs[v_index] = new_version
         return new_dirs
-
-
 
     def file_name_from_metdata(self, path: os.PathLike, override: bool = False) -> Path:
         """Construct file name matching the DRS Spec. from given input path.
