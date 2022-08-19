@@ -30,6 +30,7 @@ prepdocs:
 	python3 -m pip install -e .[docs]
 	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
 	python3 -m ipykernel install --user --name freva
+	python3 compose/dummy_user_data.py
 	make dummy-data
 	freva plugin animator project=observations variable=pr; echo 0
 

@@ -8,7 +8,6 @@ from typing import Generator, Tuple
 
 import cftime
 import pytest
-from pytest_mock import MockerFixture
 import numpy as np
 import xarray as xr
 
