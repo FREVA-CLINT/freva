@@ -286,7 +286,10 @@ class BaseCompleter:
                 continue
             facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        search = freva.databrowser(attributes=False, all_facets=True, **facets)
+        try:
+            search = freva.databrowser(attributes=False, all_facets=True, **facets)
+        except Exception:
+            search = {}
         choices = {}
         for att, values in search.items():
             if att not in facets:
@@ -300,8 +303,11 @@ class BaseCompleter:
         docs: dict[str, dict[str, str]] = {}
         desc: dict[str, dict[str, str]] = {}
         plugins: dict[str, str] = {}
-
-        for plugin in freva.read_plugin_cache():
+        try:
+            plugin_cache = freva.read_plugin_cache()
+        except Exception:
+            plugin_cache = []
+        for plugin in plugin_cache:
             plugins[plugin.name] = plugin.description
             docs[plugin.name] = {}
             desc[plugin.name] = {}
@@ -314,13 +320,13 @@ class BaseCompleter:
             # No plugin name was given
             return {pl: (help, "") for pl, help in plugins.items()}
         try:
-            config = docs[args[0]]
+            plugin_config = docs[args[0]]
             setup = desc[args[0]]
         except KeyError:
             # Wrong plugin name
             return {}
         options = []
-        for key in config.keys():
+        for key in plugin_config.keys():
             option_present = False
             for arg in args:
                 if arg.startswith(f"{key}="):
@@ -413,13 +419,14 @@ class BaseCompleter:
             if action.option_strings:
                 choice = action.option_strings[0]
             else:
-                hoice = action.dest
+                choice = action.dest
             if choice.lower() not in (
                 "facet",
                 "facets",
                 "tool-name",
                 "options",
                 "==suppress==",
+                "-h",
             ):
                 choices[choice] = (action.help or "", action_type)
         return choices
