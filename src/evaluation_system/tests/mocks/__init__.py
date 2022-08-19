@@ -8,7 +8,7 @@ scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=/tmp/slurm
 scheduler_system=slurm
 preview_path=/tmp/preview
-project_data=/tmp/crawl_my_data
+project_data=/tmp/user_data
 db.host=127.0.0.1
 db.user=freva
 db.passwd=T3st
@@ -70,7 +70,7 @@ project = "reanalysis"
 product = "reanalysis"
 
 [crawl_my_data]
-root_dir = "/tmp/crawl_my_data"
+root_dir = "/tmp/user_data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable"

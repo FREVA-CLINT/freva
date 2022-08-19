@@ -2,7 +2,7 @@ import pytest
 import mock
 import os
 
-SUBCOMMANDS = ("databrowser", "esgf", "crawl-my-data", "history", "plugin")
+SUBCOMMANDS = ("databrowser", "esgf", "user-data", "history", "plugin")
 
 
 def test_main_help(capsys):
@@ -25,9 +25,9 @@ def test_subcommand_help(capsys):
     from freva.cli.esgf import main as esgf
     from freva.cli.plugin import main as plugin
     from freva.cli.history import main as history
-    from freva.cli.crawl_my_data import main as crawl_my_data
+    from freva.cli.user_data import main as user_data
 
-    functions = (databrowser, esgf, crawl_my_data, history, plugin)
+    functions = (databrowser, esgf, user_data, history, plugin)
     env = os.environ.copy()
     env.pop("EVALUATION_SYSTEM_CONFIG_FILE", "")
     with mock.patch.dict(os.environ, env, clear=True):

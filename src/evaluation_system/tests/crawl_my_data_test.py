@@ -216,8 +216,8 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
 
 def test_add_my_data(valid_data_files, time_mock):
 
-    import freva
-    from freva.cli.crawl_my_data import main as run
+    from freva import UserData, databrowser
+    from freva.cli.user_data import main as run
 
     defaults = [
         "--institute",
@@ -241,34 +241,37 @@ def test_add_my_data(valid_data_files, time_mock):
     with pytest.raises(ValueError):
         run(["add", "foo-product", str(valid_data_files), "-d"])
 
-    assert freva.databrowser(product="foo-product", count=True) == len(input_files)
+    user_data = UserData()
+    assert databrowser(product="foo-product", count=True) == len(input_files)
     with pytest.raises(ValueError):
-        freva.add_my_data("foo-product", valid_data_files, how="foo")
+        user_data.add("foo-product", valid_data_files, how="foo")
     with pytest.warns(UserWarning):
-        freva.add_my_data("foo-product")
+        user_data.add("foo-product")
 
 
 def test_add_methods():
 
-    from freva._crawl_my_data import _set_add_method
+    from freva import UserData
     import shutil
     import os
 
-    assert _set_add_method("cp") == shutil.copy
-    assert _set_add_method("mv") == shutil.move
-    assert _set_add_method("ln") == os.symlink
-    assert _set_add_method("link") == os.link
+    assert UserData._set_add_method("cp") == shutil.copy
+    assert UserData._set_add_method("mv") == shutil.move
+    assert UserData._set_add_method("ln") == os.symlink
+    assert UserData._set_add_method("link") == os.link
     with pytest.raises(ValueError):
-        _set_add_method("foo")
+        UserData._set_add_method("foo")
 
 
 def test_delete_my_data(valid_data_files, time_mock):
 
     import freva
-    from freva.cli.crawl_my_data import main as run
+    from freva import UserData
+    from freva.cli.user_data import main as run
     from evaluation_system.model.user import User
     from evaluation_system.api.user_data import get_output_directory
 
+    user_data = UserData()
     root_path = get_output_directory() / f"user-{User().getName()}" / "foo-product"
     assert freva.databrowser(product="foo-product", count=True) > 0
     nfiles = len(list(root_path.rglob("*.nc")))
@@ -276,14 +279,14 @@ def test_delete_my_data(valid_data_files, time_mock):
     run(["delete", str(root_path)])
     assert freva.databrowser(product="foo-product", count=True) == 0
     assert len(list(root_path.rglob("*.nc"))) > 0
-    freva.delete_my_data(root_path, delete_from_fs=True)
+    user_data.delete(root_path, delete_from_fs=True)
     assert len(list(root_path.rglob("*.nc"))) == 0
 
 
 def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mock):
-    from freva import index_my_data
+    from freva import UserData
     from evaluation_system.tests import run_cli
-    from freva.cli.crawl_my_data import main as run
+    from freva.cli.user_data import main as run
     from evaluation_system.misc.exceptions import ValidationError
     from evaluation_system.model.solr import SolrFindFiles
 
@@ -295,11 +298,12 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
     assert len(list(SolrFindFiles.search(product="foo", latest_version=False))) == len(
         dummy_crawl
     )
+    user_data = UserData()
     with pytest.raises(NotImplementedError):
-        index_my_data(dtype="something")
+        user_data.index(dtype="something")
     with pytest.raises(SystemExit):
         with pytest.raises(ValidationError):
-            run_cli(["crawl-my-data", "index", "/tmp/forbidden/folder"])
+            run_cli(["user-data", "index", "/tmp/forbidden/folder"])
 
 
 def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
@@ -311,9 +315,9 @@ def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
     dummy_crawl[-1].parent.mkdir(exist_ok=True, parents=True)
     dummy_crawl[-1].touch()
     with pytest.raises(ValueError):
-        run_cli(["crawl-my-data", "index", "-d"])
+        run_cli(["user-data", "index", "-d"])
     with pytest.raises(SystemExit):
-        run_cli(["crawl-my-data", "index"])
+        run_cli(["user-data", "index"])
     captured = capsys.readouterr()
     assert "ValueError" in captured.err
     assert len(list(SolrFindFiles.search())) == 0
@@ -321,8 +325,11 @@ def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
 
 
 def test_validate_path(root_path_with_empty_config, time_mock):
-    from freva._crawl_my_data import _validate_user_dirs
+    from freva import UserData
 
+    user_data = UserData()
     root_path_str = str(root_path_with_empty_config)
     print(root_path_str)
-    assert _validate_user_dirs(root_path_str) == (root_path_with_empty_config,)
+    assert user_data._validate_user_dirs(root_path_str) == (
+        root_path_with_empty_config,
+    )

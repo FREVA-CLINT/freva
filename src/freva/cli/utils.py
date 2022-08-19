@@ -79,17 +79,17 @@ class BaseParser:
         return args
 
     @staticmethod
-    def parse_crawl_my_data(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the user data crawl."""
-        from .crawl_my_data import CrawlDataCli
+    def parse_user_data(subparsers: argparse._SubParsersAction) -> None:
+        """Parse the user data"""
+        from .user_data import UserDataCli
 
         call_parsers = subparsers.add_parser(
-            "crawl-my-data",
-            help=CrawlDataCli.desc,
-            description=CrawlDataCli.desc,
+            "user-data",
+            help=UserDataCli.desc,
+            description=UserDataCli.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        CrawlDataCli("freva", call_parsers)
+        UserDataCli("freva", call_parsers)
 
     @staticmethod
     def parse_history(subparsers: argparse._SubParsersAction) -> None:
@@ -189,7 +189,7 @@ class BaseParser:
             "databrowser": cls.parse_databrowser,
             "plugin": cls.parse_plugin,
             "history": cls.parse_history,
-            "crawl-my-data": cls.parse_crawl_my_data,
+            "user-data": cls.parse_user_data,
             "esgf": cls.parse_esgf,
         }
         admin_commands: dict[str, subparser_func_type] = {
@@ -204,12 +204,12 @@ class BaseParser:
     @classmethod
     def get_subcommand_help(cls) -> dict[str, str]:
         """Create the help strings of the available sub commands."""
-        from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
+        from freva.cli import user_data, databrowser, history, plugin, esgf
 
         modules = {
             "plugin": plugin,
             "databrowser": databrowser,
-            "crawl-my-data": crawl_my_data,
+            "user-data": user_data,
             "history": history,
             "esgf": esgf,
         }
@@ -431,13 +431,13 @@ class BaseCompleter:
     @classmethod
     def get_args_of_subcommand(cls, argv: list[str]) -> dict[str, tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
-        from freva.cli import crawl_my_data, databrowser, history, plugin, esgf
+        from freva.cli import user_data, databrowser, history, plugin, esgf
 
         sub_command = argv.pop(0)
         modules = {
             "plugin": plugin,
             "databrowser": databrowser,
-            "crawl-my-data": crawl_my_data,
+            "user-data": user_data,
             "history": history,
             "esgf": esgf,
         }

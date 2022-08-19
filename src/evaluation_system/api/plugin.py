@@ -90,8 +90,8 @@ class PluginAbstract(abc.ABC):
 
 
 
-    Minimal Example
-    ---------------
+    Example
+    -------
 
     In order to configure and call this cli, a Freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.

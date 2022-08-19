@@ -44,8 +44,8 @@ option, for example getting help on the ``databrowser usage``:
 .. note::
    Instead of using sub-commands you have also the option to use
    commands. For example the command ``freva-databrowser`` is equivalent to
-   ``freva databrowser``, ``freva-crawl-my-data`` to
-   ``freva crawl-my-data`` etc.
+   ``freva databrowser``, ``freva-user-data`` to
+   ``freva user-data`` etc.
 
 Searching for data: the ``freva-databrowser`` command
 -----------------------------------------------------
@@ -442,7 +442,7 @@ Let’s get the last entry (default is 10 entries) of the ``dummyplugin`` plugin
    print(res.stdout.decode())
 
 
-Dates are given using the `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_ 
+Dates are given using the `ISO-8601 <https://en.wikipedia.og/wiki/ISO_8601>`_
 format.
 
 The entries are sorted by their ``id``. For example you can query the
@@ -476,41 +476,139 @@ can use the ``--return-command`` option to get the command that was used:
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-Adding own datasets: the ``crawl-my-data`` command
-----------------------------------------------------------------
+Managing own datasets: the ``freva-user-data`` command
+------------------------------------------------------
 
-Freva also offers the possibility to the user to share own generated datasets 
+Freva also offers the possibility to the user to share own generated datasets
 with the rest of the project making them searchable via ``freva-databrowser``.
-These datasets must be placed under a particular project folder, following a faceted 
-structure so Freva can recognise it (e.g., ``$ROOT_PATH/$FACETED_PATH/$FILENAME.nc``). 
-Although this structure can be personalised by the Freva administrators according to the necessities of each project, by default is set up as:
+With help of the ``user-data`` sub command users can add their own data to the
+central data locatoin, (re)-index data in the databrowser or delete data in
+the databrowser.
+
+For this special type of data ``project=user-$USER``. Let’s inspect the help menu
+of the ``freva-user-data`` or ``freva user-data`` command:
 
 .. code:: bash
 
-   ROOT_PATH = {FREVA_INSTANCE}/crawl_my_data
-   FACETED_PATH = {project}/{product}/{institute}/{model}/{experiment}/{time_frequency}/{realm}/{variable}/{ensemble}
-   FILENAME = {variable}_{cmor_table}_{model}_{experiment}_{ensemble}_{time}
-   
-
-For this special type of data ``project=user-$USER``. Let’s inspect the help menu 
-of the ``freva-crawl-my-data`` or ``freva crawl-my-data`` command:
-
-.. code:: bash
-
-    freva-crawl-my-data --help
+    freva-user-data --help
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "crawl-my-data", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "user-data", "--help"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+Add new data to the databrowser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently, only files on the file system (``--data-type {fs}``) are supported.
+To be able to add data to the databrowser the file names must follow a strict
+file name standard and the files must reside in a specific location. This
+``add`` method takes care about the correct file naming and location. No pre
+requirements other that the file has to be a valid ``netCDF`` or ``grib`` file
+are assumed. In other words this method places the user data with the correct
+naming structure to the correct location.
+
+.. code:: console
+
+    freva-user-data add --help
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "user-data", "add", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Suppose you've gotten data from somewhere and want to add this data into the
+databrowser to make it accessible to others. In this specific
+example we assume that you have stored your `original` data in the
+``/tmp/my_awesome_data`` folder.
+E.g ``/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc``
+The routine will try to necessary gather all metadata from the files. You'll
+have to provide additional metadata if mandatory keywords are missing.:
+To make the routine work you'll have to provide the ``institute``, ``model``
+and ``experiment`` keywords:
+
+.. code:: console
+
+    freva-user-data add eur-11b /tmp/my_awesome_data/outfile_?.nc \
+    --institute clex --model UM-RA2T --experiment Bias-correct
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "user-data", "add", "eur-11b", "/tmp/my_awesome_data/outfile_?.nc",
+              "--institute", "clex", "--model", "UM-RA2T", "--experiment",
+              "Bias-correct"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
 
 .. note::
-   Freva allows plugins to directly index output datasets via  
+   Freva allows also *plugins* to directly index output datasets via
    :class:`add_output_to_databrowser` method (``linkmydata`` is the deprecated
    method of former Freva versions). For more information please
    take a look at :ref:`PluginAPI`.
+
+Remove your data from the databrowser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``delete`` sub command removes entries from the databrowser and if necessary
+existing files from the central user data location.
+
+.. code:: console
+
+    freva-user-data delete --help
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "user-data", "delete", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Any data in the central user directory that belongs to the user can
+be deleted from the databrowser and also from the central data location:
+
+.. code:: console
+
+    freva-user-data delete /tmp/user_data/user-<user_name>
+
+.. execute_code::
+   :hide_code:
+
+   from freva import UserData
+   user_data = UserData()
+   user_data.delete(user_data.user_dir)
+
+
+(Re)-Index existing data to the databrowser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``index`` subcommand can be used to update the databrowser for existing
+user data. For example, if data has been removed from the databrowser it can
+be re-added using the ``index`` method:
+
+.. code:: console
+
+    freva-user-data index --help
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "user-data", "index", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Currently, only files on the file system (``--data-type {fs}``) are supported.
+
+.. code:: console
+
+    freva-user-data delete /tmp/user_data/user-<user_name>
+
+.. execute_code::
+   :hide_code:
+
+   from freva import UserData
+   user_data = UserData()
+   user_data.index(user_data.user_dir)

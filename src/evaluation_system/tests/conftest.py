@@ -61,7 +61,7 @@ def mock_config(keyfile, admin=False, patch_env=True):
     with TemporaryDirectory() as temp_dir:
         eval_config = Path(temp_dir) / "evaluation_system.conf"
         drs_conf_path = Path(temp_dir) / "drs_config.toml"
-        crawl_data_dir = Path(temp_dir) / "data" / "crawl_my_data"
+        crawl_data_dir = Path(temp_dir) / "data" / "user_my_data"
         drs_config["crawl_my_data"]["root_dir"] = str(crawl_data_dir)
         PATH = (Path(__file__).parent / "mocks" / "bin").absolute()
         env = dict(

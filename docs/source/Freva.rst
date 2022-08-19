@@ -43,10 +43,10 @@ The ``history`` module
    :undoc-members:
    :show-inheritance:
 
-The ``crawl_my_data`` module
-============================
+The ``UserData`` class
+======================
 
 .. automodule:: freva
-   :members: crawl_my_data
+   :members: UserData
    :undoc-members:
    :show-inheritance:

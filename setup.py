@@ -10,7 +10,7 @@ from tempfile import TemporaryDirectory
 from deploy import find_version, read, Installer, get_data_dirs
 
 
-COMMANDS = ["databrowser", "esgf", "history", "plugin", "crawl-my-data"]
+COMMANDS = ["databrowser", "esgf", "history", "plugin", "user-data"]
 this_dir = Path(__file__).parent
 COMPLETION_DIR = this_dir / "assets" / "completions"
 

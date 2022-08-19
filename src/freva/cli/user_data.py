@@ -9,10 +9,10 @@ from evaluation_system import __version__
 from evaluation_system.misc import logger
 from .utils import BaseParser, subparser_func_type
 
-freva = lazy_import.lazy_module("freva")
+UserData = lazy_import.lazy_class("freva.UserData")
 from evaluation_system.misc.exceptions import ValidationError
 
-CLI = "CrawlDataCli"
+CLI = "UserDataCli"
 
 
 class IndexData(BaseParser):
@@ -51,8 +51,9 @@ class IndexData(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
+        user_data = UserData()
         try:
-            freva.index_my_data(*args.crawl_dir, dtype=args.data_type)
+            user_data.index(*args.crawl_dir, dtype=args.data_type)
         except (ValidationError, ValueError) as e:
             if args.debug:
                 raise e
@@ -178,8 +179,9 @@ class AddData(BaseParser):
             "ensemble",
         )
         defaults = {k: getattr(args, k) for k in facets if getattr(args, k)}
+        user_data = UserData()
         try:
-            freva.add_my_data(
+            user_data.add(
                 args.product,
                 *args.paths,
                 how=args.how,
@@ -233,10 +235,11 @@ class DeleteData(BaseParser):
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
-        freva.delete_my_data(*args.paths, delete_from_fs=args.delete_from_fs)
+        user_data = UserData()
+        user_data.delete(*args.paths, delete_from_fs=args.delete_from_fs)
 
 
-class CrawlDataCli(BaseParser):
+class UserDataCli(BaseParser):
     """Class that constructs the Data Crawler Argument Parser."""
 
     desc = "Update users project data"
@@ -248,7 +251,7 @@ class CrawlDataCli(BaseParser):
     ):
         """Construct the esgf sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-crawl-my-data",
+            prog=f"{command}-user-data",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -299,7 +302,7 @@ class CrawlDataCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = CrawlDataCli("freva")
+    cli = UserDataCli("freva")
     cli.parser.add_argument(
         "-V",
         "--version",
