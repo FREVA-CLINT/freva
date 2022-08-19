@@ -1,7 +1,8 @@
-"""The modules provides interfaces for userser to interact with 
+"""The modules provides interfaces for user to interact with 
 the freva data stack."""
 
 from __future__ import annotations
+from datetime import date
 import os
 from pathlib import Path
 from typing import Any, Generator, Iterator, Union
@@ -14,7 +15,7 @@ xr = lazy_import.lazy_module("xarray")
 
 
 class DataReader:
-    """Read meta data facets from a collection of datafiles.
+    """Read meta data facets from a collection of data files.
 
     Parameters
     ----------
@@ -47,24 +48,22 @@ class DataReader:
     @staticmethod
     def get_output_directory() -> Path:
         """Get the user data output directory."""
-        root_dir = (
-            Path(config.get_drs_config()[DataReader.drs_specification]["root_dir"])
-            .expanduser()
-            .absolute()
-        )
-        return root_dir
+        return get_output_directory()
 
     def __iter__(self) -> Generator[Path, None, None]:
         """Iterate over all found data files."""
         file_iter: Union[Iterator[Path], list[Path]] = []
-        if self.paths.is_file():
-            file_iter = [self.paths]
-        elif self.paths.is_dir():
-            file_iter = self.paths.rglob("*")
+        if isinstance(self.paths, (list, tuple, set)):
+            file_iter = self.paths
         else:
-            # This is a shot into the dark assumes that the paths variable
-            # is a glob pattern
-            file_iter = self.paths.parent.rglob(self.paths.name)
+            if self.paths.is_file():
+                file_iter = [self.paths]
+            elif self.paths.is_dir():
+                file_iter = self.paths.rglob("*")
+            else:
+                # This is a shot into the dark assumes that the paths variable
+                # is a glob pattern
+                file_iter = self.paths.parent.rglob(self.paths.name)
         for file in file_iter:
             if file.suffix in self.suffixes:
                 yield file
@@ -175,15 +174,40 @@ class DataReader:
         _data.setdefault("variable", variables[0])
         _data.setdefault("time_frequency", self.get_time_frequency(dt, time_freq))
         _data["time"] = time_str
+        _data.setdefault("cmor_table", _data["time_frequency"])
+        _data.setdefault("version", "")
         return _data
 
-    def file_name_from_metdata(self, path: os.PathLike) -> Path:
+    def _create_versioned_path(self, dir_parts: list[str], override: bool = True) -> Path:
+        """Add a version number to a file."""
+
+        v_index = self.parts_dir.index("version")
+        new_version = date.today().strftime("v%Y%m%d")
+        version_path = self.root_dir.joinpath(*dir_parts[:v_index])
+        try:
+            versions = sorted([v.name for v in version_path.iterdir()])
+        except FileNotFoundError:
+            versions = [new_version]
+        latest_version = [versions[-1]]
+        new_dirs = dir_parts[:v_index] + latest_version + dir_parts[v_index:]
+        new_path = self.root_dir.joinpath(*new_dirs)
+        print(new_path.is_dir())
+        if new_path.is_dir() and not override:
+            new_dirs[v_index] = new_version
+        return new_dirs
+
+
+
+    def file_name_from_metdata(self, path: os.PathLike, override: bool = False) -> Path:
         """Construct file name matching the DRS Spec. from given input path.
 
         Parameters
         ----------
         path:
             Input file holing the meta data information.
+        override: bool, default: False
+            If file exist, override the file instead of incrementing the version
+            number.
 
         Returns
         -------
@@ -199,12 +223,26 @@ class DataReader:
         path = Path(path)
         meta_data = self.get_metadata(path)
         try:
-            dir_path = self.root_dir.joinpath(*[meta_data[d] for d in self.parts_dir])
-            file_path = self.file_sep.join([meta_data[d] for d in self.parts_file])
+            dir_parts = [meta_data[d] for d in self.parts_dir]
+            file_parts = [meta_data[f] for f in self.parts_file]
         except KeyError as error:
             raise ValueError(
-                f"Not all information could be retrieved: {error}"
+                "Not all information could be retrieved. "
+                f"Please add the following key manually: {error}"
             ) from error
-
+        if not meta_data["version"] and "version" in self.parts_dir:
+            dir_parts = self._create_versioned_path(dir_parts, override=override)
+        dir_path = self.root_dir.joinpath(*dir_parts)
+        file_path = self.file_sep.join(file_parts)
         out_dir = (dir_path / file_path).with_suffix(path.suffix)
         return out_dir
+
+
+def get_output_directory() -> Path:
+    """Get the user data output directory."""
+    root_dir = (
+        Path(config.get_drs_config()[DataReader.drs_specification]["root_dir"])
+        .expanduser()
+        .absolute()
+    )
+    return root_dir
