@@ -476,19 +476,24 @@ can use the ``--return-command`` option to get the command that was used:
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-Managing own datasets: the ``freva-user-data`` command
-------------------------------------------------------
+Managing your own datasets: the ``freva-user-data`` command
+-----------------------------------------------------------
 
-Freva also offers the possibility to the user to share own generated datasets
-with the rest of the project making them searchable via ``freva-databrowser``.
-With help of the ``user-data`` sub command users can add their own data to the
-central data locatoin, (re)-index data in the databrowser or delete data in
-the databrowser.
+Freva offers the possibility to share custom datasets with other users
+by making it searchable via ``freva-databrowser``. With help of the
+``freva-user-data`` command users can add their own data to the
+central data location, (re)-index or delete data in the databrowser.
 
-For this special type of data ``project=user-$USER``. Let’s inspect the help menu
-of the ``freva-user-data`` or ``freva user-data`` command:
 
-.. code:: bash
+.. note::
+
+    Any data that has been added by users will be assigned a special project
+    name: ``project=user-$USER``.
+
+Let’s inspect the help menu of the ``freva-user-data`` or ``freva user-data``
+command:
+
+.. code:: console
 
     freva-user-data --help
 
@@ -503,11 +508,11 @@ Add new data to the databrowser
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To be able to add data to the databrowser the file names must follow a strict
-file name standard and the files must reside in a specific location. This
-``add`` method takes care about the correct file naming and location. No pre
-requirements other that the file has to be a valid ``netCDF`` or ``grib`` file
-are assumed. In other words this method places the user data with the correct
-naming structure to the correct location.
+standard and the files must reside in a specific location. The
+``add`` sub command takes care about the correct file naming and location.
+No pre requirements other than the file has to be a valid ``netCDF`` or
+``grib`` file are assumed. In other words this sub command places the user data
+with the correct naming structure to the correct location.
 
 .. code:: console
 
@@ -525,15 +530,16 @@ databrowser to make it accessible to others. In this specific
 example we assume that you have stored your `original` data in the
 ``/tmp/my_awesome_data`` folder.
 E.g ``/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc``
-The routine will try to necessary gather all metadata from the files. You'll
-have to provide additional metadata if mandatory keywords are missing.:
-To make the routine work you'll have to provide the ``institute``, ``model``
-and ``experiment`` keywords:
+The routine will try to gather all necessary metadata from the files. You'll
+have to provide additional metadata if mandatory keywords are missing.
+To make the routine work in this example we have to provide the ``institute``,
+``model`` and ``experiment`` keywords:
 
 .. code:: console
 
     freva-user-data add eur-11b /tmp/my_awesome_data/outfile_?.nc \
     --institute clex --model UM-RA2T --experiment Bias-correct
+    freva-databrowser experiment=bias-correct
 
 .. execute_code::
    :hide_code:
@@ -543,6 +549,7 @@ and ``experiment`` keywords:
               "--institute", "clex", "--model", "UM-RA2T", "--experiment",
               "Bias-correct"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
+   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])
 
 .. note::
    Freva allows also *plugins* to directly index output datasets via
@@ -573,6 +580,7 @@ be deleted from the databrowser and also from the central data location:
 .. code:: console
 
     freva-user-data delete /tmp/user_data/user-<user_name>
+    freva-databrowser experiment=bias-correct
 
 .. execute_code::
    :hide_code:
@@ -580,6 +588,7 @@ be deleted from the databrowser and also from the central data location:
    from freva import UserData
    user_data = UserData()
    user_data.delete(user_data.user_dir)
+   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])
 
 
 (Re)-Index existing data to the databrowser
@@ -587,7 +596,7 @@ be deleted from the databrowser and also from the central data location:
 
 The ``index`` subcommand can be used to update the databrowser for existing
 user data. For example, if data has been removed from the databrowser it can
-be re-added using the ``index`` method:
+be re-added:
 
 .. code:: console
 
@@ -604,7 +613,8 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
 
 .. code:: console
 
-    freva-user-data delete /tmp/user_data/user-<user_name>
+    freva-user-data delete /tmp/user_data/user-freva
+    freva-databrowser experiment=bias-correct
 
 .. execute_code::
    :hide_code:
@@ -612,3 +622,4 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
    from freva import UserData
    user_data = UserData()
    user_data.index(user_data.user_dir)
+   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])

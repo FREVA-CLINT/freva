@@ -80,12 +80,12 @@ class UserData:
         """Add custom user files to the databrowser.
 
         To be able to add data to the databrowser the file names must
-        follow a strict file name standard and the files must reside in a
-        specific location. This ``add`` method takes
-        care about the correct file naming and location. No pre requirements
-        other that the file has to be a valid ``netCDF`` or ``grib`` file are
-        assumed. In other words this method places the user data with the correct
-        naming structure to the correct location.
+        follow a strict standard and the files must reside in a
+        specific location. This ``add`` method takes care about the correct
+        file naming and location. No pre requirements other than the file has
+        to be a valid ``netCDF`` or ``grib`` file are assumed. In other words
+        this method places the user data with the correct naming structure to
+        the correct location.
 
         Parameters
         ----------
@@ -145,8 +145,8 @@ class UserData:
         example we assume that you have stored your `original` data in the
         ``/tmp/my_awesome_data`` folder.
         E.g ``/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc``
-        The routine will try to necessary gather all metadata from the files. You'll
-        have to provide additional metadata if mandatory keywords are missing.:
+        The routine will try to gather all necessary metadata from the files. You'll
+        have to provide additional metadata if mandatory keywords are missing.
         To make the routine work you'll have to provide the ``institute``, ``model``
         and ``experiment`` keywords:
 
