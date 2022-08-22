@@ -67,8 +67,8 @@ class SolrFindFiles(object):
     def _get_file_query_parameters(self, **search_dict: Union[str, list[str]]) -> str:
 
         partial_dict = search_dict.copy()
-        _ = partial_dict.pop("start", None)
-
+        for key in ("start", "row"):
+            _ = partial_dict.pop("start", None)
         for key, value in {"q": "*:*", "fl": "file", "sort": "file desc"}.items():
             partial_dict.setdefault(key, value)
         if "text" in partial_dict:
