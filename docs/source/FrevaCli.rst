@@ -586,6 +586,7 @@ be deleted from the databrowser and also from the central data location:
    :hide_code:
 
    from freva import UserData
+   from subprocess import run, PIPE
    user_data = UserData()
    user_data.delete(user_data.user_dir)
    run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
@@ -620,6 +621,7 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
    :hide_code:
 
    from freva import UserData
+   from subprocess import run, PIPE
    user_data = UserData()
    user_data.index(user_data.user_dir)
    run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
