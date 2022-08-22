@@ -8,14 +8,14 @@ This package encapsulate access to a solr instance
 
 from __future__ import annotations
 import urllib
-from typing import cast, Union, NamedTuple
+from typing import cast, Union, List, NamedTuple
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger, utils
 
 SolrResponse = NamedTuple(
     "SolrResponse",
-    [("num_objects", int), ("start", int), ("exact", bool), ("docs", list[str])],
+    [("num_objects", int), ("start", int), ("exact", bool), ("docs", List[str])],
 )
 
 
