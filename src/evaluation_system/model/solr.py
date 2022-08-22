@@ -8,10 +8,15 @@ This package encapsulate access to a solr instance
 
 from __future__ import annotations
 import urllib
-from typing import cast, Union
+from typing import cast, Union, List, NamedTuple
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger, utils
+
+SolrResponse = NamedTuple(
+    "SolrResponse",
+    [("num_objects", int), ("start", int), ("exact", bool), ("docs", List[str])],
+)
 
 
 class SolrFindFiles(object):
@@ -59,11 +64,44 @@ class SolrFindFiles(object):
         logger.debug(params)
         return urllib.parse.urlencode(params)
 
+    def _get_file_query_parameters(self, **search_dict: Union[str, list[str]]) -> str:
+
+        partial_dict = search_dict.copy()
+        for key in ("start", "row"):
+            _ = partial_dict.pop("start", None)
+        for key, value in {"q": "*:*", "fl": "file", "sort": "file desc"}.items():
+            partial_dict.setdefault(key, value)
+        if "text" in partial_dict:
+            partial_dict["q"] = partial_dict.pop("text")
+        return self._to_solr_query(partial_dict)
+
+    def _retrieve_metadata(self, **search_dict: str) -> SolrResponse:
+        """Retrieve metadata from databrowser.
+
+        Parameters
+        ----------
+
+        **search_dict: str
+            Search query parameter
+
+        Returns
+        -------
+        evaluation_system.model.solr.SolrResponse:
+          NamedTuple of metadata on the search query results.
+        """
+        query = self._get_file_query_parameters(**search_dict)
+        anw = self.solr.get_json("select?facet=true&rows=0&%s" % query)["response"]
+        return SolrResponse(
+            num_objects=anw["numFound"],
+            start=anw["start"],
+            exact=anw["numFoundExact"],
+            docs=anw["docs"],
+        )
+
     def _search(
         self,
         batch_size=10000,
         latest_version=False,
-        _retrieve_metadata=False,
         rows=None,
         **partial_dict,
     ):
@@ -74,30 +112,20 @@ class SolrFindFiles(object):
         :param latest_version: if the search should *try* to find the latest version from all contained here. Please note
          that we don't use this anymore. Instead we have 2 cores and this is defined directly in :class:`SolrFindFiles.search`.
          It was changed because it was slow and required too much memory.
-        :param _retrieve_metadata: if set to true, the first item on the iterator is a metadata one. This is used so it can be
         known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
         implement a result set object. But that would break the find_files compatibility."""
         offset = int(partial_dict.pop("start", "0"))
-        for key, value in {"q": "*:*", "fl": "file", "sort": "file desc"}.items():
-            partial_dict.setdefault(key, value)
-        if "text" in partial_dict:
-            partial_dict["q"] = partial_dict.pop("text")
-        query = self._to_solr_query(partial_dict)
-        answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
+        query = self._get_file_query_parameters(**partial_dict)
+        metadata = self._retrieve_metadata(**partial_dict)
         if rows:
-            results_to_visit = min(answer["response"]["numFound"], rows)
+            results_to_visit = min(metadata.num_objects, rows)
         else:
-            results_to_visit = answer["response"]["numFound"]
+            results_to_visit = metadata.num_objects
         while results_to_visit > 0:
             batch_size = min(batch_size, results_to_visit)
             answer = self.solr.get_json(
                 "select?start=%s&rows=%s&%s" % (offset, batch_size, query)
             )
-            if _retrieve_metadata:
-                meta = answer["response"].copy()
-                del meta["docs"]
-                yield meta
-                _retrieve_metadata = False
             offset = answer["response"]["start"]
             iter_answer = answer["response"]["docs"]
             for item in iter_answer:
@@ -122,6 +150,29 @@ class SolrFindFiles(object):
             search_dict["fq"] = time
         return search_dict
 
+    @classmethod
+    def get_metadata(
+        cls, latest_version: bool = True, **search_dict: str
+    ) -> SolrResponse:
+        """Retrieve metadata from databrowser.
+
+        Parameters
+        ----------
+
+        **search_dict: str
+            Search query parameter
+
+        Returns
+        -------
+        evaluation_system.model.solr.SolrResponse:
+          NamedTuple of metadata on the search query results.
+        """
+        if latest_version:
+            solrcore = cls(core="latest")
+        else:
+            solrcore = cls(core="files")
+        return solrcore._retrieve_metadata(**search_dict)
+
     @staticmethod
     def search(latest_version=True, **partial_dict):
         """It mimics the same :class:`evaluation_system.model.file.DRSFile.search` behavior.
@@ -136,7 +187,7 @@ class SolrFindFiles(object):
             s = SolrFindFiles(core="latest")
         else:
             s = SolrFindFiles(core="files")
-        return s._search(latest_version=False, **partial_dict)
+        return s._search(**partial_dict)
 
     def _facets(self, latest_version=False, facets=None, **partial_dict):
         if facets and not isinstance(facets, list):

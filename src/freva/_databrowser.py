@@ -244,16 +244,11 @@ def databrowser(
         if relevant_only:
             return (k for k in results if len(results[k]) > 2)
         return (k for k in results)
+    if count:
+        return solr_core._retrieve_metadata(**search_facets).num_objects
     search_results = solr_core._search(
         batch_size=batch_size,
         latest_version=latest,
-        _retrieve_metadata=count,
         **search_facets,
     )
-    if count:
-        try:
-            ne = next(search_results)["numFound"]
-        except (StopIteration, KeyError):
-            ne = 0
-        return ne
     return search_results
