@@ -32,11 +32,13 @@ Bug fixes
 
 Documentations
 ++++++++++++++
+- Documentation of the python modules has been improved
 
 Internal Changes
 ++++++++++++++++
 - Files found by the databrowser are *alphabetically* sorted.
-
+- ``follow/unfolllow_history_tag`` recieves a user object as argument instead of string
+- lazy loading has been improved
 
 v2206.0.10
 ~~~~~~~~~~
