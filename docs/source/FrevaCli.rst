@@ -549,7 +549,7 @@ To make the routine work in this example we have to provide the ``institute``,
               "--institute", "clex", "--model", "UM-RA2T", "--experiment",
               "Bias-correct"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
-   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])
+   run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
 
 .. note::
    Freva allows also *plugins* to directly index output datasets via
@@ -588,7 +588,7 @@ be deleted from the databrowser and also from the central data location:
    from freva import UserData
    user_data = UserData()
    user_data.delete(user_data.user_dir)
-   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])
+   run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
 
 
 (Re)-Index existing data to the databrowser
@@ -622,4 +622,4 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
    from freva import UserData
    user_data = UserData()
    user_data.index(user_data.user_dir)
-   run(["freva-databrowser", "experiment=bias-correct", check=True, stderr=PIPE])
+   run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
