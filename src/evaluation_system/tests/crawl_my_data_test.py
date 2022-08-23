@@ -210,8 +210,11 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
     import freva
 
     input_files = list(valid_data_files.rglob("*.nc"))
-    dummy_plugin.add_output_to_databrowser(valid_data_files, experiment="foo")
+    dummy_plugin.add_output_to_databrowser(
+        valid_data_files, "muh", "mah", experiment="foo"
+    )
     assert len(list(freva.databrowser(experiment="foo"))) == len(input_files)
+    assert len(list(freva.databrowser(product="muh.mah"))) == len(input_files)
 
 
 def test_add_my_data(valid_data_files, time_mock):

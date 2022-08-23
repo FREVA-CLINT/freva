@@ -469,10 +469,12 @@ class PluginAbstract(abc.ABC):
     def add_output_to_databrowser(
         self,
         plugin_output: os.PathLike,
+        project: str,
+        product: str,
         *,
         model: str = "freva",
         institute: Optional[str] = None,
-        ensemble: str = "r0i0p0",
+        ensemble: str = "r1i1p1",
         time_frequency: Optional[str] = None,
         variable: Optional[str] = None,
         experiment: Optional[str] = None,
@@ -501,6 +503,12 @@ class PluginAbstract(abc.ABC):
             Plugin output directory or file created by the files. If a
             directory is given all data files within the sub directories
             will be collected for ingestion.
+        project: str
+            Project facet of the input data. The project argument will distinguish
+            plugin results for different setups.
+        product: str
+            Product facet of the input data. The product argument will distinguish
+            plugin results for different setups.
         model: str, default: None
             Default model facet. If None is given (default) the model name will
             be set to ``freva``. The model argument can be used to distinguish
@@ -529,14 +537,15 @@ class PluginAbstract(abc.ABC):
         plugin_version = plugin_version or "no_plugin_version"
         plugin = self.__class__.__name__.lower().replace("_", "-")
         project_name = config.get("project_name", "").replace("_", "-")
-        product_dir = f"{plugin}"
+
+        product_dir = f"{project}.{product}"
         root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
         drs_config = dict(
             project=root_dir.name,
             product=product_dir,
             model=model,
             experiment=experiment or "frev-plugin",
-            realm="plugins",
+            realm=plugin,
             institute=institute or project_name,
             ensemble=ensemble,
             version=f"v{self.rowid}",
