@@ -12,10 +12,11 @@ from tempfile import TemporaryDirectory
 from typing import Any, Optional
 
 import lazy_import
+import django
 from evaluation_system.misc import logger
 from ..utils import BaseParser
 
-FlatPage = lazy_import.lazy_class("django.contrib.flatpages.models.FlatPage")
+
 is_admin = lazy_import.lazy_function("freva.cli.utils.is_admin")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
@@ -72,6 +73,7 @@ class Convert2Html:
 def update_tool_doc(tool_name: str, master_doc: Optional[Path] = None) -> None:
     """Update the html files of tool documentation"""
     is_admin(raise_error=True)
+    FlatPage = django.contrib.flatpages.models.FlatPage  # type: ignore
     plugin_path = Path(pm.get_plugin_instance(tool_name).class_basedir or ".")
     doc_file = Path(master_doc or plugin_path / "doc" / "{tool_name}.tex")
     if not doc_file.is_file():

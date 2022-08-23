@@ -6,7 +6,7 @@ What's new
    :titlesonly:
 
 
-v2206.0.11 (unreleased)
+v2208.0.1 (unreleased)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 New Features
@@ -14,6 +14,9 @@ New Features
 - ``count`` keyword/flag for the databrowser counts also the number of files
   found by the databrowser, not only the facet counts.
 - databrowser can subset results by time.
+- add functionality to add new data to databrowser
+- add functionality to delete existing user data from databrowser
+- add new class to handle user data requests
 
 Breaking changes
 ++++++++++++++++
@@ -21,6 +24,8 @@ Breaking changes
 
 Deprecations
 ++++++++++++
+- move ``freva.crawl_my_data`` functionality to `freva.UsersData.index`
+- renamed ``freva crawl_my_data`` to ``freva user-data```
 
 Bug fixes
 +++++++++
@@ -96,7 +101,7 @@ Breaking changes
 
 Deprecations
 ++++++++++++
- - the `tool-pull-request` sub command has been made deprecated.
+- The `tool-pull-request` sub command has been made deprecated.
 - The following methods in the :ref:`PluginAPI` have been renamed:
     - :py:meth:`runTool` → :py:meth:`run_tool`
     - :py:meth:`linkmydata` → :py:meth:`add_output_to_databrowser`

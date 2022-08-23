@@ -90,8 +90,8 @@ class PluginAbstract(abc.ABC):
 
 
 
-    Minimal Example
-    ---------------
+    Example
+    -------
 
     In order to configure and call this cli, a Freva wrapper api class will
     have the be created in ``/mnt/freva/plugins/new_plugin/plugin.py``.
@@ -469,12 +469,15 @@ class PluginAbstract(abc.ABC):
     def add_output_to_databrowser(
         self,
         plugin_output: os.PathLike,
+        project: str,
+        product: str,
         *,
         model: str = "freva",
         institute: Optional[str] = None,
-        ensemble: str = "r0i0p0",
+        ensemble: str = "r1i1p1",
         time_frequency: Optional[str] = None,
         variable: Optional[str] = None,
+        experiment: Optional[str] = None,
     ) -> Path:
         """Add Plugin output data to the solr database.
 
@@ -489,12 +492,10 @@ class PluginAbstract(abc.ABC):
 
         The following facets are fixed:
 
-        - project: ``<project_name>-plugin-ouput``
-        - product: ``user-<user_name>``
-        - experiment: ``<plugin_name>``
+        - project: ``user-<user_name>``
+        - product: ``<plugin_name>``
         - dataset version: ``<history_id>``
         - realm: ``plugins``
-        - cmor_table: ``<plugin_version>``
 
         Parameters
         ----------
@@ -502,6 +503,12 @@ class PluginAbstract(abc.ABC):
             Plugin output directory or file created by the files. If a
             directory is given all data files within the sub directories
             will be collected for ingestion.
+        project: str
+            Project facet of the input data. The project argument will distinguish
+            plugin results for different setups.
+        product: str
+            Product facet of the input data. The product argument will distinguish
+            plugin results for different setups.
         model: str, default: None
             Default model facet. If None is given (default) the model name will
             be set to ``freva``. The model argument can be used to distinguish
@@ -516,6 +523,8 @@ class PluginAbstract(abc.ABC):
         time_frequency: str, default: None
             Default time frequency facet. If None is given (default) the time
             frequency will be retrieved from the output files.
+        experiment: str, default: freva-plugin
+            Default time experiment facet.
         variable: str, default: None
             Default variable facet. If None is given (default) the variable
             will be retrieved from the output files.
@@ -526,17 +535,19 @@ class PluginAbstract(abc.ABC):
         """
         _, plugin_version = repository.get_version(self.wrapper_file)
         plugin_version = plugin_version or "no_plugin_version"
-        product_dir = f"{config.get('project_name')}-plugin-results"
+        plugin = self.__class__.__name__.lower().replace("_", "-")
+        project_name = config.get("project_name", "").replace("_", "-")
+
+        product_dir = f"{project}.{product}"
         root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
         drs_config = dict(
             project=root_dir.name,
             product=product_dir,
             model=model,
-            experiment=self.__class__.__name__.lower(),
-            realm="plugins",
-            institute=institute or root_dir.name,
+            experiment=experiment or "frev-plugin",
+            realm=plugin,
+            institute=institute or project_name,
             ensemble=ensemble,
-            cmor_table=plugin_version,
             version=f"v{self.rowid}",
         )
         if time_frequency:
@@ -546,7 +557,7 @@ class PluginAbstract(abc.ABC):
         user_data = DataReader(plugin_output, **drs_config)
         for output_file in user_data:
             new_file = user_data.file_name_from_metdata(output_file)
-            new_file.parent.mkdir(exist_ok=True, parents=True, mode=509)
+            new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             shutil.copy(str(output_file), str(new_file))
         SolrCore.load_fs(root_dir / product_dir, drs_type=user_data.drs_specification)
         return root_dir / product_dir

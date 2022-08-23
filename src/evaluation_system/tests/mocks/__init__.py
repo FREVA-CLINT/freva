@@ -8,7 +8,7 @@ scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=/tmp/slurm
 scheduler_system=slurm
 preview_path=/tmp/preview
-project_data=/tmp/crawl_my_data
+project_data=/tmp/user_data
 db.host=127.0.0.1
 db.user=freva
 db.passwd=T3st
@@ -57,8 +57,8 @@ project = "observations"
 [reanalysis]
 root_dir = "/mnt/data4freva"
 parts_dir = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "variable", "ensemble",
+    "institute", "model", "experiment", "time_frequency",
+    "realm", "ensemble", "variable",
 ]
 parts_file_name = [
     "variable", "cmor_table", "project", "experiment", "ensemble", "time",
@@ -70,10 +70,10 @@ project = "reanalysis"
 product = "reanalysis"
 
 [crawl_my_data]
-root_dir = "/tmp/crawl_my_data"
+root_dir = "/tmp/user_data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "variable"
+    "realm", "cmor_table", "ensemble", "version", "variable"
 ]
 parts_file_name = [
     "variable", "cmor_table", "model", "experiment", "ensemble", "time",
