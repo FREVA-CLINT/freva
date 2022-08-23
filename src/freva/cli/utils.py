@@ -15,9 +15,7 @@ from evaluation_system.misc import logger
 freva = lazy_import.lazy_module("freva")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 
-subparser_func_type = Callable[
-    [str, argparse._SubParsersAction], Optional["BaseParser"]
-]
+subparser_func_type = Callable[[argparse._SubParsersAction], Optional["BaseParser"]]
 """Type for a method that creates a sub-command parser. This method gets a string
 representing the description of the sub command as well as the SubParserAction
 this sub command parser is added to.
