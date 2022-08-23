@@ -15,7 +15,9 @@ from evaluation_system.misc import logger
 freva = lazy_import.lazy_module("freva")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 
-subparser_func_type = Callable[[argparse._SubParsersAction], Optional["BaseParser"]]
+subparser_func_type = Callable[
+    [str, argparse._SubParsersAction], Optional["BaseParser"]
+]
 """Type for a method that creates a sub-command parser. This method gets a string
 representing the description of the sub command as well as the SubParserAction
 this sub command parser is added to.
@@ -283,10 +285,7 @@ class BaseCompleter:
                 continue
             facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        try:
-            search = freva.databrowser(attributes=False, all_facets=True, **facets)
-        except Exception:
-            search = {}
+        search = freva.databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
         for att, values in search.items():
             if att not in facets:
