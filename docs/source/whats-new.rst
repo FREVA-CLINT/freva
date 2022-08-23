@@ -6,8 +6,8 @@ What's new
    :titlesonly:
 
 
-v2208.0.1 (unreleased)
-~~~~~~~~~~~~~~~~~~~~~~~
+v2208.0.1
+~~~~~~~~~
 
 New Features
 ++++++++++++
