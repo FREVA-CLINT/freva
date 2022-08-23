@@ -292,7 +292,10 @@ class BaseCompleter:
                 continue
             facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        search = freva.databrowser(attributes=False, all_facets=True, **facets)
+        time = facets.pop("time", [""])[0]
+        search = freva.databrowser(
+            attributes=False, all_facets=True, time=time, **facets
+        )
         choices = {}
         for att, values in search.items():
             if att not in facets:
