@@ -36,11 +36,11 @@ proc ModulesHelp {{ }} {{
 }}
 if {{ $curMode eq "load" }} {{
     if {{ $shell == "fish" }} {{
-        puts "source {eval_conf_file.parent}/completions/complete_fish"
+        puts "source {eval_conf_dir}/completions/complete_fish"
     }} elseif {{ $shell == "csh" }} {{
-        puts "source {eval_conf_file.parent}/completions/complete_csh"
+        puts "source {eval_conf_dir}/completions/complete_csh"
     }} elseif {{ $shell == "sh" }} {{
-        puts ". {eval_conf_file.parent}/completions/complete_sh"
+        puts ". {eval_conf_dir}/completions/complete_sh"
     }}
 }}
 prepend-path PATH {root_dir}/bin
@@ -165,7 +165,10 @@ def parse_args(argv=None):
         default=[],
     )
     ap.add_argument(
-        "--channel", type=str, default="conda-forge", help="Conda channel to be used"
+        "--channel",
+        type=str,
+        default="conda-forge",
+        help="Conda channel to be used",
     )
     ap.add_argument("--shell", type=str, default="bash", help="Shell type")
     ap.add_argument(
