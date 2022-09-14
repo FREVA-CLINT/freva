@@ -5,6 +5,28 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2208.0.2-rc1 [unreleased]
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New Features
+++++++++++++
+
+Breaking changes
+++++++++++++++++
+
+Deprecations
+++++++++++++
+
+Bug fixes
++++++++++
+- Fix typo in deployment routine
+
+Documentations
+++++++++++++++
+
+Internal Changes
+++++++++++++++++
+
 
 v2208.0.1
 ~~~~~~~~~
