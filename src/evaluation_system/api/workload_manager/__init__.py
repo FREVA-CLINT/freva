@@ -91,22 +91,19 @@ def schedule_job(
         env_extra = []
     if config_file:
         env_extra.append(f"export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
-    try:
-        job = job_object(
-            name=cast(str, config["name"]),
-            memory=cast(str, config.get("memory", "128GB")),
-            walltime=cast(str, config.get("walltime", "08:00:00")),
-            job_cpu=ncpus,
-            queue=config["queue"],
-            project=config["project"],
-            log_directory=log_directory,
-            job_extra=config.get("extra_options", []),
-            freva_args=cast(List[str], config.get("args")),
-            delete_job_script=delete_job_script,
-            env_extra=env_extra,
-        )
-    except KeyError:
-        raise ValueError("Scheduler options not properly configured")
+    job = job_object(
+        name=cast(str, config.get("name", "plugin")),
+        memory=cast(str, config.get("memory", "128GB")),
+        walltime=cast(str, config.get("walltime", "08:00:00")),
+        job_cpu=ncpus,
+        queue=config.get("queue"),
+        project=config.get("project"),
+        log_directory=log_directory,
+        job_extra=config.get("extra_options", []),
+        freva_args=cast(List[str], config.get("args")),
+        delete_job_script=delete_job_script,
+        env_extra=env_extra,
+    )
     job.start()
     job_name = job.job_name or "worker"
     job_out = Path(log_directory) / f"{job_name}-{job.job_id}.out"
