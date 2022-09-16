@@ -255,7 +255,6 @@ class Installer:
             + CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX),
             **kwargs,
         )
-        self.check_hash(conda_script)
         conda_script.touch(0o755)
         cmd = f"{self.shell} {conda_script} -p {tmp_env} -b -f"
         logger.info(f"Installing {CONDA_PREFIX}:\n{cmd}")
@@ -289,19 +288,6 @@ class Installer:
         # parser installed we have to do this manually
         env_file = Path(__file__).parent / "dev-environment.yml"
         return f"env create -q -p {self.install_prefix} -f {env_file} --force"
-
-    def check_hash(self, filename):
-        archive = urllib.request.urlopen(self.conda_url).read().decode()
-        md5sum = ""
-        for line in archive.split("</tr>"):
-            if CONDA_VERSION.format(arch=self.arch, conda_prefix=CONDA_PREFIX) in line:
-                md5sum = line.split("<td>")[-1].strip().strip("</td>")
-        md5_hash = hashlib.md5()
-        with filename.open("rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                md5_hash.update(byte_block)
-        if md5_hash.hexdigest() != md5sum:
-            raise ValueError("Download failed, md5sum mismatch: {md5sum} ")
 
     def pip_install(self, editable=False):
         """Install additional packages using pip."""
