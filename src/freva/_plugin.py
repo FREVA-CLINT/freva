@@ -33,7 +33,11 @@ CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
 
 PluginInfo = NamedTuple(
     "PluginInfo",
-    [("name", str), ("description", str), ("parameters", List[Tuple[str, str, Any]])],
+    [
+        ("name", str),
+        ("description", str),
+        ("parameters", List[Tuple[str, str, Any]]),
+    ],
 )
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
@@ -317,7 +321,9 @@ def run_plugin(
         )
     if scheduled_id and not dry_run:
         logger.info(
-            "Running %s as scheduled in history with ID %i", tool_name, scheduled_id
+            "Running %s as scheduled in history with ID %i",
+            tool_name,
+            scheduled_id,
         )
         out = pm.run_tool(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
@@ -351,10 +357,10 @@ def run_plugin(
                 extra_options=extra_options,
                 unique_output=unique_output,
             )
-            logger.info("Scheduled job with history id: %s", scheduled_id)
-            logger.info("You can view the job's status with the command squeue")
-            logger.info("Your job's progress will be shown with the command")
-            logger.info("tail -f %s", job_file)
+            print(f"Scheduled job with history id: {scheduled_id}")
+            print("You can view the job's status with the command squeue")
+            print("Your job's progress will be shown with the command")
+            print(f"tail -f {job_file}")
             return 0, ""
         results = pm.run_tool(
             tool_name,
