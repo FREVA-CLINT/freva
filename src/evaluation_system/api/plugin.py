@@ -39,7 +39,17 @@ import tempfile
 import traceback
 import textwrap
 from time import time
-from typing import cast, Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
+from typing import (
+    cast,
+    Any,
+    Dict,
+    IO,
+    Optional,
+    Union,
+    Iterator,
+    Iterable,
+    TextIO,
+)
 from uuid import uuid4
 
 
@@ -1086,7 +1096,7 @@ class PluginAbstract(abc.ABC):
         log_directory: Optional[str] = None,
         unique_output: bool = True,
         extra_options: Optional[list[str]] = None,
-    ) -> tuple[int, str]:
+    ) -> dict[str, str]:
         """Create a job script suitable for the configured workload manager.
 
         Parameters
@@ -1105,8 +1115,8 @@ class PluginAbstract(abc.ABC):
 
         Returns
         -------
-        tuple[int, str]:
-            The workload manager job id, the file containing the std out.
+        dict[str, str]:
+            Dict holding the std_err, job id and job output file.
 
         :meta private:
         """

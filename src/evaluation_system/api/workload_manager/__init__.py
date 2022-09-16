@@ -66,11 +66,11 @@ def schedule_job(
     log_directory: Union[Path, str],
     delete_job_script: bool = True,
     config_file: Optional[Path] = None,
-) -> tuple[int, str]:
+) -> dict[str, str]:
     """Create a scheduler object from a given scheduler configuration.
 
-    Parameters:
-    ===========
+    Parameters
+    ----------
     system:
         Name of the workload manager system (slurm, pbs, moab, etc)
     source:
@@ -78,9 +78,10 @@ def schedule_job(
     config:
         Configuration to setup a job that is submitted to the workload manager
 
-    Returns:
-    ========
-    Instance of a workload manager object
+    Returns
+    -------
+    dict[str, str]:
+        dict holding the std_err, job id and job output file.
     """
     job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
@@ -104,7 +105,12 @@ def schedule_job(
         delete_job_script=delete_job_script,
         env_extra=env_extra,
     )
-    job.start()
+    std_err = ""
+    try:
+        job.start()
+    except RuntimeError as error:
+        # Job sould not start
+        std_err = str(error)
     job_name = job.job_name or "worker"
     job_out = Path(log_directory) / f"{job_name}-{job.job_id}.out"
-    return int(job.job_id), str(job_out.absolute())
+    return dict(err=std_err, job_id=job.job_id, out_file=str(job_out.absolute()))

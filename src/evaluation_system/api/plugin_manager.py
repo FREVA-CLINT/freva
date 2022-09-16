@@ -62,7 +62,11 @@ from evaluation_system.misc.exceptions import (
     PluginManagerException,
     ParameterNotFoundError,
 )
-from evaluation_system.model.history.models import Configuration, History, HistoryTag
+from evaluation_system.model.history.models import (
+    Configuration,
+    History,
+    HistoryTag,
+)
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
 from .plugin import PluginAbstract
@@ -236,7 +240,9 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
                     extra_plugins.append(module_name)
                 else:
                     log.warning(
-                        "Cannot load %s, directory missing: %s", module_name, path
+                        "Cannot load %s, directory missing: %s",
+                        module_name,
+                        path,
                     )
     # get the tools directory from the current one
     # get all modules from the tool directory
@@ -255,7 +261,9 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
             if py_mod in __plugin_modules__:
                 file_path = __plugin_modules__[py_mod] + ".py"
                 log.warning(
-                    "Module '%s' is being overwritten by: %s", py_mod, file_path
+                    "Module '%s' is being overwritten by: %s",
+                    py_mod,
+                    file_path,
                 )
             else:
                 log.debug("Loading '%s'", plugin_name)
@@ -886,7 +894,7 @@ def schedule_tool(
         utils.supermakedirs(log_directory, 0o2777)
     # write the std out file
     p.rowid = rowid
-    job_id, output_file = p.submit_job_script(
+    job_dict = p.submit_job_script(
         config_dict=config_dict,
         scheduled_id=rowid,
         user=user,
@@ -894,22 +902,30 @@ def schedule_tool(
         unique_output=unique_output,
         extra_options=extra_options,
     )
+    output_file = job_dict.pop("out_file")
+    # set the slurm output file
+    schedule_entry = user.getUserDB()
+    schedule_entry.scheduleEntry(rowid, user.getName(), output_file)
     # create a standard slurm file to view with less
     with open(output_file, "w") as the_file:
-        if job_id:
+        if job_dict["err"]:
+            msg = f"Scheduled job with history id FAILED: {rowid}\n\n"
+            msg += job_dict["err"]
+            msg += f"\n\n see also {output_file}"
+            the_file.write(msg)
+            print(msg)
+        else:
             the_file.write(
-                f"Your job is pending with id {job_id}.\n"
+                f"Your job is pending with id {job_dict['job_id']}.\n"
                 f"\nThis file was automatically "
                 "created by the evaluation system.\n"
                 f"It will be overwritten by the output of {plugin_name}.\n"
             )
-        else:
-            the_file.write(
-                f"The job id for the submission of {plugin_name} "
-                "could not be retreived.\n"
-            )
-    # set the slurm output file
-    user.getUserDB().scheduleEntry(rowid, user.getName(), output_file)
+    if job_dict["err"]:
+        schedule_entry.upgradeStatus(
+            rowid, user.getName(), History.processStatus.broken
+        )
+        raise RuntimeError(job_dict["err"])
     return rowid, output_file
 
 

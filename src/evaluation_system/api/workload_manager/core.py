@@ -1,5 +1,6 @@
 from __future__ import annotations
 from contextlib import contextmanager, suppress
+from datetime import datetime
 import os
 from pathlib import Path
 import re
@@ -290,14 +291,20 @@ class Job(abc.ABC):
     def start(self) -> None:
         """Start workers and point them to our local scheduler"""
         logger.debug("Starting worker: %s", self.name)
-
+        # Alternative job id
+        job_id = int(datetime.utcnow().timestamp() * 10**6)
         with self.job_file() as fn:
-            out = self._submit_job(fn)
-            job_id = self._job_id_from_submit_output(out)
             try:
-                self.job_id = job_id
+                out = self._submit_job(fn)
+            except RuntimeError as error:
+                # Something went wrong submitting this job
+                # Let's set the job_id and raise the error
+                self.job_id = str(job_id)
+                raise error
+            try:
+                self.job_id = self._job_id_from_submit_output(out)
             except ValueError:
-                self.job_id = "0"
+                self.job_id = str(job_id)
         logger.debug("Starting job: %s", self.job_id)
 
     def __enter__(self):
