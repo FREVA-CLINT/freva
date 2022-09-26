@@ -894,7 +894,7 @@ def schedule_tool(
         utils.supermakedirs(log_directory, 0o2777)
     # write the std out file
     p.rowid = rowid
-    job_dict = p.submit_job_script(
+    job_status = p.submit_job_script(
         config_dict=config_dict,
         scheduled_id=rowid,
         user=user,
@@ -902,31 +902,30 @@ def schedule_tool(
         unique_output=unique_output,
         extra_options=extra_options,
     )
-    output_file = job_dict.pop("out_file")
     # set the slurm output file
     schedule_entry = user.getUserDB()
-    schedule_entry.scheduleEntry(rowid, user.getName(), output_file)
+    schedule_entry.scheduleEntry(rowid, user.getName(), str(job_status.std_out))
     # create a standard slurm file to view with less
-    with open(output_file, "w") as the_file:
-        if job_dict["err"]:
-            msg = f"Scheduled job with history id FAILED: {rowid}\n\n"
-            msg += job_dict["err"]
-            msg += f"\n\n see also {output_file}"
+    with open(job_status.std_out, "w") as the_file:
+        if job_status.submit_status:
+            msg = f"Scheduled job with history id FAILED: {rowid}"
+            msg += f"\n\n{job_status.error_msg}"
+            msg += f"\n\nsee also {job_status.std_out}"
             the_file.write(msg)
             print(msg)
         else:
             the_file.write(
-                f"Your job is pending with id {job_dict['job_id']}.\n"
+                f"Your job is pending with id {job_status.job_id}.\n"
                 f"\nThis file was automatically "
                 "created by the evaluation system.\n"
                 f"It will be overwritten by the output of {plugin_name}.\n"
             )
-    if job_dict["err"]:
+    if job_status.submit_status:
         schedule_entry.upgradeStatus(
             rowid, user.getName(), History.processStatus.broken
         )
-        raise RuntimeError(job_dict["err"])
-    return rowid, output_file
+        raise RuntimeError(job_status.error_msg)
+    return rowid, str(job_status.std_out)
 
 
 def get_history(

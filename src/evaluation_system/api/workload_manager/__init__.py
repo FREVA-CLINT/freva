@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import cast, Union, Type, List, Optional
-from .core import Job
+from .core import Job, JobStatus
 from .local import LocalJob
 from .lsf import LSFJob
 from .moab import MoabJob
@@ -66,7 +66,7 @@ def schedule_job(
     log_directory: Union[Path, str],
     delete_job_script: bool = True,
     config_file: Optional[Path] = None,
-) -> dict[str, str]:
+) -> JobStatus:
     """Create a scheduler object from a given scheduler configuration.
 
     Parameters
@@ -80,8 +80,8 @@ def schedule_job(
 
     Returns
     -------
-    dict[str, str]:
-        dict holding the std_err, job id and job output file.
+    workload_manager.core.JobStatus:
+        JobStatus instance holding information on the job submission.
     """
     job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
@@ -106,11 +106,18 @@ def schedule_job(
         env_extra=env_extra,
     )
     std_err = ""
+    submit_status = 0
     try:
         job.start()
     except RuntimeError as error:
         # Job sould not start
         std_err = str(error)
+        submit_status = 1
     job_name = job.job_name or "worker"
-    job_out = Path(log_directory) / f"{job_name}-{job.job_id}.out"
-    return dict(err=std_err, job_id=job.job_id, out_file=str(job_out.absolute()))
+    return JobStatus(
+        job.job_id,
+        job.job_name,
+        Path(log_directory) / f"{job_name}-{job.job_id}.out",
+        submit_status=submit_status,
+        error_msg=std_err,
+    )

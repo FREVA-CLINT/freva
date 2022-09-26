@@ -68,7 +68,7 @@ from evaluation_system.misc.exceptions import (
 
 from evaluation_system.misc.utils import PIPE_OUT
 from evaluation_system.model.solr_core import SolrCore
-from .workload_manager import schedule_job
+from .workload_manager import schedule_job, JobStatus
 from .user_data import DataReader
 
 __version__ = (1, 0, 0)
@@ -1096,7 +1096,7 @@ class PluginAbstract(abc.ABC):
         log_directory: Optional[str] = None,
         unique_output: bool = True,
         extra_options: Optional[list[str]] = None,
-    ) -> dict[str, str]:
+    ) -> JobStatus:
         """Create a job script suitable for the configured workload manager.
 
         Parameters
@@ -1115,8 +1115,8 @@ class PluginAbstract(abc.ABC):
 
         Returns
         -------
-        dict[str, str]:
-            Dict holding the std_err, job id and job output file.
+        workload_manager.core.JobStatus:
+            JobStatus instance holding information on the job submission.
 
         :meta private:
         """
