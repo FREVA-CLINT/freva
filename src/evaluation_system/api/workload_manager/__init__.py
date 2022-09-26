@@ -93,7 +93,7 @@ def schedule_job(
     if config_file:
         env_extra.append(f"export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
     job = job_object(
-        name=cast(str, config.get("name", "plugin")),
+        name=cast(str, config["name"]),
         memory=cast(str, config.get("memory", "128GB")),
         walltime=cast(str, config.get("walltime", "08:00:00")),
         job_cpu=ncpus,
