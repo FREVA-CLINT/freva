@@ -61,9 +61,7 @@ def parse_bytes(s: Union[str, float, int]) -> int:
     try:
         n = float(prefix)
     except ValueError as e:
-        raise ValueError(
-            "Could not interpret '%s' as a number" % prefix
-        ) from e
+        raise ValueError("Could not interpret '%s' as a number" % prefix) from e
     byte_sizes = {
         "kB": 10**3,
         "MB": 10**6,
@@ -79,19 +77,13 @@ def parse_bytes(s: Union[str, float, int]) -> int:
         "": 1,
     }
     byte_sizes = {k.lower(): v for k, v in byte_sizes.items()}
-    byte_sizes.update(
-        {k[0]: v for k, v in byte_sizes.items() if k and "i" not in k}
-    )
-    byte_sizes.update(
-        {k[:-1]: v for k, v in byte_sizes.items() if k and "i" in k}
-    )
+    byte_sizes.update({k[0]: v for k, v in byte_sizes.items() if k and "i" not in k})
+    byte_sizes.update({k[:-1]: v for k, v in byte_sizes.items() if k and "i" in k})
 
     try:
         multiplier = byte_sizes[suffix.lower()]
     except KeyError as e:
-        raise ValueError(
-            "Could not interpret '%s' as a byte unit" % suffix
-        ) from e
+        raise ValueError("Could not interpret '%s' as a byte unit" % suffix) from e
 
     result = n * multiplier
     return int(result)
@@ -126,9 +118,7 @@ def tmpfile(**kwargs) -> Iterator[Path]:
 def string_to_bytes(size: str) -> float:
     """Convert a size string to int."""
 
-    mul_dec = dict(
-        pb=1000**5, tb=1000**4, gb=1000**3, mb=1000**2, kb=1000, b=1
-    )
+    mul_dec = dict(pb=1000**5, tb=1000**4, gb=1000**3, mb=1000**2, kb=1000, b=1)
     mul_bi = dict(
         pib=1024**5,
         tib=1024**4,
@@ -296,9 +286,7 @@ class Job(abc.ABC):
         if self.log_directory is not None:
             if not os.path.exists(self.log_directory):
                 os.makedirs(self.log_directory)
-        self._command_template = self.scheduler + " ".join(
-            map(str, freva_args)
-        )
+        self._command_template = self.scheduler + " ".join(map(str, freva_args))
 
     def job_script(self) -> str:
         """Construct a job submission script"""
@@ -328,9 +316,7 @@ class Job(abc.ABC):
 
     def _submit_job(self, script_filename: Union[str, Path]) -> Any:
         # Should we make this async friendly?
-        return self._call(
-            shlex.split(self.submit_command) + [str(script_filename)]
-        )
+        return self._call(shlex.split(self.submit_command) + [str(script_filename)])
 
     def start(self) -> None:
         """Start workers and point them to our local scheduler"""
@@ -412,9 +398,7 @@ class Job(abc.ABC):
         """
         cmd_str = " ".join(command)
         logger.debug(
-            "Executing the following command to command line\n{}".format(
-                cmd_str
-            )
+            "Executing the following command to command line\n{}".format(cmd_str)
         )
         try:
             proc = subprocess.Popen(
