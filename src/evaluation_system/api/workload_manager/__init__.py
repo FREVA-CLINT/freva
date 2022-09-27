@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import cast, Union, Type, List, Optional
-from .core import Job
+from .core import Job, JobStatus
 from .local import LocalJob
 from .lsf import LSFJob
 from .moab import MoabJob
@@ -66,11 +66,11 @@ def schedule_job(
     log_directory: Union[Path, str],
     delete_job_script: bool = True,
     config_file: Optional[Path] = None,
-) -> tuple[int, str]:
+) -> JobStatus:
     """Create a scheduler object from a given scheduler configuration.
 
-    Parameters:
-    ===========
+    Parameters
+    ----------
     system:
         Name of the workload manager system (slurm, pbs, moab, etc)
     source:
@@ -78,9 +78,10 @@ def schedule_job(
     config:
         Configuration to setup a job that is submitted to the workload manager
 
-    Returns:
-    ========
-    Instance of a workload manager object
+    Returns
+    -------
+    workload_manager.core.JobStatus:
+        JobStatus instance holding information on the job submission.
     """
     job_object: Type[Job] = get_job_class(system)
     source = source.expanduser().absolute()
@@ -91,23 +92,32 @@ def schedule_job(
         env_extra = []
     if config_file:
         env_extra.append(f"export EVALUATION_SYSTEM_CONFIG_FILE={config_file}")
+    job = job_object(
+        name=cast(str, config["name"]),
+        memory=cast(str, config.get("memory", "128GB")),
+        walltime=cast(str, config.get("walltime", "08:00:00")),
+        job_cpu=ncpus,
+        queue=config.get("queue"),
+        project=config.get("project"),
+        log_directory=log_directory,
+        job_extra=config.get("extra_options", []),
+        freva_args=cast(List[str], config.get("args")),
+        delete_job_script=delete_job_script,
+        env_extra=env_extra,
+    )
+    std_err = ""
+    submit_status = 0
     try:
-        job = job_object(
-            name=cast(str, config["name"]),
-            memory=cast(str, config.get("memory", "128GB")),
-            walltime=cast(str, config.get("walltime", "08:00:00")),
-            job_cpu=ncpus,
-            queue=config["queue"],
-            project=config["project"],
-            log_directory=log_directory,
-            job_extra=config.get("extra_options", []),
-            freva_args=cast(List[str], config.get("args")),
-            delete_job_script=delete_job_script,
-            env_extra=env_extra,
-        )
-    except KeyError:
-        raise ValueError("Scheduler options not properly configured")
-    job.start()
+        job.start()
+    except RuntimeError as error:
+        # Job sould not start
+        std_err = str(error)
+        submit_status = 1
     job_name = job.job_name or "worker"
-    job_out = Path(log_directory) / f"{job_name}-{job.job_id}.out"
-    return int(job.job_id), str(job_out.absolute())
+    return JobStatus(
+        job.job_id,
+        job.job_name,
+        Path(log_directory) / f"{job_name}-{job.job_id}.out",
+        submit_status=submit_status,
+        error_msg=std_err,
+    )

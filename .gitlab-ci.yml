@@ -8,6 +8,7 @@ stages:
 variables:
     CONDA_ENV: "freva-dev"
     PYTHON_VERSION: "3.10"
+    NUMEXPR_MAX_THREADS: "8"
     FREVA_ENV: "/tmp/freva/bin"
     EVALUATION_SYSTEM_CONFIG_FILE: ".docker/evaluation_system.conf"
     GIT_SUBMODULE_STRATEGY: recursive

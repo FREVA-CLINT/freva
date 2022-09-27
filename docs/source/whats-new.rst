@@ -26,7 +26,7 @@ Documentations
 
 Internal Changes
 ++++++++++++++++
-
+- Make all scheduler options non-mandatory
 
 v2208.0.1
 ~~~~~~~~~

@@ -39,7 +39,17 @@ import tempfile
 import traceback
 import textwrap
 from time import time
-from typing import cast, Any, Dict, IO, Optional, Union, Iterator, Iterable, TextIO
+from typing import (
+    cast,
+    Any,
+    Dict,
+    IO,
+    Optional,
+    Union,
+    Iterator,
+    Iterable,
+    TextIO,
+)
 from uuid import uuid4
 
 
@@ -58,7 +68,7 @@ from evaluation_system.misc.exceptions import (
 
 from evaluation_system.misc.utils import PIPE_OUT
 from evaluation_system.model.solr_core import SolrCore
-from .workload_manager import schedule_job
+from .workload_manager import schedule_job, JobStatus
 from .user_data import DataReader
 
 __version__ = (1, 0, 0)
@@ -1086,7 +1096,7 @@ class PluginAbstract(abc.ABC):
         log_directory: Optional[str] = None,
         unique_output: bool = True,
         extra_options: Optional[list[str]] = None,
-    ) -> tuple[int, str]:
+    ) -> JobStatus:
         """Create a job script suitable for the configured workload manager.
 
         Parameters
@@ -1105,8 +1115,8 @@ class PluginAbstract(abc.ABC):
 
         Returns
         -------
-        tuple[int, str]:
-            The workload manager job id, the file containing the std out.
+        workload_manager.core.JobStatus:
+            JobStatus instance holding information on the job submission.
 
         :meta private:
         """

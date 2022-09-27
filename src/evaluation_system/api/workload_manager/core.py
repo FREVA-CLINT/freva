@@ -1,5 +1,7 @@
 from __future__ import annotations
 from contextlib import contextmanager, suppress
+from dataclasses import dataclass
+from datetime import datetime
 import os
 from pathlib import Path
 import re
@@ -174,6 +176,35 @@ def format_bytes(n: int) -> str:
     return f"{n} B"
 
 
+@dataclass
+class JobStatus:
+    """Simple class storing the status of a submitted job.
+
+    Parameters
+    ----------
+    job_id: str
+        Id of the job within the workload manager system.
+    job_name: str
+        Name of the job in the workload manager system.
+    std_out: pathlib.Path,
+        Path to the stdout/stderr file.
+    submit_status: int, default: 0
+        Status of the job submission
+    error_msg: str, default: ""
+        Error message fo the job submisstion if
+        `submit_status` is != 0.
+    """
+
+    job_id: str
+    job_name: str
+    _std_out: Union[str, os.PathLike]
+    submit_status: int = 0
+    error_msg: str = ""
+
+    def __post_init__(self) -> None:
+        self.std_out = Path(self._std_out).expanduser().absolute()
+
+
 class Job(abc.ABC):
     """Base class to launch workers on Job queues
 
@@ -290,14 +321,20 @@ class Job(abc.ABC):
     def start(self) -> None:
         """Start workers and point them to our local scheduler"""
         logger.debug("Starting worker: %s", self.name)
-
+        # Alternative job id
+        job_id = int(datetime.utcnow().timestamp() * 10**6)
         with self.job_file() as fn:
-            out = self._submit_job(fn)
-            job_id = self._job_id_from_submit_output(out)
             try:
-                self.job_id = job_id
+                out = self._submit_job(fn)
+            except RuntimeError as error:
+                # Something went wrong submitting this job
+                # Let's set the job_id and raise the error
+                self.job_id = str(job_id)
+                raise error
+            try:
+                self.job_id = self._job_id_from_submit_output(out)
             except ValueError:
-                self.job_id = "0"
+                self.job_id = str(job_id)
         logger.debug("Starting job: %s", self.job_id)
 
     def __enter__(self):
@@ -363,9 +400,15 @@ class Job(abc.ABC):
         logger.debug(
             "Executing the following command to command line\n{}".format(cmd_str)
         )
-        proc = subprocess.Popen(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
-        )
+        try:
+            proc = subprocess.Popen(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                **kwargs,
+            )
+        except Exception as error:
+            raise RuntimeError(str(error))
 
         out, err = proc.communicate()
         out, err = out.decode(), err.decode()

@@ -13,7 +13,10 @@ import mock
 import time
 from subprocess import Popen
 from evaluation_system.tests import run_cli, similar_string
-from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
+from evaluation_system.misc.exceptions import (
+    PluginNotFoundError,
+    ValidationError,
+)
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -49,10 +52,8 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     out_path.unlink()
     plugin_cli(["dummyplugin", "the_number=13", "--batchmode"])
     output = capsys.readouterr().out
-    _, loglevel, message = caplog.record_tuples[-1]
-    assert loglevel == logging.INFO
-    assert "tail -f" in message
-    out_f = Path(message.split("\n")[-1].split(" ")[-1])
+    assert "tail -f" in output
+    out_f = Path([o.split()[-1] for o in output.split("\n") if "tail" in o][0])
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
@@ -161,7 +162,9 @@ extra_scheduler_options: - (default: )""",
     time.sleep = partial(pr_sleep, version="1.0", status="failed", tool="dummyplugin")
     retun_val, cmd_out = freva.run_plugin("dummyplugin", pull_request=True, tag="1.0")
     assert similar_string(
-        cmd_out, """The pull request failed.\nPlease contact the admins.""", 0.7
+        cmd_out,
+        """The pull request failed.\nPlease contact the admins.""",
+        0.7,
     )
     time.sleep = partial(pr_sleep, version="2.0", status="success", tool="dummyplugin")
     _, cmd_out = freva.run_plugin("dummyplugin", pull_request=True, tag="2.0")
