@@ -15,7 +15,7 @@ Welcome to Freva's documentation!
    :target: https://anaconda.org/conda-forge/freva
 .. image:: https://img.shields.io/badge/Freva-Docs-green.svg
    :target: https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html
-.. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva_dev/coverage.svg
+.. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg
    :target: https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html
 .. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg
    :target: https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest
