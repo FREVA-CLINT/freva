@@ -4,7 +4,7 @@
 [![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/releases)
 [![Conda](https://anaconda.org/conda-forge/freva/badges/installer/conda.svg)](https://anaconda.org/conda-forge/freva)
 [![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html)
-[![Coverage](https://gitlab.dkrz.de/freva/evaluation_system/badges/freva_dev/coverage.svg)](https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html)
+[![Coverage](https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg)](https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html)
 [![Pipeline](https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/freva-dev)
 [![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md)
