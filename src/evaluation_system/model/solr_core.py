@@ -117,8 +117,7 @@ class SolrCore:
             raise ValueError("Bad databrowser request") from error
         if response["responseHeader"]["status"] != 0:
             raise ValueError(
-                "Error while accessing Core %s. Response: %s"
-                % (self.core, response)
+                "Error while accessing Core %s. Response: %s" % (self.core, response)
             ) from error
 
         return response
@@ -163,8 +162,7 @@ class SolrCore:
             self.instance_dir = instance_dir
         if not os.path.isdir(self.instance_dir) and check_if_exist:
             raise FileNotFoundError(
-                "Expected Solr Core configuration not found in %s"
-                % self.instance_dir
+                "Expected Solr Core configuration not found in %s" % self.instance_dir
             )
 
         if data_dir is not None:
@@ -197,8 +195,7 @@ class SolrCore:
 
         :param other_core: the name of the other core that this will be swapped with."""
         return self.get_json(
-            "admin/cores?action=SWAP&core=%s&other=%s"
-            % (self.core, other_core),
+            "admin/cores?action=SWAP&core=%s&other=%s" % (self.core, other_core),
             use_core=False,
         )
 
@@ -268,9 +265,7 @@ class SolrCore:
             metadata["time"] = get_solr_time_range(metadata.pop("time", ""))
             yield drs_file, metadata
 
-    def _del_file_pattern(
-        self, file_pattern: Path, prefix: str = "file"
-    ) -> None:
+    def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:
         """Delete all entries of the core."""
         file_pattern = Path(file_pattern).expanduser().absolute()
         # TODO: Better way to determine if we have a regex on board
@@ -347,12 +342,8 @@ class SolrCore:
             The server hostname of the apache solr server.
         port:
             The host port number the apache solr server is listinig to."""
-        core_latest = core_latest or SolrCore(
-            core="latest", host=host, port=port
-        )
-        core_all_files = core_all_files or SolrCore(
-            core=core, host=host, port=port
-        )
+        core_latest = core_latest or SolrCore(core="latest", host=host, port=port)
+        core_all_files = core_all_files or SolrCore(core=core, host=host, port=port)
         core_latest._del_file_pattern(input_dir)
         core_all_files._del_file_pattern(input_dir)
         chunk, chunk_latest = [], []
@@ -378,9 +369,7 @@ class SolrCore:
                     chunk_latest.append(metadata)
             else:
                 # if not version always add to latest
-                chunk_latest_new[
-                    drs_file.to_dataset(versioned=False)
-                ] = metadata
+                chunk_latest_new[drs_file.to_dataset(versioned=False)] = metadata
                 chunk_latest.append(metadata)
             if len(chunk) >= chunk_size:
                 log.info(
