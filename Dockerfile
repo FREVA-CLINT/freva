@@ -1,4 +1,4 @@
-FROM freva-dev:latest
+FROM registry.gitlab.dkrz.de/freva/evaluation_system/freva:latest
 
 ARG NB_USER="nb_user"
 ARG NB_UID="1000"
