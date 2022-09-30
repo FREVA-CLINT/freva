@@ -48,6 +48,8 @@ RUN set -x && \
      cp /mnt/freva_plugins/animator/.git/config . &&\
      rm -fr /mnt/freva_plugins/animator/.git/* &&\
      mv config /mnt/freva_plugins/animator/.git/ ;\
+  else\
+     /opt/conda/bin/conda create -y -q -c pip conda -p /opt/evaluation_system;\
   fi &&\
   rm -rf /opt/conda &&\
   mkdir -p ${EVAL_HOME}/bin ${EVAL_HOME}/share/freva /mnt/freva_plugins \
