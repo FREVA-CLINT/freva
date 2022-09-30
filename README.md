@@ -9,6 +9,8 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/freva-dev)
 [![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md)
 
+<img src="docs/source/_static/freva_flowchart-new.jpg" alt="Freva" width="400"/>
+
 ## What is Freva ?
 Freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric

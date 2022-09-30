@@ -25,6 +25,9 @@ Welcome to Freva's documentation!
    :target: https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md
 
 
+.. image:: _static/freva_flowchart-new.jpg
+   :width: 400
+
 Freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric
 science community. With help of Freva researchers can:
