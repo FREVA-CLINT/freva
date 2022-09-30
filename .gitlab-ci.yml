@@ -69,7 +69,7 @@ lint:
 
 .test_template: &py_test  # pytest framework template
     stage: test
-    needs: ["lint", "build-stable-image"]
+    needs: ["lint", "build-test-image"]
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:$CI_COMMIT_BRANCH
     variables:
         CONDA: "Miniconda3-latest"
