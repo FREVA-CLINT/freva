@@ -69,7 +69,7 @@ lint:
 
 .test_template: &py_test  # pytest framework template
     stage: test
-    needs: ["lint", "build-test-image"]
+    needs: ["lint"]
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     variables:
         CONDA: "Miniconda3-latest"
@@ -110,7 +110,7 @@ test:latest:
 
 docs:
     stage: docs
-    needs: ["lint", "build-test-image"]
+    needs: ["lint"]
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     tags:
         - docker, specific
