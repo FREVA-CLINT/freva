@@ -14,6 +14,49 @@ variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
 
+build-test-image:
+    stage: build
+    needs: []
+    image:
+        name: gcr.io/kaniko-project/executor:debug
+        entrypoint: [""]
+    script:
+        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo $CI_COMMIT_BRANCH
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context $CI_PROJECT_DIR
+                       --cleanup
+                       --skip-unused-stages=true
+                       --ignore-var-run
+                       --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
+                       --build-arg=binder=false
+                       --destination $CI_REGISTRY_IMAGE/freva-dev:$CI_COMMIT_BRANCH
+    tags:
+        - docker, specific
+    rules:
+        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+
+build-stable-image:
+    stage: build
+    needs: []
+    image:
+        name: gcr.io/kaniko-project/executor:debug
+        entrypoint: [""]
+    script:
+        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo $CI_COMMIT_BRANCH
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context $CI_PROJECT_DIR
+                       --cleanup
+                       --skip-unused-stages=true
+                       --ignore-var-run
+                       --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
+                       --destination $CI_REGISTRY_IMAGE/freva:latest
+    tags:
+        - docker, specific
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
+
 lint:
     image: python
     stage: build
@@ -26,8 +69,8 @@ lint:
 
 .test_template: &py_test  # pytest framework template
     stage: test
-    needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
+    needs: ["lint", "build-stable-image"]
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:$CI_COMMIT_BRANCH
     variables:
         CONDA: "Miniconda3-latest"
     tags:
@@ -67,8 +110,8 @@ test:latest:
 
 docs:
     stage: docs
-    needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
+    needs: ["lint", "build-test-image"]
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:$CI_COMMIT_BRANCH
     tags:
         - docker, specific
     variables:
@@ -86,6 +129,8 @@ docs:
         when: always
         paths:
             - sphinx_docs
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 pages:
     stage: report
@@ -111,6 +156,8 @@ pages:
             - public/
         reports:
             junit: report.xml
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 release_job:
     stage: release
     image: python
