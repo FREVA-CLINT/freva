@@ -76,7 +76,7 @@ lint:
     tags:
         - docker, specific
     before_script:   # Do the unit tests
-        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
+        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc
     script:
         - make test
 
@@ -118,7 +118,7 @@ docs:
         CONDA: "Miniconda3-latest"
         EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
     before_script:
-        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
         - 'git config --global --add safe.directory $PWD'
     script:
         - make prepdocs
