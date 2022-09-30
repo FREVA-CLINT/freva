@@ -34,7 +34,7 @@ build-test-image:
     tags:
         - docker, specific
     rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH == 'main'"
 
 build-stable-image:
     stage: build
@@ -55,7 +55,7 @@ build-stable-image:
     tags:
         - docker, specific
     rules:
-        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH == 'main'"
 
 lint:
     image: python
@@ -70,7 +70,7 @@ lint:
 .test_template: &py_test  # pytest framework template
     stage: test
     needs: ["lint", "build-test-image"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:$CI_COMMIT_BRANCH
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     variables:
         CONDA: "Miniconda3-latest"
     tags:
@@ -111,7 +111,7 @@ test:latest:
 docs:
     stage: docs
     needs: ["lint", "build-test-image"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:$CI_COMMIT_BRANCH
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     tags:
         - docker, specific
     variables:
