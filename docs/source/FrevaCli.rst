@@ -71,8 +71,8 @@ Let’s inspect the help menu of the databrowser sub-command:
 The databrowser expects a list of key=value pairs. The order of the
 pairs doesn’t really matter. Most important is that you don’t need to
 split the search according to the type of data you are searching for.
-You can search for files both on observations, reanalysis, and
-model data all at the same time. Also important is that all searches are
+You can search for files within observations, reanalysis and
+model data at the same time. Also important is that all queries are
 case *insensitive*. You can also search for attributes themselves
 instead of file paths. For example you can search for the list of
 variables available that satisfies a certain constraint (e.g. sampled
@@ -149,7 +149,7 @@ There are many more options for defining a value for a given key:
     different meaning (normally it will try to match files with that name)
     to turn that off you can use backslash \ (key=\*) or use quotes (key='*').
 
-In some cases it might be useful to know how much files are found in the
+In some cases it might be useful to know how many files are found in the
 databrowser for certain search constraints. In such cases you can use the
 ``count`` flag to count the number of *found* files instead of getting
 the files themselves.

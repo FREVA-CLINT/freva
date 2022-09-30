@@ -9,9 +9,9 @@ project = "cmip5"
 root_dir = "/mnt/data4freva/"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
-    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
+    "realm", "cmor_table", "ensemble", "version", "variable",
 ]
-parts_file_name = ["variable", "experiment", "level", "version", "time"]
+parts_file_name = ["variable", "time_frequency", "model", "experiment", "ensemble", "time"]
 parts_time = "start_time-end_time"
 drs_format = "custom"
 

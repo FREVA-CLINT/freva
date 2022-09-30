@@ -22,7 +22,10 @@ The ``databrowser`` module
 
 The ``plugin`` module
 ======================
-
+Already defined data analysis tools can be started with the ``freva.run_plugin``
+method. Besides the ``run_plugin`` method two more utility methods
+(``list_plugins`` and ``plugin_doc``) are available to get an overview over
+existing plugins and the documentation of each plugins.
 .. automodule:: freva
    :members: list_plugins, plugin_doc, run_plugin
    :undoc-members:
