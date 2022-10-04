@@ -125,7 +125,7 @@ docs:
         EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
         FREVA_ENV: "/tmp/freva/bin"
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql gitpython pandoc cartopy xarray dask-core cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql ffmpeg gitpython pandoc cartopy xarray dask-core cftime netcdf4
         - 'git config --global --add safe.directory $PWD'
     script:
         - make prepdocs
