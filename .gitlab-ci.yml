@@ -123,12 +123,13 @@ docs:
     variables:
         DJANGO_ALLOW_ASYNC_UNSAFE: 1
     before_script:
-        - python -m pip install .
+        - python -m pip install .[docs]
         - 'git config --global --add safe.directory $PWD'
-        - make prepdocs
+        - python3 -m ipykernel install --user --name freva
+        - freva plugin animator project=observations variable=pr; echo 0
         - make -C docs clean
     script:
-        - make -C html
+        - make -C docs html
     after_script:
         - mv docs/build/html sphinx_docs
     artifacts:
