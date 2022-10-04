@@ -76,7 +76,7 @@ lint:
     tags:
         - docker, specific
     before_script:   # Do the unit tests
-        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc mysqlclient
+        - python deploy.py /tmp/freva -e -s --packages xarray gitpython pandoc mysqlclient
     script:
         - make test
 
