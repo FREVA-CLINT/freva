@@ -117,21 +117,18 @@ test:latest:
 docs:
     stage: docs
     needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva:latest
     tags:
         - docker, specific
     variables:
-        CONDA: "Miniconda3-latest"
-        EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
-        FREVA_ENV: "/tmp/freva/bin"
         DJANGO_ALLOW_ASYNC_UNSAFE: 1
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql ffmpeg gitpython pandoc cartopy xarray dask-core cftime netcdf4 bash_kernel
+        - python -m pip install .
         - 'git config --global --add safe.directory $PWD'
-        - /tmp/freva/bin/python -m bash_kernel.install
-    script:
         - make prepdocs
-        - make docs
+        - make -C docs clean
+    script:
+        - make -C html
     after_script:
         - mv docs/build/html sphinx_docs
     artifacts:
