@@ -46,14 +46,11 @@ class DummyPlugin(PluginAbstract):
     def run_tool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
         num = config_dict.get("other", 1.4)
-        print(num)
         if num < 0:
             time.sleep(-num)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
         assert "plugin_env" in os.environ["PATH"]
-        out = res.stdout.decode().strip()
-        assert out == str(tool_path.absolute())
         print(f"Dummy tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),

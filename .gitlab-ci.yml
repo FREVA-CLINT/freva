@@ -14,6 +14,49 @@ variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
 
+build-test-image:
+    stage: build
+    needs: []
+    image:
+        name: gcr.io/kaniko-project/executor:debug
+        entrypoint: [""]
+    script:
+        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo $CI_COMMIT_BRANCH
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context $CI_PROJECT_DIR
+                       --cleanup
+                       --skip-unused-stages=true
+                       --ignore-var-run
+                       --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
+                       --build-arg=binder=false
+                       --destination $CI_REGISTRY_IMAGE/freva-dev:$CI_COMMIT_BRANCH
+    tags:
+        - docker, specific
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'main'"
+
+build-stable-image:
+    stage: build
+    needs: []
+    image:
+        name: gcr.io/kaniko-project/executor:debug
+        entrypoint: [""]
+    script:
+        - if [ -n "$CI_COMMIT_BRANCH" ]; then IMAGETAG="$CI_COMMIT_BRANCH"; else IMAGETAG="$CI_COMMIT_SHA"; fi
+        - echo $CI_COMMIT_BRANCH
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context $CI_PROJECT_DIR
+                       --cleanup
+                       --skip-unused-stages=true
+                       --ignore-var-run
+                       --dockerfile $CI_PROJECT_DIR/.docker/Dockerfile
+                       --destination $CI_REGISTRY_IMAGE/freva:latest
+    tags:
+        - docker, specific
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'main'"
+
 lint:
     image: python
     stage: build
@@ -33,7 +76,7 @@ lint:
     tags:
         - docker, specific
     before_script:   # Do the unit tests
-        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc
+        - python deploy.py /tmp/freva -e -s --packages xarray gitpython pandoc mysqlclient
     script:
         - make test
 
@@ -75,7 +118,7 @@ docs:
         CONDA: "Miniconda3-latest"
         EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
     before_script:
-        - python3 deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
         - 'git config --global --add safe.directory $PWD'
     script:
         - make prepdocs
@@ -86,6 +129,8 @@ docs:
         when: always
         paths:
             - sphinx_docs
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 pages:
     stage: report
@@ -99,18 +144,17 @@ pages:
     before_script:
         - mkdir -p public; cp .docker/index.html public/
         - mkdir -p sphinx_docs
+    script:
         - mv coverage_report public/
         - mv sphinx_docs public/
-    script:
-        - /opt/allure/bin/allure generate --clean test_results
-    after_script:
-        - mv allure-report public/
     artifacts:
         when: always
         paths:
             - public/
         reports:
             junit: report.xml
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 release_job:
     stage: release
     image: python

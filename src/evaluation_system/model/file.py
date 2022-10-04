@@ -368,7 +368,10 @@ class DRSFile:
             If `file_path` does not correspond with any DRS structure.
         """
         structures = []
-        for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
+        for (
+            path_prefix,
+            st_type,
+        ) in DRSFile._get_structure_prefix_map().items():
             if file_path.startswith(path_prefix):
                 if allow_multiples:
                     structures.append(st_type)
@@ -406,7 +409,10 @@ class DRSFile:
             If `dir_path` does not correspond with any DRS structure.
         """
         structures = []
-        for path_prefix, st_type in DRSFile._get_structure_prefix_map().items():
+        for (
+            path_prefix,
+            st_type,
+        ) in DRSFile._get_structure_prefix_map().items():
             if dir_path.startswith(path_prefix):
                 if allow_multiples:
                     structures.append(st_type)
@@ -481,7 +487,10 @@ class DRSFile:
             )
         for key, value in dict(zip(structure.parts_file_name, file_name_parts)).items():
             result["parts"].setdefault(key, value)
-        return DRSFile(result, drs_structure=activity)
+        return DRSFile(
+            result,
+            drs_structure=activity,
+        )
 
     def get_drs_structure(self) -> DRSStructure:
         """Returns the DRS structure used by this file.

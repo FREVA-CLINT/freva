@@ -374,7 +374,10 @@ class SolrCore:
             if len(chunk) >= chunk_size:
                 log.info(
                     "Sending entries %s-%s"
-                    % (chunk_count * chunk_size, (chunk_count + 1) * chunk_size)
+                    % (
+                        chunk_count * chunk_size,
+                        (chunk_count + 1) * chunk_size,
+                    )
                 )
                 core_all_files.post(chunk)
                 chunk = []
@@ -393,6 +396,8 @@ class SolrCore:
     def to_solr_dict(drs_file):
         """Extracts from a DRSFile the information that will be stored in Solr"""
         metadata = drs_file.dict["parts"].copy()
+        for key, value in drs_file.get_drs_structure().defaults.items():
+            metadata[key] = value
         metadata["file"] = drs_file.to_path()
         if "version" in metadata:
             metadata["file_no_version"] = metadata["file"].replace(
