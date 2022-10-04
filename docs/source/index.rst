@@ -26,7 +26,8 @@ Welcome to Freva's documentation!
 
 
 .. image:: _static/freva_flowchart-new.jpg
-   :width: 400
+   :width: 320
+   :align: center
 
 Freva, the free evaluation system framework, is a data search and analysis
 platform developed by the atmospheric science community for the atmospheric
@@ -67,7 +68,12 @@ and best practices when it comes to plugin development.
    whats-new
 
 
+.. seealso::
 
+   `Freva intro talk <https://k204230.gitlab-pages.dkrz.de/Presentations/FrevaIntro/index.slides.html#/>`_
+        A short introduction given at the Julich computing centre.
+   `Freva admin docs <https://freva.gitlab-pages.dkrz.de/deployment/index.html>`_
+        Installation and configuration of the freva services.
 
 Indices and tables
 ==================
