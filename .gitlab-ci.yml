@@ -84,15 +84,21 @@ test:37:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.7"
+    rules:
+        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 test:38:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.8"
+    rules:
+        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 
 test:39:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.9"
+    rules:
+        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 
 test:latest:
     <<: *py_test
@@ -118,7 +124,7 @@ docs:
         CONDA: "Miniconda3-latest"
         EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages mysqlclient gitpython pandoc cartopy xarray dask cftime netcdf4
         - 'git config --global --add safe.directory $PWD'
     script:
         - make prepdocs
@@ -131,6 +137,7 @@ docs:
             - sphinx_docs
     rules:
         - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 
 pages:
     stage: report
