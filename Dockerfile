@@ -16,3 +16,4 @@ RUN set -e && \
 
 USER $NB_USER
 WORKDIR $HOME
+RUN cp $EVAL_HOME/notebooks/*.ipynb ${HOME}/

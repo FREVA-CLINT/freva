@@ -9,7 +9,6 @@ solr start -s ${SOLR_HOME}
 if [ "${IS_BINDER}" = "true" ];then
     python $EVAL_HOME/ingest_dummy_data.py /mnt/data4freva
     python $EVAL_HOME/dummy_user_data.py
-    cp $EVAL_HOME/notebooks/*.ipynb .
     for i in 1 2 3 4 5; do
         freva plugin dummyplugin the_number=$i
     done
