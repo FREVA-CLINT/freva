@@ -126,8 +126,9 @@ docs:
         FREVA_ENV: "/tmp/freva/bin"
         DJANGO_ALLOW_ASYNC_UNSAFE: 1
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql ffmpeg gitpython pandoc cartopy xarray dask-core cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql ffmpeg gitpython pandoc cartopy xarray dask-core cftime netcdf4 bash_kernel
         - 'git config --global --add safe.directory $PWD'
+        - /tmp/freva/bin/python -m bash_kernel.install
     script:
         - make prepdocs
         - make docs
