@@ -123,8 +123,9 @@ docs:
     variables:
         CONDA: "Miniconda3-latest"
         EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
+        EVALUATION_SYSTEM_DRS_CONFIG_FILE: compose/drs_config.toml
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages mysqlclient gitpython pandoc cartopy xarray dask cftime netcdf4
+        - python deploy.py /tmp/freva -e -s --packages mysqlclient mysql gitpython pandoc cartopy xarray dask-core cftime netcdf4
         - 'git config --global --add safe.directory $PWD'
     script:
         - make prepdocs

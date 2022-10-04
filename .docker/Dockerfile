@@ -98,7 +98,7 @@ RUN set -x && \
   mysql -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
-  rm /tmp/set_root_pw
+  rm -fr /tmp/set_root_pw /tmp/evaluation_system
 EXPOSE 8888
 USER freva
 WORKDIR /home/freva
