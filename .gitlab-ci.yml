@@ -85,20 +85,20 @@ test:37:
     variables:
         PYTHON_VERSION: "3.7"
     rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 test:38:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.8"
     rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 test:39:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.9"
     rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 test:latest:
     <<: *py_test
@@ -113,6 +113,8 @@ test:latest:
             - coverage_report
             - test_results
             - report.xml
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 docs:
     stage: docs
@@ -122,6 +124,9 @@ docs:
         - docker, specific
     variables:
         DJANGO_ALLOW_ASYNC_UNSAFE: 1
+        EVALUATION_SYSTEM_CONFIG_FILE: /opt/evaluation_system/share/freva//evaluation_system.conf
+        EVALUATION_SYSTEM_DRS_CONFIG_FILE: /opt/evaluation_system/share/freva/drs_config.toml\
+
     before_script:
         - python -m pip install .[docs]
         - 'git config --global --add safe.directory $PWD'
