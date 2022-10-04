@@ -66,10 +66,12 @@ lint:
         - pip install -e .[test]
     script:
         - make lint
+    rules:
+        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 .test_template: &py_test  # pytest framework template
     stage: test
-    needs: ["lint"]
+    # needs: ["lint"]
     image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
     variables:
         CONDA: "Miniconda3-latest"
@@ -124,8 +126,8 @@ docs:
         - docker, specific
     variables:
         DJANGO_ALLOW_ASYNC_UNSAFE: 1
-        EVALUATION_SYSTEM_CONFIG_FILE: /opt/evaluation_system/share/freva//evaluation_system.conf
-        EVALUATION_SYSTEM_DRS_CONFIG_FILE: /opt/evaluation_system/share/freva/drs_config.toml\
+        EVALUATION_SYSTEM_CONFIG_FILE: /opt/evaluation_system/share/freva/evaluation_system.conf
+        EVALUATION_SYSTEM_DRS_CONFIG_FILE: /opt/evaluation_system/share/freva/drs_config.toml
 
     before_script:
         - python -m pip install .[docs]
