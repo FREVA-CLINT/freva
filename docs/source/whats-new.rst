@@ -5,7 +5,7 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2208.0.2-rc1 [unreleased]
+v2208.1.1 [unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 New Features
@@ -23,10 +23,13 @@ Bug fixes
 
 Documentations
 ++++++++++++++
+- Fix binder instance
 
 Internal Changes
 ++++++++++++++++
 - Make all scheduler options non-mandatory
+- Add metadata-inspector as dependency
+
 
 v2208.0.1
 ~~~~~~~~~
