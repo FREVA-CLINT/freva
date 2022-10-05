@@ -34,8 +34,8 @@ RUN set -x && \
   --shell /bin/bash --disabled-password freva && \
   usermod -aG solr,mysql freva &&\
   if [ "$binder" = "true" ]; then\
-     /opt/conda/bin/conda create -y -q -c conda-forge cftime bash_kernel cartopy\
-     h5netcdf netcdf4 ffmpeg pip notebook jupyterhub freva -p /opt/evaluation_system &&\
+     /opt/conda/bin/conda create -y -q -c conda-forge cftime make bash_kernel cartopy\
+     h5netcdf netcdf4 ffmpeg pip notebook jupyterlab jupyterhub freva -p /opt/evaluation_system &&\
      /opt/evaluation_system/bin/python -m pip install pint-xarray cf_xarray nc-time-axis &&\
      /opt/evaluation_system/bin/python -m ipykernel install --name freva &&\
      /opt/evaluation_system/bin/python -m bash_kernel.install &&\
@@ -98,7 +98,7 @@ RUN set -x && \
   mysql -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
-  rm /tmp/set_root_pw
+  rm -fr /tmp/set_root_pw /tmp/evaluation_system
 EXPOSE 8888
 USER freva
 WORKDIR /home/freva

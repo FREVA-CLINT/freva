@@ -356,19 +356,10 @@ animate its content.
    res = run(["freva", "plugin", "animator",
              "project=observations",
              "variable=pr",
-             "cmap=Blues",
-             "fps=5",
-             "output_unit=mm/h",
-             "vmin=0",
-             "vmax=5",
-             "suffix=gif",
              ], check=True, stdout=PIPE, stderr=PIPE)
    out = res.stdout.decode()
    print(out)
    out_f = Path(out.split("\n")[-2].split()[2]).absolute()
-   gif = Path(".") / "source" / "_static" / "animator_output.gif"
-   print(out_f, Path.cwd())
-   shutil.copy(out_f, gif)
 
 The plugin will produce the following output:
 

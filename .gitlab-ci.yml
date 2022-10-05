@@ -84,6 +84,7 @@ test:37:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.7"
+
 test:38:
     <<: *py_test
     variables:
@@ -111,26 +112,28 @@ test:latest:
 docs:
     stage: docs
     needs: ["lint"]
-    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva-dev:latest
+    image: registry.gitlab.dkrz.de/freva/evaluation_system/freva:latest
     tags:
         - docker, specific
     variables:
-        CONDA: "Miniconda3-latest"
-        EVALUATION_SYSTEM_PLUGINS: "/tmp/animator,animator"
+        DJANGO_ALLOW_ASYNC_UNSAFE: 1
+        EVALUATION_SYSTEM_CONFIG_FILE: /opt/evaluation_system/share/freva/evaluation_system.conf
+        EVALUATION_SYSTEM_DRS_CONFIG_FILE: /opt/evaluation_system/share/freva/drs_config.toml
+
     before_script:
-        - python deploy.py /tmp/freva -e -s --packages gitpython pandoc cartopy xarray dask cftime netcdf4
+        - python -m pip install .[docs]
         - 'git config --global --add safe.directory $PWD'
+        - python3 -m ipykernel install --user --name freva
+        - freva plugin animator project=observations variable=pr; echo 0
+        - make -C docs clean
     script:
-        - make prepdocs
-        - make docs
+        - make -C docs html
     after_script:
         - mv docs/build/html sphinx_docs
     artifacts:
         when: always
         paths:
             - sphinx_docs
-    rules:
-        - if: "$CI_COMMIT_BRANCH == 'freva-dev'"
 
 pages:
     stage: report
