@@ -6,7 +6,8 @@ ARG NB_UID="1000"
 ENV USER=${NB_USER} \
     HOME=/tmp/${NB_USER} \
     NB_GID=${NB_UID} \
-    NB_GROUP=${NB_USER}
+    NB_GROUP=${NB_USER}\
+    DJANGO_ALLOW_ASYNC_UNSAFE=1
 USER root
 RUN set -e && \
   adduser --uid "$NB_UID" --gid 1000 --gecos "Default user" \

@@ -20,7 +20,7 @@ Welcome to Freva's documentation!
 .. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg
    :target: https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system/freva-dev
+   :target: https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD
 .. image:: https://anaconda.org/conda-forge/freva/badges/license.svg
    :target: https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md
 
