@@ -84,21 +84,16 @@ test:37:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.7"
-    rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
+
 test:38:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.8"
-    rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 
 test:39:
     <<: *py_test
     variables:
         PYTHON_VERSION: "3.9"
-    rules:
-        - if: "$CI_COMMIT_BRANCH != 'freva-dev'"
 
 test:latest:
     <<: *py_test
