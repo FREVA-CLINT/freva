@@ -141,6 +141,7 @@ setup(
         "h5netcdf",
         "lazy-import",
         "mysqlclient",
+        "metadata-inspector",
         "netCDF4",
         "numpy",
         "pymysql",
