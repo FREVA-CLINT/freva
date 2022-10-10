@@ -25,7 +25,7 @@ jobs:
     -
       name: Install freva
       run: |
-        conda create -c conda-forge -n docs freva make
+        conda create -c conda-forge -n -q docs freva make
     -
       name: Setup services
       run: |
@@ -33,7 +33,7 @@ jobs:
     -
       name: Create docs
       run: |
-        conda run -n docs make predocs
+        conda run -n docs make prepdocs
         conda run -n docs make docs
     -
       name: Publish docs
@@ -69,7 +69,7 @@ jobs:
     -
       name: Creating conda python ${{ matrix.python-version }} env
       run: |
-        conda create -n test -c conda-forge -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
+        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
     -
       name: Setup services
       run: |
