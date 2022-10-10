@@ -14,6 +14,6 @@ jobs:
         python-version: "3.10"
     - name: Install packages
       run: |
-        python3 -m pip install -e .[tests]
+        python3 -m pip install -e .[test]
     - name: Linting
       run: make lint
