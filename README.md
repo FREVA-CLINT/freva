@@ -54,7 +54,7 @@ mode consult [deployment docs](https://freva.gitlab-pages.dkrz.de/deployment/ind
 To start development with freva clone the repository and its submodules:
 
 ```
-git clone --recursive https://gitlab.dkrz.de/freva/evaluation_system.git
+git clone --recursive https://github.com/FREVA-CLINT/freva.git
 ```
 
 A basic local development setup can be created using
