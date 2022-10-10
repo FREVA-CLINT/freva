@@ -1,7 +1,7 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 
-on: 
+on:
   # Runs on pushes targeting the default branch
   push:
   #  branches: ["main"]
@@ -32,7 +32,7 @@ jobs:
       GIT_SUBMODULE_STRATEGY: recursive
       DJANGO_ALLOW_ASYNC_UNSAFE: 1
     steps:
-      - 
+      -
         name: Checkout
         uses: actions/checkout@v3
       -
@@ -58,16 +58,16 @@ jobs:
         name: Creating docs
         run: |
           conda run -n docs make docs
-      - 
+      -
         name: Setup Pages
         uses: actions/configure-pages@v2
-      - 
+      -
         name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: '.'
-      - 
+          path: './docs/build/html'
+      -
         name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
