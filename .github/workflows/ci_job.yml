@@ -1,12 +1,7 @@
 name: CI Tests
 run-name: ${{ github.actor }} is testing the code
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-
-
+on: [push, pull_request]
 jobs:
   test:
     runs-on: antarcticrainforest/freva-dev
