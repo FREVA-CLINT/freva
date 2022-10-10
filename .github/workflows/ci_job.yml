@@ -6,13 +6,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-  deployments: write
-
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
@@ -22,6 +15,8 @@ concurrency:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive
@@ -64,7 +59,6 @@ jobs:
       with:
         # Upload entire repository
         path: './docs/build/html'
-        name: github-pages
     -
       name: Deploy
       uses: peaceiris/actions-gh-pages@v3
