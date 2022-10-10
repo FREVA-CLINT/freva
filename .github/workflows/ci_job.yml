@@ -64,9 +64,12 @@ jobs:
         # Upload entire repository
         path: './docs/build/html'
     -
-      name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v1
+      name: Trigger RTDs build
+      uses: dfm/rtds-action@v1
+      with:
+        webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
+        webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
+        commit_ref: ${{ github.ref }}
   test:
     runs-on: ubuntu-latest
     env:
