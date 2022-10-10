@@ -6,6 +6,7 @@ export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator
 export EVALUATION_SYSTEM_CONFIG_FILE := $(PWD)/compose/local-eval-system.conf
 export EVALUATION_SYSTEM_DRS_CONFIG_FILE := $(PWD)/compose/drs_config.toml
+PYTHON3 := $(shell which python3)
 all: install test_coverage
 
 .PHONY: docs
@@ -35,6 +36,8 @@ prepdocs:
 	rm -rf /tmp/animator
 	python3 -m pip install -e .[docs]
 	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
+	mkdir -p /tmp/animator/plugin_env/bin
+	ln -s $(PYTHON3) /tmp/animator/plugin_env/bin/python
 	python3 -m ipykernel install --user --name freva
 	make dummy-data
 	freva plugin animator project=observations variable=pr; echo 0
