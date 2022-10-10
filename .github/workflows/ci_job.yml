@@ -33,14 +33,16 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     -
       name: Creating conda python ${{ matrix.python-version }} env
-      env:
-        PYTHON_VERSION: ${{ matrix.python-version }}
       run: |
         conda create -n test -y python=${{matrix.python-version}} xarray gitpython pandoc mysqlclient make
     -
       name: Setup services
       run: |
         docker-compose up -d --remove-orphans
+    -
+      name: Install dependencies on python ${{matrix.python-version}}
+      run: |
+        conda run -n test python3 -m pip install -e .[test]
     -
       name: Running tests for python ${{ matrix.python-version }}
       run: |
