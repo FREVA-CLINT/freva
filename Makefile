@@ -46,7 +46,3 @@ prepdocs:
 lint:
 	mypy --install-types --non-interactive
 	black --check -t py310 src
-
-dummy-data:
-	compose/dummy_plugin_runs.sh
-	python3 compose/solr/ingest_dummy_data.py
