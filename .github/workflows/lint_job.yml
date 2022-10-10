@@ -6,14 +6,18 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - name: Ceckout
+    -
+      name: Ceckout
       uses: actions/checkout@v3
-    - name: Set up Python 3.10
+    -
+      name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
-    - name: Install packages
+    -
+      name: Install packages
       run: |
         python3 -m pip install -e .[test]
-    - name: Linting
+    -
+      name: Linting
       run: make lint
