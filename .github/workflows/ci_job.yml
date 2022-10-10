@@ -8,7 +8,6 @@ jobs:
     env:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive
-      EVALUATION_SYSTEM_CONFIG_FILE: .docker/evaluation_system.conf
     steps:
     -
       name: Checkout
