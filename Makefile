@@ -6,7 +6,7 @@ export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator
 export EVALUATION_SYSTEM_CONFIG_FILE := $(PWD)/compose/local-eval-system.conf
 export EVALUATION_SYSTEM_DRS_CONFIG_FILE := $(PWD)/compose/drs_config.toml
-all: install test
+all: install test_coverage
 
 .PHONY: docs
 install:
@@ -18,7 +18,7 @@ test:
 test_coverage:
 	python3 -m pytest -vv \
 	    --cov=$(PWD)/src --cov-report=html:coverage_report \
-	    --alluredir=test_results  --junitxml=report.xml --cov-report xml:coverage_report.xml \
+	    --junitxml report.xml --current-env --cov-report xml \
 		$(PWD)/src/evaluation_system/tests
 	python3 -m coverage report
 
