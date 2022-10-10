@@ -1,5 +1,6 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
+run-name: ${{ github.actor }} is deploying GH Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -24,7 +25,7 @@ jobs:
   # Single deploy job since we're just deploying
   deploy:
     environment:
-      # name: github-pages
+      name: convert-ci
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     env:
