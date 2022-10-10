@@ -16,4 +16,4 @@ jobs:
       run: |
         python3 -m pip install -e .[tests]
     - name: Linting
-        make lint
+      run: make lint
