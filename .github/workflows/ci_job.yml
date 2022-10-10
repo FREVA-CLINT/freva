@@ -1,7 +1,23 @@
 name: CI Tests
 run-name: ${{ github.actor }} is testing the code
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -39,11 +55,18 @@ jobs:
       run: |
         conda run -n docs make docs
     -
-      name: Publish docs
-      uses: peaceiris/actions-gh-pages@v3
+      name: Setup Pages
+      uses: actions/configure-pages@v2
+    -
+      name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/build/html
+        # Upload entire repository
+        path: './docs/build/html'
+    -
+      name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
   test:
     runs-on: ubuntu-latest
     env:
