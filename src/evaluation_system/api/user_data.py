@@ -35,12 +35,16 @@ class DataReader:
     """The drs holding metadata for user data information."""
 
     def __init__(
-        self, paths: Union[os.PathLike, Collection[os.PathLike]], **defaults: str
+        self,
+        paths: Union[os.PathLike, Collection[os.PathLike]],
+        **defaults: str,
     ) -> None:
 
         self.paths = paths
         self.defaults = defaults
-        drs_config: dict[str, Any] = config.get_drs_config()[self.drs_specification]
+        drs_config: dict[str, Any] = config.get_drs_config()[
+            self.drs_specification
+        ]
         self.root_dir = Path(drs_config["root_dir"]).expanduser().absolute()
         self.parts_dir: list[str] = [
             d for d in drs_config["parts_dir"] if d != "file_name"
@@ -131,7 +135,7 @@ class DataReader:
 
         try:
             with xr.open_mfdataset(
-                str(file_name), parallel=True, use_cftime=True
+                str(file_name), parallel=False, use_cftime=True
             ) as dset:
                 time_freq = dset.attrs.get("frequency", "")
                 data_vars = map(str, dset.data_vars)
@@ -172,10 +176,14 @@ class DataReader:
                 continue
             variables.append(var)
         if len(variables) != 1:
-            raise ValueError(f"Only one data variable allowed found: {variables}")
+            raise ValueError(
+                f"Only one data variable allowed found: {variables}"
+            )
         _data = self.defaults.copy()
         _data.setdefault("variable", variables[0])
-        _data.setdefault("time_frequency", self.get_time_frequency(dt, time_freq))
+        _data.setdefault(
+            "time_frequency", self.get_time_frequency(dt, time_freq)
+        )
         _data["time"] = time_str
         _data.setdefault("cmor_table", _data["time_frequency"])
         _data.setdefault("version", "")
@@ -200,7 +208,9 @@ class DataReader:
             new_dirs[v_index] = new_version
         return new_dirs
 
-    def file_name_from_metdata(self, path: os.PathLike, override: bool = False) -> Path:
+    def file_name_from_metdata(
+        self, path: os.PathLike, override: bool = False
+    ) -> Path:
         """Construct file name matching the DRS Spec. from given input path.
 
         Parameters
@@ -233,7 +243,9 @@ class DataReader:
                 f"Please add the following key manually: {error}"
             ) from error
         if not meta_data["version"] and "version" in self.parts_dir:
-            dir_parts = self._create_versioned_path(dir_parts, override=override)
+            dir_parts = self._create_versioned_path(
+                dir_parts, override=override
+            )
         dir_path = self.root_dir.joinpath(*dir_parts)
         file_path = self.file_sep.join(file_parts)
         out_dir = (dir_path / file_path).with_suffix(path.suffix)
