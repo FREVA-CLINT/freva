@@ -1,0 +1,273 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0f552b23",
+   "metadata": {},
+   "source": [
+    "# Searching for data: the databrowser method\n",
+    "\n",
+    "All files available on in the project are scanned and indexed via a data search server. This allows you to query the server with almost immediate response time. To search for data you can either use the `databrowser` method of the, `freva` python module. Let's import the `freva` module first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4452611e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import freva"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c279c04c",
+   "metadata": {},
+   "source": [
+    "Now inspect the help menu:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "30b10d73",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "help(freva.databrowser)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ad14a13b",
+   "metadata": {},
+   "source": [
+    "The databrowser expects a list of `key=value` pairs. The order of the pairs doesn’t really matter. Most important is that you don’t need to split the search according to the type of data you are searching for. You can search for any files, both observations, reanalysis, and model data, all at the same time. Also important is that all searches are case insensitive. You can also search for attributes themselves instead of file paths. For example you can search for the list of variables available that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8e658edf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "files = freva.databrowser(project=\"observations\", variable=\"pr\", model=\"cp*\")\n",
+    "files"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1b7dffb2",
+   "metadata": {},
+   "source": [
+    "This will return a so called iterator. The advantage of an iterator is that the data can be loaded into memory if needed. Nothing is pre loaded. To access the files you can either loop through the Iterator or convert it to a list:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "82e51de3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "list(files)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8ac2c194",
+   "metadata": {},
+   "source": [
+    "In some cases it might be useful to know how much files are found in the `databrowser` for certain search constraints. In such cases you can use the `count` flag to count the number of found files instead of getting the files themselves."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3a6cf622",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "freva.databrowser(project=\"observations\", variable=\"pr\", model=\"cp*\", count=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "49db8913",
+   "metadata": {},
+   "source": [
+    "Sometimes it might be useful to subset the data you’re interested in by time. To do so you can use the time search key to subset time steps and whole time ranges. For example let’s get the for certain time range:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "3132274e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "list(freva.databrowser(project=\"observations\", time=\"2016-09-02T22:15 to 2016-10\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "10cc881b",
+   "metadata": {},
+   "source": [
+    "The default method for selecting time periods is flexible, which means all files are selected that cover at least start or end date. The strict method implies that the entire search time period has to be covered by the files. Using the strict method in the example above would only yield on file because the first file contains time steps prior to the start of the time period:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "96b67cb8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "list(freva.databrowser(project=\"observations\", time=\"2016-09-02T22:15 to 2016-10\", time_select=\"strict\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "377c7d75",
+   "metadata": {},
+   "source": [
+    "The time format has to follow the ISO-8601 standard. Time ranges are indicated by the to keyword such as 2000 to 2100 or 2000-01 to 2100-12 and alike. Single time steps are given without the to keyword."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4b1a383c",
+   "metadata": {},
+   "source": [
+    "You might as well want to know about possible values that an attribute can take after a certain search is done. For this you use the `facet` flag (facets are the attributes used to search for and sub set the data). For example to see all facets that are available in the observations project:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "076c8f4b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "freva.databrowser(project=\"observations\", all_facets=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "aa7319d4",
+   "metadata": {},
+   "source": [
+    "Likewise you can inspect all model `facet` flags in the databrowser:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c6ddf027",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "freva.databrowser(facet=\"model\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4c010777",
+   "metadata": {},
+   "source": [
+    "__Note__: If you don't give a search constraints like in the case above the command will query the whole data server."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a5f33a36",
+   "metadata": {},
+   "source": [
+    "You can also retrieve information on how many facets are found by the databrowser by giving the count flag"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9a75e16a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "freva.databrowser(facet=\"model\", count=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e4775b78",
+   "metadata": {},
+   "source": [
+    "Reverse search is also be possible. You can query the metadata of a given file:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a920c003",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "file_to_query = next(freva.databrowser()) # Get a file\n",
+    "file_to_query"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "febba8ed",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "freva.databrowser(file=file_to_query, all_facets=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d7158582",
+   "metadata": {},
+   "source": [
+    "## Example: Using the databrowser to open datasets with xarray"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "29d23614",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import xarray as xr\n",
+    "dset = xr.open_mfdataset(freva.databrowser(variable=\"pr\", project=\"observations\"), combine=\"by_coords\")\n",
+    "dset"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "freva",
+   "language": "python",
+   "name": "freva"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

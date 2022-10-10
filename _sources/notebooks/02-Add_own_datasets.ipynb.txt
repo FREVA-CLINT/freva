@@ -1,0 +1,232 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "b9c6fc29",
+   "metadata": {},
+   "source": [
+    "# Managing your own datasets: the UserData class\n",
+    "\n",
+    "Freva offers the possibility to share custom datasets with other users by making it searchable via `freva.databrowser`. With help of the `UserData` class users can add their own data to the central data location, (re)-index or delete data in the databrowser.\n",
+    "\n",
+    "__Note__: Any data that has been added by users will be assigned a special project name: `project=user-$USER`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f0aaffd0",
+   "metadata": {},
+   "source": [
+    "## Add new data to the databrowser\n",
+    "To be able to add data to the databrowser the file names must follow a strict standard and the files must reside in a specific location. This add method takes care about the correct file naming and location. No pre-requirements other than the file has to be a valid `netCDF` or `grib` file are assumed. In other words this method places the user data with the correct naming structure to the correct location.\n",
+    "\n",
+    "Suppose you’ve gotten data from somewhere and want to add this data into the databrowser to make it accessible to others. In this specific example we assume that you have stored your original data in the /tmp/my_awesome_data folder. E.g `/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc` The routine will try to gather all necessary metadata from the files. You’ll have to provide additional metadata if mandatory keywords are missing. To make the routine work you’ll have to provide the institute, model and experiment keywords:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9debb4b8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from freva import UserData, databrowser"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "98936fa7",
+   "metadata": {},
+   "source": [
+    "Let's create an instance of the `UserData` class. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5c9308c5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "user_data = UserData()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72912c33",
+   "metadata": {},
+   "source": [
+    "The `add` method can add data into the users data directory. The location of this data directory is given by the system and can be queried by accessing the `user_dir` property:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bf820eaf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Get the location of the user data\n",
+    "print(user_data.user_dir)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4145b879",
+   "metadata": {},
+   "source": [
+    "Let's inspect the help of the `add` method:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c0312496",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "help(user_data.add)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "819cb0f1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# You can also provide wild cards to search for data\n",
+    "user_data.add(\"eur-11b\", \"/tmp/my_awesome_data/outfile_?.nc\",\n",
+    "                  institute=\"clex\", model=\"UM-RA2T\",\n",
+    "                  experiment=\"Bias-correct\")\n",
+    "# Check the databrowser if the data has been added"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "401651c0",
+   "metadata": {},
+   "source": [
+    "Let's check if the data has been added to the data browser"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e2a7d8c8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for file in databrowser(experiment=\"bias*\"):\n",
+    "    print(file)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7c572404",
+   "metadata": {},
+   "source": [
+    "By default the data is copied. By using the how keyword you can also link or move the data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72626b9d",
+   "metadata": {},
+   "source": [
+    "## Remove your data from the databrowser\n",
+    "\n",
+    "The `delete` removes entries from the databrowser and if necessary existing files from the central user data location. Let's inspect the help of the user `delete` method first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "36f5c14a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "help(user_data.delete)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9eadc3b3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "user_data.delete(user_data.user_dir)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6d4af8b6",
+   "metadata": {},
+   "source": [
+    "Check the databrowser if the data has been removed:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c1335145",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    " databrowser(experiment=\"bias*\", count=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cb7cde92",
+   "metadata": {},
+   "source": [
+    "## (Re)-Index existing data to the databrowser\n",
+    "\n",
+    "Using the `index` method the `databrowser` can be updated with existing user data. For example, if data has been removed from the `databrowser` it can be re-added. Again, inspect the help first:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f7737037",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "help(user_data.index)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "808782fe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "user_data.index()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "freva",
+   "language": "python",
+   "name": "freva"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

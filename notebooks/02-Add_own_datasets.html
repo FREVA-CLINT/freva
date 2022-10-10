@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Managing your own datasets: the UserData class &mdash; freva user guide 2208.1.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> freva user guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Freva.html">Freva python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FrevaCli.html">The Freva command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers_guide.html">Plugin Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugin_api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">Frequently Ask Questions and best practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s new</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">freva user guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Managing your own datasets: the UserData class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/02-Add_own_datasets.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Managing-your-own-datasets:-the-UserData-class">
+<h1>Managing your own datasets: the UserData class<a class="headerlink" href="#Managing-your-own-datasets:-the-UserData-class" title="Permalink to this heading"></a></h1>
+<p>Freva offers the possibility to share custom datasets with other users by making it searchable via <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>. With help of the <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class users can add their own data to the central data location, (re)-index or delete data in the databrowser.</p>
+<p><strong>Note</strong>: Any data that has been added by users will be assigned a special project name: <code class="docutils literal notranslate"><span class="pre">project=user-$USER</span></code>.</p>
+<section id="Add-new-data-to-the-databrowser">
+<h2>Add new data to the databrowser<a class="headerlink" href="#Add-new-data-to-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>To be able to add data to the databrowser the file names must follow a strict standard and the files must reside in a specific location. This add method takes care about the correct file naming and location. No pre-requirements other than the file has to be a valid <code class="docutils literal notranslate"><span class="pre">netCDF</span></code> or <code class="docutils literal notranslate"><span class="pre">grib</span></code> file are assumed. In other words this method places the user data with the correct naming structure to the correct location.</p>
+<p>Suppose you’ve gotten data from somewhere and want to add this data into the databrowser to make it accessible to others. In this specific example we assume that you have stored your original data in the /tmp/my_awesome_data folder. E.g <code class="docutils literal notranslate"><span class="pre">/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc</span></code> The routine will try to gather all necessary metadata from the files. You’ll have to provide additional metadata if mandatory keywords are missing. To make the routine work you’ll have to
+provide the institute, model and experiment keywords:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">freva</span> <span class="kn">import</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">databrowser</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s create an instance of the <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_data</span> <span class="o">=</span> <span class="n">UserData</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">add</span></code> method can add data into the users data directory. The location of this data directory is given by the system and can be queried by accessing the <code class="docutils literal notranslate"><span class="pre">user_dir</span></code> property:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the location of the user data</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">user_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/tmp/user_data/user-runner
+</pre></div></div>
+</div>
+<p>Let’s inspect the help of the <code class="docutils literal notranslate"><span class="pre">add</span></code> method:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">add</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Help on method add in module freva._user_data:
+
+add(product: &#39;str&#39;, *paths: &#39;os.PathLike&#39;, how: &#39;str&#39; = &#39;copy&#39;, override: &#39;bool&#39; = False, **defaults: &#39;str&#39;) -&gt; &#39;None&#39; method of freva._user_data.UserData instance
+    Add custom user files to the databrowser.
+
+    To be able to add data to the databrowser the file names must
+    follow a strict standard and the files must reside in a
+    specific location. This ``add`` method takes care about the correct
+    file naming and location. No pre requirements other than the file has
+    to be a valid ``netCDF`` or ``grib`` file are assumed. In other words
+    this method places the user data with the correct naming structure to
+    the correct location.
+
+    Parameters
+    ----------
+    product: str
+        Product search key the newly added data can be found.
+    *paths: os.PathLike
+        Filename(s) or Directories that are going to be added to the
+        databrowser. The files will be added into the central user
+        directory and named according the CMOR standard. This ensures
+        that the data can be added into the databrowser.
+        **Note:** Once the data has been added into the databrowser it can
+        be found via the ``user-&lt;username&gt;`` project.
+    how: str, default: copy
+        Method of how the data is added into the central freva user directory.
+        Default is copy, which means your data files will be replicated.
+        To avoid a this redundancy you can set the ``how`` keyword to
+        ``symlink`` for symbolic links or ``link`` for creating hard links
+        to create symbolic links or ``move`` to move the data into the central
+        user directory entirely.
+    override: bool, default: False
+        Replace existing files in the user data structre
+    experiment: str, default: None
+        By default the method tries to deduce the *experiment* information from
+        the metadata. To overwrite this information the *experiment* keyword
+        should be set.
+    institute: str, default: None
+        By default the method tries to deduce the *institute* information from
+        the metadata. To overwrite this information the *institute* keyword
+        should be set.
+    model: str, default: None
+        By default the method tries to deduce the *model* information from
+        the metadata. To overwrite this information the *model* keyword
+        should be set.
+    variable: str, default: None
+        By default the method tries to deduce the *variable* information from
+        the metadata. To overwrite this information the *variable* keyword
+        should be set.
+    time_frequency: str, default: None
+        By default the method tries to deduce the *time_frequency* information
+        from the metadata. To overwrite this information the *time_frequency*
+        keyword should be set.
+    ensemble: str, default: None
+        By default the method tries to deduce the *ensemble* information from
+        the metadata. To overwrite this information the *ensemble* keyword
+        should be set.
+
+    Raises
+    ------
+    ValueError: If metadata is insufficient, or product key is empty
+
+
+    Example
+    -------
+
+    Suppose you&#39;ve gotten data from somewhere and want to add this data into the
+    databrowser to make it accessible to others. In this specific
+    example we assume that you have stored your `original` data in the
+    ``/tmp/my_awesome_data`` folder.
+    E.g ``/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc``
+    The routine will try to gather all necessary metadata from the files. You&#39;ll
+    have to provide additional metadata if mandatory keywords are missing.
+    To make the routine work you&#39;ll have to provide the ``institute``, ``model``
+    and ``experiment`` keywords:
+
+    .. execute_code::
+
+        from freva import UserData, databrowser
+        user_data = UserData()
+        # You can also provide wild cards to search for data
+        user_data.add(&#34;eur-11b&#34;, &#34;/tmp/my_awesome_data/outfile_?.nc&#34;,
+                          institute=&#34;clex&#34;, model=&#34;UM-RA2T&#34;,
+                          experiment=&#34;Bias-correct&#34;)
+        # Check the databrowser if the data has been added
+        for file in databrowser(experiment=&#34;bias*&#34;):
+            print(file)
+
+    By default the data is copied. By using the ``how`` keyword you can
+    also link or move the data.
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># You can also provide wild cards to search for data</span>
+<span class="n">user_data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;eur-11b&quot;</span><span class="p">,</span> <span class="s2">&quot;/tmp/my_awesome_data/outfile_?.nc&quot;</span><span class="p">,</span>
+                  <span class="n">institute</span><span class="o">=</span><span class="s2">&quot;clex&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;UM-RA2T&quot;</span><span class="p">,</span>
+                  <span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;Bias-correct&quot;</span><span class="p">)</span>
+<span class="c1"># Check the databrowser if the data has been added</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Status: crawling ...ok
+</pre></div></div>
+</div>
+<p>Let’s check if the data has been added to the data browser</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">databrowser</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;bias*&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+</pre></div></div>
+</div>
+<p>By default the data is copied. By using the how keyword you can also link or move the data.</p>
+</section>
+<section id="Remove-your-data-from-the-databrowser">
+<h2>Remove your data from the databrowser<a class="headerlink" href="#Remove-your-data-from-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">delete</span></code> removes entries from the databrowser and if necessary existing files from the central user data location. Let’s inspect the help of the user <code class="docutils literal notranslate"><span class="pre">delete</span></code> method first:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">delete</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Help on method delete in module freva._user_data:
+
+delete(*paths: &#39;os.PathLike&#39;, delete_from_fs: &#39;bool&#39; = False) -&gt; &#39;None&#39; method of freva._user_data.UserData instance
+    Delete data from the databrowser.
+
+    The methods deletes user data from the databrowser.
+
+    Parameters
+    ----------
+
+     *paths: os.PathLike
+        Filename(s) or Directories that are going to be from  the
+        databrowser.
+    delete_from_fs: bool, default : False
+        Do not only delete the files from the databrowser but also from their
+        central location where they have been added to.
+
+    Raises
+    ------
+
+    ValidationError:
+        If crawl_dirs do not belong to current user.
+
+    Example
+    -------
+
+    Any data in the central user directory that belongs to the user can
+    be deleted from the databrowser and also from the central data location:
+
+    .. execute_code::
+
+        from freva import UserData
+        user_data = UserData()
+        user_data.delete(user_data.user_dir)
+
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_data</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">user_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Check the databrowser if the data has been removed:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span> <span class="n">databrowser</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;bias*&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0
+</pre></div></div>
+</div>
+</section>
+<section id="(Re)-Index-existing-data-to-the-databrowser">
+<h2>(Re)-Index existing data to the databrowser<a class="headerlink" href="#(Re)-Index-existing-data-to-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">index</span></code> method the <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> can be updated with existing user data. For example, if data has been removed from the <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> it can be re-added. Again, inspect the help first:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Help on method index in module freva._user_data:
+
+index(*crawl_dirs: &#39;os.PathLike&#39;, dtype: &#39;str&#39; = &#39;fs&#39;) -&gt; &#39;None&#39; method of freva._user_data.UserData instance
+    Index and add user output data to the databrowser.
+
+    This method can be used to update the databrowser for existing user data
+
+    Parameters
+    ----------
+    crawl_dirs:
+        The data path(s) that needs to be crawled
+    dtype:
+        The data type, currently only files on the file system are supported.
+
+    Raises
+    ------
+    ValidationError:
+        If crawl_dirs do not belong to current user.
+
+    Example
+    -------
+
+    If data has been removed from the databrowser it can be re added using
+    the ``index`` method:
+
+    .. execute_code::
+
+        from freva import UserData
+        user_data = UserData()
+        user_data.index()
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">user_data</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Status: crawling ...ok
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, CLINT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

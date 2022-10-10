@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What’s new &mdash; freva user guide 2208.1.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Frequently Ask Questions and best practices" href="FAQ.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> freva user guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Freva.html">Freva python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrevaCli.html">The Freva command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Ask Questions and best practices</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v2208-1-1-unreleased">v2208.1.1 [unreleased]</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-features">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecations">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentations">Documentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#internal-changes">Internal Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2208-0-1">v2208.0.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Documentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Internal Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2206-0-10">v2206.0.10</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Documentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Internal Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2206-0-1">v2206.0.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">New Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Breaking changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Deprecations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Documentations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Internal Changes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">freva user guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>What’s new</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/whats-new.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="what-s-new">
+<h1>What’s new<a class="headerlink" href="#what-s-new" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="v2208-1-1-unreleased">
+<h2>v2208.1.1 [unreleased]<a class="headerlink" href="#v2208-1-1-unreleased" title="Permalink to this heading"></a></h2>
+<section id="new-features">
+<h3>New Features<a class="headerlink" href="#new-features" title="Permalink to this heading"></a></h3>
+</section>
+<section id="breaking-changes">
+<h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Permalink to this heading"></a></h3>
+</section>
+<section id="deprecations">
+<h3>Deprecations<a class="headerlink" href="#deprecations" title="Permalink to this heading"></a></h3>
+</section>
+<section id="bug-fixes">
+<h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix typo in deployment routine</p></li>
+</ul>
+</section>
+<section id="documentations">
+<h3>Documentations<a class="headerlink" href="#documentations" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix binder instance</p></li>
+</ul>
+</section>
+<section id="internal-changes">
+<h3>Internal Changes<a class="headerlink" href="#internal-changes" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make all scheduler options non-mandatory</p></li>
+<li><p>Add metadata-inspector as dependency</p></li>
+</ul>
+</section>
+</section>
+<section id="v2208-0-1">
+<h2>v2208.0.1<a class="headerlink" href="#v2208-0-1" title="Permalink to this heading"></a></h2>
+<section id="id1">
+<h3>New Features<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count</span></code> keyword/flag for the databrowser counts also the number of files
+found by the databrowser, not only the facet counts.</p></li>
+<li><p>databrowser can subset results by time.</p></li>
+<li><p>add functionality to add new data to databrowser</p></li>
+<li><p>add functionality to delete existing user data from databrowser</p></li>
+<li><p>add new class to handle user data requests</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Breaking changes<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">count_facet_values</span></code> keyword (<code class="docutils literal notranslate"><span class="pre">count-facet-values</span></code> flag in cli) has been renamed to <code class="docutils literal notranslate"><span class="pre">count</span></code></p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Deprecations<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>move <code class="docutils literal notranslate"><span class="pre">freva.crawl_my_data</span></code> functionality to <cite>freva.UsersData.index</cite></p></li>
+<li><p>renamed <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">crawl_my_data</span></code> to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">user-data`</span></code></p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>Bug fixes<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id5">
+<h3>Documentations<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Documentation of the python modules has been improved</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Internal Changes<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Files found by the databrowser are <em>alphabetically</em> sorted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">follow/unfolllow_history_tag</span></code> recieves a user object as argument instead of string</p></li>
+<li><p>lazy loading has been improved</p></li>
+</ul>
+</section>
+</section>
+<section id="v2206-0-10">
+<h2>v2206.0.10<a class="headerlink" href="#v2206-0-10" title="Permalink to this heading"></a></h2>
+<section id="id7">
+<h3>New Features<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id8">
+<h3>Breaking changes<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id9">
+<h3>Deprecations<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id10">
+<h3>Bug fixes<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Set plugin status to broken in OS related termination signals that can be
+handled by python (SIGTERM, SIGINT …) and any other internal python errors.</p></li>
+<li><p>Update databrowser query algorithm.</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>Documentations<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id12">
+<h3>Internal Changes<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Introduce lazy loading to make freva cli a little more responsive</p></li>
+<li><p>Explicitly set EVALUATION_SYSTEM_CONFIG_FILE env variable in workload
+manager job script.</p></li>
+<li><p>Increase batch size to 5000 as default for querying data.</p></li>
+</ul>
+</section>
+</section>
+<section id="v2206-0-1">
+<h2>v2206.0.1<a class="headerlink" href="#v2206-0-1" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h3>New Features<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add python module for importing <a class="reference internal" href="Freva.html#module-1" title="freva"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva()</span></code></a> directly in python
+environments</p></li>
+<li><dl class="simple">
+<dt>Rename command line interface sub modules:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">--databrowser</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">--plugin</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">--history</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">history</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">--esgf</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">esgf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">--crawl_my_data</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">crawl-my-data</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Add new commands as alternative for freva sub commands</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> = <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code> etc</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Argument completion works for all sub commands, including plugin setup.</p></li>
+<li><p>Interactive jobs can be controlled from the web user interface</p></li>
+<li><p>Output of interactive jobs can be displayed in the web user interface</p></li>
+</ul>
+</section>
+<section id="id14">
+<h3>Breaking changes<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Command line arguments taking boolean values do not require True or False:</dt><dd><ul>
+<li><p>Instead of <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span> <span class="pre">animtor</span> <span class="pre">--batchmode=True</span></code> → <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span> <span class="pre">animtor</span> <span class="pre">--batchmode</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_output_to_databrowser()</span></code> formerly <code class="xref py py-meth docutils literal notranslate"><span class="pre">linkmydata()</span></code> does not infer meta data
+from file and directory structure anymore (i.e., does not need to
+follow a particular folder path and naming convention)</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>Deprecations<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>The <cite>tool-pull-request</cite> sub command has been made deprecated.</p></li>
+<li><dl class="simple">
+<dt>The following methods in the <a class="reference internal" href="plugin_api.html#pluginapi"><span class="std std-ref">Plugin API Reference</span></a> have been renamed:</dt><dd><ul>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">runTool()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">run_tool()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">linkmydata()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_output_to_databrowser()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepareOutput()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_output()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">getHelp()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_help()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">getClassBaseDir()</span></code> → <code class="xref py py-attr docutils literal notranslate"><span class="pre">class_basedir</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">setupConfiguration()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">setup_configuration()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">readConfiguration()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">read_configuration()</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>The following methods in the <a class="reference internal" href="plugin_api.html#parameterapi"><span class="std std-ref">Parameter API Reference</span></a> have been renamed:</dt><dd><ul>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">parseArguments()</span></code> → <code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_arguments()</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id16">
+<h3>Bug fixes<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+</section>
+<section id="id17">
+<h3>Documentations<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add user sphinx documentation</p></li>
+</ul>
+</section>
+<section id="id18">
+<h3>Internal Changes<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add support for different workload managers</p></li>
+<li><p>Install <code class="docutils literal notranslate"><span class="pre">freva</span></code> in dedicated anaconda environment</p></li>
+<li><p>Install each Freva plugin in dedicated anaconda environment</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="FAQ.html" class="btn btn-neutral float-left" title="Frequently Ask Questions and best practices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, CLINT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

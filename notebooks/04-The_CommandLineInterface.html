@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Freva command line interface &mdash; freva user guide 2208.1.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> freva user guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Freva.html">Freva python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FrevaCli.html">The Freva command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers_guide.html">Plugin Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugin_api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">Frequently Ask Questions and best practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s new</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">freva user guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>The Freva command line interface</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/04-The_CommandLineInterface.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="The-Freva-command-line-interface">
+<h1>The Freva command line interface<a class="headerlink" href="#The-Freva-command-line-interface" title="Permalink to this heading"></a></h1>
+<p>This notebook introduces the usage of the Freva command line interface - cli. The tutorial assumes that you have already access to Freva either because you’ve setup an instance yourself or one has been setup by the Freva admin team. Hence it is assumed that you know how to access Freva. If this is not the case please contact one of your Freva admins for help.</p>
+<p>A general usage overview of the available Freva sub-commands is available via the –help option:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva [-h] [-V] {databrowser,plugin,history,user-data,esgf} ...
+
+Free EVAluation system framework (freva)
+
+positional arguments:
+  {databrowser,plugin,history,user-data,esgf}
+                        Available sub-commands:
+    databrowser         Find data in the system.
+    plugin              Apply data analysis plugin.
+    history             Read the plugin application history.
+    user-data           Update users project data
+    esgf                Search/Download ESGF the data catalogue.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -V, --version         show program&#39;s version number and exit
+
+To get help for the individual sub-commands use: freva &lt;sub-command&gt; --help
+</pre></div></div>
+</div>
+<p>The most common sub-commands are <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> and <code class="docutils literal notranslate"><span class="pre">plugin</span></code>. You can get more help on the actual commands using the sub-commands <code class="docutils literal notranslate"><span class="pre">--help</span></code> option, for example getting help on the databrowser usage:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva databrowser --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva databrowser [-h] [--multiversion] [--relevant-only]
+                         [--batch-size BATCH_SIZE] [--count] [--attributes]
+                         [--all-facets] [--facet FACET]
+                         [--facet-limit FACET_LIMIT]
+                         [--time-select {flexible,strict,file}] [--debug]
+                         [facets ...]
+
+Find data in the system.
+
+positional arguments:
+  facets                Search facet(s) (default: None)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --multiversion        Select not only the latest version. (default: False)
+  --relevant-only       Show only search with results &gt;1 possible values
+                        (default: False)
+  --batch-size BATCH_SIZE
+                        Number of files to retrieve (default: 5000)
+  --count               Show the number of files for each search result
+                        (default: False)
+  --attributes          Retrieve all possible attributes for the current
+                        search instead of the files. (default: False)
+  --all-facets          retrieve all facets (attributes &amp; values) instead of
+                        the files (default: False)
+  --facet FACET         Retrieve values of given facet instead of files
+                        (default: None)
+  --facet-limit FACET_LIMIT
+                        Limit the number of output facets. (default:
+                        9223372036854775807)
+  --time-select {flexible,strict,file}
+                        Operator that specifies how the time period is
+                        selected. (default: flexible)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+</pre></div></div>
+</div>
+<p><strong>Note</strong>: Instead of using sub-commands you have also the option to use commands. For example the command <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code>, <code class="docutils literal notranslate"><span class="pre">freva-user-data</span></code> to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">user-data</span></code> etc.</p>
+<section id="Searching-for-data:-the-freva-databrowser-command">
+<h2>Searching for data: the freva-databrowser command<a class="headerlink" href="#Searching-for-data:-the-freva-databrowser-command" title="Permalink to this heading"></a></h2>
+<p>All files available on in the project are scanned and indexed via a data search server. This allows you to query the server which responds almost immediately. To search for data you can either use the <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> command or the <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code> sub-command. Let’s inspect the help menu of the databrowser sub-command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-databrowser [-h] [--multiversion] [--relevant-only]
+                         [--batch-size BATCH_SIZE] [--count] [--attributes]
+                         [--all-facets] [--facet FACET]
+                         [--facet-limit FACET_LIMIT]
+                         [--time-select {flexible,strict,file}] [--debug] [-V]
+                         [facets ...]
+
+Find data in the system.
+
+positional arguments:
+  facets                Search facet(s) (default: None)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --multiversion        Select not only the latest version. (default: False)
+  --relevant-only       Show only search with results &gt;1 possible values
+                        (default: False)
+  --batch-size BATCH_SIZE
+                        Number of files to retrieve (default: 5000)
+  --count               Show the number of files for each search result
+                        (default: False)
+  --attributes          Retrieve all possible attributes for the current
+                        search instead of the files. (default: False)
+  --all-facets          retrieve all facets (attributes &amp; values) instead of
+                        the files (default: False)
+  --facet FACET         Retrieve values of given facet instead of files
+                        (default: None)
+  --facet-limit FACET_LIMIT
+                        Limit the number of output facets. (default:
+                        9223372036854775807)
+  --time-select {flexible,strict,file}
+                        Operator that specifies how the time period is
+                        selected. (default: flexible)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+  -V, --version         show program&#39;s version number and exit
+</pre></div></div>
+</div>
+<p>The databrowser expects a list of <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pairs. The order of the pairs doesn’t really matter. Most important is that you don’t need to split the search according to the type of data you are searching for. You can search for any files, for example observations, reanalysis and model data at the same time. Also important is that all queries are case insensitive. You can also search for attributes themselves instead of file paths. For example you can search for the list of variables available
+that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser <span class="nv">project</span><span class="o">=</span>observations <span class="nv">variable</span><span class="o">=</span>pr <span class="nv">model</span><span class="o">=</span>cp*
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022100-201609022130.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022000-201609022030.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021900-201609021930.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021800-201609021830.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021700-201609021730.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021600-201609021630.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021500-201609021530.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021400-201609021430.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021300-201609021330.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021200-201609021230.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021100-201609021130.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609021000-201609021030.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020900-201609020930.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020800-201609020830.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020700-201609020730.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020600-201609020630.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020500-201609020530.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020400-201609020430.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020300-201609020330.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020200-201609020230.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020100-201609020130.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc
+</pre></div></div>
+</div>
+<p>In some cases it might be useful to know how many files are found in the <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> for certain search constraints. In such cases you can use the <code class="docutils literal notranslate"><span class="pre">count</span></code> flag to count the number of found files instead of getting the files themselves.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser <span class="nv">project</span><span class="o">=</span>observations --count
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+24
+</pre></div></div>
+</div>
+<p>Sometimes it might be useful to subset the data you’re interested in by time. To do so you can use the time search key to subset time steps and whole time ranges. For example let’s get the for certain time range:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser <span class="nv">project</span><span class="o">=</span>observations <span class="nv">time</span><span class="o">=</span><span class="s1">&#39;2016-09-02T22:15 to 2016-10&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
+</pre></div></div>
+</div>
+<p>The default method for selecting time periods is <code class="docutils literal notranslate"><span class="pre">flexible</span></code>, which means all files are selected that cover at least start or end date. The <code class="docutils literal notranslate"><span class="pre">strict</span></code> method implies that the entire search time period has to be covered by the files. Using the <code class="docutils literal notranslate"><span class="pre">strict</span></code> method in the example above would only yield on file because the first file contains time steps prior to the start of the time period:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser <span class="nv">project</span><span class="o">=</span>observations <span class="nv">time</span><span class="o">=</span><span class="s1">&#39;2016-09-02T22:15 to 2016-10&#39;</span> --time-select strict
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
+</pre></div></div>
+</div>
+<p>You might as well want to know about possible values that an attribute can take after a certain search is done. For this you use the <code class="docutils literal notranslate"><span class="pre">--facet</span></code> flag (facets are the attributes used to search for and sub set the data). For example to see all <code class="docutils literal notranslate"><span class="pre">facets</span></code> that are available in the observations project:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser <span class="nv">project</span><span class="o">=</span>observations --all-facets
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+product: grid
+experiment: cmorph
+realm: atmos
+dataset: testdata
+cmor_table: 30min
+model: cpc
+time_frequency: 30min
+project: observations
+institute: cpc
+variable: pr
+ensemble: r1i1p1
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser --facet time_frequency --facet variable <span class="nv">project</span><span class="o">=</span>observations
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time_frequency: 30min
+variable: pr
+</pre></div></div>
+</div>
+<p>You can also retrieve information on how many facets are found by the databrowser by giving the <code class="docutils literal notranslate"><span class="pre">count</span></code> flag</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser --facet time_frequency --facet variable <span class="nv">project</span><span class="o">=</span>observations --count
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time_frequency: 30min (24)
+variable: pr (24)
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Running-data-analysis-plugins:-the-freva-plugin-command">
+<h1>Running data analysis plugins: the freva-plugin command<a class="headerlink" href="#Running-data-analysis-plugins:-the-freva-plugin-command" title="Permalink to this heading"></a></h1>
+<p>Already defined data analysis tools can be started with the <code class="docutils literal notranslate"><span class="pre">freva-plugin</span></code> command or the <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span></code> sub-command. Let’s inspect the help menu of the plugin command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-plugin --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-plugin [-h] [--repo-version] [--caption CAPTION] [--save]
+                    [--save-config SAVE_CONFIG] [--show-config] [--dry-run]
+                    [--batchmode] [--unique_output UNIQUE_OUTPUT]
+                    [--pull-request] [--tag TAG] [--debug] [--list-tools]
+                    [--doc] [-V]
+                    [plugin_name]
+
+Apply data analysis plugin.
+
+positional arguments:
+  plugin_name           Plugin name (default: None)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --repo-version        Show the version number from the repository (default:
+                        False)
+  --caption CAPTION     Set a caption for the results (default: )
+  --save                Save the plugin configuration to default destination.
+                        (default: False)
+  --save-config SAVE_CONFIG
+                        Save the plugin configuration. (default: None)
+  --show-config         Show the resulting configuration (implies dry-run).
+                        (default: False)
+  --dry-run             Perform no computation. Useful for development.
+                        (default: False)
+  --batchmode           Create a Batch job and submit it to the scheduling
+                        system. (default: False)
+  --unique_output UNIQUE_OUTPUT
+                        Append a freva run id to every output folder (default:
+                        True)
+  --pull-request        Issue a new pull request for the tool (default: False)
+  --tag TAG             Use git commit hash (default: None)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+  --list-tools, --list, -l
+                        Only list the available tools. (default: False)
+  --doc, --plugin-doc   Display plugin documentation (default: False)
+  -V, --version         show program&#39;s version number and exit
+</pre></div></div>
+</div>
+<p>As the help menu suggests you can list all available tools using the <code class="docutils literal notranslate"><span class="pre">-l</span></code> option (or <code class="docutils literal notranslate"><span class="pre">--list</span></code>, <code class="docutils literal notranslate"><span class="pre">--list-tools</span></code>):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-plugin -l
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Animator: Animate data on lon/lat grids
+DummyPlugin: A dummy plugin
+</pre></div></div>
+</div>
+<p>This means currently we have two plugins available (animator and dummyplugin). The general syntax is freva-plugin <code class="docutils literal notranslate"><span class="pre">&lt;plugin-name&gt;</span> <span class="pre">[options]</span></code> for example to inspect the documentation of a certain plugin you can use the <code class="docutils literal notranslate"><span class="pre">--doc</span></code> option. Here we concentrate on the Animator plugin. A simple plugin that creates animations of geospatial data. The basic usage of that command can be retrieved by:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-plugin --doc animator
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Animator (v2022.7.15): Create animations (in gif or mp4 format) This tool creates plots of solr facets and an animation.
+Options:
+input_file              (default: &lt;undefined&gt;)
+                        NetCDF input file(s), you can choose multiple files
+                        separated by a , or use a global pattern for multiple
+                        files chose this option only if you don&#39;t want Freva to
+                        find files by seach facets
+variable                (default: &lt;undefined&gt;) [mandatory]
+                        Variable name (only applicable if you didn&#39;t choose an
+                        input file)
+project                 (default: &lt;undefined&gt;)
+                        Project name (only applicable if you didn&#39;t choose an
+                        input file)
+product                 (default: &lt;undefined&gt;)
+                        Product name (only applicable if you didn&#39;t choose an
+                        input file)
+experiment              (default: &lt;undefined&gt;)
+                        Experiment name (only applicable if you didn&#39;t choose an
+                        input file)
+institute               (default: &lt;undefined&gt;)
+                        Institute name (only applicable if you didn&#39;t choose an
+                        input file)
+model                   (default: &lt;undefined&gt;)
+                        Model name (only applicable if you didn&#39;t choose an
+                        input file)
+time_frequency          (default: &lt;undefined&gt;)
+                        Time frequency name (only applicable if you didn&#39;t
+                        choose an input file)
+ensemble                (default: &lt;undefined&gt;)
+                        Ensemble name (only applicable if you didn&#39;t choose an
+                        input file)
+start                   (default: &lt;undefined&gt;)
+                        Define the first time step to be plotted, leave blank if
+                        taken from data
+end                     (default: &lt;undefined&gt;)
+                        Define the last time step to be plotted, leave blank if
+                        taken from data
+time_mean               (default: &lt;undefined&gt;)
+                        Select a time interval if time averaging/min/max/sum
+                        should be applied along the time axis. This can be D for
+                        daily, M for monthly 6H for 6 hours etc. Leave blank if
+                        the time axis should not be resampled (default) or set
+                        to &lt;em&gt;all&lt;/em&gt; if you want to collapse the time axis.
+time_method             (default: mean)
+                        If resampling of the time axis is chosen (default: no)
+                        set the method: mean, max or min. &lt;b&gt;Note:&lt;/b&gt; This has
+                        only an effect if the above parameter for
+                        &lt;em&gt;time_mean&lt;/em&gt; is set.
+lonlatbox               (default: &lt;undefined&gt;)
+                        Set the extend of a rectangular lonlatbox (left_lon,
+                        right_lat, lower_lat, upper_lat)
+output_unit             (default: &lt;undefined&gt;)
+                        Set the output unit of the variable - leave blank for no
+                        conversion. This can be useful if the unit of the input
+                        files should be converted, for example for
+                        precipitation. Note: Although many conversions are
+                        supported, by using the `pint` conversion library.
+vmin                    (default: &lt;undefined&gt;)
+                        Set the minimum plotting range (leave blank to calculate
+                        from data 1st decile)
+vmax                    (default: &lt;undefined&gt;)
+                        Set the maximum plotting range (leave blank to calculate
+                        the 9th decile)
+cmap                    (default: RdYlBu_r)
+                        Set the colormap, more information on colormaps is
+                        available on the &lt;a href=&#34;https://matplotlib.org/stable/
+                        tutorials/colors/colormaps.html&#34;
+                        target=_blank&gt;matplotlib website&lt;/a&gt;.
+linecolor               (default: k)
+                        Color of the coast lines in the map
+projection              (default: PlateCarree)
+                        Set the global map projection. Note: this should the
+                        name of the cartopy projection method (e.g PlatteCarree
+                        for Cylindrical Projection). Pleas refer to &lt;a href=&#34;htt
+                        ps://scitools.org.uk/cartopy/docs/latest/crs/projections
+                        .html&#34;target=_blank&gt;cartopy website&lt;/a&gt; for details.
+proj_centre             (default: 50)
+                        Set center longitude of the global map projection.
+pic_size                (default: 1360,900)
+                        Set the size of the picture (in pixel)
+plot_title              (default: )
+                        Set plot title
+cbar_label              (default: )
+                        Overwrite default colorbar label by this value
+suffix                  (default: mp4)
+                        Filetype of the animation
+fps                     (default: 5)
+                        Set the frames per seceonds of the output animation.
+extra_scheduler_options (default: --qos=test, --array=20)
+                        Set additional options for the job submission to the
+                        workload manager (, seperated). Note: batchmode and web
+                        only.
+</pre></div></div>
+</div>
+<p>The parameters are also given as <code class="docutils literal notranslate"><span class="pre">key=values</span></code> pairs. But not all of the above parameters are mandatory. Let’s use one project search key and animate its content.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva plugin animator <span class="nv">project</span><span class="o">=</span>observations <span class="nv">variable</span><span class="o">=</span>pr <span class="nv">cmap</span><span class="o">=</span>Blues <span class="nv">fps</span><span class="o">=</span><span class="m">5</span> <span class="nv">output_unit</span><span class="o">=</span>mm/h <span class="nv">vmin</span><span class="o">=</span><span class="m">0</span> <span class="nv">vmax</span><span class="o">=</span><span class="m">5</span> <span class="nv">suffix</span><span class="o">=</span>gif
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Setp 1: Collecting all files
+Step 2: Opening the netcdf-files, collecting metadata
+Step 3: Converting Units
+Step 4: Loading the dataset, getting min/max values
+Step 5: Creating the animation
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 52 seconds
+</pre></div></div>
+</div>
+<p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva plugin animator <span class="nv">project</span><span class="o">=</span>observations <span class="nv">variable</span><span class="o">=</span>pr <span class="nv">cmap</span><span class="o">=</span>Blues <span class="nv">fps</span><span class="o">=</span><span class="m">5</span> <span class="nv">output_unit</span><span class="o">=</span>mm/h <span class="nv">vmin</span><span class="o">=</span><span class="m">0</span> <span class="nv">vmax</span><span class="o">=</span><span class="m">5</span> <span class="nv">suffix</span><span class="o">=</span>gif --batchmode
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Scheduled job with history id: 2121
+You can view the job&#39;s status with the command squeue
+Your job&#39;s progress will be shown with the command
+tail -f /tmp/share/slurm/animator/Animator-29506.out
+</pre></div></div>
+</div>
+</section>
+<section id="Inspecting-previous-analysis-jobs:-the-freva-history-command">
+<h1>Inspecting previous analysis jobs: the freva-history command<a class="headerlink" href="#Inspecting-previous-analysis-jobs:-the-freva-history-command" title="Permalink to this heading"></a></h1>
+<p>Sometimes it can be useful to access the status of past plugin applications. The <code class="docutils literal notranslate"><span class="pre">freva-history</span></code> command or <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">history</span></code> sub-command can do that:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-history --limit <span class="m">1</span> --plugin dummyplugin
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
+2115) dummyplugin [2022-10-10 16:22:38] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-history --entry-ids <span class="m">1</span> --full-text
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+INFO:freva:history, limit=10, since=None, until=None, entry_ids=[&#39;1&#39;]
+</pre></div></div>
+</div>
+<p>To re-run a command of a past configuration you can use the –return-command option to get the command that was used:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-history  --entry-ids <span class="m">136</span> --return-command
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Managing-your-own-datasets:-the-freva-user-data-command">
+<h1>Managing your own datasets: the freva-user-data command<a class="headerlink" href="#Managing-your-own-datasets:-the-freva-user-data-command" title="Permalink to this heading"></a></h1>
+<p>Freva offers the possibility to share custom datasets with other users by making it searchable via <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code>. With help of the <code class="docutils literal notranslate"><span class="pre">freva-user-data</span></code> command users can add their own data to the central data location, (re)-index or delete data in the databrowser.</p>
+<p><strong>Note</strong>: Any data that has been added by users will be assigned a special project name: <code class="docutils literal notranslate"><span class="pre">project=user-$USER</span></code>. Let’s inspect the help menu of the freva-user-data or freva user-data command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-user-data [-h] [-V] {index,add,delete} ...
+
+Update users project data
+
+positional arguments:
+  {index,add,delete}  Available sub-commands:
+    index             Index existing user project data to the databrowser
+    add               Add new user project data to the databrowser
+    delete            Delete existing user project data from the databrowser
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -V, --version       show program&#39;s version number and exit
+</pre></div></div>
+</div>
+<section id="Add-new-data-to-the-databrowser">
+<h2>Add new data to the databrowser<a class="headerlink" href="#Add-new-data-to-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>To be able to add data to the databrowser the file names must follow a strict standard and the files must reside in a specific location. The add sub command takes care about the correct file naming and location. No pre requirements other than the file has to be a valid netCDF or grib file are assumed. In other words this sub command places the user data with the correct naming structure to the correct location.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data add --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-user-data add [-h] [--how {copy,move,symlink,link}] [--override]
+                           [--experiment EXPERIMENT] [--institute INSTITUTE]
+                           [--model MODEL] [--variable VARIABLE]
+                           [--time_frequency TIME_FREQUENCY]
+                           [--ensemble ENSEMBLE] [--debug]
+                           product paths [paths ...]
+
+Add new user project data to the databrowser
+
+positional arguments:
+  product               Product search key the newly added data can be found.
+  paths                 Filename(s) or Directories that are going to be added
+                        to thedatabrowser
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --how {copy,move,symlink,link}
+                        Method of how the data is added into the central freva
+                        user directory. (default: copy)
+  --override, --overwrite
+                        Replace existing files in the user data structre
+                        (default: False)
+  --experiment EXPERIMENT
+                        Set the &lt;experiment&gt; information if they can&#39;t be
+                        found in the meta data (default: None)
+  --institute INSTITUTE
+                        Set the &lt;institute&gt; information if they can&#39;t be found
+                        in the meta data (default: None)
+  --model MODEL         Set the &lt;model&gt; information if they can&#39;t be found in
+                        the meta data (default: None)
+  --variable VARIABLE   Set the &lt;variable&gt; information if they can&#39;t be found
+                        in the meta data (default: None)
+  --time_frequency TIME_FREQUENCY
+                        Set the &lt;time_frequency&gt; information if they can&#39;t be
+                        found in the meta data (default: None)
+  --ensemble ENSEMBLE   Set the &lt;ensemble&gt; information if they can&#39;t be found
+                        in the meta data (default: None)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+</pre></div></div>
+</div>
+<p>Suppose you’ve gotten data from somewhere and want to add this data into the databrowser to make it accessible to others. In this specific example we assume that you have stored your original data in the <code class="docutils literal notranslate"><span class="pre">/tmp/my_awesome_data</span></code> folder. E.g <code class="docutils literal notranslate"><span class="pre">/tmp/my_awesome_data/outfile_0.nc...tmp/my_awesome_data/outfile_9.nc</span></code> The routine will try to gather all necessary metadata from the files. You’ll have to provide additional metadata if mandatory keywords are missing. To make the routine work in this
+example we have to provide the institute, model and experiment keywords:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data add eur-11b /tmp/my_awesome_data/outfile_?.nc <span class="se">\</span>
+--institute clex --model UM-RA2T --experiment Bias-correct
+freva-databrowser <span class="nv">experiment</span><span class="o">=</span>bias-correct
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Status: crawling ...ok
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221010/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+</pre></div></div>
+</div>
+</section>
+<section id="Remove-your-data-from-the-databrowser">
+<h2>Remove your data from the databrowser<a class="headerlink" href="#Remove-your-data-from-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>The delete sub command removes entries from the databrowser and if necessary existing files from the central user data location.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data delete --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-user-data delete [-h] [--delete-from-fs] [--debug]
+                              paths [paths ...]
+
+Delete existing user project data from the databrowser
+
+positional arguments:
+  paths                 The user directory(s) that needs to be crawled
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --delete-from-fs, --delete_from_fs, --delete
+                        Do not only delete the files from the databrowser but
+                        also from file system. (default: False)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+</pre></div></div>
+</div>
+<p>Any data in the central user directory that belongs to the user can be deleted from the databrowser and also from the central data location:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data delete /tmp/user_data/user-<span class="nv">$USER</span>
+freva-databrowser <span class="nv">experiment</span><span class="o">=</span>bias-correct
+</pre></div>
+</div>
+</div>
+</section>
+<section id="(Re)-Index-existing-data-to-the-databrowser">
+<h2>(Re)-Index existing data to the databrowser<a class="headerlink" href="#(Re)-Index-existing-data-to-the-databrowser" title="Permalink to this heading"></a></h2>
+<p>The index subcommand can be used to update the databrowser for existing user data. For example, if data has been removed from the databrowser it can be re-added:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data index --help
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+usage: freva-user-data index [-h] [--data-type {fs}] [--debug] [crawl_dir ...]
+
+Index existing user project data to the databrowser
+
+positional arguments:
+  crawl_dir             The user directory(s) that needs to be crawled
+                        (default: None)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --data-type {fs}, --dtype {fs}
+                        The data type of the data. (default: fs)
+  --debug, -v, -d, --verbose
+                        Use verbose output. (default: False)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-user-data delete /tmp/user_data/user-<span class="nv">$USER</span>
+freva-databrowser <span class="nv">experiment</span><span class="o">=</span>bias-correct
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, CLINT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

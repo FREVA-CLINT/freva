@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Freva’s documentation! &mdash; freva user guide 2208.1.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Freva python module" href="Freva.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> freva user guide
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Freva.html">Freva python module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FrevaCli.html">The Freva command line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Ask Questions and best practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">freva user guide</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Welcome to Freva’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="welcome-to-freva-s-documentation">
+<h1>Welcome to Freva’s documentation!<a class="headerlink" href="#welcome-to-freva-s-documentation" title="Permalink to this heading"></a></h1>
+<a class="reference external image-reference" href="https://badge.fury.io/py/freva"><img alt="https://badge.fury.io/py/freva.svg" src="https://badge.fury.io/py/freva.svg" /></a>
+<a class="reference external image-reference" href="https://gitlab.dkrz.de/freva/evaluation_system/-/releases"><img alt="https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg" src="https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg" /></a>
+<a class="reference external image-reference" href="https://anaconda.org/conda-forge/freva"><img alt="https://anaconda.org/conda-forge/freva/badges/installer/conda.svg" src="https://anaconda.org/conda-forge/freva/badges/installer/conda.svg" /></a>
+<a class="reference external image-reference" href="https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html"><img alt="https://img.shields.io/badge/Freva-Docs-green.svg" src="https://img.shields.io/badge/Freva-Docs-green.svg" /></a>
+<a class="reference external image-reference" href="https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html"><img alt="https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg" src="https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg" /></a>
+<a class="reference external image-reference" href="https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest"><img alt="https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg" src="https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" /></a>
+<a class="reference external image-reference" href="https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md"><img alt="https://anaconda.org/conda-forge/freva/badges/license.svg" src="https://anaconda.org/conda-forge/freva/badges/license.svg" /></a>
+<a class="reference internal image-reference" href="_images/freva_flowchart-new.jpg"><img alt="_images/freva_flowchart-new.jpg" class="align-center" src="_images/freva_flowchart-new.jpg" style="width: 320px;" /></a>
+<p>Freva, the free evaluation system framework, is a data search and analysis
+platform developed by the atmospheric science community for the atmospheric
+science community. With help of Freva researchers can:</p>
+<ul class="simple">
+<li><p>quickly and intuitively search for data stored at typical data centers that
+host many datasets.</p></li>
+<li><p>create a common interface for user defined data analysis tools.</p></li>
+<li><p>apply data analysis tools in a reproducible manner.</p></li>
+</ul>
+<p>Data analysis is realised by user developed data analysis plugins. These plugins
+are code agnostic, meaning that users don’t have to rewrite the core of their
+plugins to make them work with Freva. All that Freva does is providing a user
+interface for the plugins.</p>
+<p>Currently Freva comes in three different flavours:</p>
+<ul class="simple">
+<li><p>a python module that allows the usage of Freva in python environments, like jupyter notebooks</p></li>
+<li><p>a command line interface (cli) that allows using Freva from the command lines and shell scripts.</p></li>
+<li><p>a web user interface (web-ui)</p></li>
+</ul>
+<p>This documentation covers the usage of the python module as well the cli. We
+have also added a section on plugin development for users who want to get started
+with developing their own data analysis plugins and providing them to their
+community. The last section covers the answers to frequently asked questions
+and best practices when it comes to plugin development.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Freva.html">Freva python module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Freva.html#module-freva">The <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Freva.html#the-plugin-module">The <code class="docutils literal notranslate"><span class="pre">plugin</span></code> module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Freva.html#module-0">The <code class="docutils literal notranslate"><span class="pre">history</span></code> module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Freva.html#module-1">The <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FrevaCli.html">The Freva command line interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="FrevaCli.html#searching-for-data-the-freva-databrowser-command">Searching for data: the <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrevaCli.html#running-data-analysis-plugins-the-freva-plugin-command">Running data analysis plugins: the <code class="docutils literal notranslate"><span class="pre">freva-plugin</span></code> command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrevaCli.html#inspecting-previous-analysis-jobs-the-freva-history-command">Inspecting previous analysis jobs: the <code class="docutils literal notranslate"><span class="pre">freva-history</span></code> command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FrevaCli.html#managing-your-own-datasets-the-freva-user-data-command">Managing your own datasets: the <code class="docutils literal notranslate"><span class="pre">freva-user-data</span></code> command</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers_guide.html#module-evaluation_system.api.plugin">A Minimal Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developers_guide.html#setting-up-your-new-plugin">Setting up your new plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugin_api.html#module-evaluation_system.api.plugin">Plugin API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugin_api.html#module-evaluation_system.api.parameters">Parameter API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Ask Questions and best practices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#How-can-I-use-Freva-in-my-analysis-workflows.">How can I use <code class="docutils literal notranslate"><span class="pre">Freva</span></code> in my analysis workflows.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#Best-practice:-Using-the-Freva-module-in-a-plugin">Best practice: Using the <code class="docutils literal notranslate"><span class="pre">Freva</span></code> module in a plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FAQ.html#Best-practice:-Making-calls-to-external-commands-with-complex-command-line-parameters">Best practice: Making calls to external commands with complex command line parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="whats-new.html#v2208-1-1-unreleased">v2208.1.1 [unreleased]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats-new.html#v2208-0-1">v2208.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats-new.html#v2206-0-10">v2206.0.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whats-new.html#v2206-0-1">v2206.0.1</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://k204230.gitlab-pages.dkrz.de/Presentations/FrevaIntro/index.slides.html#/">Freva intro talk</a></dt><dd><p>A short introduction given at the Julich computing centre.</p>
+</dd>
+<dt><a class="reference external" href="https://freva.gitlab-pages.dkrz.de/deployment/index.html">Freva admin docs</a></dt><dd><p>Installation and configuration of the freva services.</p>
+</dd>
+</dl>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Freva.html" class="btn btn-neutral float-right" title="Freva python module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, CLINT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
