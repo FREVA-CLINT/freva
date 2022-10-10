@@ -24,7 +24,7 @@ jobs:
     -
       name: Install freva
       run: |
-        conda create -c conda-forge -n docs -q freva cartopy make
+        conda create -c conda-forge -n docs -y -q freva cartopy make
     -
       name: Setup services
       run: |
