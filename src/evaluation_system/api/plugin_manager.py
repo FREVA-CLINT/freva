@@ -153,9 +153,7 @@ class _PluginStateHandle:
     def _update_plugin_state_in_db_and_quit(self, *args):
         """Update the plugin state of a plugin and quit."""
         self._update_plugin_state_in_db()
-        print(
-            "Recieved termination signal: exiting", file=sys.stderr, flush=True
-        )
+        print("Recieved termination signal: exiting", file=sys.stderr, flush=True)
         sys.exit(1)
 
 
@@ -213,22 +211,16 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
         for path, module_name in plugin_env_iter(os.environ[PLUGIN_ENV]):
             # extend path to be exact by resolving all
             # "user shortcuts" (e.g. '~' or '$HOME')
-            path = os.path.abspath(
-                os.path.expandvars(os.path.expanduser(path))
-            )
+            path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
             if os.path.isdir(path):
                 # we have a plugin_imp with defined api
                 sys.path.append(path)
                 # TODO this is not working like in the previous loop. Though we might
                 # just want to remove it, as there seem to be no use for this info...
-                __plugin_modules__[module_name] = os.path.join(
-                    path, module_name
-                )
+                __plugin_modules__[module_name] = os.path.join(path, module_name)
                 extra_plugins.append(module_name)
             else:
-                log.warning(
-                    "Cannot load %s, directory missing: %s", module_name, path
-                )
+                log.warning("Cannot load %s, directory missing: %s", module_name, path)
     # the same for user specific env variable
     if user_name:  # is it possible for User().getName() to be None?
         if PLUGIN_ENV + "_" + user_name in os.environ:
@@ -238,18 +230,14 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
             ):
                 # extend path to be exact by resolving all
                 # "user shortcuts" (e.g. '~' or '$HOME')
-                path = os.path.abspath(
-                    os.path.expandvars(os.path.expanduser(path))
-                )
+                path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
                 if os.path.isdir(path):
                     # we have a plugin_imp with defined api
                     sys.path.append(path)
                     # TODO this is not working like in the previous loop. Though we
                     # might just want to remove it, as there seem to be no use for
                     # this info...
-                    __plugin_modules__[module_name] = os.path.join(
-                        path, module_name
-                    )
+                    __plugin_modules__[module_name] = os.path.join(path, module_name)
                     extra_plugins.append(module_name)
                 else:
                     log.warning(
@@ -283,9 +271,7 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
                 sys.path.append(py_dir)
                 __plugin_modules__[plugin_name] = os.path.join(py_dir, py_mod)
         else:
-            log.warning(
-                "Cannot load '%s' directory missing: %s", plugin_name, py_dir
-            )
+            log.warning("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
     for plugin_name, plugin_mod in __plugin_modules__.items():
 
@@ -310,10 +296,7 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
             log.warning(f"Error loading plugin {plugin_name}: {e}")
             continue
 
-        if (
-            class_name_str != ""
-            and class_name_str.lower() not in __plugins_meta.keys()
-        ):
+        if class_name_str != "" and class_name_str.lower() not in __plugins_meta.keys():
             __plugins_meta[class_name_str.lower()] = PluginMetadata(
                 name=class_name_str,
                 plugin_class=class_name_str,
@@ -557,9 +540,7 @@ def write_setup(
     """
     plugin_name = plugin_name.lower()
     user = user or User()
-    cfg = cast(
-        Dict[str, Union[str, int, float, bool, None]], config_dict or {}
-    )
+    cfg = cast(Dict[str, Union[str, int, float, bool, None]], config_dict or {})
     p = get_plugin_instance(plugin_name, user)
     complete_conf = p.setup_configuration(
         config_dict=cfg, check_cfg=False, substitute=False
@@ -597,18 +578,13 @@ def _preview_copy(source_path: str, dest_path: str) -> None:
 
     extension = Path(source_path).suffix
     supported = Image.registered_extensions()
-    if (
-        extension in supported
-        and supported[extension] not in IMAGE_RESIZE_EXCEPTIONS
-    ):
+    if extension in supported and supported[extension] not in IMAGE_RESIZE_EXCEPTIONS:
         _preview_convert(source_path, dest_path)
     else:
         shutil.copyfile(source_path, dest_path)
 
 
-def _preview_convert(
-    source_path: str, dest_path: str, width: int = 800
-) -> None:
+def _preview_convert(source_path: str, dest_path: str, width: int = 800) -> None:
     """Resizes and converts image
 
     Resulting image format is based on dest_path file extension
@@ -650,9 +626,7 @@ def _preview_generate_name(plugin_name: str, metadata: dict[str, Any]) -> str:
     str
         Generated filename string
     """
-    random_suffix = "".join(
-        random.choice(string.ascii_letters) for i in range(8)
-    )
+    random_suffix = "".join(random.choice(string.ascii_letters) for i in range(8))
     ctime = metadata.get("timestamp", "")
     if ctime:
         time_string = datetime.fromtimestamp(ctime).strftime("%Y%m%d_%H%M%S")
@@ -660,9 +634,7 @@ def _preview_generate_name(plugin_name: str, metadata: dict[str, Any]) -> str:
     return plugin_name + "_" + ctime + random_suffix
 
 
-def _preview_unique_file(
-    plugin_name: str, ext: str, metadata: dict[str, str]
-) -> str:
+def _preview_unique_file(plugin_name: str, ext: str, metadata: dict[str, str]) -> str:
     """Creates a unique filename for the preview
 
     Parameters
@@ -845,9 +817,7 @@ def run_tool(
 def schedule_tool(
     plugin_name: str,
     log_directory: Optional[str] = None,
-    config_dict: Optional[
-        dict[str, Optional[Union[str, int, bool, float]]]
-    ] = None,
+    config_dict: Optional[dict[str, Optional[Union[str, int, bool, float]]]] = None,
     user: Optional[User] = None,
     caption: Optional[str] = None,
     extra_options: list[str] = [],
@@ -935,9 +905,7 @@ def schedule_tool(
     )
     # set the slurm output file
     schedule_entry = user.getUserDB()
-    schedule_entry.scheduleEntry(
-        rowid, user.getName(), str(job_status.std_out)
-    )
+    schedule_entry.scheduleEntry(rowid, user.getName(), str(job_status.std_out))
     # create a standard slurm file to view with less
     with open(job_status.std_out, "w") as the_file:
         if job_status.submit_status:
@@ -1133,15 +1101,11 @@ def get_command_string_from_row(
     str
         CLI command string to run this command.
     """
-    config = get_command_config_from_row(
-        history_row, command_name, command_options
-    )
+    config = get_command_config_from_row(history_row, command_name, command_options)
     return get_command_string_from_config(config)
 
 
-def load_scheduled_conf(
-    plugin_name: str, entry_id: int, user: User
-) -> dict[str, str]:
+def load_scheduled_conf(plugin_name: str, entry_id: int, user: User) -> dict[str, str]:
     """Loads the configuration from a scheduled plug-in.
 
     Parameters
@@ -1163,9 +1127,7 @@ def load_scheduled_conf(
     row = h[0]
     # scheduled jobs only
     if row.status != History.processStatus.scheduled:
-        raise Exception(
-            "This is not a scheduled job (status %i)!" % row.status
-        )
+        raise Exception("This is not a scheduled job (status %i)!" % row.status)
     return row.config_dict()
 
 
@@ -1259,9 +1221,7 @@ def follow_history_tag(history_id: int, user: User, info: str = "") -> None:
         history_id_id=history_id, type=tagType, uid_id=user_name
     )
     if len(rows) == 0:
-        user.getUserDB().addHistoryTag(
-            history_id, tagType, info, uid=user_name
-        )
+        user.getUserDB().addHistoryTag(history_id, tagType, info, uid=user_name)
 
 
 def unfollow_history_tag(history_id: int, user: User) -> None:
@@ -1345,17 +1305,13 @@ def get_version(pluginname: str) -> tuple[int, int, int]:
     version_id = (
         User()
         .getUserDB()
-        .getVersionId(
-            tool_name, version, "", version_api, repos_tool, version_tool
-        )
+        .getVersionId(tool_name, version, "", version_api, repos_tool, version_tool)
     )
     if version_id is None:
         version_id = (
             User()
             .getUserDB()
-            .newVersion(
-                tool_name, version, "", version_api, repos_tool, version_tool
-            )
+            .newVersion(tool_name, version, "", version_api, repos_tool, version_tool)
         )
     return version_id
 
@@ -1383,9 +1339,7 @@ def dict2conf(
     paramstring = []
     tool = get_plugin_instance(toolname, user)
     for key, value in conf_dict.items():
-        o = Parameter.objects.filter(
-            tool=toolname, parameter_name=key
-        ).order_by("-id")
+        o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by("-id")
         if len(o) == 0:
             string = "Parameter <%s> not found" % key
             raise ParameterNotFoundError(string)
@@ -1424,9 +1378,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         The type is variable length but this will only ever return
         a 2 element tuple when given a well formed string.
     """
-    return (
-        i.strip().partition(",")[::2] for i in envvar.split(":") if i.strip()
-    )
+    return (i.strip().partition(",")[::2] for i in envvar.split(":") if i.strip())
 
 
 def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:
