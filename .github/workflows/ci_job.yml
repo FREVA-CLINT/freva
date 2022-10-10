@@ -25,7 +25,7 @@ jobs:
     -
       name: Install freva
       run: |
-        conda create -c conda-forge -n -q docs freva make
+        conda create -c conda-forge -n docs -q freva make
     -
       name: Setup services
       run: |
