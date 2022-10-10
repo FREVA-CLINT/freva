@@ -26,13 +26,16 @@ jobs:
       run: |
         conda create -c conda-forge -n docs -y -q freva cartopy make
     -
-      name: Setup services
+      name: Set up services
       run: |
         docker-compose up -d --remove-orphans
     -
-      name: Create docs
+      name: Preparing docs
       run: |
         conda run -n docs make prepdocs
+    -
+      name:
+      run: |
         conda run -n docs make docs
     -
       name: Publish docs
@@ -46,7 +49,7 @@ jobs:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive
     strategy:
-        max-parallel: 3
+        max-parallel: 1
         matrix:
           python-version: [3.8, 3.9, "3.10"]
     steps:
@@ -70,7 +73,7 @@ jobs:
       run: |
         conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
     -
-      name: Setup services
+      name: Set up services
       run: |
         docker-compose up -d --remove-orphans
     -
