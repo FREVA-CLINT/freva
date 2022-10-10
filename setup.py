@@ -152,6 +152,7 @@ setup(
     setup_requires=["appdirs"],
     extras_require={
         "docs": [
+            "bash_kernel",
             "cartopy",
             "cftime",
             "cf_xarray",

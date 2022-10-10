@@ -35,7 +35,7 @@ jobs:
       run: |
         conda run -n docs make prepdocs
     -
-      name:
+      name: Creating docs
       run: |
         conda run -n docs make docs
     -
