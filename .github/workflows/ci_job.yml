@@ -12,7 +12,7 @@ jobs:
       EVALUATION_SYSTEM_CONFIG_FILE: .docker/evaluation_system.conf
       GIT_SUBMODULE_STRATEGY: recursive
     strategy:
-        max-parallel: 5
+        max-parallel: 1
         matrix:
           python-version: [3.8, 3.9, "3.10"]
     steps:
