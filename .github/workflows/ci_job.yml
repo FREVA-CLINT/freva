@@ -65,17 +65,13 @@ jobs:
         # Upload entire repository
         path: './docs/build/html'
         name: github-pages
-  deploy:
-    needs: docs
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      -
-        name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+    -
+      name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      # if: ${{ github.ref == 'refs/heads/main' }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build/html
   test:
     runs-on: ubuntu-latest
     env:
