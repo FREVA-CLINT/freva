@@ -11,6 +11,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  deployments: write
 
 # Allow one concurrent deployment
 concurrency:
@@ -63,17 +64,18 @@ jobs:
       with:
         # Upload entire repository
         path: './docs/build/html'
-    -
-      name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v1
-    -
-      name: Trigger RTDs build
-      uses: dfm/rtds-action@v1
-      with:
-        webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
-        webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
-        commit_ref: ${{ github.ref }}
+        name: github-pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      -
+        name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
   test:
     runs-on: ubuntu-latest
     env:
