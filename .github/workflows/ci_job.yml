@@ -50,7 +50,7 @@ jobs:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive
     strategy:
-        max-parallel: 1
+        max-parallel: 4
         matrix:
           python-version: [3.8, 3.9, "3.10"]
     steps:
