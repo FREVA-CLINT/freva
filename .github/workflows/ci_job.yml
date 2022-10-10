@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is testing the code
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: antarcticrainforest/freva-dev
+    runs-on: ubuntu-latest
     env:
       CONDA_ENV: freva-dev
       NUMEXPR_MAX_THREADS: 8
@@ -34,11 +34,15 @@ jobs:
       env:
         PYTHON_VERSION: ${{ matrix.python-version }}
       run: |
-        python deploy.py /tmp/freva -e -s --packages xarray gitpython pandoc mysqlclient
+        conda create -n test -y python=${{matrix.python-version}} xarray gitpython pandoc mysqlclient make
+    -
+      name: Setup services
+      run: |
+        docker-compose up -d --remove-orphans
     -
       name: Running tests for python ${{ matrix.python-version }}
       run: |
-        make test_coverage
+        conda run -n test make test_coverage
     -
       name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
