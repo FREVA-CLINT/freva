@@ -13,8 +13,53 @@ concurrency:
 
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NUMEXPR_MAX_THREADS: 8
+      GIT_SUBMODULE_STRATEGY: recursive
+    strategy:
+        max-parallel: 4
+        matrix:
+          python-version: [3.8, 3.9, "3.10"]
+    steps:
+    -
+      name: Ceckout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    -
+      name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{matrix.python-versoin}}
+    -
+      name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    -
+      name: Creating conda python ${{ matrix.python-version }} env
+      run: |
+        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
+    -
+      name: Set up services
+      run: |
+        docker-compose up -d --remove-orphans
+    -
+      name: Install dependencies on python ${{matrix.python-version}}
+      run: |
+        conda run -n test python3 -m pip install -e .[test]
+    -
+      name: Running tests for python ${{ matrix.python-version }}
+      run: |
+        conda run -n test make test_coverage
+    -
+      name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
   docs:
     runs-on: ubuntu-latest
+    needs: test
     permissions:
       contents: write
     env:
@@ -66,47 +111,3 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/build/html
-  test:
-    runs-on: ubuntu-latest
-    env:
-      NUMEXPR_MAX_THREADS: 8
-      GIT_SUBMODULE_STRATEGY: recursive
-    strategy:
-        max-parallel: 4
-        matrix:
-          python-version: [3.8, 3.9, "3.10"]
-    steps:
-    -
-      name: Ceckout
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    -
-      name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{matrix.python-versoin}}
-    -
-      name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    -
-      name: Creating conda python ${{ matrix.python-version }} env
-      run: |
-        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
-    -
-      name: Set up services
-      run: |
-        docker-compose up -d --remove-orphans
-    -
-      name: Install dependencies on python ${{matrix.python-version}}
-      run: |
-        conda run -n test python3 -m pip install -e .[test]
-    -
-      name: Running tests for python ${{ matrix.python-version }}
-      run: |
-        conda run -n test make test_coverage
-    -
-      name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1

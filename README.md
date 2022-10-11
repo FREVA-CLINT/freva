@@ -6,7 +6,7 @@
 [![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva-clint.github.io/freva)
 [![codecov](https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg)](https://codecov.io/gh/FREVA-CLINT/freva)
 [![Pipeline](https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg)](https://github.com/FREVA-CLINT/freva/actions)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/FREVA-CLINT/freva/main?labpath=Readme.ipynb)
 [![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/FREVA-CLINT/freva)
 
 <img src="docs/source/_static/freva_flowchart-new.jpg" alt="Freva" width="400"/>
