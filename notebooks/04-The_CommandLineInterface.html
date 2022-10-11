@@ -602,17 +602,17 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, et
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-model: cpc
-institute: cpc
-product: grid
-realm: atmos
-time_frequency: 30min
-ensemble: r1i1p1
-variable: pr
-experiment: cmorph
-cmor_table: 30min
 dataset: testdata
+cmor_table: 30min
+realm: atmos
+model: cpc
 project: observations
+variable: pr
+time_frequency: 30min
+product: grid
+institute: cpc
+experiment: cmorph
+ensemble: r1i1p1
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -853,7 +853,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 49 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 43 seconds
 Recieved termination signal: exiting
 </pre></div></div>
 </div>
@@ -874,7 +874,7 @@ Recieved termination signal: exiting
 Scheduled job with history id: 2121
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-238.out
+tail -f /tmp/share/slurm/animator/Animator-27444.out
 </pre></div></div>
 </div>
 </section>
@@ -895,7 +895,7 @@ tail -f /tmp/share/slurm/animator/Animator-238.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2022-10-11 07:40:35] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2022-10-11 14:17:49] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">

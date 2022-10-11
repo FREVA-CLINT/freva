@@ -15,7 +15,7 @@ Welcome to Freva's documentation!
    :target: https://anaconda.org/conda-forge/freva
 .. image:: https://img.shields.io/badge/Freva-Docs-green.svg
    :target: https://freva-clint.github.io/freva
-.. image:: https://codecov.io/gh/FREVA-CLINT/freva/branch/master/graph/badge.svg?token=2ZCEDPJ34M
+.. image:: https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/FREVA-CLINT/freva
 .. image:: https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg
    :target: https://github.com/FREVA-CLINT/freva/actions
