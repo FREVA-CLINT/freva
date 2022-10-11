@@ -1,13 +1,13 @@
 # Free Evaluation System Framework
 
 [![PyPI version](https://badge.fury.io/py/freva.svg)](https://badge.fury.io/py/freva)
-[![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/releases)
+[![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://github.com/FREVA-CLINT/freva)
 [![Conda](https://anaconda.org/conda-forge/freva/badges/installer/conda.svg)](https://anaconda.org/conda-forge/freva)
-[![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html)
-[![Coverage](https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg)](https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html)
-[![Pipeline](https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest)
+[![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva-clint.github.io/freva)
+[![codecov](https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg)](https://codecov.io/gh/FREVA-CLINT/freva)
+[![Pipeline](https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg)](https://github.com/FREVA-CLINT/freva/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD)
-[![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md)
+[![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/FREVA-CLINT/freva)
 
 <img src="docs/source/_static/freva_flowchart-new.jpg" alt="Freva" width="400"/>
 
@@ -38,7 +38,7 @@ Currently Freva comes in three different flavours:
 
 ## Where can I find the Freva user documentation?
 A more detailed overview on the usage of freva can be found on the
-[freva user documentation page](https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html)
+[freva user documentation page](https://freva-clint.github.io/freva)
 
 
 
