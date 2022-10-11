@@ -10,19 +10,19 @@ Welcome to Freva's documentation!
 .. image:: https://badge.fury.io/py/freva.svg
    :target: https://badge.fury.io/py/freva
 .. image:: https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg
-   :target: https://gitlab.dkrz.de/freva/evaluation_system/-/releases
+   :target: https://github.com/FREVA-CLINT/freva
 .. image:: https://anaconda.org/conda-forge/freva/badges/installer/conda.svg
    :target: https://anaconda.org/conda-forge/freva
 .. image:: https://img.shields.io/badge/Freva-Docs-green.svg
-   :target: https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html
-.. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/coverage.svg
-   :target: https://freva.gitlab-pages.dkrz.de/evaluation_system/coverage_report/index.html
-.. image:: https://gitlab.dkrz.de/freva/evaluation_system/badges/freva-dev/pipeline.svg
-   :target: https://gitlab.dkrz.de/freva/evaluation_system/-/pipelines/latest
+   :target: https://freva-clint.github.io/freva
+.. image:: https://codecov.io/gh/FREVA-CLINT/freva/branch/master/graph/badge.svg?token=2ZCEDPJ34M
+   :target: https://codecov.io/gh/FREVA-CLINT/freva
+.. image:: https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg
+   :target: https://github.com/FREVA-CLINT/freva/actions
 .. image:: https://mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD
 .. image:: https://anaconda.org/conda-forge/freva/badges/license.svg
-   :target: https://gitlab.dkrz.de/freva/evaluation_system/-/blob/freva-dev/LICENSE.md
+   :target: https://github.com/FREVA-CLINT/freva/blob/main/LICENSE.md
 
 
 .. image:: _static/freva_flowchart-new.jpg
