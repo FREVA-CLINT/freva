@@ -35,7 +35,9 @@ class DataReader:
     """The drs holding metadata for user data information."""
 
     def __init__(
-        self, paths: Union[os.PathLike, Collection[os.PathLike]], **defaults: str
+        self,
+        paths: Union[os.PathLike, Collection[os.PathLike]],
+        **defaults: str,
     ) -> None:
 
         self.paths = paths
@@ -131,7 +133,7 @@ class DataReader:
 
         try:
             with xr.open_mfdataset(
-                str(file_name), parallel=True, use_cftime=True
+                str(file_name), parallel=False, use_cftime=True
             ) as dset:
                 time_freq = dset.attrs.get("frequency", "")
                 data_vars = map(str, dset.data_vars)

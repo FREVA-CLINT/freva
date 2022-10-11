@@ -1377,10 +1377,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         The type is variable length but this will only ever return
         a 2 element tuple when given a well formed string.
     """
-    return map(
-        lambda item: tuple([e.strip() for e in item.split(",")]),
-        envvar.split(":"),
-    )
+    return (i.strip().partition(",")[::2] for i in envvar.split(":") if i.strip())
 
 
 def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:
