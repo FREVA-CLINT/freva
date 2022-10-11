@@ -20,7 +20,7 @@ Welcome to Freva's documentation!
 .. image:: https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg
    :target: https://github.com/FREVA-CLINT/freva/actions
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.dkrz.de%2Ffreva%2Fevaluation_system.git/HEAD
+ :target: https://mybinder.org/v2/gh/FREVA-CLINT/freva/main?labpath=Readme.ipynb
 .. image:: https://anaconda.org/conda-forge/freva/badges/license.svg
    :target: https://github.com/FREVA-CLINT/freva/blob/main/LICENSE.md
 
