@@ -3,7 +3,7 @@ GitPython==3.1.27
 Pillow==9.0.1
 PyPDF2==2.8.1
 appdirs==1.4.4
-dask==2022.02.1
+dask==2022.9.2
 h5netcdf==1.0.1
 humanize==4.2.3
 lazy-import==0.2.2
