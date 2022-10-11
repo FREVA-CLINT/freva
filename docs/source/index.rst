@@ -70,7 +70,7 @@ and best practices when it comes to plugin development.
 
 .. seealso::
 
-   `Freva intro talk <https://k204230.gitlab-pages.dkrz.de/Presentations/FrevaIntro/index.slides.html#/>`_
+   `Freva intro talk <https://freva-clint.github.io/Talks/FrevaIntro/index.slides.html#/>`_
         A short introduction given at the Julich computing centre.
    `Freva admin docs <https://freva.gitlab-pages.dkrz.de/deployment/index.html>`_
         Installation and configuration of the freva services.
