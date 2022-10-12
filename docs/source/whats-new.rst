@@ -5,8 +5,32 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2208.1.1 [unreleased]
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+v2210.0.0 [unreleased]
+~~~~~~~~~~~~~~~~~~~~~~
+
+New Features
+++++++++++++
+
+Breaking changes
+++++++++++++++++
+
+Deprecations
+++++++++++++
+
+Bug fixes
++++++++++
+- Only save the hostname when submitting jobs, not the host + domain name
+
+Documentations
+++++++++++++++
+
+Internal Changes
+++++++++++++++++
+
+
+
+v2208.1.1
+~~~~~~~~~
 
 New Features
 ++++++++++++
