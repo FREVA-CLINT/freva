@@ -194,10 +194,10 @@ was given a value (str or list[str])</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f1d43497820&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7fa71a8160a0&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
-[&#39;model&#39;, &#39;product&#39;, &#39;institute&#39;, &#39;realm&#39;, &#39;experiment&#39;, &#39;time_frequency&#39;, &#39;cmor_table&#39;, &#39;project&#39;, &#39;dataset&#39;, &#39;ensemble&#39;, &#39;variable&#39;]
+[&#39;variable&#39;, &#39;institute&#39;, &#39;model&#39;, &#39;time_frequency&#39;, &#39;product&#39;, &#39;realm&#39;, &#39;dataset&#39;, &#39;ensemble&#39;, &#39;cmor_table&#39;, &#39;experiment&#39;, &#39;project&#39;]
 </pre></div>
 </div>
 <p>Search for files between a two given time steps:</p>
@@ -241,7 +241,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [&#39;cpc&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [&#39;pr&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;project&#39;: [&#39;observations&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -266,7 +266,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [], &#39;product&#39;: [], &#39;institute&#39;: [], &#39;realm&#39;: [], &#39;experiment&#39;: [], &#39;time_frequency&#39;: [], &#39;cmor_table&#39;: [], &#39;project&#39;: [], &#39;dataset&#39;: [], &#39;ensemble&#39;: [], &#39;variable&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [], &#39;institute&#39;: [], &#39;model&#39;: [], &#39;time_frequency&#39;: [], &#39;product&#39;: [], &#39;realm&#39;: [], &#39;dataset&#39;: [], &#39;ensemble&#39;: [], &#39;cmor_table&#39;: [], &#39;experiment&#39;: [], &#39;project&#39;: []}
 </pre></div>
 </div>
 <p>Check the number of files in the system</p>
@@ -450,16 +450,16 @@ and <code class="docutils literal notranslate"><span class="pre">experiment</spa
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div>
 </div>
 <p>By default the data is copied. By using the <code class="docutils literal notranslate"><span class="pre">how</span></code> keyword you can

@@ -382,7 +382,7 @@ positional arguments:
     user-data           Update users project data
     esgf                Search/Download ESGF the data catalogue.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -V, --version         show program&#39;s version number and exit
 
@@ -415,7 +415,7 @@ Find data in the system.
 positional arguments:
   facets                Search facet(s) (default: None)
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --multiversion        Select not only the latest version. (default: False)
   --relevant-only       Show only search with results &gt;1 possible values
@@ -469,7 +469,7 @@ Find data in the system.
 positional arguments:
   facets                Search facet(s) (default: None)
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --multiversion        Select not only the latest version. (default: False)
   --relevant-only       Show only search with results &gt;1 possible values
@@ -602,17 +602,17 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, et
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+dataset: testdata
 realm: atmos
-institute: cpc
 project: observations
 ensemble: r1i1p1
+cmor_table: 30min
 model: cpc
 experiment: cmorph
-dataset: testdata
-product: grid
-time_frequency: 30min
 variable: pr
-cmor_table: 30min
+institute: cpc
+time_frequency: 30min
+product: grid
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -680,7 +680,7 @@ Apply data analysis plugin.
 positional arguments:
   plugin_name           Plugin name (default: None)
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --repo-version        Show the version number from the repository (default:
                         False)
@@ -873,7 +873,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_2
 Scheduled job with history id: 2121
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-16477.out
+tail -f /tmp/share/slurm/animator/Animator-10273.out
 </pre></div></div>
 </div>
 </section>
@@ -894,7 +894,7 @@ tail -f /tmp/share/slurm/animator/Animator-16477.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2022-10-11 14:57:09] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2022-10-12 06:58:54] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -950,7 +950,7 @@ positional arguments:
     add               Add new user project data to the databrowser
     delete            Delete existing user project data from the databrowser
 
-optional arguments:
+options:
   -h, --help          show this help message and exit
   -V, --version       show program&#39;s version number and exit
 </pre></div></div>
@@ -985,7 +985,7 @@ positional arguments:
   paths                 Filename(s) or Directories that are going to be added
                         to thedatabrowser
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --how {copy,move,symlink,link}
                         Method of how the data is added into the central freva
@@ -1030,16 +1030,16 @@ freva-databrowser <span class="nv">experiment</span><span class="o">=</span>bias
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221011/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20221012/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
@@ -1067,7 +1067,7 @@ Delete existing user project data from the databrowser
 positional arguments:
   paths                 The user directory(s) that needs to be crawled
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --delete-from-fs, --delete_from_fs, --delete
                         Do not only delete the files from the databrowser but
@@ -1111,7 +1111,7 @@ positional arguments:
   crawl_dir             The user directory(s) that needs to be crawled
                         (default: None)
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --data-type {fs}, --dtype {fs}
                         The data type of the data. (default: fs)
