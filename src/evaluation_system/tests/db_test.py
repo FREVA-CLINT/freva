@@ -167,9 +167,7 @@ def test_create_user(dummy_user):
     from django.contrib.auth.models import User
 
     User.objects.filter(username="new_user").delete()
-    dummy_user.user.getUserDB().createUser(
-        "new_user", "test@test.de", "Test", "User"
-    )
+    dummy_user.user.getUserDB().createUser("new_user", "test@test.de", "Test", "User")
     assert User.objects.filter(username="new_user").exists()
     User.objects.filter(username="new_user").delete()
 
@@ -178,12 +176,8 @@ def test_create_user_crawl(dummy_user):
     from evaluation_system.model.solr_models.models import UserCrawl
     from django.contrib.auth.models import User
 
-    dummy_user.user.getUserDB().createUser(
-        "new_user", "test@test.de", "t", "u"
-    )
-    dummy_user.user.getUserDB().create_user_crawl(
-        "/some/test/folder", "new_user"
-    )
+    dummy_user.user.getUserDB().createUser("new_user", "test@test.de", "t", "u")
+    dummy_user.user.getUserDB().create_user_crawl("/some/test/folder", "new_user")
     assert UserCrawl.objects.filter(
         status="waiting", path_to_crawl="/some/test/folder"
     ).exists()
