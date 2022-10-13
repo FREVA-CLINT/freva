@@ -355,11 +355,10 @@ class PluginAbstract(abc.ABC):
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):
         """Set an interactive job as running."""
-        host = socket.getfqdn()
         try:
             hist = hist_model.History.objects.get(id=rowid)
             hist.slurm_output = str(self.plugin_output_file)
-            hist.host = host.partition(".")[0]
+            hist.host = socket.gethostname().partition(".")[0]
             hist.status = hist_model.History.processStatus.running
             hist.save()
         except hist_model.History.DoesNotExist:

@@ -156,7 +156,7 @@ class UserDB(object):
         )
 
         h.slurm_output = slurmFileName
-        h.host = socket.gethostbyname(socket.gethostname())
+        h.host = socket.gethostname().partition(".")[0]
         h.status = status or hist.History.processStatus.scheduled
 
         h.save()

@@ -32,7 +32,7 @@ def test_schedule_entry(dummy_user, dummy_history):
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.status == dummy_history.processStatus.scheduled
     assert h.slurm_output == "/slurm/output/file.txt"
-    assert h.host == socket.gethostbyname(socket.gethostname())
+    assert socket.gethostname().startswith(h.host)
 
 
 def test_upgrade_status(dummy_user, dummy_history):
@@ -43,7 +43,9 @@ def test_upgrade_status(dummy_user, dummy_history):
         )
 
     dummy_user.user.getUserDB().upgradeStatus(
-        dummy_user.row_id, dummy_user.username, dummy_history.processStatus.finished
+        dummy_user.row_id,
+        dummy_user.username,
+        dummy_history.processStatus.finished,
     )
     h = dummy_history.objects.get(id=dummy_user.row_id)
     assert h.status == dummy_history.processStatus.finished
@@ -96,7 +98,10 @@ def test_update_history_tag(dummy_user):
     from evaluation_system.model.history.models import History, HistoryTag
 
     dummy_user.user.getUserDB().addHistoryTag(
-        dummy_user.row_id, HistoryTag.tagType.note_public, "Some note", uid="user"
+        dummy_user.row_id,
+        HistoryTag.tagType.note_public,
+        "Some note",
+        uid="user",
     )
     h_tag = History.objects.get(id=dummy_user.row_id).historytag_set.last()
     dummy_user.user.getUserDB().updateHistoryTag(
@@ -136,13 +141,23 @@ def test_version(dummy_user):
     Version.objects.all().delete()
     # create version entry
     version_id = dummy_user.user.getUserDB().newVersion(
-        "dummyplugin", "1.0", "git", "git_number", "tool_git", "tool_git_number"
+        "dummyplugin",
+        "1.0",
+        "git",
+        "git_number",
+        "tool_git",
+        "tool_git_number",
     )
     assert Version.objects.filter(id=version_id).exists()
 
     # get version entry
     get_version_id = dummy_user.user.getUserDB().getVersionId(
-        "dummyplugin", "1.0", "git", "git_number", "tool_git", "tool_git_number"
+        "dummyplugin",
+        "1.0",
+        "git",
+        "git_number",
+        "tool_git",
+        "tool_git_number",
     )
     assert version_id == get_version_id
     Version.objects.all().delete()
@@ -171,14 +186,20 @@ def test_create_user_crawl(dummy_user):
 
 
 def test_timestamp_to_string():
-    from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
+    from evaluation_system.model.db import (
+        timestamp_to_string,
+        timestamp_from_string,
+    )
 
     time = datetime.now()
     assert timestamp_to_string(time) == time.strftime("%Y-%m-%d %H:%M:%S.%f")
 
 
 def test_timestamp_from_string():
-    from evaluation_system.model.db import timestamp_to_string, timestamp_from_string
+    from evaluation_system.model.db import (
+        timestamp_to_string,
+        timestamp_from_string,
+    )
 
     time = datetime.now()
     time_str = timestamp_to_string(time)
