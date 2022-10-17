@@ -111,9 +111,7 @@ def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
 
-    res, _ = freva.run_plugin(
-        "dummyplugin", the_number=32, caption="Some caption"
-    )
+    res, _ = freva.run_plugin("dummyplugin", the_number=32, caption="Some caption")
     assert res == 0
     _, res = freva.run_plugin("dummyplugin", the_number=32, show_config=True)
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
@@ -122,9 +120,7 @@ def test_run_pyclientplugin(dummy_history):
         """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
 extra_scheduler_options: - (default: )""",
     )
-    return_val, repo = freva.run_plugin(
-        "dummyplugin", the_number=32, repo_version=True
-    )
+    return_val, repo = freva.run_plugin("dummyplugin", the_number=32, repo_version=True)
     assert "repository" in repo.lower()
     assert "version" in repo.lower()
 
@@ -139,9 +135,7 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
     with pytest.raises(ValidationError):
         run_cli(["plugin", "dummyplugin"])
     # test run tool
-    run_cli(
-        ["plugin", "dummyplugin", "the_number=32", '--caption="Some caption"']
-    )
+    run_cli(["plugin", "dummyplugin", "the_number=32", '--caption="Some caption"'])
     output_str = capsys.readouterr().out
     assert "Dummy tool was run" in output_str
     assert "the_number" in output_str
