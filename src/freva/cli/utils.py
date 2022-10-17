@@ -144,19 +144,6 @@ class BaseParser:
         SolrCli(call_parser)
 
     @staticmethod
-    def parse_doc(subparser: argparse._SubParsersAction) -> None:
-        """Parse the docu update command."""
-        from .admin.doc import DocCli
-
-        call_parser = subparser.add_parser(
-            "doc",
-            help=DocCli.desc,
-            description=DocCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        DocCli(call_parser)
-
-    @staticmethod
     def parse_esgf(subparsers: argparse._SubParsersAction) -> None:
         """Parse the esgf command."""
         from .esgf import EsgfCli
@@ -195,7 +182,6 @@ class BaseParser:
         admin_commands: dict[str, subparser_func_type] = {
             "solr": cls.parse_solr,
             "check": cls.parse_check,
-            "doc": cls.parse_doc,
         }
         if is_admin():
             return {**sub_commands, **admin_commands}

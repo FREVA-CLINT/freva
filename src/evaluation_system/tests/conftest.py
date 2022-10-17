@@ -112,28 +112,6 @@ def dummy_key(time_mock):
         yield tf.name
 
 
-@pytest.fixture(scope="module")
-def plugin_doc():
-
-    with TemporaryDirectory() as td:
-        dummy_doc = Path(td) / "dummy_plugin_doc.tex"
-        dummy_bib = Path(td) / "dummy_plugin.bib"
-        with (dummy_doc).open("w") as f:
-            f.write(
-                """\\documentclass[12pt]{article}
-\\usepackage[utf8]{inputenc}
-\\begin{document}
-This is a dummy doc
-\\end{document}"""
-            )
-        with (dummy_doc).open("w") as f:
-            f.write(
-                """% This file was created with JabRef 2.9.2.
-% Encoding: UTF-8"""
-            )
-        yield dummy_doc
-
-
 @pytest.fixture(scope="session")
 def admin_env(time_mock, dummy_key):
     yield from mock_config(dummy_key, admin=True, patch_env=False)

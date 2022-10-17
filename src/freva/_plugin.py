@@ -24,9 +24,6 @@ utils = lazy_import.lazy_module("evaluation_system.misc.utils")
 PluginNotFoundError = lazy_import.lazy_callable(
     "evaluation_system.misc.exceptions.PluginNotFoundError"
 )
-ToolPullRequest = lazy_import.lazy_class(
-    "evaluation_system.model.plugins.models.ToolPullRequest"
-)
 
 
 CACHE_FILE = Path(appdirs.user_cache_dir()) / "freva" / "plugins.json"
@@ -169,33 +166,6 @@ def get_tools_list() -> str:
     return "\n".join(result)
 
 
-def handle_pull_request(
-    tag: Optional[str], tool_name: Optional[str]
-) -> tuple[int, str]:
-    """:meta private:"""
-    # TODO: This method should go
-    if not tag:
-        return 1, 'Missing required option "--tag"'
-    # create new entry in
-    freva_user = user.User()
-    db_user = freva_user.getUserDB().getUserId(freva_user.getName())
-    pull_request = ToolPullRequest.objects.create(
-        user_id=db_user, tool=tool_name, tagged_version=tag, status="waiting"
-    )
-    print("Please wait while your pull request is processed.")
-    while pull_request.status in ["waiting", "processing"]:
-        time.sleep(5)
-        pull_request = ToolPullRequest.objects.get(id=pull_request.id)
-    if pull_request.status == "failed":
-        # TODO: Better error messages, like tag not valid or other
-        return 1, "The pull request failed.\nPlease contact the admins."
-    else:
-        return (
-            0,
-            (f"{tool_name} plugin is now updated in the system.\nNew version: {tag}"),
-        )
-
-
 def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
     """Check if a given plugin name is part of the plugin stack."""
     if tool_name in pm.get_plugins():
@@ -226,7 +196,6 @@ def run_plugin(
     repo_version: bool = False,
     unique_output: bool = False,
     batchmode: bool = False,
-    pull_request: bool = False,
     caption: str = "",
     tag: Optional[str] = None,
     return_result: bool = False,
@@ -254,8 +223,6 @@ def run_plugin(
         Create a Batch job and submit it to the scheduling system.
     unique_output:
         Append a Freva run id to every output folder
-    pull_request:
-        Issue a new pull request for the tool
     return_result:
         Return the plugin result, this can be useful for pipelining.
     repo_version:
@@ -294,8 +261,6 @@ def run_plugin(
     _check_if_plugin_exists(tool_name)
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
-    if pull_request:
-        return _return_value(*handle_pull_request(tag, tool_name))
     if repo_version:
         (repos, version) = pm.get_plugin_version(tool_name)
         return _return_value(

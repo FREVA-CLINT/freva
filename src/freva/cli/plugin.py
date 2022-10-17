@@ -104,15 +104,6 @@ class PluginCli(BaseParser):
             type=bool,
         )
         subparser.add_argument(
-            "--pull-request",
-            help="Issue a new pull request for the tool",
-            default=False,
-            action="store_true",
-        )
-        subparser.add_argument(
-            "--tag", help="Use git commit hash", type=str, default=None
-        )
-        subparser.add_argument(
             "--debug",
             "-v",
             "-d",
