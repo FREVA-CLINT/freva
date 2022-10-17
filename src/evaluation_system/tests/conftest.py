@@ -27,15 +27,13 @@ class mock_datetime:
         return datetime.datetime(self._year, self._month, self._day)
 
 
-def get_config(admin=False):
+def get_config():
     from .mocks import TEST_EVAL, TEST_DRS
 
     test_cfg = ConfigParser(interpolation=ExtendedInterpolation())
     test_cfg.read_string(TEST_EVAL)
     drs_cfg = toml.loads(TEST_DRS)
     cfg_p = ConfigParser(interpolation=ExtendedInterpolation())
-    if admin:
-        test_cfg["evaluation_system"].setdefault("admins", getuser())
     items_to_overwrite = [
         "db.host",
         "db.user",
@@ -54,8 +52,8 @@ def get_config(admin=False):
     return test_cfg, drs_cfg
 
 
-def mock_config(keyfile, admin=False, patch_env=True):
-    cfg, drs_config = get_config(admin)
+def mock_config(keyfile, patch_env=True):
+    cfg, drs_config = get_config()
     from evaluation_system.misc import config
 
     with TemporaryDirectory() as temp_dir:
@@ -113,13 +111,8 @@ def dummy_key(time_mock):
 
 
 @pytest.fixture(scope="session")
-def admin_env(time_mock, dummy_key):
-    yield from mock_config(dummy_key, admin=True, patch_env=False)
-
-
-@pytest.fixture(scope="session")
 def dummy_env(time_mock, dummy_key):
-    yield from mock_config(dummy_key, admin=False)
+    yield from mock_config(dummy_key)
 
 
 @pytest.fixture(scope="session")

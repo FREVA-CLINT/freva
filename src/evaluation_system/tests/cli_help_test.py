@@ -49,15 +49,3 @@ def test_subcommand_help(capsys):
                 main_cli([subcommand[:-1]])
             doc_string3 = capsys.readouterr().err
             assert subcommand in doc_string3
-
-
-def test_admin_subcommans_help(admin_env, capsys):
-    from evaluation_system.tests import run_cli
-
-    with mock.patch.dict(os.environ, admin_env, clear=True):
-        with pytest.raises(SystemExit):
-            run_cli("solr")
-        assert "the following sub-commands are required:" in capsys.readouterr().err
-        with pytest.raises(SystemExit):
-            run_cli("check")
-        assert "the following sub-commands are required:" in capsys.readouterr().err
