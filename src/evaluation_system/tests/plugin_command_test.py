@@ -3,13 +3,12 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
-import logging
 from functools import partial
 import os
 import mock
+import multiprocessing as mp
 from pathlib import Path
 import pytest
-import mock
 import time
 from subprocess import Popen
 from evaluation_system.tests import run_cli, similar_string
@@ -60,40 +59,19 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
 
 
 def test_killed_jobs_set_to_broken():
-    from freva.cli.plugin import main as plugin_cli
     import freva
 
-    cmd = ["freva-plugin", "dummyplugin", "the_number=13", "other=-10"]
-    res = Popen(cmd)
-    time.sleep(3)
-    os.kill(res.pid, 15)
-    time.sleep(2)
+    proc = mp.Process(
+        target=freva.run_plugin,
+        args=("dummyplugin",),
+        kwargs={"the_number": 10, "other": -10},
+    )
+    proc.start()
+    time.sleep(1)
+    proc.terminate()
+    time.sleep(1)
     hist = freva.history()[0]
     assert hist["status_dict"][hist["status"]].lower() == "broken"
-
-
-@mock.patch("os.getpid", lambda: 12345)
-def test_tool_doc(capsys, plugin_doc, admin_env, caplog):
-    cmd = ["doc", "DummyPlugin", "--file-name", str(plugin_doc)]
-    with mock.patch.dict(os.environ, admin_env, clear=True):
-        run_cli(cmd)
-        out = capsys.readouterr().out
-        _, loglevel, message = caplog.record_tuples[-1]
-        assert loglevel == logging.INFO
-        assert "dummyplugin" in message.lower()
-        assert "created" in message.lower()
-        with pytest.raises(FileNotFoundError):
-            run_cli(cmd[:-2])
-
-
-@mock.patch("os.getpid", lambda: 12345)
-def test_forbidden_tool_doc(dummy_env):
-    from freva.cli.admin import update_tool_doc
-
-    with pytest.raises(RuntimeError):
-        update_tool_doc("dummyplugin")
-    with pytest.raises(SystemExit):
-        run_cli(["solr", "doc" "--help"])
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -132,7 +110,6 @@ extra_scheduler_options (default: --qos=test, --array=20)
 def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
-    from evaluation_system.model.plugins.models import ToolPullRequest
 
     res, _ = freva.run_plugin("dummyplugin", the_number=32, caption="Some caption")
     assert res == 0
@@ -143,36 +120,12 @@ def test_run_pyclientplugin(dummy_history):
         """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
 extra_scheduler_options: - (default: )""",
     )
-    return_val, repo = freva.run_plugin("dummyplugin", repo_version=True)
+    return_val, repo = freva.run_plugin("dummyplugin", the_number=32, repo_version=True)
     assert "repository" in repo.lower()
     assert "version" in repo.lower()
 
-    ToolPullRequest.objects.all().delete()
     with pytest.raises(PluginNotFoundError):
-        freva.run_plugin("dummyplugin0", pull_request=True, tag="")
-
-    ret, _ = freva.run_plugin("dummyplugin", pull_request=True, tag="")
-    assert ret != 0
-
-    def pr_sleep(t, version=None, status=None, tool="dummyplugin"):
-        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
-        t.status = status
-        t.save()
-
-    time.sleep = partial(pr_sleep, version="1.0", status="failed", tool="dummyplugin")
-    retun_val, cmd_out = freva.run_plugin("dummyplugin", pull_request=True, tag="1.0")
-    assert similar_string(
-        cmd_out,
-        """The pull request failed.\nPlease contact the admins.""",
-        0.7,
-    )
-    time.sleep = partial(pr_sleep, version="2.0", status="success", tool="dummyplugin")
-    _, cmd_out = freva.run_plugin("dummyplugin", pull_request=True, tag="2.0")
-    assert similar_string(
-        cmd_out,
-        """dummyplugin plugin is now updated in the system. New version:  2.0""",
-        0.7,
-    )
+        freva.run_plugin("dummyplugin0")
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -208,29 +161,3 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
         "input: -",
     ):
         assert line in output_str
-
-
-@mock.patch("os.getpid", lambda: 12345)
-def test_handle_pull_request(dummy_env, capsys):
-    from evaluation_system.model.plugins.models import ToolPullRequest
-
-    ToolPullRequest.objects.all().delete()
-    tool = "dummyplugin"
-    run_cli(["plugin", tool, "--pull-request"])
-    cmd_out = capsys.readouterr().out
-    assert similar_string(cmd_out, """'Missing required option "--tag"'""", 0.7)
-
-    def pr_sleep(t, version=None, status=None, tool="dummyplugin"):
-
-        t = ToolPullRequest.objects.get(tool=tool, tagged_version=version)
-        t.status = status
-        t.save()
-
-    time.sleep = partial(pr_sleep, version="1.0", status="failed", tool=tool)
-    run_cli(["plugin", tool, "--pull-request", "--tag=1.0"])
-    cmd_out = capsys.readouterr().out
-    assert "The pull request failed.\nPlease contact the admins." in cmd_out
-    time.sleep = partial(pr_sleep, version="2.0", status="success", tool=tool)
-    run_cli(["plugin", tool, "--pull-request", "--tag=2.0"])
-    cmd_out = capsys.readouterr().out
-    assert "New version: 2.0" in cmd_out

@@ -41,7 +41,7 @@ jobs:
     -
       name: Creating conda python ${{ matrix.python-version }} env
       run: |
-        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython pandoc mysqlclient make
+        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython mysqlclient make
     -
       name: Set up services
       run: |

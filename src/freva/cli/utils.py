@@ -22,23 +22,6 @@ this sub command parser is added to.
 """
 
 
-def is_admin(raise_error: bool = False) -> bool:
-    """Check if the user at runtime is one of the admins.
-
-    Parameters:
-    -----------
-    raise_error:
-        Raise a RuntimeError if user is not admin
-    """
-    config.reloadConfiguration()
-    admin = [a for a in config.get("admins", "").split(",") if a.strip()]
-    user = getuser()
-    is_admin = user in admin
-    if not is_admin and raise_error:
-        raise RuntimeError(f"{user} is not in admin list")
-    return is_admin
-
-
 class BaseParser:
     """Base class for common command line argument parsers."""
 
@@ -118,45 +101,6 @@ class BaseParser:
         PluginCli("freva", call_parser)
 
     @staticmethod
-    def parse_check(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the check command."""
-        from .admin.check import CheckCli
-
-        call_parser = subparsers.add_parser(
-            "check",
-            help=CheckCli.desc,
-            description=CheckCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        CheckCli(call_parser)
-
-    @staticmethod
-    def parse_solr(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the solr index command."""
-        from .admin.solr import SolrCli
-
-        call_parser = subparsers.add_parser(
-            "solr",
-            help=SolrCli.desc,
-            description=SolrCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        SolrCli(call_parser)
-
-    @staticmethod
-    def parse_doc(subparser: argparse._SubParsersAction) -> None:
-        """Parse the docu update command."""
-        from .admin.doc import DocCli
-
-        call_parser = subparser.add_parser(
-            "doc",
-            help=DocCli.desc,
-            description=DocCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        DocCli(call_parser)
-
-    @staticmethod
     def parse_esgf(subparsers: argparse._SubParsersAction) -> None:
         """Parse the esgf command."""
         from .esgf import EsgfCli
@@ -192,13 +136,6 @@ class BaseParser:
             "user-data": cls.parse_user_data,
             "esgf": cls.parse_esgf,
         }
-        admin_commands: dict[str, subparser_func_type] = {
-            "solr": cls.parse_solr,
-            "check": cls.parse_check,
-            "doc": cls.parse_doc,
-        }
-        if is_admin():
-            return {**sub_commands, **admin_commands}
         return sub_commands
 
     @classmethod
