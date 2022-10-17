@@ -602,17 +602,17 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, et
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-model: cpc
-ensemble: r1i1p1
-realm: atmos
-project: observations
-experiment: cmorph
-product: grid
-dataset: testdata
 time_frequency: 30min
 institute: cpc
-variable: pr
+dataset: testdata
 cmor_table: 30min
+experiment: cmorph
+ensemble: r1i1p1
+product: grid
+project: observations
+model: cpc
+realm: atmos
+variable: pr
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -670,9 +670,8 @@ variable: pr (24)
 <div class="highlight"><pre>
 usage: freva-plugin [-h] [--repo-version] [--caption CAPTION] [--save]
                     [--save-config SAVE_CONFIG] [--show-config] [--dry-run]
-                    [--batchmode] [--unique_output UNIQUE_OUTPUT]
-                    [--pull-request] [--tag TAG] [--debug] [--list-tools]
-                    [--doc] [-V]
+                    [--batchmode] [--unique_output UNIQUE_OUTPUT] [--debug]
+                    [--list-tools] [--doc] [-V]
                     [plugin_name]
 
 Apply data analysis plugin.
@@ -698,8 +697,6 @@ options:
   --unique_output UNIQUE_OUTPUT
                         Append a freva run id to every output folder (default:
                         True)
-  --pull-request        Issue a new pull request for the tool (default: False)
-  --tag TAG             Use git commit hash (default: None)
   --debug, -v, -d, --verbose
                         Use verbose output. (default: False)
   --list-tools, --list, -l
@@ -853,7 +850,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 42 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 43 seconds
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -873,7 +870,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_2
 Scheduled job with history id: 2121
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-20123.out
+tail -f /tmp/share/slurm/animator/Animator-14290.out
 </pre></div></div>
 </div>
 </section>
@@ -894,7 +891,7 @@ tail -f /tmp/share/slurm/animator/Animator-20123.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2022-10-17 08:04:49] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2022-10-17 11:03:44] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
