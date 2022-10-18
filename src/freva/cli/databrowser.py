@@ -5,26 +5,23 @@ from typing import Any, Optional
 
 import lazy_import
 from evaluation_system import __version__
-from .utils import BaseParser, BaseCompleter
+from .utils import AbstractParser, BaseCompleter
 
 freva = lazy_import.lazy_module("freva")
 
-CLI = "DataBrowserCli"
 
-
-class DataBrowserCli(BaseParser):
+class Cli(AbstractParser):
     """Class that constructs the Databrowser Argument Parser."""
 
     desc = "Find data in the system."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the databrwoser sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-databrowser",
+            prog="freva-databrowser",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -97,7 +94,11 @@ class DataBrowserCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-            "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
+            "facets",
+            nargs="*",
+            help="Search facet(s)",
+            type=str,
+            metavar="facets",
         )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
@@ -151,7 +152,7 @@ class DataBrowserCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = DataBrowserCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

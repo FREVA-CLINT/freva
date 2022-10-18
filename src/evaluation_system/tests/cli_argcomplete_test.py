@@ -17,16 +17,22 @@ def test_main_complete(dummy_env, capsys):
     assert capsys.readouterr().out == sub_commands
     print_choices(["--shell", "zsh", "freva"])
     sub_commands_zsh = capsys.readouterr().out.split("\n")
+    commands = 0
     for complete in [s.strip() for s in sub_commands_zsh if s.strip()]:
         cmd = complete.split("[")
-        assert cmd[0] in SUBCOMMANDS
+        if cmd[0] in SUBCOMMANDS:
+            commands += 1
         assert len(cmd) == 2
+    assert commands == len(SUBCOMMANDS)
+    commands = 0
     print_choices(["--shell", "fish", "freva"])
     sub_commands_fish = capsys.readouterr().out.split("\n")
     for complete in [s.strip() for s in sub_commands_fish if s.strip()]:
         cmd = complete.split(":")
-        assert cmd[0] in SUBCOMMANDS
+        if cmd[0] in SUBCOMMANDS:
+            commands += 1
         assert len(cmd) == 2
+    assert commands == len(SUBCOMMANDS)
 
 
 def test_subcommand_help(dummy_env, capsys):
@@ -76,7 +82,14 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
         choices = capsys.readouterr().out
         assert choices == facets
         print_choices(
-            ["--shell", shell, "--strip", "freva", "databrowser", "time_frequency=mon"]
+            [
+                "--shell",
+                shell,
+                "--strip",
+                "freva",
+                "databrowser",
+                "time_frequency=mon",
+            ]
         )
         choices = capsys.readouterr().out
         assert "time_frequency" not in choices

@@ -6,27 +6,24 @@ from typing import Optional, Any, cast, Union
 
 import lazy_import
 from evaluation_system import __version__
-from .utils import BaseParser
+from .utils import AbstractParser
 
 freva = lazy_import.lazy_module("freva")
 BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
 
-CLI = "EsgfCli"
 
-
-class EsgfCli(BaseParser):
+class Cli(AbstractParser):
     """Class that constructs the ESGF Query Argument Parser."""
 
     desc = "Search/Download ESGF the data catalogue."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the esgf sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-esgf",
+            prog="freva-esgf",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -89,14 +86,20 @@ class EsgfCli(BaseParser):
             default=False,
         )
         subparser.add_argument(
-            "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
+            "facets",
+            nargs="*",
+            help="Search facet(s)",
+            type=str,
+            metavar="facets",
         )
         self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """Call the esgf command and print the results."""
         facets: dict[str, Union[list[str], str]] = {}
@@ -138,7 +141,7 @@ class EsgfCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = EsgfCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

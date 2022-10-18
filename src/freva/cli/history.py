@@ -6,26 +6,23 @@ from typing import Any, Optional
 import lazy_import
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser
+from .utils import AbstractParser
 
 freva = lazy_import.lazy_module("freva")
 
-CLI = "HistoryCli"
 
-
-class HistoryCli(BaseParser):
+class Cli(AbstractParser):
     """Class that constructs the History Query Parser."""
 
     desc = "Read the plugin application history."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the history sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-history",
+            prog="freva-history",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -89,7 +86,9 @@ class HistoryCli(BaseParser):
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]], **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]],
+        **kwargs: Any,
     ) -> None:
         """Call the databrowser command and print the results."""
         kwargs.pop("other_args", "")
@@ -112,7 +111,7 @@ class HistoryCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = HistoryCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

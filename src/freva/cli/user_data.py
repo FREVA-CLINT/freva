@@ -2,23 +2,21 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import sys
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
 import lazy_import
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser, subparser_func_type
+from .utils import AbstractParser, BaseParser
 
 UserData = lazy_import.lazy_class("freva.UserData")
 from evaluation_system.misc.exceptions import ValidationError
 
-CLI = "UserDataCli"
 
-
-class IndexData(BaseParser):
+class IndexData(AbstractParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Update user project data in the databrowser"
+    desc = "Index existing user project data to the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
 
@@ -58,16 +56,20 @@ class IndexData(BaseParser):
             if args.debug:
                 raise e
             try:
-                print(f"{e.__module__}: " f"{e.__str__()}", flush=True, file=sys.stderr)
+                print(
+                    f"{e.__module__}: " f"{e.__str__()}",
+                    flush=True,
+                    file=sys.stderr,
+                )
             except AttributeError:
                 print(f"{e.__repr__()}", flush=True, file=sys.stderr)
             sys.exit(1)
 
 
-class AddData(BaseParser):
+class AddData(AbstractParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Add new user data to the the databrowser"
+    desc = "Add new user project data to the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
 
@@ -195,10 +197,10 @@ class AddData(BaseParser):
             sys.exit(1)
 
 
-class DeleteData(BaseParser):
+class DeleteData(AbstractParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Delete user project data from the databrowser"
+    desc = "Delete existing user project data from the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
 
@@ -239,70 +241,38 @@ class DeleteData(BaseParser):
         user_data.delete(*args.paths, delete_from_fs=args.delete_from_fs)
 
 
-class UserDataCli(BaseParser):
+class Cli(BaseParser):
     """Class that constructs the Data Crawler Argument Parser."""
 
     desc = "Update users project data"
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the esgf sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-user-data",
+            prog=f"freva-user-data",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        subcommands: dict[str, subparser_func_type] = {
-            "index": self.index,
-            "add": self.add,
-            "delete": self.delete,
+        subcommands: dict[str, Type[AbstractParser]] = {
+            "index": IndexData,
+            "add": AddData,
+            "delete": DeleteData,
         }
-        super().__init__(subcommands, subparser)
+        super().__init__(subparser, subcommands)
+        self.parser = subparser
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
     def run_cmd(args: argparse.Namespace, **kwargs: str):
         args.apply_func(args, **kwargs)
 
-    @staticmethod
-    def index(subparsers: argparse._SubParsersAction) -> IndexData:
-        sub_parser = subparsers.add_parser(
-            "index",
-            description="Index existing user project data to the databrowser",
-            help="Index existing user project data to the databrowser",
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        return IndexData(sub_parser)
-
-    @staticmethod
-    def add(subparsers: argparse._SubParsersAction) -> AddData:
-        help = "Add new user project data to the databrowser"
-        sub_parser = subparsers.add_parser(
-            "add",
-            description=help,
-            help=help,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        return AddData(sub_parser)
-
-    @staticmethod
-    def delete(subparsers: argparse._SubParsersAction) -> DeleteData:
-        help = "Delete existing user project data from the databrowser"
-        sub_parser = subparsers.add_parser(
-            "delete",
-            description=help,
-            help=help,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        return DeleteData(sub_parser)
-
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = UserDataCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

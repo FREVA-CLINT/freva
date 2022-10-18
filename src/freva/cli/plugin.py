@@ -8,7 +8,7 @@ import lazy_import
 
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser, BaseCompleter
+from .utils import AbstractParser, BaseCompleter
 
 freva = lazy_import.lazy_module("freva")
 PluginNotFoundError = lazy_import.lazy_class(
@@ -24,22 +24,19 @@ hide_exception = lazy_import.lazy_function(
     "evaluation_system.misc.exceptions.hide_exception"
 )
 
-CLI = "PluginCli"
 
-
-class PluginCli(BaseParser):
+class Cli(AbstractParser):
     """Class that constructs the Plugin Argument Parser."""
 
     desc = "Apply data analysis plugin."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the plugin sub arg. parser."""
         subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-plugin",
+            prog="freva-plugin",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
@@ -132,7 +129,9 @@ class PluginCli(BaseParser):
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """Call the databrowser command and print the results."""
         tool_name = kwargs.pop("tool-name")
@@ -149,7 +148,11 @@ class PluginCli(BaseParser):
                 print(freva.plugin_doc(tool_name))
                 return
             value, out = freva.run_plugin(tool_name or "", **tool_args)
-        except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
+        except (
+            PluginNotFoundError,
+            ValidationError,
+            ParameterNotFoundError,
+        ) as e:
             if args.debug:
                 raise e
             with hide_exception():
@@ -162,7 +165,7 @@ class PluginCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = PluginCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",
