@@ -5,12 +5,12 @@ from typing import Any, Optional
 
 import lazy_import
 from evaluation_system import __version__
-from .utils import AbstractParser, BaseCompleter
+from .utils import BaseParser, BaseCompleter
 
 freva = lazy_import.lazy_module("freva")
 
 
-class Cli(AbstractParser):
+class Cli(BaseParser):
     """Class that constructs the Databrowser Argument Parser."""
 
     desc = "Find data in the system."
@@ -20,36 +20,32 @@ class Cli(AbstractParser):
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the databrwoser sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
-            prog="freva-databrowser",
-            description=self.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        subparser.add_argument(
+        super().__init__(parser, "freva-databrowser")
+        self.parser.add_argument(
             "--multiversion",
             default=False,
             action="store_true",
             help="Select not only the latest version.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--relevant-only",
             default=False,
             action="store_true",
             help="Show only search with results >1 possible values",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--batch-size",
             default=5000,
             type=int,
             help="Number of files to retrieve",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--count",
             default=False,
             action="store_true",
             help="Show the number of files for each search result",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--attributes",
             default=False,
             action="store_true",
@@ -58,33 +54,33 @@ class Cli(AbstractParser):
                 "search instead of the files."
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--all-facets",
             default=False,
             action="store_true",
             help=("retrieve all facets (attributes & values) instead of " "the files"),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--facet",
             default=None,
             type=str,
             action="append",
             help=("Retrieve values of given facet instead of files"),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--facet-limit",
             type=int,
             help="Limit the number of output facets.",
             default=sys.maxsize,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--time-select",
             type=str,
             help="Operator that specifies how the time period is selected.",
             choices=["flexible", "strict", "file"],
             default="flexible",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -93,14 +89,13 @@ class Cli(AbstractParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "facets",
             nargs="*",
             help="Search facet(s)",
             type=str,
             metavar="facets",
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod

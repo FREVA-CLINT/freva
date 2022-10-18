@@ -6,12 +6,12 @@ from typing import Any, Optional
 import lazy_import
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import AbstractParser
+from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
 
 
-class Cli(AbstractParser):
+class Cli(BaseParser):
     """Class that constructs the History Query Parser."""
 
     desc = "Read the plugin application history."
@@ -21,18 +21,14 @@ class Cli(AbstractParser):
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the history sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
-            prog="freva-history",
-            description=self.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        subparser.add_argument(
+        super().__init__(parser, "freva-history")
+        self.parser.add_argument(
             "--full-text",
             default=False,
             action="store_true",
             help="Show the complete configuration.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--return-command",
             default=False,
             action="store_true",
@@ -41,38 +37,38 @@ class Cli(AbstractParser):
                 "instead of the entries themself."
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--limit",
             default=10,
             type=int,
             help="Limit the number of displayed entries to N",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--plugin",
             default=None,
             type=str,
             help="Display only entries of selected plugin.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--since",
             default=None,
             type=str,
             help="Retrieve entries older than date",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--until",
             default=None,
             type=str,
             help="Retrieve entries newer than date",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--entry-ids",
             default=None,
             type=str,
             nargs="+",
             help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 )",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -81,7 +77,6 @@ class Cli(AbstractParser):
             action="store_true",
             default=False,
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod

@@ -5,12 +5,12 @@ import sys
 from typing import Optional, List
 
 from evaluation_system import __version__
-from .utils import BaseParser
+from .utils import SubCommandParser
 
 COMMAND = "freva"
 
 
-class ArgParser(BaseParser):
+class ArgParser(SubCommandParser):
     """Cmd argument parser class for main entry-point."""
 
     def __init__(self, argv: List[str]):

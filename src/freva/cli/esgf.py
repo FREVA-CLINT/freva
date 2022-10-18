@@ -6,13 +6,13 @@ from typing import Optional, Any, cast, Union
 
 import lazy_import
 from evaluation_system import __version__
-from .utils import AbstractParser
+from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
 BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
 
 
-class Cli(AbstractParser):
+class Cli(BaseParser):
     """Class that constructs the ESGF Query Argument Parser."""
 
     desc = "Search/Download ESGF the data catalogue."
@@ -22,18 +22,19 @@ class Cli(AbstractParser):
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the esgf sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
+        super().__init__(parser, "freva-esgf")
+        self.parser = parser or argparse.ArgumentParser(
             prog="freva-esgf",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--datasets",
             default=False,
             action="store_true",
             help="List the name of the datasets instead of showing the urls.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--show-facet",
             default=None,
             action="append",
@@ -46,13 +47,13 @@ class Cli(AbstractParser):
                 "(faceted search)"
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--opendap",
             default=False,
             action="store_true",
             help="Show opendap endpoints instead of http onse.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--gridftp",
             default=False,
             action="store_true",
@@ -61,7 +62,7 @@ class Cli(AbstractParser):
                 "ones (or skip them if none found)"
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--download-script",
             default=None,
             type=Path,
@@ -70,13 +71,13 @@ class Cli(AbstractParser):
                 "instead of displaying anything (only http) "
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--query",
             default=None,
             type=str,
             help=("Display results from <list> queried fields"),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -85,14 +86,13 @@ class Cli(AbstractParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "facets",
             nargs="*",
             help="Search facet(s)",
             type=str,
             metavar="facets",
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
