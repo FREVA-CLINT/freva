@@ -1,15 +1,14 @@
 """Collection of utilities of the freva command line argument parser."""
 
 from __future__ import annotations
+import abc
 import argparse
-from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
-from getpass import getuser
 import logging
 import os
 from pathlib import Path
 import sysconfig
-from typing import Callable, Optional, Type
+from typing import Optional, Type
 
 import lazy_import
 from evaluation_system.misc import logger
@@ -47,7 +46,7 @@ def get_cli_class(name: str) -> Optional[Type[AbstractParser]]:
     return None
 
 
-class AbstractParser:
+class AbstractParser(metaclass=abc.ABCMeta):
     """Abstract class that is used to construct a valid freva cli tool.
 
     This class can be used to extent the freva commands with additional sub
@@ -236,25 +235,25 @@ class BaseCompleter:
 
     def _print_zsh(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
-        for key, (help, func) in choices.items():
+        for key, (_help, func) in choices.items():
             if self.metavar != "databrowser" or key.startswith("-"):
-                out.append(f"{key}[{help}]{func}")
+                out.append(f"{key}[{_help}]{func}")
             else:
-                out.append(f"{key}: {help}")
+                out.append(f"{key}: {_help}")
         return out
 
     def _print_fish(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
-        for key, (help, func) in choices.items():
-            out.append(f"{key}: {help}")
+        for key, (_help, func) in choices.items():
+            out.append(f"{key}: {_help}")
         return out
 
     def _print_default(self, choices: dict[str, tuple[str, str]]) -> list[str]:
 
         out = []
-        for key, (help, func) in choices.items():
+        for key, (_help, _) in choices.items():
             if self.metavar == "databrowser" and not key.startswith("-"):
-                out.append(f"{key}: {help}")
+                out.append(f"{key}: {_help}")
             else:
                 out.append(key)
         return out
@@ -264,11 +263,8 @@ class BaseCompleter:
 
         facet_args = []
         for arg in self.argv:
-            try:
-                key, value = arg.split("=")
-            except ValueError:
-                continue
-            facet_args.append(arg)
+            if len(arg.split("=")) == 2:
+                facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
         search = freva.databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
@@ -325,6 +321,7 @@ class BaseCompleter:
 
     @property
     def command_choices(self) -> dict[str, tuple[str, str]]:
+        """Get the command line arguments for all sub commands."""
 
         choices = {}
         if self.flags_only:
@@ -390,8 +387,8 @@ class BaseCompleter:
                     if sub_parser:
                         choices.update(cls._get_choices_from_parser(sub_parser, argv))
                 else:
-                    for ch, parser in action.choices.items():
-                        choices[ch] = parser.description or "", action_type
+                    for ch, _parser in action.choices.items():
+                        choices[ch] = _parser.description or "", action_type
             if action.help == argparse.SUPPRESS:
                 # This is an option that is not exposed to users
                 continue
@@ -419,8 +416,8 @@ class BaseCompleter:
         parser_class = get_cli_class(sub_command)
         if parser_class is None:
             return {}
-        CliParser = parser_class()
-        return cls._get_choices_from_parser(CliParser.parser, argv)
+        cli_parser = parser_class()
+        return cls._get_choices_from_parser(cli_parser.parser, argv)
 
     @classmethod
     def parse_choices(cls, argv: list[str]) -> BaseCompleter:
@@ -444,12 +441,12 @@ class BaseCompleter:
             default=False,
             action="store_true",
         )
-        ap, args = parser.parse_known_args(argv)
+        app, args = parser.parse_known_args(argv)
         main_choices = {k: (v, "") for k, v in BaseParser.get_subcommand_help().items()}
-        if ap.command == "freva" and not args:
-            return cls(ap.command, [], main_choices, shell=ap.shell, strip=ap.strip)
-        elif ap.command != "freva":
-            sub_cmd = "-".join(ap.command.split("-")[1:])
+        if app.command == "freva" and not args:
+            return cls(app.command, [], main_choices, shell=app.shell, strip=app.strip)
+        if app.command != "freva":
+            sub_cmd = "-".join(app.command.split("-")[1:])
             args.insert(0, sub_cmd)
         choices = {}
         if args[0] in main_choices:
@@ -459,9 +456,9 @@ class BaseCompleter:
             args[0],
             args,
             choices,
-            shell=ap.shell,
-            strip=ap.strip,
-            flags_only=ap.flags_only,
+            shell=app.shell,
+            strip=app.strip,
+            flags_only=app.flags_only,
         )
 
 
