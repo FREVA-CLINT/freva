@@ -92,7 +92,7 @@ class UserDB(object):
         :param result: dictionary with the results (created files)."""
         if result is None:
             result = {}
-        if slurm_output is None or slurm_output.endswith("local"):
+        if slurm_output is None:
             slurm_output = 0
         if flag is None:
             flag = 0
