@@ -252,7 +252,9 @@ def testDynamicPluginLoading(dummy_env, temp_user, in_wsl):
             pm.reload_plugins()
             log.debug("post-loading: %s", list(pm.get_plugins()))
             assert "testplugin1" in list(pm.get_plugins())
-            if not in_wsl:  # WSL does not recognise $HOME as ~ apparently: skip this assert
+            if (
+                not in_wsl
+            ):  # WSL does not recognise $HOME as ~ apparently: skip this assert
                 assert "testplugin2" in list(pm.get_plugins())
 
 

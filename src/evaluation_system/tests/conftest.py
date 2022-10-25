@@ -16,10 +16,12 @@ import pytest
 import toml
 import mock
 
+
 @pytest.fixture(scope="session")
 def in_wsl() -> bool:
-    """ function to detect whether we are on Windows (WSL) or not"""
-    return 'microsoft-standard' in uname().release
+    """function to detect whether we are on Windows (WSL) or not"""
+    return "microsoft-standard" in uname().release
+
 
 class mock_datetime:
     def __init__(self, year, month, day):
