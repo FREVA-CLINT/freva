@@ -128,8 +128,7 @@ class AddData(BaseParser):
             type=str,
             default=None,
             help=(
-                "Set the <model> information if they can't be found in the "
-                "meta data"
+                "Set the <model> information if they can't be found in the " "meta data"
             ),
         )
         self.parser.add_argument(
@@ -257,9 +256,7 @@ class Cli(SubCommandParser):
             "add": AddData,
             "delete": DeleteData,
         }
-        super().__init__(
-            parser, sub_parsers=subcommands, command="freva-user-data"
-        )
+        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod

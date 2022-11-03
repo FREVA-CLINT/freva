@@ -136,14 +136,10 @@ class BaseParser(metaclass=abc.ABCMeta):
         if debug is True:
             self.logger.setLevel(logging.DEBUG)
 
-    def parse_args(
-        self, argv: Optional[list[str]] = None
-    ) -> argparse.Namespace:
+    def parse_args(self, argv: Optional[list[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
         args, other_args = self.parser.parse_known_args(argv)
-        self.kwargs = {
-            k: v for (k, v) in args._get_kwargs() if k != "apply_func"
-        }
+        self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
         self.kwargs["other_args"] = other_args
         self.set_debug(self.kwargs.pop("debug", False))
         return args
@@ -154,23 +150,19 @@ class SubCommandParser(BaseParser):
 
     def __init__(
         self,
-        parser: argparse.ArgumentParser,
+        parser: Optional[argparse.ArgumentParser] = None,
         sub_parsers: Optional[dict[str, Type[BaseParser]]] = None,
         command: str = "freva",
     ) -> None:
         """Create the sub-command parsers."""
         super().__init__(parser, command)
-        self.subparsers = self.parser.add_subparsers(
-            help="Available sub-commands:"
-        )
+        self.subparsers = self.parser.add_subparsers(help="Available sub-commands:")
         self.sub_commands = sub_parsers or self.get_subcommand_parsers()
         self.help = self.get_subcommand_help(self.sub_commands)
         for cmd, subparser in self.sub_commands.items():
             self.parse_subcommand(cmd, subparser)
 
-    def parse_subcommand(
-        self, command: str, cli_class: Type[BaseParser]
-    ) -> None:
+    def parse_subcommand(self, command: str, cli_class: Type[BaseParser]) -> None:
         """Parse the databrowser command."""
 
         call_parsers = self.subparsers.add_parser(
@@ -215,9 +207,7 @@ class SubCommandParser(BaseParser):
     ) -> dict[str, str]:
         """Create the help strings of the available sub commands."""
         parsers = parsers or cls.get_subcommand_parsers()
-        return {
-            h: mod.desc for (h, mod) in parsers.items() if hasattr(mod, "desc")
-        }
+        return {h: mod.desc for (h, mod) in parsers.items() if hasattr(mod, "desc")}
 
 
 class BaseCompleter:
@@ -302,11 +292,7 @@ class BaseCompleter:
             for param, doc, value in plugin.parameters:
                 desc[plugin.name][param] = doc
                 docs[plugin.name][param] = value
-        args = [
-            arg
-            for arg in self.argv
-            if not arg.startswith("-") and arg != "plugin"
-        ]
+        args = [arg for arg in self.argv if not arg.startswith("-") and arg != "plugin"]
         choices = {}
         if not args:
             # No plugin name was given
@@ -400,9 +386,7 @@ class BaseCompleter:
                     cmd = argv.pop(0)
                     sub_parser = action.choices.get(cmd, "")
                     if sub_parser:
-                        choices.update(
-                            cls._get_choices_from_parser(sub_parser, argv)
-                        )
+                        choices.update(cls._get_choices_from_parser(sub_parser, argv))
                 else:
                     for ch, _parser in action.choices.items():
                         choices[ch] = _parser.description or "", action_type
@@ -427,9 +411,7 @@ class BaseCompleter:
         return choices
 
     @classmethod
-    def get_args_of_subcommand(
-        cls, argv: list[str]
-    ) -> dict[str, tuple[str, str]]:
+    def get_args_of_subcommand(cls, argv: list[str]) -> dict[str, tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
         sub_command = argv.pop(0)
         parser_class = get_cli_class(sub_command)
@@ -447,9 +429,7 @@ class BaseCompleter:
         parser.add_argument(
             "command", help="First command, freva, freva-histor etc", type=str
         )
-        parser.add_argument(
-            "--shell", help="Shell in use", default="bash", type=str
-        )
+        parser.add_argument("--shell", help="Shell in use", default="bash", type=str)
         parser.add_argument(
             "--strip",
             help="Do not print options starting with -",
@@ -464,13 +444,10 @@ class BaseCompleter:
         )
         app, args = parser.parse_known_args(argv)
         main_choices = {
-            k: (v, "")
-            for k, v in SubCommandParser.get_subcommand_help().items()
+            k: (v, "") for k, v in SubCommandParser.get_subcommand_help().items()
         }
         if app.command == "freva" and not args:
-            return cls(
-                app.command, [], main_choices, shell=app.shell, strip=app.strip
-            )
+            return cls(app.command, [], main_choices, shell=app.shell, strip=app.strip)
         if app.command != "freva":
             sub_cmd = "-".join(app.command.split("-")[1:])
             args.insert(0, sub_cmd)
