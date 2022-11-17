@@ -17,7 +17,7 @@ def history(
     plugin: Optional[str] = None,
     since: Optional[str] = None,
     until: Optional[str] = None,
-    entry_ids: Union[int, list[int]] = None,
+    entry_ids: Union[int, list[int], None] = None,
     full_text: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
