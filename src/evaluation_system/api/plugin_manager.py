@@ -933,7 +933,7 @@ def get_history(
     limit: int = -1,
     since: Optional[str] = None,
     until: Optional[str] = None,
-    entry_ids: list[int] = None,
+    entry_ids: Optional[list[int]] = None,
     user: Optional[User] = None,
 ) -> QuerySet[History]:
     """Returns the history from the given user.
