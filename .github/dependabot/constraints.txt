@@ -9,7 +9,7 @@ humanize==4.4.0
 lazy-import==0.2.2
 metadata-inspector==2022.11.1
 mysqlclient==2.1.1
-netCDF4==1.6.1
+netCDF4==1.6.2
 numpy==1.23.4
 pandas==1.5.1
 pymysql==1.0.2
