@@ -7,7 +7,7 @@ dask==2022.10.2
 h5netcdf==1.0.2
 humanize==4.4.0
 lazy-import==0.2.2
-metadata-inspector==2022.10.5
+metadata-inspector==2022.11.1
 mysqlclient==2.1.1
 netCDF4==1.6.1
 numpy==1.23.4
