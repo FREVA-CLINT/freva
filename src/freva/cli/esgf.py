@@ -11,32 +11,30 @@ from .utils import BaseParser
 freva = lazy_import.lazy_module("freva")
 BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
 
-CLI = "EsgfCli"
 
-
-class EsgfCli(BaseParser):
+class Cli(BaseParser):
     """Class that constructs the ESGF Query Argument Parser."""
 
     desc = "Search/Download ESGF the data catalogue."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the esgf sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-esgf",
+        super().__init__(parser, "freva-esgf")
+        self.parser = parser or argparse.ArgumentParser(
+            prog="freva-esgf",
             description=self.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--datasets",
             default=False,
             action="store_true",
             help="List the name of the datasets instead of showing the urls.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--show-facet",
             default=None,
             action="append",
@@ -49,13 +47,13 @@ class EsgfCli(BaseParser):
                 "(faceted search)"
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--opendap",
             default=False,
             action="store_true",
             help="Show opendap endpoints instead of http onse.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--gridftp",
             default=False,
             action="store_true",
@@ -64,7 +62,7 @@ class EsgfCli(BaseParser):
                 "ones (or skip them if none found)"
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--download-script",
             default=None,
             type=Path,
@@ -73,13 +71,13 @@ class EsgfCli(BaseParser):
                 "instead of displaying anything (only http) "
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--query",
             default=None,
             type=str,
             help=("Display results from <list> queried fields"),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -88,15 +86,20 @@ class EsgfCli(BaseParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
-            "facets", nargs="*", help="Search facet(s)", type=str, metavar="facets"
+        self.parser.add_argument(
+            "facets",
+            nargs="*",
+            help="Search facet(s)",
+            type=str,
+            metavar="facets",
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """Call the esgf command and print the results."""
         facets: dict[str, Union[list[str], str]] = {}
@@ -138,7 +141,7 @@ class EsgfCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = EsgfCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

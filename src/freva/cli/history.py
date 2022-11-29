@@ -10,32 +10,25 @@ from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
 
-CLI = "HistoryCli"
 
-
-class HistoryCli(BaseParser):
+class Cli(BaseParser):
     """Class that constructs the History Query Parser."""
 
     desc = "Read the plugin application history."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the history sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-history",
-            description=self.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        subparser.add_argument(
+        super().__init__(parser, "freva-history")
+        self.parser.add_argument(
             "--full-text",
             default=False,
             action="store_true",
             help="Show the complete configuration.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--return-command",
             default=False,
             action="store_true",
@@ -44,38 +37,38 @@ class HistoryCli(BaseParser):
                 "instead of the entries themself."
             ),
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--limit",
             default=10,
             type=int,
             help="Limit the number of displayed entries to N",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--plugin",
             default=None,
             type=str,
             help="Display only entries of selected plugin.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--since",
             default=None,
             type=str,
             help="Retrieve entries older than date",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--until",
             default=None,
             type=str,
             help="Retrieve entries newer than date",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--entry-ids",
             default=None,
             type=str,
             nargs="+",
             help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 )",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -84,12 +77,13 @@ class HistoryCli(BaseParser):
             action="store_true",
             default=False,
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]], **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]],
+        **kwargs: Any,
     ) -> None:
         """Call the databrowser command and print the results."""
         kwargs.pop("other_args", "")
@@ -112,7 +106,7 @@ class HistoryCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = HistoryCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",

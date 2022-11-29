@@ -5,12 +5,12 @@ import sys
 from typing import Optional, List
 
 from evaluation_system import __version__
-from .utils import BaseParser
+from .utils import SubCommandParser
 
 COMMAND = "freva"
 
 
-class ArgParser(BaseParser):
+class ArgParser(SubCommandParser):
     """Cmd argument parser class for main entry-point."""
 
     def __init__(self, argv: List[str]):
@@ -37,7 +37,7 @@ class ArgParser(BaseParser):
             action="version",
             version="%(prog)s {version}".format(version=__version__),
         )
-        super().__init__(sub_parsers, parser)
+        super().__init__(parser, sub_parsers)
         args = self.parse_args(argv)
         try:
             args.apply_func(args, **self.kwargs)

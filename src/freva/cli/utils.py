@@ -1,13 +1,14 @@
 """Collection of utilities of the freva command line argument parser."""
 
 from __future__ import annotations
+import abc
 import argparse
-from configparser import ConfigParser, ExtendedInterpolation
 from copy import copy
-from getpass import getuser
 import logging
+import os
 from pathlib import Path
-from typing import Callable, Optional
+import sysconfig
+from typing import Optional, Type
 
 import lazy_import
 from evaluation_system.misc import logger
@@ -15,33 +16,115 @@ from evaluation_system.misc import logger
 freva = lazy_import.lazy_module("freva")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 
-subparser_func_type = Callable[[argparse._SubParsersAction], Optional["BaseParser"]]
-"""Type for a method that creates a sub-command parser. This method gets a string
-representing the description of the sub command as well as the SubParserAction
-this sub command parser is added to.
-"""
+
+def get_cli_class(name: str) -> Optional[Type[BaseParser]]:
+    """Get core module or cli extension.
+
+    Parameters
+    ----------
+    name: str
+        name of the cli sub module that is to be imported. This can be
+        either a cli sub module for the freva core (databrowser, plugin etc)
+        or an extension. Extensions are assumed to follow the following nameing
+        conventions: :py:mod:`<name>.app`. The ``app`` sub module must contain
+        a class named :py:class:`Cli`.
+
+    Returns
+    -------
+    module: The imported module
+    """
+    mod_name = name.replace("-", "_")
+    try:  # First try importing a module extensions
+        mod = __import__(f"{mod_name}.cli", fromlist=[""])
+    except ImportError:
+        try:  # Freva core module?
+            mod = __import__(f"freva.cli.{mod_name}", fromlist=[""])
+        except ImportError:
+            return None
+    if hasattr(mod, "Cli") and hasattr(mod.Cli, "desc"):
+        return mod.Cli
+    return None
 
 
-class BaseParser:
-    """Base class for common command line argument parsers."""
+class BaseParser(metaclass=abc.ABCMeta):
+    """Base class that is used to construct a valid freva cli tool.
 
-    parser_func = argparse.ArgumentParser.parse_args
-    """Define the standard arparse parsing function"""
+    This class can be used to extent the freva commands with additional sub
+    commands.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser, default: None
+        Already parsed arguments if, None given (default) a new
+        :py:class:`ArgumentParser` will should be constructed.
+
+    Attributes
+    ----------
+    desc: str
+        The class should have the :py:attribute:`desc` attribute set. This
+        attribute is used to display a short summary over what this command
+        is supposed to do.
+
+
+    Example
+    -------
+    Suppose your tool named ``mytool`` should be made a freva cli extension the
+    then the ``mytool`` library should define a command line interface that
+    resides in the ``mytool.cli`` sub module of ``mytool``. Additionally your
+    ``mytool.cli`` sub module has to define a class called ``Cli``. The content
+    of the ``Cli`` class could like the following:
+
+    .. code-block:: python
+
+        import argparse
+        from pathlib import Path
+        import sys
+        from typing import Optional
+
+        from ferva.cli import BaseParser
+
+        class Cli(BaseParser):
+
+            desc = "Apply mytool."
+
+            def __init__(parser: Optional[argparse.ArgumentParser] = None):
+
+                super().__init__("mytool", parser)
+                self.parser.add_argument("path",
+                                         type=Path,
+                                         help="The first argument"
+                )
+
+            def do_something(path: Path) -> list[str]:
+                '''Do the actual work, for example list a directory.'''
+                return sorted(path.iterdir())
+
+        def main():
+            '''The main method calling the cli from a stand alone tool.'''
+
+            arg_p = Cli()
+            args = arg_p.parse_args(sys.argv[1:])
+            arg_p.do_something(args.path)
+
+    Following this outline all that would be needed to do is creating an entry
+    point named ``freva-mytool`` pointing to ``mytool.cli:main``. This would
+    be sufficent to creagte a freva mytool sub command.
+    """
+
+    desc: str = ""
+    """The short describtion of a freva command."""
 
     def __init__(
         self,
-        sub_commands: dict[str, subparser_func_type],
-        parser: argparse.ArgumentParser,
-    ) -> None:
-        """Create the sub-command parsers."""
+        parser: Optional[argparse.ArgumentParser] = None,
+        command: str = "freva",
+    ):
 
-        self.parser = parser
-        self.subparsers = parser.add_subparsers(help="Available sub-commands:")
-        self.help = self.get_subcommand_help()
-        subcommands = self.get_subcommand_parsers()
-        self.sub_commands = sub_commands
-        for cmd, subparser in sub_commands.items():
-            subparser(self.subparsers)
+        self.parser = parser or argparse.ArgumentParser(
+            prog=command,
+            description=self.desc,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        )
 
     @property
     def logger(self) -> logging.Logger:
@@ -61,96 +144,34 @@ class BaseParser:
         self.set_debug(self.kwargs.pop("debug", False))
         return args
 
-    @staticmethod
-    def parse_user_data(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the user data"""
-        from .user_data import UserDataCli
 
-        call_parsers = subparsers.add_parser(
-            "user-data",
-            help=UserDataCli.desc,
-            description=UserDataCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        UserDataCli("freva", call_parsers)
+class SubCommandParser(BaseParser):
+    """Base class for all freva sub command line argument parsers."""
 
-    @staticmethod
-    def parse_history(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the history command."""
-        from .history import HistoryCli
+    def __init__(
+        self,
+        parser: Optional[argparse.ArgumentParser] = None,
+        sub_parsers: Optional[dict[str, Type[BaseParser]]] = None,
+        command: str = "freva",
+    ) -> None:
+        """Create the sub-command parsers."""
+        super().__init__(parser, command)
+        self.subparsers = self.parser.add_subparsers(help="Available sub-commands:")
+        self.sub_commands = sub_parsers or self.get_subcommand_parsers()
+        self.help = self.get_subcommand_help(self.sub_commands)
+        for cmd, subparser in self.sub_commands.items():
+            self.parse_subcommand(cmd, subparser)
 
-        call_parser = subparsers.add_parser(
-            "history",
-            description=HistoryCli.desc,
-            help=HistoryCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        HistoryCli("freva", call_parser)
-
-    @staticmethod
-    def parse_plugin(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the plugin command."""
-        from .plugin import PluginCli
-
-        call_parser = subparsers.add_parser(
-            "plugin",
-            help=PluginCli.desc,
-            description=PluginCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        PluginCli("freva", call_parser)
-
-    @staticmethod
-    def parse_esgf(subparsers: argparse._SubParsersAction) -> None:
-        """Parse the esgf command."""
-        from .esgf import EsgfCli
-
-        call_parsers = subparsers.add_parser(
-            "esgf",
-            help=EsgfCli.desc,
-            description=EsgfCli.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        EsgfCli("freva", call_parsers)
-
-    @staticmethod
-    def parse_databrowser(subparsers: argparse._SubParsersAction) -> None:
+    def parse_subcommand(self, command: str, cli_class: Type[BaseParser]) -> None:
         """Parse the databrowser command."""
-        from .databrowser import DataBrowserCli
 
-        call_parsers = subparsers.add_parser(
-            "databrowser",
-            description=DataBrowserCli.desc,
-            help=DataBrowserCli.desc,
+        call_parsers = self.subparsers.add_parser(
+            command,
+            description=cli_class.desc,
+            help=cli_class.desc,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        DataBrowserCli("freva", call_parsers)
-
-    @classmethod
-    def get_subcommand_parsers(cls) -> dict[str, subparser_func_type]:
-        """Create the help strings of the available sub commands."""
-        sub_commands: dict[str, subparser_func_type] = {
-            "databrowser": cls.parse_databrowser,
-            "plugin": cls.parse_plugin,
-            "history": cls.parse_history,
-            "user-data": cls.parse_user_data,
-            "esgf": cls.parse_esgf,
-        }
-        return sub_commands
-
-    @classmethod
-    def get_subcommand_help(cls) -> dict[str, str]:
-        """Create the help strings of the available sub commands."""
-        from freva.cli import user_data, databrowser, history, plugin, esgf
-
-        modules = {
-            "plugin": plugin,
-            "databrowser": databrowser,
-            "user-data": user_data,
-            "history": history,
-            "esgf": esgf,
-        }
-        return {h: getattr(mod, mod.CLI).desc for (h, mod) in modules.items()}
+        cli_class(call_parsers)
 
     def _usage(self, *args: Optional[str], **kwargs: Optional[str]) -> None:
         """Exit with usage message."""
@@ -158,6 +179,35 @@ class BaseParser:
             "the following sub-commands are "
             f"required: {', '.join(self.sub_commands.keys())}"
         )
+
+    @staticmethod
+    def get_subcommand_parsers() -> dict[str, Type[BaseParser]]:
+        """Create the help strings of the available sub commands."""
+        path_list = [
+            Path(p)
+            for p in (os.environ.get("PATH") or os.defpath).split(os.pathsep)
+            + [sysconfig.get_paths().get("scripts", "")]
+            if p and Path(p).is_dir()
+        ]
+        parsers = {}
+        for _dir in path_list:
+            for file in _dir.iterdir():
+                if file.name.startswith("freva-"):
+                    _, _, sub_cmd = file.name.partition("-")
+                    if sub_cmd not in parsers:
+                        parser_class = get_cli_class(sub_cmd)
+                        if parser_class is not None:
+                            parsers[sub_cmd] = parser_class
+        return parsers
+
+    @classmethod
+    def get_subcommand_help(
+        cls,
+        parsers: Optional[dict[str, Type[BaseParser]]] = None,
+    ) -> dict[str, str]:
+        """Create the help strings of the available sub commands."""
+        parsers = parsers or cls.get_subcommand_parsers()
+        return {h: mod.desc for (h, mod) in parsers.items() if hasattr(mod, "desc")}
 
 
 class BaseCompleter:
@@ -186,25 +236,25 @@ class BaseCompleter:
 
     def _print_zsh(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
-        for key, (help, func) in choices.items():
+        for key, (_help, func) in choices.items():
             if self.metavar != "databrowser" or key.startswith("-"):
-                out.append(f"{key}[{help}]{func}")
+                out.append(f"{key}[{_help}]{func}")
             else:
-                out.append(f"{key}: {help}")
+                out.append(f"{key}: {_help}")
         return out
 
     def _print_fish(self, choices: dict[str, tuple[str, str]]) -> list[str]:
         out = []
-        for key, (help, func) in choices.items():
-            out.append(f"{key}: {help}")
+        for key, (_help, func) in choices.items():
+            out.append(f"{key}: {_help}")
         return out
 
     def _print_default(self, choices: dict[str, tuple[str, str]]) -> list[str]:
 
         out = []
-        for key, (help, func) in choices.items():
+        for key, (_help, _) in choices.items():
             if self.metavar == "databrowser" and not key.startswith("-"):
-                out.append(f"{key}: {help}")
+                out.append(f"{key}: {_help}")
             else:
                 out.append(key)
         return out
@@ -214,11 +264,8 @@ class BaseCompleter:
 
         facet_args = []
         for arg in self.argv:
-            try:
-                key, value = arg.split("=")
-            except ValueError:
-                continue
-            facet_args.append(arg)
+            if len(arg.split("=")) == 2:
+                facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
         search = freva.databrowser(attributes=False, all_facets=True, **facets)
         choices = {}
@@ -275,6 +322,7 @@ class BaseCompleter:
 
     @property
     def command_choices(self) -> dict[str, tuple[str, str]]:
+        """Get the command line arguments for all sub commands."""
 
         choices = {}
         if self.flags_only:
@@ -340,8 +388,8 @@ class BaseCompleter:
                     if sub_parser:
                         choices.update(cls._get_choices_from_parser(sub_parser, argv))
                 else:
-                    for ch, parser in action.choices.items():
-                        choices[ch] = parser.description or "", action_type
+                    for ch, _parser in action.choices.items():
+                        choices[ch] = _parser.description or "", action_type
             if action.help == argparse.SUPPRESS:
                 # This is an option that is not exposed to users
                 continue
@@ -365,22 +413,12 @@ class BaseCompleter:
     @classmethod
     def get_args_of_subcommand(cls, argv: list[str]) -> dict[str, tuple[str, str]]:
         """Get all possible arguments from a freva sub-command."""
-        from freva.cli import user_data, databrowser, history, plugin, esgf
-
         sub_command = argv.pop(0)
-        modules = {
-            "plugin": plugin,
-            "databrowser": databrowser,
-            "user-data": user_data,
-            "history": history,
-            "esgf": esgf,
-        }
-        try:
-            mod = modules[sub_command]
-        except AttributeError:
+        parser_class = get_cli_class(sub_command)
+        if parser_class is None:
             return {}
-        CliParser = getattr(mod, mod.CLI)()
-        return cls._get_choices_from_parser(CliParser.parser, argv)
+        cli_parser = parser_class()
+        return cls._get_choices_from_parser(cli_parser.parser, argv)
 
     @classmethod
     def parse_choices(cls, argv: list[str]) -> BaseCompleter:
@@ -404,12 +442,14 @@ class BaseCompleter:
             default=False,
             action="store_true",
         )
-        ap, args = parser.parse_known_args(argv)
-        main_choices = {k: (v, "") for k, v in BaseParser.get_subcommand_help().items()}
-        if ap.command == "freva" and not args:
-            return cls(ap.command, [], main_choices, shell=ap.shell, strip=ap.strip)
-        elif ap.command != "freva":
-            sub_cmd = "-".join(ap.command.split("-")[1:])
+        app, args = parser.parse_known_args(argv)
+        main_choices = {
+            k: (v, "") for k, v in SubCommandParser.get_subcommand_help().items()
+        }
+        if app.command == "freva" and not args:
+            return cls(app.command, [], main_choices, shell=app.shell, strip=app.strip)
+        if app.command != "freva":
+            sub_cmd = "-".join(app.command.split("-")[1:])
             args.insert(0, sub_cmd)
         choices = {}
         if args[0] in main_choices:
@@ -419,9 +459,9 @@ class BaseCompleter:
             args[0],
             args,
             choices,
-            shell=ap.shell,
-            strip=ap.strip,
-            flags_only=ap.flags_only,
+            shell=app.shell,
+            strip=app.strip,
+            flags_only=app.flags_only,
         )
 
 

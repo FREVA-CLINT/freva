@@ -24,86 +24,79 @@ hide_exception = lazy_import.lazy_function(
     "evaluation_system.misc.exceptions.hide_exception"
 )
 
-CLI = "PluginCli"
 
-
-class PluginCli(BaseParser):
+class Cli(BaseParser):
     """Class that constructs the Plugin Argument Parser."""
 
     desc = "Apply data analysis plugin."
 
     def __init__(
         self,
-        command: str = "freva",
         parser: Optional[argparse.ArgumentParser] = None,
     ):
         """Construct the plugin sub arg. parser."""
-        subparser = parser or argparse.ArgumentParser(
-            prog=f"{command}-plugin",
-            description=self.desc,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        )
-        subparser.add_argument(
+        super().__init__(parser, "freva-plugin")
+        self.parser.add_argument(
             "tool-name",
             nargs="?",
             metavar="plugin_name",
             help="Plugin name",
             default=None,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--repo-version",
             default=False,
             action="store_true",
             help="Show the version number from the repository",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--caption",
             default="",
             help="Set a caption for the results",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--save",
             default=False,
             action="store_true",
             help="Save the plugin configuration to default destination.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--save-config",
             type=Path,
             default=None,
             help="Save the plugin configuration.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--show-config",
             help="Show the resulting configuration (implies dry-run).",
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--scheduled-id",
             default=None,
             type=int,
             help=argparse.SUPPRESS,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--dry-run",
             default=False,
             action="store_true",
             help="Perform no computation. Useful for development.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--batchmode",
             help="Create a Batch job and submit it to the scheduling system.",
             default=False,
             action="store_true",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--unique_output",
             help="Append a freva run id to every output folder",
             default=True,
             type=bool,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -112,7 +105,7 @@ class PluginCli(BaseParser):
             action="store_true",
             default=False,
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--list-tools",
             "--list",
             "-l",
@@ -120,19 +113,20 @@ class PluginCli(BaseParser):
             action="store_true",
             help="Only list the available tools.",
         )
-        subparser.add_argument(
+        self.parser.add_argument(
             "--doc",
             "--plugin-doc",
             default=False,
             action="store_true",
             help="Display plugin documentation",
         )
-        self.parser = subparser
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
-        args: argparse.Namespace, other_args: Optional[list[str]] = None, **kwargs: Any
+        args: argparse.Namespace,
+        other_args: Optional[list[str]] = None,
+        **kwargs: Any,
     ) -> None:
         """Call the databrowser command and print the results."""
         tool_name = kwargs.pop("tool-name")
@@ -149,7 +143,11 @@ class PluginCli(BaseParser):
                 print(freva.plugin_doc(tool_name))
                 return
             value, out = freva.run_plugin(tool_name or "", **tool_args)
-        except (PluginNotFoundError, ValidationError, ParameterNotFoundError) as e:
+        except (
+            PluginNotFoundError,
+            ValidationError,
+            ParameterNotFoundError,
+        ) as e:
             if args.debug:
                 raise e
             with hide_exception():
@@ -162,7 +160,7 @@ class PluginCli(BaseParser):
 
 def main(argv: Optional[list[str]] = None) -> None:
     """Wrapper for entry point script."""
-    cli = PluginCli("freva")
+    cli = Cli()
     cli.parser.add_argument(
         "-V",
         "--version",
