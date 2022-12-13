@@ -1243,7 +1243,7 @@ def unfollow_history_tag(history_id: int, user: User) -> None:
     )
     for row in rows:
         user.getUserDB().updateHistoryTag(
-            row.id, HistoryTag.tagType.unfollow, uid=user_name
+            row.id, HistoryTag.tagType.unfollow, uid=user_name  # type: ignore
         )
 
 
