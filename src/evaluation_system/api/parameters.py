@@ -13,9 +13,16 @@ import textwrap
 from typing import Any, Optional, Union, Type
 import warnings
 
-from evaluation_system.misc.utils import find_similar_words, PrintableList, initOrder
+from evaluation_system.misc.utils import (
+    find_similar_words,
+    PrintableList,
+    initOrder,
+)
 from evaluation_system.misc import config
-from evaluation_system.misc.exceptions import ValidationError, deprecated_method
+from evaluation_system.misc.exceptions import (
+    ValidationError,
+    deprecated_method,
+)
 from evaluation_system.model.plugins.models import Parameter
 
 ParameterBaseType = Union[str, int, float, bool, PrintableList]
@@ -147,7 +154,7 @@ class ParameterType(initOrder):
                 parameter_name=self.name,
                 parameter_type=itype,
             )
-            self.id = tool_obj[0].id
+            self.id = tool_obj[0].id  # type: ignore
         return self.id
 
     def _verified(
