@@ -36,7 +36,6 @@ def test_schedule_entry(dummy_user, dummy_history):
 
 
 def test_upgrade_status(dummy_user, dummy_history):
-
     with pytest.raises(dummy_user.user.getUserDB().ExceptionStatusUpgrade):
         dummy_user.user.getUserDB().upgradeStatus(
             dummy_user.row_id, dummy_user.username, 6
@@ -113,7 +112,6 @@ def test_update_history_tag(dummy_user):
 
 
 def test_store_results(dummy_user, dummy_history):
-
     from evaluation_system.model.history.models import ResultTag
 
     results = {

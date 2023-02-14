@@ -39,7 +39,6 @@ class DataReader:
         paths: Union[os.PathLike, Collection[os.PathLike]],
         **defaults: str,
     ) -> None:
-
         self.paths = paths
         self.defaults = defaults
         drs_config: dict[str, Any] = config.get_drs_config()[self.drs_specification]

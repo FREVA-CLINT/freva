@@ -619,7 +619,6 @@ class PluginAbstract(abc.ABC):
                     raise ValueError("Meta information must be of type dict")
                 metadata = output_files[file_path]
             if os.path.isfile(file_path):
-
                 self._extend_output_metadata(file_path, metadata)
                 result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
@@ -662,7 +661,6 @@ class PluginAbstract(abc.ABC):
                     metadata["todo"] = "convert"
 
                 if ext == ".pdf":
-
                     # If pdfs have more than one page we don't convert them,
                     # instead we offer a download link
                     pdf = PdfReader(open(file_path, "rb"))

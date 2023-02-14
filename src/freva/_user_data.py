@@ -41,7 +41,6 @@ class UserData:
             return get_output_directory() / f"user-{User().getName()}"
 
     def _validate_user_dirs(self, *crawl_dirs: os.PathLike) -> tuple[Path, ...]:
-
         root_path = self.user_dir
         user_paths: tuple[Path, ...] = ()
         for crawl_dir in crawl_dirs or (root_path,):
@@ -57,7 +56,6 @@ class UserData:
 
     @staticmethod
     def _set_add_method(how: str) -> Callable[[os.PathLike, os.PathLike], None]:
-
         choices = "copy, link, move, symlink, cp, ln, mv"
         if how in ["copy", "cp"]:
             return shutil.copy

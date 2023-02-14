@@ -232,7 +232,6 @@ def testDynamicPluginLoading(dummy_env, temp_user):
             f.write(basic_plugin % tuple(["TestPlugin1"] * 2))
 
         with tempfile.TemporaryDirectory(prefix="dyn_plugin") as path2:
-
             os.makedirs(os.path.join(path2, "x/y/z"))
             with open(path2 + "/x/__init__.py", "w"):
                 pass
@@ -378,7 +377,6 @@ def test_load_scheduled_conf(dummy_env, django_user, temp_user):
 
 
 def test_2dict_to_conf(dummy_env, dummy_plugin):
-
     import evaluation_system.api.plugin_manager as pm
 
     configuration = {"number": 1, "the_number": 2, "something": "test"}

@@ -178,7 +178,6 @@ class ParameterType(initOrder):
             and self._pattern is None
             and isinstance(values[0], str)
         ):
-
             self._pattern = re.compile(self.regex)
 
         if self._pattern:
@@ -454,7 +453,6 @@ class ParameterDictionary(dict):
                         missing_values
                     )
                 if too_many_items:
-
                     msg += "Too many entries for these parameters: %s" % ", ".join(
                         [
                             "%s(max:%s, found:%s)"
@@ -813,7 +811,6 @@ class Date(String):
     """
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
 
@@ -1103,7 +1100,6 @@ class SelectField(String):
         super().__init__(*args, **kwargs)
 
     def _verified(self, orig_values):
-
         if orig_values not in self.options.values():
             values = ",".join(list(self.options.values()))
             raise ValueError(

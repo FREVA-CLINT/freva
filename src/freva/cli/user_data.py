@@ -19,7 +19,6 @@ class IndexData(BaseParser):
     desc = "Index existing user project data to the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
-
         super().__init__(subparser)
         self.parser.add_argument(
             "crawl_dir",
@@ -72,7 +71,6 @@ class AddData(BaseParser):
     desc = "Add new user project data to the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
-
         super().__init__(subparser)
         self.parser.add_argument(
             "product",
@@ -203,7 +201,6 @@ class DeleteData(BaseParser):
     desc = "Delete existing user project data from the databrowser"
 
     def __init__(self, subparser: argparse.ArgumentParser):
-
         self.parser = subparser
         self.parser.add_argument(
             "paths",

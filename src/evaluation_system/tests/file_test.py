@@ -45,7 +45,6 @@ def test_json_path(dummy_solr):
 
 
 def test_find_structure_in_path(dummy_solr):
-
     search_path = str(Path(dummy_solr.tmpdir) / "cmip5")
     s = dummy_solr.DRSFile.find_structure_in_path(search_path)
     assert s == "cmip5"
@@ -56,7 +55,6 @@ def test_find_structure_in_path(dummy_solr):
 
 
 def test_structure_from_path(dummy_solr):
-
     s = dummy_solr.DRSFile.find_structure_from_path(dummy_solr.fn)
     assert s == ["cmip5"]
     s = dummy_solr.DRSFile.find_structure_from_path(dummy_solr.fn, allow_multiples=True)

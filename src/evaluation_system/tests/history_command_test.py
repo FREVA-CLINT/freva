@@ -50,7 +50,6 @@ def test_freva_history_method(dummy_history, dummy_user):
 
 
 def test_history_cmd(capsys, dummy_history, dummy_user):
-
     from freva.cli.history import main as run
 
     hist_ids = []

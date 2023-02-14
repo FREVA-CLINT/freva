@@ -11,7 +11,6 @@ from evaluation_system.tests import run_cli
 
 
 def test_show_facet(capsys, dummy_config):
-
     run_cli("esgf --show-facet=project,product -d")
     res = capsys.readouterr().out
     assert "[product]" in res
@@ -82,7 +81,6 @@ def test_freva_esgf_method(dummy_config):
 
 
 def test_find_files(capsys, search_dict, dummy_config):
-
     result_to_be = [
         "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/"
         "tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
@@ -111,7 +109,6 @@ def test_find_files(capsys, search_dict, dummy_config):
 
 
 def test_download_script(capsys, search_dict, tmp_dir, dummy_config):
-
     fn = tmp_dir / "download_test_script.sh"
     run_cli(
         ["esgf"]

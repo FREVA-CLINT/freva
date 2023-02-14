@@ -60,7 +60,6 @@ class Esgf2SolrConfig(object):
 
 class Solr2EsgfConfig(object):
     def cmip5(self, esgfpath, filename):
-
         (
             project,
             product,
@@ -88,7 +87,6 @@ class Solr2EsgfConfig(object):
         return cmip5_structure
 
     def specs(self, esgfpath, filename):
-
         (
             project,
             product,
@@ -131,7 +129,6 @@ class Solr2EsgfConfig(object):
         return specs_structure
 
     def project_select(self, esgfpath, filename):
-
         options = {
             "CMIP5": self.cmip5,
             "specs": self.specs,

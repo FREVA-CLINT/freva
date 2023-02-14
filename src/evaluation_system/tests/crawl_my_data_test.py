@@ -206,7 +206,6 @@ def test_iter_data_files(valid_data_files: Path, time_mock: mock_datetime) -> No
 
 
 def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
-
     import freva
 
     input_files = list(valid_data_files.rglob("*.nc"))
@@ -218,7 +217,6 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
 
 
 def test_add_my_data(valid_data_files, time_mock):
-
     from freva import UserData, databrowser
     from freva.cli.user_data import main as run
 
@@ -253,7 +251,6 @@ def test_add_my_data(valid_data_files, time_mock):
 
 
 def test_add_methods():
-
     from freva import UserData
     import shutil
     import os
@@ -267,7 +264,6 @@ def test_add_methods():
 
 
 def test_delete_my_data(valid_data_files, time_mock):
-
     import freva
     from freva import UserData
     from freva.cli.user_data import main as run
@@ -310,7 +306,6 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
 
 
 def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
-
     from evaluation_system.tests import run_cli
     from evaluation_system.model.solr import SolrFindFiles
 

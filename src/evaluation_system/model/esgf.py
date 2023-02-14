@@ -89,7 +89,8 @@ class P2P(object):
 
             del_defaults('institute','model')
 
-        This would remove all values for both *institute* and *model* leaving everything else intact."""
+        This would remove all values for both *institute* and *model* leaving everything else intact.
+        """
         for k in def_keys:
             if k in self.defaults:
                 del self.defaults[k]
@@ -99,7 +100,8 @@ class P2P(object):
     def duplicate(self):
         """Create a duplicate of this p2p connection.
 
-        :returns: A new instance of :class:`P2P` with the same configuration as this one."""
+        :returns: A new instance of :class:`P2P` with the same configuration as this one.
+        """
         return P2P(node=self.node, api=self.api, defaults=self.get_defaults())
 
     def __get_url(self):
