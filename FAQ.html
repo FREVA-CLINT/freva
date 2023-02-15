@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frequently Ask Questions and best practices &mdash; freva user guide 2210.0.0 documentation</title>
@@ -11,10 +11,8 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -32,11 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> freva user guide
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            freva user guide
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -70,7 +72,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Frequently Ask Questions and best practices</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/FAQ.ipynb.txt" rel="nofollow"> View page source</a>
@@ -367,7 +369,7 @@ div.rendered_html tbody tr:hover {
 <h2>How can I use <code class="docutils literal notranslate"><span class="pre">Freva</span></code> in my analysis workflows.<a class="headerlink" href="#How-can-I-use-Freva-in-my-analysis-workflows." title="Permalink to this heading"></a></h2>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">Freva</span></code> without creating or applying data analysis plugins. One example would be using the <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> command in you data analysis workflow:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the databrowser search and pipe the output to ncremap</span>
-freva databrowser <span class="nv">project</span><span class="o">=</span>observations <span class="nv">experiment</span><span class="o">=</span>cmorph <span class="nv">time_frequency</span><span class="o">=</span>30min <span class="p">|</span> ncremap -m map.nc -O drc_rgr
+freva<span class="w"> </span>databrowser<span class="w"> </span><span class="nv">project</span><span class="o">=</span>observations<span class="w"> </span><span class="nv">experiment</span><span class="o">=</span>cmorph<span class="w"> </span><span class="nv">time_frequency</span><span class="o">=</span>30min<span class="w"> </span><span class="p">|</span><span class="w"> </span>ncremap<span class="w"> </span>-m<span class="w"> </span>map.nc<span class="w"> </span>-O<span class="w"> </span>drc_rgr
 </pre></div>
 </div>
 <p>Below you can find a python example, which you could use in a notebook</p>
@@ -375,12 +377,12 @@ freva databrowser <span class="nv">project</span><span class="o">=</span>observa
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import freva
-import xarray as xr
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
-# Open the data with xarray
-dset = xr.open_mfdataset(freva.databrowser(project=&quot;obs*&quot;, time_frequency=&#39;30min&#39;), combine=&#39;by_coords&#39;)[&#39;pr&#39;]
-dset
+<span class="c1"># Open the data with xarray</span>
+<span class="n">dset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">,</span> <span class="n">time_frequency</span><span class="o">=</span><span class="s1">&#39;30min&#39;</span><span class="p">),</span> <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;by_coords&#39;</span><span class="p">)[</span><span class="s1">&#39;pr&#39;</span><span class="p">]</span>
+<span class="n">dset</span>
 </pre></div>
 </div>
 </div>
@@ -761,7 +763,7 @@ Coordinates:
 Attributes:
     standard_name:  precipitation_flux
     long_name:      Precipitation
-    units:          kg m-2 s-1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-array-name'>'pr'</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lat</span>: 412</li><li><span class='xr-has-index'>lon</span>: 687</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-5d3f0eb8-32d0-4fa6-b204-0fde660097b2' class='xr-array-in' type='checkbox' checked><label for='section-5d3f0eb8-32d0-4fa6-b204-0fde660097b2' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</span></div><div class='xr-array-data'><table>
+    units:          kg m-2 s-1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-array-name'>'pr'</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lat</span>: 412</li><li><span class='xr-has-index'>lon</span>: 687</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-3aa44de7-c892-4a3e-9e5a-158598c69a52' class='xr-array-in' type='checkbox' checked><label for='section-3aa44de7-c892-4a3e-9e5a-158598c69a52' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</span></div><div class='xr-array-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -875,7 +877,7 @@ Attributes:
 </svg>
         </td>
     </tr>
-</table></div></div></li><li class='xr-section-item'><input id='section-7823fe41-0d14-432e-a2ce-30f5523fc9fe' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7823fe41-0d14-432e-a2ce-30f5523fc9fe' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-666a4b4b-d281-45cd-b136-a3b0daf45325' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-666a4b4b-d281-45cd-b136-a3b0daf45325' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d32a37b5-39cb-4637-9b9f-5785538d0903' class='xr-var-data-in' type='checkbox'><label for='data-d32a37b5-39cb-4637-9b9f-5785538d0903' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
+</table></div></div></li><li class='xr-section-item'><input id='section-8d2f9ec2-575b-453d-8068-89e6a2ed0d7c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-8d2f9ec2-575b-453d-8068-89e6a2ed0d7c' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-ab869800-0936-4ac9-a6de-b5b8255b8bb4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ab869800-0936-4ac9-a6de-b5b8255b8bb4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9f0a7da0-c4ac-46a6-85ae-bd1dba8855d0' class='xr-var-data-in' type='checkbox'><label for='data-9f0a7da0-c4ac-46a6-85ae-bd1dba8855d0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
        &#x27;2016-09-02T01:00:00.000000000&#x27;, &#x27;2016-09-02T01:30:00.000000000&#x27;,
        &#x27;2016-09-02T02:00:00.000000000&#x27;, &#x27;2016-09-02T02:30:00.000000000&#x27;,
        &#x27;2016-09-02T03:00:00.000000000&#x27;, &#x27;2016-09-02T03:30:00.000000000&#x27;,
@@ -899,9 +901,9 @@ Attributes:
        &#x27;2016-09-02T21:00:00.000000000&#x27;, &#x27;2016-09-02T21:30:00.000000000&#x27;,
        &#x27;2016-09-02T22:00:00.000000000&#x27;, &#x27;2016-09-02T22:30:00.000000000&#x27;,
        &#x27;2016-09-02T23:00:00.000000000&#x27;, &#x27;2016-09-02T23:30:00.000000000&#x27;],
-      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-40314dec-4ce9-4d2f-a12e-44acbb732216' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-40314dec-4ce9-4d2f-a12e-44acbb732216' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2442d045-877c-4974-b11c-85ff439c75a1' class='xr-var-data-in' type='checkbox'><label for='data-2442d045-877c-4974-b11c-85ff439c75a1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
-      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-02c0641a-de98-4355-8501-da46a5fb14a2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-02c0641a-de98-4355-8501-da46a5fb14a2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-795d3095-0fcb-4c8a-a2bd-bdb9d05dd869' class='xr-var-data-in' type='checkbox'><label for='data-795d3095-0fcb-4c8a-a2bd-bdb9d05dd869' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
-      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-3ad7e5d9-f1bb-42ae-9de2-998103d079cc' class='xr-section-summary-in' type='checkbox'  ><label for='section-3ad7e5d9-f1bb-42ae-9de2-998103d079cc' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-1f32199e-6ea8-42b8-929d-a9da7cbfb1c9' class='xr-index-data-in' type='checkbox'/><label for='index-1f32199e-6ea8-42b8-929d-a9da7cbfb1c9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-635d16fd-2076-4ee2-bf34-e5ad0b7c260a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-635d16fd-2076-4ee2-bf34-e5ad0b7c260a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e55ec1e4-663a-4fbe-ac7a-870af2c30760' class='xr-var-data-in' type='checkbox'><label for='data-e55ec1e4-663a-4fbe-ac7a-870af2c30760' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-e0db4b29-aaba-4cf4-b530-b83ef95be889' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e0db4b29-aaba-4cf4-b530-b83ef95be889' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6b781ee3-a1c6-4d95-b9ad-bd94691dd068' class='xr-var-data-in' type='checkbox'><label for='data-6b781ee3-a1c6-4d95-b9ad-bd94691dd068' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
+      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-ee7d8247-1e2c-4437-9ed9-99f86e34d84b' class='xr-section-summary-in' type='checkbox'  ><label for='section-ee7d8247-1e2c-4437-9ed9-99f86e34d84b' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-fdeb3d92-f863-459c-981e-7b6ec739c1e4' class='xr-index-data-in' type='checkbox'/><label for='index-fdeb3d92-f863-459c-981e-7b6ec739c1e4' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
                &#x27;2016-09-02 01:00:00&#x27;, &#x27;2016-09-02 01:30:00&#x27;,
                &#x27;2016-09-02 02:00:00&#x27;, &#x27;2016-09-02 02:30:00&#x27;,
                &#x27;2016-09-02 03:00:00&#x27;, &#x27;2016-09-02 03:30:00&#x27;,
@@ -925,7 +927,7 @@ Attributes:
                &#x27;2016-09-02 21:00:00&#x27;, &#x27;2016-09-02 21:30:00&#x27;,
                &#x27;2016-09-02 22:00:00&#x27;, &#x27;2016-09-02 22:30:00&#x27;,
                &#x27;2016-09-02 23:00:00&#x27;, &#x27;2016-09-02 23:30:00&#x27;],
-              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-dedca582-5331-43be-a672-7c0882c5687b' class='xr-index-data-in' type='checkbox'/><label for='index-dedca582-5331-43be-a672-7c0882c5687b' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
+              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-ccabb183-7e2e-4cf2-b844-c6da22dda615' class='xr-index-data-in' type='checkbox'/><label for='index-ccabb183-7e2e-4cf2-b844-c6da22dda615' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
                255.2667694091797, 255.33953857421875, 255.41229248046875,
               255.48504638671875, 255.55780029296875, 255.63055419921875,
               255.70330810546875,
@@ -934,7 +936,7 @@ Attributes:
                304.5230407714844,  304.5957946777344,  304.6685485839844,
                304.7413024902344,  304.8140563964844,  304.8868103027344,
                304.9595947265625],
-             dtype=&#x27;float64&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-40a28c42-02ac-4434-91b3-cee7666b3ca7' class='xr-index-data-in' type='checkbox'/><label for='index-40a28c42-02ac-4434-91b3-cee7666b3ca7' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
+             dtype=&#x27;float64&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-2ab57008-a704-4ddc-9e69-605293cf017b' class='xr-index-data-in' type='checkbox'/><label for='index-2ab57008-a704-4ddc-9e69-605293cf017b' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
               15.281989097595215, 15.354761123657227, 15.427532196044922,
               15.500303268432617, 15.573075294494629, 15.645846366882324,
                15.71861743927002,
@@ -943,7 +945,7 @@ Attributes:
                44.53608322143555, 44.608856201171875,  44.68162536621094,
               44.754398345947266,  44.82716751098633, 44.899940490722656,
                44.97270965576172],
-             dtype=&#x27;float64&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-79a8486f-b8e1-4749-8726-31905ed7c60d' class='xr-section-summary-in' type='checkbox'  checked><label for='section-79a8486f-b8e1-4749-8726-31905ed7c60d' class='xr-section-summary' >Attributes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div></li></ul></div></div></div>
+             dtype=&#x27;float64&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-6561310d-a858-47a4-86e7-49f8b777de57' class='xr-section-summary-in' type='checkbox'  checked><label for='section-6561310d-a858-47a4-86e7-49f8b777de57' class='xr-section-summary' >Attributes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div></li></ul></div></div></div>
 </div>
 </section>
 <section id="Best-practice:-Using-the-Freva-module-in-a-plugin">
@@ -953,27 +955,27 @@ Attributes:
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
-from evaluation_system.api import plugin, parameters
-import freva
+<span class="kn">from</span> <span class="nn">evaluation_system.api</span> <span class="kn">import</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">parameters</span>
+<span class="kn">import</span> <span class="nn">freva</span>
 
-class MyPlugin(plugin.PluginAbstract):
-    &quot;&quot;&quot;An analysis plugin that uses the databrowser search.&quot;&quot;&quot;
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">PluginAbstract</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An analysis plugin that uses the databrowser search.&quot;&quot;&quot;</span>
 
-    __parameters__ = parameters.ParameterDictionary(
-        parameters.SolrField(name=&quot;project&quot;, facet=&quot;project&quot;, help=&quot;Set the project name&quot;),
-        parameters.SolrField(name=&quot;variable&quot;, facet=&quot;variable&quot;, help=&quot;Set the variable name&quot;),
-    )
+    <span class="n">__parameters__</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">ParameterDictionary</span><span class="p">(</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="n">SolrField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="n">facet</span><span class="o">=</span><span class="s2">&quot;project&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set the project name&quot;</span><span class="p">),</span>
+        <span class="n">parameters</span><span class="o">.</span><span class="n">SolrField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">facet</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set the variable name&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
 
-    def run_tool(self, config_dict):
-        &quot;&quot;&quot;Main plugin method that makes Freva calls.&quot;&quot;&quot;
-        # Search for files
-        files = list(freva.databrowser(**config_dict))
-        # Save the files to a json file
-        with open(&quot;/tmp/some_json_file.json&quot;, &quot;w&quot;) as f:
-            json.dumps(files, f)
-        self.call(&quot;external_command /tmp/some_json_file.json&quot;)
+    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main plugin method that makes Freva calls.&quot;&quot;&quot;</span>
+        <span class="c1"># Search for files</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="o">**</span><span class="n">config_dict</span><span class="p">))</span>
+        <span class="c1"># Save the files to a json file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/tmp/some_json_file.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;external_command /tmp/some_json_file.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -985,23 +987,23 @@ class MyPlugin(plugin.PluginAbstract):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
-from evaluation_system.api import plugin, parameters
-import freva
-class MyPlugin(plugin.PluginAbstract):
+<span class="kn">from</span> <span class="nn">evaluation_system.api</span> <span class="kn">import</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">parameters</span>
+<span class="kn">import</span> <span class="nn">freva</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">PluginAbstract</span><span class="p">):</span>
 
-    def run_tool(self, config_dict):
-        result = self.call(&#39;%s/main.py %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s&#39;
-                   % (self.class_basedir, config_dict[&#39;inputdir&#39;], config_dict[&#39;project&#39;],
-                      config_dict[&#39;product&#39;], config_dict[&#39;institute&#39;], config_dict[&#39;model&#39;],
-                      config_dict[&#39;experiment&#39;], config_dict[&#39;time_frequency&#39;],
-                      config_dict[&#39;variable&#39;], config_dict[&#39;ensemble&#39;], config_dict[&#39;cmor_table&#39;],
-                      config_dict[&#39;outputdir&#39;], config_dict[&#39;cache&#39;], config_dict[&#39;cacheclear&#39;],
-                      config_dict[&#39;seldate&#39;], config_dict[&#39;latlon&#39;], config_dict[&#39;area_weight&#39;],
-                      config_dict[&#39;percentile_threshold&#39;], config_dict[&#39;threshold&#39;],
-                      config_dict[&#39;persistence&#39;], config_dict[&#39;sel_extr&#39;], config_dict[&#39;dryrun&#39;])
-        )
+    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/main.py </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span>
+                   <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_basedir</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;inputdir&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;institute&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;experiment&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;time_frequency&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;ensemble&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;cmor_table&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;outputdir&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;cache&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;cacheclear&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;seldate&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;latlon&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;area_weight&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;percentile_threshold&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;threshold&#39;</span><span class="p">],</span>
+                      <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;persistence&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;sel_extr&#39;</span><span class="p">],</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;dryrun&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1010,26 +1012,26 @@ class MyPlugin(plugin.PluginAbstract):
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
-from tempfile import NamedTemporaryFile
-from evaluation_system.api import plugin, parameters
-import freva
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">NamedTemporaryFile</span>
+<span class="kn">from</span> <span class="nn">evaluation_system.api</span> <span class="kn">import</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">parameters</span>
+<span class="kn">import</span> <span class="nn">freva</span>
 
-class MyPlugin(plugin.PluginAbstract):
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">PluginAbstract</span><span class="p">):</span>
 
-    def run_tool(self, config_dict):
-        config_dict[&#39;input_files&#39;] = list(
-            freva.databrowser(
-                product=config_dict.pop(&#39;product&#39;), project=config_dict.pop(&#39;project&#39;),
-                institute=config_dict.pop(&#39;institute&#39;), model=config_dict.pop(&#39;model&#39;),
-                experiment=config_dict.pop(&#39;experiment&#39;), variable=config_dict.pop(&#39;variable&#39;),
-                ensemble=config_dict.pop(&#39;ensemble&#39;), cmor_table=config_dict.pop(&#39;cmor_table&#39;)
-            )
-        )
-        with NamedTemporaryFile(suffix=&#39;.json&#39;) as tf:
-            with open(tf.name, &#39;w&#39;) as f:
-                json.dump(config_dict, f)
-            self.call(f&quot;{self.class_basedir}/main.py {tf.name}&quot;)
+    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">):</span>
+        <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;input_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span>
+                <span class="n">product</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;product&#39;</span><span class="p">),</span> <span class="n">project</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;project&#39;</span><span class="p">),</span>
+                <span class="n">institute</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;institute&#39;</span><span class="p">),</span> <span class="n">model</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">),</span>
+                <span class="n">experiment</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;experiment&#39;</span><span class="p">),</span> <span class="n">variable</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;variable&#39;</span><span class="p">),</span>
+                <span class="n">ensemble</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ensemble&#39;</span><span class="p">),</span> <span class="n">cmor_table</span><span class="o">=</span><span class="n">config_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cmor_table&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_basedir</span><span class="si">}</span><span class="s2">/main.py </span><span class="si">{</span><span class="n">tf</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

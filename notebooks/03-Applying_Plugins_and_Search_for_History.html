@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Applying data analysis Plugins &mdash; freva user guide 2210.0.0 documentation</title>
@@ -11,10 +11,8 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -30,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> freva user guide
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            freva user guide
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -63,7 +65,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Applying data analysis Plugins</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/03-Applying_Plugins_and_Search_for_History.ipynb.txt" rel="nofollow"> View page source</a>
@@ -361,7 +363,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import freva
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
 </pre></div>
 </div>
 </div>
@@ -369,7 +371,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>freva.list_plugins()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -387,7 +389,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(freva.plugin_doc(&quot;animator&quot;))
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">plugin_doc</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -496,7 +498,7 @@ extra_scheduler_options (default: --qos=test, --array=20)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>freva.run_plugin(&quot;animator&quot;, variable=&quot;pr&quot;, project=&quot;obs*&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -510,7 +512,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2119/pr_20160902T0000-20160902T2330.mp4 in 47 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2119/pr_20160902T0000-20160902T2330.mp4 in 42 seconds
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -538,7 +540,7 @@ Recieved termination signal: exiting
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>help(freva.history)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -614,8 +616,8 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>animator_history = freva.history(&quot;animator&quot;)[-1]
-animator_history
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">animator_history</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">animator_history</span>
 </pre></div>
 </div>
 </div>
@@ -639,9 +641,9 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
   5: &#39;not_scheduled&#39;,
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
- &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7f27c716ea40&gt;,
+ &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7f542c553b90&gt;,
  &#39;id&#39;: 2111,
- &#39;timestamp&#39;: datetime.datetime(2022, 12, 7, 18, 7, 22),
+ &#39;timestamp&#39;: datetime.datetime(2023, 2, 15, 7, 13, 14),
  &#39;tool&#39;: &#39;dummyplugin&#39;,
  &#39;version&#39;: &#39;(0, 0, 0)&#39;,
  &#39;version_details_id&#39;: 123,
@@ -651,8 +653,8 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
   &#39;other&#39;: 1.4,
   &#39;input&#39;: None,
   &#39;variable&#39;: &#39;tas&#39;},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5361.local&#39;,
- &#39;host&#39;: &#39;fv-az298-402&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5769.local&#39;,
+ &#39;host&#39;: &#39;fv-az365-162&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,
@@ -663,7 +665,7 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>animator_history[&quot;configuration&quot;]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">animator_history</span><span class="p">[</span><span class="s2">&quot;configuration&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -686,7 +688,7 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>animator_history[&quot;status_dict&quot;][animator_history[&quot;status&quot;]]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">animator_history</span><span class="p">[</span><span class="s2">&quot;status_dict&quot;</span><span class="p">][</span><span class="n">animator_history</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]]</span>
 </pre></div>
 </div>
 </div>
