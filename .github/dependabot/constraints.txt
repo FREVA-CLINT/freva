@@ -1,4 +1,4 @@
-Django==4.1.6
+Django==4.1.7
 GitPython==3.1.30
 Pillow==9.4.0
 PyPDF2==3.0.1
