@@ -24,7 +24,6 @@ logging.getLogger().setLevel(logging.INFO)
 
 class EsgfFuse(Operations):
     def __init__(self):
-
         self.logcache = config.get("esgf_logcache")
         # self.logcache= '/pf/b/b324029/cache'
         self.esgftmp = "%s/%s/" % (self.logcache, "ESGF_CACHE")
@@ -59,7 +58,6 @@ class EsgfFuse(Operations):
     #             pass
 
     def get_url(self, path, size=False):
-
         esgfpath, filename = os.path.split(path)
 
         if size:
@@ -214,7 +212,6 @@ class EsgfFuse(Operations):
         return st
 
     def open(self, path, fh):
-
         sleep(0.1)
         esgfpath, filename = os.path.split(path)
         try:

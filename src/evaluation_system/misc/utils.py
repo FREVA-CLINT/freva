@@ -104,7 +104,6 @@ class PIPE_OUT:
         return self
 
     def __init__(self, *handlers: Union[IO[bytes], TextIO]):
-
         self.handlers = handlers
 
     def write(self, msg, *args, **kwargs) -> None:
@@ -273,7 +272,6 @@ class TemplateDict(object):
         templ_self = self
 
         def f(self, key):
-
             if key in var_dict:
                 val = var_dict[key]
             else:
@@ -365,7 +363,6 @@ class TemplateDict(object):
         while recursion and max_iter > 0:
             recursion = False  # assume no recursion until one possible case is found
             for var, value in result.items():
-
                 tmpl = None
                 if isinstance(value, str) and "$" in value:
                     # something that might need to get replaced!

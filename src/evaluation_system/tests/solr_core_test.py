@@ -93,7 +93,6 @@ def test_reload(dummy_solr):
 
 
 def test_unload_and_create(dummy_solr):
-
     res = dummy_solr.all_files.unload()
     status = dummy_solr.all_files.status()
     assert {} == status

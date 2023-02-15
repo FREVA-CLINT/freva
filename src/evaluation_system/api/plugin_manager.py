@@ -136,7 +136,6 @@ class _PluginStateHandle:
         signal.signal(signal.SIGHUP, self._update_plugin_state_in_db_and_quit)
 
     def __enter__(self):
-
         # Initialize the plugin state the database
         self._update_plugin_state_in_db()
         return self
@@ -273,7 +272,6 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
             log.warning("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
     for plugin_name, plugin_mod in __plugin_modules__.items():
-
         try:
             loader = importlib.machinery.SourceFileLoader(
                 plugin_name, plugin_mod + ".py"

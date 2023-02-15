@@ -438,7 +438,6 @@ class UserDB(object):
         first_name="",
         last_name="",
     ):
-
         timestamp = datetime.now()
 
         u = User(

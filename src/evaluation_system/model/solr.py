@@ -30,7 +30,8 @@ class SolrFindFiles(object):
         :param core: name of the solr core that will be used.
         :param host: hostname of the machine where the solr core is to be found.
         :param port: port number of the machine where the solr core is to be found.
-        :param get_status: if the core should be contacted in an attempt to get more metadata."""
+        :param get_status: if the core should be contacted in an attempt to get more metadata.
+        """
         self.solr = SolrCore(core, host=host, port=port, get_status=get_status)
 
     def __str__(self):  # pragma: no cover
@@ -65,7 +66,6 @@ class SolrFindFiles(object):
         return urllib.parse.urlencode(params)
 
     def _get_file_query_parameters(self, **search_dict: Union[str, list[str]]) -> str:
-
         partial_dict = search_dict.copy()
         for key in ("start", "row"):
             _ = partial_dict.pop("start", None)
@@ -113,7 +113,8 @@ class SolrFindFiles(object):
          that we don't use this anymore. Instead we have 2 cores and this is defined directly in :class:`SolrFindFiles.search`.
          It was changed because it was slow and required too much memory.
         known beforehand how many values are going to be returned, even before getting them all. To avoid this we might
-        implement a result set object. But that would break the find_files compatibility."""
+        implement a result set object. But that would break the find_files compatibility.
+        """
         offset = int(partial_dict.pop("start", "0"))
         query = self._get_file_query_parameters(**partial_dict)
         metadata = self._retrieve_metadata(**partial_dict)

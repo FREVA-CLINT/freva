@@ -115,7 +115,6 @@ def test_directory_creation(temp_user, dummy_env):
 
 def test_directory_creation2(temp_user, dummy_env):
     try:
-
         testUser = temp_user
         # assure we have a home directory setup
         assert os.path.isdir(testUser.getUserHome())

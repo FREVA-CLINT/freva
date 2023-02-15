@@ -188,7 +188,6 @@ ensemble: r2i1p1,r7i2p1,r9i3p1
 
 
 def test_show_attributes(dummy_solr, capsys):
-
     cmd = shlex.split("databrowser --attributes")
     run_cli(cmd)
     res = capsys.readouterr().out
@@ -212,7 +211,6 @@ def test_show_attributes(dummy_solr, capsys):
 
 
 def test_solr_backwards(dummy_solr, capsys):
-
     cmd = shlex.split("databrowser --all-facets")
     cmd += [
         f"file={dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc"

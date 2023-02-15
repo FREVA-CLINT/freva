@@ -557,7 +557,6 @@ def test_special_variables():
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_compose_command():
-
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
     dummy_plugin = DummyPlugin()

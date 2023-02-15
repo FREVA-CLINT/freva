@@ -79,7 +79,8 @@ class SolrCore:
 
         :param list_of_dicts: either a json or more normally a list of json instances that will be sent to Solr for ingestion
         :param auto_list: avoid packing list_of dicts in a directory if it's not one
-        :param commit: send also a Solr commit so that changes can be seen immediately."""
+        :param commit: send also a Solr commit so that changes can be seen immediately.
+        """
         if auto_list and not isinstance(list_of_dicts, list):
             list_of_dicts = [list_of_dicts]
         endpoint = "update/json?"
@@ -124,7 +125,8 @@ class SolrCore:
 
     def get_solr_fields(self):
         """Return information about the Solr fields. This is dynamically generated and because of
-        dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else."""
+        dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else.
+        """
         answer = self.get_json("admin/luke")["fields"]
         # TODO: Solr has a language facet. Until we know why, delete it
         if isinstance(answer, dict):
@@ -179,7 +181,8 @@ class SolrCore:
 
     def reload(self):
         """Reload the core. Useful after schema changes.
-        Be aware that you might need to re-ingest everything if there were changes to the indexing part of the schema."""
+        Be aware that you might need to re-ingest everything if there were changes to the indexing part of the schema.
+        """
         return self.get_json(
             "admin/cores?action=RELOAD&core=" + self.core, use_core=False
         )
@@ -350,7 +353,7 @@ class SolrCore:
         chunk_count = 0
         chunk_latest_new: Dict[str, Dict[str, str]] = {}
         latest_versions: Dict[str, str] = {}
-        for (drs_file, metadata) in SolrCore._get_metadata_from_path(
+        for drs_file, metadata in SolrCore._get_metadata_from_path(
             input_dir, abort_on_errors, suffix, drs_type=drs_type
         ):
             chunk.append(metadata)

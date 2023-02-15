@@ -25,7 +25,6 @@ def test_solr_search(dummy_solr):
 
 
 def test_facet_search(dummy_solr):
-
     from evaluation_system.model.solr import SolrFindFiles
 
     factes_to_be = {

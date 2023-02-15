@@ -6,7 +6,6 @@ SUBCOMMANDS = ("databrowser", "esgf", "user-data", "history", "plugin")
 
 
 def test_main_help(capsys):
-
     from freva.cli import main as main_cli
 
     env = os.environ.copy()

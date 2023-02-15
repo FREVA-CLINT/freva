@@ -14,7 +14,6 @@ class ArgParser(SubCommandParser):
     """Cmd argument parser class for main entry-point."""
 
     def __init__(self, argv: List[str]):
-
         epilog = f"""To get help for the individual sub-commands use:
         {COMMAND} <sub-command> --help
 """

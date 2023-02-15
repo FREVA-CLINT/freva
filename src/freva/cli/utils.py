@@ -119,7 +119,6 @@ class BaseParser(metaclass=abc.ABCMeta):
         parser: Optional[argparse.ArgumentParser] = None,
         command: str = "freva",
     ):
-
         self.parser = parser or argparse.ArgumentParser(
             prog=command,
             description=self.desc,
@@ -250,7 +249,6 @@ class BaseCompleter:
         return out
 
     def _print_default(self, choices: dict[str, tuple[str, str]]) -> list[str]:
-
         out = []
         for key, (_help, _) in choices.items():
             if self.metavar == "databrowser" and not key.startswith("-"):

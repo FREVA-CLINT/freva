@@ -20,7 +20,6 @@ from evaluation_system.misc.exceptions import (
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_cli(dummy_plugin, capsys, dummy_config, caplog):
-
     from freva.cli.plugin import main as plugin_cli
     import time
     from evaluation_system.misc.exceptions import ValidationError

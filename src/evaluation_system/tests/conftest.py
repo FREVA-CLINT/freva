@@ -18,7 +18,6 @@ import mock
 
 class mock_datetime:
     def __init__(self, year, month, day):
-
         self._year = year
         self._month = month
         self._day = day
@@ -97,7 +96,6 @@ def time_mock():
 
 @pytest.fixture(scope="function")
 def temp_script():
-
     with NamedTemporaryFile(suffix="test.sh") as tf:
         yield tf.name
 
@@ -138,7 +136,6 @@ def temp_dir():
 
 @pytest.fixture(scope="function")
 def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
-
     # At this point files have been ingested into the server already,
     # delete them again
     [getattr(dummy_solr, key).delete("*") for key in ("all_files", "latest")]
@@ -160,7 +157,6 @@ def dummy_crawl(dummy_solr, dummy_settings, dummy_env):
 
 @pytest.fixture(scope="module")
 def dummy_reana(dummy_solr, dummy_settings):
-
     from evaluation_system.model.solr_core import SolrCore
 
     with TemporaryDirectory(prefix="solr") as td:
@@ -187,7 +183,6 @@ def dummy_reana(dummy_solr, dummy_settings):
 
 @pytest.fixture(scope="module")
 def dummy_solr(dummy_env, dummy_settings):
-
     dummy_settings.reloadConfiguration()
     server = namedtuple(
         "solr",
@@ -220,7 +215,6 @@ def dummy_solr(dummy_env, dummy_settings):
     server.all_files.delete("*")
     server.latest.delete("*")
     with TemporaryDirectory(prefix="solr") as td:
-
         supermakedirs(str(Path(td) / "solr_core"), 0o0777)
         server.tmpdir = str(
             Path(td) / "solr_core",
@@ -267,7 +261,6 @@ def dummy_solr(dummy_env, dummy_settings):
 
 @pytest.fixture(scope="module")
 def django_user(dummy_settings, dummy_env):
-
     from django.contrib.auth.models import User
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
@@ -280,7 +273,6 @@ def django_user(dummy_settings, dummy_env):
 
 @pytest.fixture(scope="module")
 def dummy_config(dummy_env, dummy_settings_single):
-
     from evaluation_system.misc import config, utils
 
     config.reloadConfiguration()
@@ -290,7 +282,6 @@ def dummy_config(dummy_env, dummy_settings_single):
 
 @pytest.fixture(scope="module")
 def dummy_plugin(dummy_env, dummy_settings):
-
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
     yield DummyPlugin()
@@ -298,7 +289,6 @@ def dummy_plugin(dummy_env, dummy_settings):
 
 @pytest.fixture(scope="function")
 def dummy_history(dummy_env, dummy_settings):
-
     from evaluation_system.model.history.models import History
 
     yield History
@@ -307,7 +297,6 @@ def dummy_history(dummy_env, dummy_settings):
 
 @pytest.fixture(scope="module")
 def test_user(dummy_env, dummy_settings, config_dict):
-
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
 
@@ -339,7 +328,6 @@ def temp_user(dummy_settings):
 def dummy_user(
     dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user
 ):
-
     from django.contrib.auth.models import User
 
     User.objects.filter(username="test_user2").delete()
@@ -422,7 +410,6 @@ def root_path_with_empty_config(dummy_env):
 
 @pytest.fixture(scope="module")
 def hist_obj(django_user):
-
     from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
     from evaluation_system.misc import config
