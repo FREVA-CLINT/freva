@@ -15,7 +15,11 @@ def test_ingest(dummy_solr):
     from evaluation_system.model.solr import SolrFindFiles
     from evaluation_system.misc.utils import supermakedirs
 
-    latest_versions = [dummy_solr.files[0], dummy_solr.files[1], dummy_solr.files[3]]
+    latest_versions = [
+        dummy_solr.files[0],
+        dummy_solr.files[1],
+        dummy_solr.files[3],
+    ]
     multiversion_latest = dummy_solr.files[3]
     old_versions = [dummy_solr.files[2], dummy_solr.files[4]]
     data_dir = Path(dummy_solr.tmpdir) / "cmip5"
@@ -35,10 +39,20 @@ def test_ingest(dummy_solr):
     )
     all_entries = [i for i in ff_all._search()]
     latest_entries = [i for i in ff_latest._search()]
-    assert all([dummy_solr.tmpdir + "/" + e in all_entries for e in dummy_solr.files])
-    assert all([dummy_solr.tmpdir + "/" + e in latest_entries for e in latest_versions])
     assert all(
-        [dummy_solr.tmpdir + "/" + e not in latest_entries for e in old_versions]
+        [dummy_solr.tmpdir + "/" + e in all_entries for e in dummy_solr.files]
+    )
+    assert all(
+        [
+            dummy_solr.tmpdir + "/" + e in latest_entries
+            for e in latest_versions
+        ]
+    )
+    assert all(
+        [
+            dummy_solr.tmpdir + "/" + e not in latest_entries
+            for e in old_versions
+        ]
     )
 
     # add new version
@@ -54,10 +68,12 @@ def test_ingest(dummy_solr):
         core_all_files=dummy_solr.all_files,
         core_latest=dummy_solr.latest,
     )
-    assert set(ff_all._search()).symmetric_difference(set(all_entries)).pop() == str(
+    assert set(ff_all._search()).symmetric_difference(
+        set(all_entries)
+    ).pop() == str(new_version)
+    assert (set(ff_latest._search()) - set(latest_entries)).pop() == str(
         new_version
     )
-    assert (set(ff_latest._search()) - set(latest_entries)).pop() == str(new_version)
     # TODO: The below test does not make much sense, because data set versioning
     # doesn't really work, let's turn it off for now
     # assert (set(latest_entries) - set(ff_latest._search())).pop() == dummy_solr.tmpdir + '/' + multiversion_latest
@@ -82,6 +98,8 @@ def test_ingest(dummy_solr):
         "_version_",
         "file_no_version",
         "project",
+        "fs_type",
+        "uri",
         "ensemble",
     ]
     assert sorted(facets) == sorted(facets_to_be)

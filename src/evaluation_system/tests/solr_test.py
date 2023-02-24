@@ -39,16 +39,19 @@ def test_facet_search(dummy_solr):
         "variable": ["tauu", 1, "ua", 1, "wetso2", 1],
         "model": ["hadcm3", 3],
         "ensemble": ["r2i1p1", 1, "r7i2p1", 1, "r9i3p1", 1],
+        "fs_type": ["posix", 3],
     }
     s = SolrFindFiles
     all_factes = s.facets()
-    assert len(all_factes) == 11
+    assert len(all_factes) == len(factes_to_be)
     assert all_factes == factes_to_be
 
     var_facets = s.facets(facets=["variable"])
     assert var_facets == dict(variable=factes_to_be["variable"])
     experiment_facets = s.facets(facets="experiment", cmor_table="amon")
-    assert experiment_facets == {"experiment": ["decadal2008", 1, "decadal2009", 1]}
+    assert experiment_facets == {
+        "experiment": ["decadal2008", 1, "decadal2009", 1]
+    }
 
     # test files core
     res = s.facets(facets="variable,project", latest_version=False)
