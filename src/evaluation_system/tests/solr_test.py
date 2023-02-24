@@ -49,9 +49,7 @@ def test_facet_search(dummy_solr):
     var_facets = s.facets(facets=["variable"])
     assert var_facets == dict(variable=factes_to_be["variable"])
     experiment_facets = s.facets(facets="experiment", cmor_table="amon")
-    assert experiment_facets == {
-        "experiment": ["decadal2008", 1, "decadal2009", 1]
-    }
+    assert experiment_facets == {"experiment": ["decadal2008", 1, "decadal2009", 1]}
 
     # test files core
     res = s.facets(facets="variable,project", latest_version=False)

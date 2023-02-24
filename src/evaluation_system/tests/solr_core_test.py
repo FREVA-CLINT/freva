@@ -39,20 +39,10 @@ def test_ingest(dummy_solr):
     )
     all_entries = [i for i in ff_all._search()]
     latest_entries = [i for i in ff_latest._search()]
+    assert all([dummy_solr.tmpdir + "/" + e in all_entries for e in dummy_solr.files])
+    assert all([dummy_solr.tmpdir + "/" + e in latest_entries for e in latest_versions])
     assert all(
-        [dummy_solr.tmpdir + "/" + e in all_entries for e in dummy_solr.files]
-    )
-    assert all(
-        [
-            dummy_solr.tmpdir + "/" + e in latest_entries
-            for e in latest_versions
-        ]
-    )
-    assert all(
-        [
-            dummy_solr.tmpdir + "/" + e not in latest_entries
-            for e in old_versions
-        ]
+        [dummy_solr.tmpdir + "/" + e not in latest_entries for e in old_versions]
     )
 
     # add new version
@@ -68,12 +58,10 @@ def test_ingest(dummy_solr):
         core_all_files=dummy_solr.all_files,
         core_latest=dummy_solr.latest,
     )
-    assert set(ff_all._search()).symmetric_difference(
-        set(all_entries)
-    ).pop() == str(new_version)
-    assert (set(ff_latest._search()) - set(latest_entries)).pop() == str(
+    assert set(ff_all._search()).symmetric_difference(set(all_entries)).pop() == str(
         new_version
     )
+    assert (set(ff_latest._search()) - set(latest_entries)).pop() == str(new_version)
     # TODO: The below test does not make much sense, because data set versioning
     # doesn't really work, let's turn it off for now
     # assert (set(latest_entries) - set(ff_latest._search())).pop() == dummy_solr.tmpdir + '/' + multiversion_latest

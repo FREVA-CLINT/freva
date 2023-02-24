@@ -13,9 +13,7 @@ def test_time_subsets(dummy_solr):
     from freva import databrowser
 
     files = list(databrowser(project="cmip5"))
-    subset_1 = databrowser(
-        project="cmip5", time="2000-12 to 2012-12", count=True
-    )
+    subset_1 = databrowser(project="cmip5", time="2000-12 to 2012-12", count=True)
     subset_2 = databrowser(project="cmip5", time="1900 to 1918", count=True)
     subset_3 = databrowser(project="cmip5", time="2100", count=True)
     subset_4 = databrowser(

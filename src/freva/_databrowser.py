@@ -8,9 +8,7 @@ from typing_extensions import Literal
 import lazy_import
 from evaluation_system.misc import logger
 
-SolrFindFiles = lazy_import.lazy_class(
-    "evaluation_system.model.solr.SolrFindFiles"
-)
+SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
 
 __all__ = ["databrowser"]
 
@@ -230,9 +228,7 @@ def databrowser(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning(
-            "Turning latest off when searching for a specific version."
-        )
+        logger.warning("Turning latest off when searching for a specific version.")
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
