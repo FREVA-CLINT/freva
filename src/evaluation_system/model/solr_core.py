@@ -266,6 +266,7 @@ class SolrCore:
             metadata = SolrCore.to_solr_dict(drs_file)
             metadata["timestamp"] = timestamp
             metadata["time"] = get_solr_time_range(metadata.pop("time", ""))
+            metadata["uri"] = metadata["file"]
             yield drs_file, metadata
 
     def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:
