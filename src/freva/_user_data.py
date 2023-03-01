@@ -235,7 +235,9 @@ class UserData:
                 if delete_from_fs:
                     file.unlink()
 
-    def index(self, *crawl_dirs: os.PathLike, dtype: str = "fs", allow: bool = False) -> None:
+    def index(
+        self, *crawl_dirs: os.PathLike, dtype: str = "fs", allow: bool = False
+    ) -> None:
         """Index and add user output data to the databrowser.
 
         This method can be used to update the databrowser for existing user data
