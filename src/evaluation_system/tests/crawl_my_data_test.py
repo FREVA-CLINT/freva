@@ -303,6 +303,23 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
     with pytest.raises(SystemExit):
         with pytest.raises(ValidationError):
             run_cli(["user-data", "index", "/tmp/forbidden/folder"])
+    
+    import os
+    tmp_files = [
+        "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_189509010000-192112312300_as.nc",
+        "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_199509010000-202112312300.nc",
+    ]
+    new_files = [str(user_data.user_dir) + "/" + file for file in tmp_files]
+    for file in new_files:
+        os.makedirs(os.path.dirname(file), exist_ok=True)
+        with open(file, "w"):
+            pass
+    run(["index", "-a"])
+    captured = capsys.readouterr()
+    assert "Status: crawling ..." in captured.out
+    assert "ok" in captured.out
+    assert len(list(SolrFindFiles.search(project="user*", product="observations.station"))) == len(tmp_files) - 1
+    run(["delete", str(user_data.user_dir) + "/observations.station/"])
 
 
 def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
