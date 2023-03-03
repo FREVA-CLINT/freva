@@ -8,7 +8,8 @@ This package encapsulate access to a solr instance
 
 from __future__ import annotations
 import urllib
-from typing import cast, Union, List, Literal, NamedTuple
+from typing import cast, Union, List, NamedTuple
+from typing_extensions import Literal
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger, utils
