@@ -241,11 +241,10 @@ def testDynamicPluginLoading(dummy_env, temp_user):
             os.environ[pm.PLUGIN_ENV] = "%s,%s:%s,%s" % (
                 "~/../../../../../.." + path1 + "/a",
                 "blah",  # test a relative path starting from ~
-                "$HOME/../../../../../.." + path2 + "/x",
+                "~/../../../../../.." + path2 + "/x",
                 "foo",
-            )  # test a relative path starting from $HOME
+            )  # test a relative path starting from ~
             log.debug("pre-loading: %s", list(pm.get_plugins()))
-            os.environ["HOME"] = os.path.expanduser("~")
 
             assert "testplugin1" not in list(pm.get_plugins())
             assert "testplugin2" not in list(pm.get_plugins())
