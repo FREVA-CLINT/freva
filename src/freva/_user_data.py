@@ -236,7 +236,7 @@ class UserData:
                     file.unlink()
 
     def index(
-        self, *crawl_dirs: os.PathLike, dtype: str = "fs", allow: bool = False
+        self, *crawl_dirs: os.PathLike, dtype: str = "fs", continue_on_errors: bool = False
     ) -> None:
         """Index and add user output data to the databrowser.
 
@@ -248,8 +248,8 @@ class UserData:
             The data path(s) that needs to be crawled.
         dtype:
             The data type, currently only files on the file system are supported.
-        allow:
-            Allow indexing to continue on error.
+        continue_on_errors:
+            Continue indexing on error.
 
         Raises
         ------
@@ -281,7 +281,7 @@ class UserData:
                 solr_core.load_fs(
                     crawl_dir,
                     chunk_size=1000,
-                    abort_on_errors=not allow,
+                    abort_on_errors=not continue_on_errors,
                     drs_type=data_reader.drs_specification,
                 )
             print("ok", flush=True)
