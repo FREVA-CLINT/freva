@@ -305,6 +305,7 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
             run_cli(["user-data", "index", "/tmp/forbidden/folder"])
 
     import os, shutil
+
     tmp_files = [
         "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_189509010000-192412312300.nc",
         "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_192509010000-194112312300_as.nc",
@@ -321,7 +322,13 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
         assert "Status: crawling ..." in captured.out
         assert "ok" in captured.out
         assert (
-            len(list(SolrFindFiles.search(project="user*", product="observations.station")))
+            len(
+                list(
+                    SolrFindFiles.search(
+                        project="user*", product="observations.station"
+                    )
+                )
+            )
             == len(tmp_files) - 1
         )
         run(["delete", str(user_data.user_dir) + "/observations.station/"])

@@ -57,7 +57,11 @@ class IndexData(BaseParser):
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         try:
-            user_data.index(*args.crawl_dir, dtype=args.data_type, continue_on_errors=args.continue_on_errors)
+            user_data.index(
+                *args.crawl_dir,
+                dtype=args.data_type,
+                continue_on_errors=args.continue_on_errors,
+            )
         except (ValidationError, ValueError) as e:
             if args.debug:
                 raise e

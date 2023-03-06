@@ -236,7 +236,10 @@ class UserData:
                     file.unlink()
 
     def index(
-        self, *crawl_dirs: os.PathLike, dtype: str = "fs", continue_on_errors: bool = False
+        self,
+        *crawl_dirs: os.PathLike,
+        dtype: str = "fs",
+        continue_on_errors: bool = False,
     ) -> None:
         """Index and add user output data to the databrowser.
 
