@@ -9,13 +9,19 @@ This package encapsulate access to a solr instance
 from __future__ import annotations
 import urllib
 from typing import cast, Union, List, NamedTuple
+from typing_extensions import Literal
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger, utils
 
 SolrResponse = NamedTuple(
     "SolrResponse",
-    [("num_objects", int), ("start", int), ("exact", bool), ("docs", List[str])],
+    [
+        ("num_objects", int),
+        ("start", int),
+        ("exact", bool),
+        ("docs", List[str]),
+    ],
 )
 
 
@@ -65,22 +71,35 @@ class SolrFindFiles(object):
         logger.debug(params)
         return urllib.parse.urlencode(params)
 
-    def _get_file_query_parameters(self, **search_dict: Union[str, list[str]]) -> str:
+    def _get_file_query_parameters(
+        self,
+        uniq_key: Literal["file", "uri"] = "file",
+        **search_dict: Union[str, list[str]],
+    ) -> str:
         partial_dict = search_dict.copy()
         for key in ("start", "row"):
             _ = partial_dict.pop("start", None)
-        for key, value in {"q": "*:*", "fl": "file", "sort": "file desc"}.items():
+        for key, value in {
+            "q": "*:*",
+            "fl": f"{uniq_key}",
+            "sort": f"{uniq_key} desc",
+        }.items():
             partial_dict.setdefault(key, value)
         if "text" in partial_dict:
             partial_dict["q"] = partial_dict.pop("text")
         return self._to_solr_query(partial_dict)
 
-    def _retrieve_metadata(self, **search_dict: str) -> SolrResponse:
+    def _retrieve_metadata(
+        self, uniq_key: Literal["file", "uri"] = "file", **search_dict: str
+    ) -> SolrResponse:
         """Retrieve metadata from databrowser.
 
         Parameters
         ----------
 
+
+        uniq_key: str, default: file
+            The unique key the solr server should be queried for.
         **search_dict: str
             Search query parameter
 
@@ -89,7 +108,7 @@ class SolrFindFiles(object):
         evaluation_system.model.solr.SolrResponse:
           NamedTuple of metadata on the search query results.
         """
-        query = self._get_file_query_parameters(**search_dict)
+        query = self._get_file_query_parameters(uniq_key=uniq_key, **search_dict)
         anw = self.solr.get_json("select?facet=true&rows=0&%s" % query)["response"]
         return SolrResponse(
             num_objects=anw["numFound"],
@@ -102,6 +121,7 @@ class SolrFindFiles(object):
         self,
         batch_size=10000,
         latest_version=False,
+        uniq_key="file",
         rows=None,
         **partial_dict,
     ):
@@ -116,8 +136,8 @@ class SolrFindFiles(object):
         implement a result set object. But that would break the find_files compatibility.
         """
         offset = int(partial_dict.pop("start", "0"))
-        query = self._get_file_query_parameters(**partial_dict)
-        metadata = self._retrieve_metadata(**partial_dict)
+        query = self._get_file_query_parameters(uniq_key=uniq_key, **partial_dict)
+        metadata = self._retrieve_metadata(uniq_key=uniq_key, **partial_dict)
         if rows:
             results_to_visit = min(metadata.num_objects, rows)
         else:
@@ -130,7 +150,7 @@ class SolrFindFiles(object):
             offset = answer["response"]["start"]
             iter_answer = answer["response"]["docs"]
             for item in iter_answer:
-                yield item["file"]
+                yield item[uniq_key]
                 results_to_visit -= 1
             offset += batch_size
 
@@ -153,7 +173,10 @@ class SolrFindFiles(object):
 
     @classmethod
     def get_metadata(
-        cls, latest_version: bool = True, **search_dict: str
+        cls,
+        uniq_key: Literal["file", "uri"] = "file",
+        latest_version: bool = True,
+        **search_dict: str,
     ) -> SolrResponse:
         """Retrieve metadata from databrowser.
 
@@ -172,7 +195,7 @@ class SolrFindFiles(object):
             solrcore = cls(core="latest")
         else:
             solrcore = cls(core="files")
-        return solrcore._retrieve_metadata(**search_dict)
+        return solrcore._retrieve_metadata(uniq_key=uniq_key, **search_dict)
 
     @staticmethod
     def search(latest_version=True, **partial_dict):
@@ -207,7 +230,7 @@ class SolrFindFiles(object):
 
         if facets is None:
             # get all minus what we don't want
-            facets = set(self.solr.get_solr_fields()) - set(
+            facets = self.solr.get_solr_fields() - set(
                 [
                     "",
                     "_version_",
@@ -218,6 +241,7 @@ class SolrFindFiles(object):
                     "creation_time",
                     "source",
                     "version",
+                    "uri",
                     "file",
                     "file_name",
                 ]

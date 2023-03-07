@@ -5,14 +5,19 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2210.0.0 [unreleased]
-~~~~~~~~~~~~~~~~~~~~~~
+v2303.0.0
+~~~~~~~~~
 
 New Features
 ++++++++++++
+- User data can be ingested also if not all data files match directory reference
+  standard.
+- A new databrowser key (uri) was added that representing the object storge
+  where the data is stored.
 
 Breaking changes
 ++++++++++++++++
+
 
 Deprecations
 ++++++++++++
@@ -26,7 +31,6 @@ Documentations
 
 Internal Changes
 ++++++++++++++++
-
 
 
 v2208.1.1

@@ -620,7 +620,8 @@ class PluginAbstract(abc.ABC):
                 metadata = output_files[file_path]
             if os.path.isfile(file_path):
                 self._extend_output_metadata(file_path, metadata)
-                result[os.path.abspath(file_path)] = metadata
+                if metadata.get("type", "data") != "data":
+                    result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
                 # ok, we got a directory, so parse the contents recursively
                 for file_path in [
@@ -634,10 +635,11 @@ class PluginAbstract(abc.ABC):
                     # update meta data with user entries
                     usermetadata = result.get(os.path.abspath(file_path), {})
                     filemetadata.update(usermetadata)
-
-                    result[os.path.abspath(file_path)] = filemetadata
+                    if filemetadata.get("type", "data") != "data":
+                        result[os.path.abspath(file_path)] = filemetadata
             else:
-                result[os.path.abspath(file_path)] = metadata
+                if filemetadata.get("type", "data") != "data":
+                    result[os.path.abspath(file_path)] = metadata
         return result
 
     def _extend_output_metadata(self, file_path, metadata):

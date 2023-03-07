@@ -123,23 +123,12 @@ class SolrCore:
 
         return response
 
-    def get_solr_fields(self):
+    def get_solr_fields(self) -> set[str]:
         """Return information about the Solr fields. This is dynamically generated and because of
         dynamicFiled entries in the Schema, this information cannot be inferred from anywhere else.
         """
-        answer = self.get_json("admin/luke")["fields"]
-        # TODO: Solr has a language facet. Until we know why, delete it
-        if isinstance(answer, dict):
-            try:
-                del answer["language"]
-            except KeyError:
-                pass
-        else:
-            try:
-                answer.remove("language")
-            except ValueError:
-                pass
-        return answer
+        answer = self.get_json("schema")["schema"]["fields"]
+        return set([f["name"] for f in answer if f["type"] != "extra_facet"])
 
     def create(
         self,
@@ -266,6 +255,7 @@ class SolrCore:
             metadata = SolrCore.to_solr_dict(drs_file)
             metadata["timestamp"] = timestamp
             metadata["time"] = get_solr_time_range(metadata.pop("time", ""))
+            metadata["uri"] = metadata["file"]
             yield drs_file, metadata
 
     def _del_file_pattern(self, file_pattern: Path, prefix: str = "file") -> None:

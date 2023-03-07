@@ -15,7 +15,11 @@ def test_ingest(dummy_solr):
     from evaluation_system.model.solr import SolrFindFiles
     from evaluation_system.misc.utils import supermakedirs
 
-    latest_versions = [dummy_solr.files[0], dummy_solr.files[1], dummy_solr.files[3]]
+    latest_versions = [
+        dummy_solr.files[0],
+        dummy_solr.files[1],
+        dummy_solr.files[3],
+    ]
     multiversion_latest = dummy_solr.files[3]
     old_versions = [dummy_solr.files[2], dummy_solr.files[4]]
     data_dir = Path(dummy_solr.tmpdir) / "cmip5"
@@ -62,7 +66,7 @@ def test_ingest(dummy_solr):
     # doesn't really work, let's turn it off for now
     # assert (set(latest_entries) - set(ff_latest._search())).pop() == dummy_solr.tmpdir + '/' + multiversion_latest
     # test get_solr_fields (facets)
-    facets = dummy_solr.all_files.get_solr_fields().keys()
+    facets = dummy_solr.all_files.get_solr_fields()
     facets_to_be = [
         "model",
         "product",
@@ -82,6 +86,8 @@ def test_ingest(dummy_solr):
         "_version_",
         "file_no_version",
         "project",
+        "fs_type",
+        "uri",
         "ensemble",
     ]
     assert sorted(facets) == sorted(facets_to_be)
