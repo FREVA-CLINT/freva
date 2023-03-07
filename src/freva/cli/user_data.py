@@ -25,7 +25,7 @@ class IndexData(BaseParser):
             nargs="*",
             type=Path,
             metavar="crawl_dir",
-            help="The user directory(s) that needs to be crawled",
+            help="The user directory(s) that needs to be crawled.",
         )
         self.parser.add_argument(
             "--data-type",
@@ -33,6 +33,13 @@ class IndexData(BaseParser):
             default="fs",
             choices=["fs"],
             help="The data type of the data.",
+        )
+        self.parser.add_argument(
+            "--continue-on-errors",
+            "--continue",
+            "-c",
+            action="store_true",
+            help="Continue indexing on error.",
         )
         self.parser.add_argument(
             "--debug",
@@ -50,7 +57,11 @@ class IndexData(BaseParser):
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         try:
-            user_data.index(*args.crawl_dir, dtype=args.data_type)
+            user_data.index(
+                *args.crawl_dir,
+                dtype=args.data_type,
+                continue_on_errors=args.continue_on_errors,
+            )
         except (ValidationError, ValueError) as e:
             if args.debug:
                 raise e

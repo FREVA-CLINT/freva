@@ -173,7 +173,7 @@ class PluginAbstract(abc.ABC):
 
     Use a colon to separate multiple items::
 
-        export EVALUATION_SYSTEM_PLUGINS=/path1,plguin1:/path2,plugin2:/path3,plugin3
+        export EVALUATION_SYSTEM_PLUGINS=/path1,plugin1:/path2,plugin2:/path3,plugin3
 
     By telling the system where to find the packages it can find the
     :class:`evaluation_system.api.plugin` implementations. The system just
