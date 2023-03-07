@@ -17,7 +17,10 @@ def test_time_subsets(dummy_solr):
     subset_2 = databrowser(project="cmip5", time="1900 to 1918", count=True)
     subset_3 = databrowser(project="cmip5", time="2100", count=True)
     subset_4 = databrowser(
-        project="cmip5", time="2000-12 to 2012-12", count=True, time_select="strict"
+        project="cmip5",
+        time="2000-12 to 2012-12",
+        count=True,
+        time_select="strict",
     )
     with pytest.raises(ValueError):
         databrowser(time="2000-12 to bar", count=True)
@@ -78,9 +81,16 @@ def test_freva_databrowser_method(dummy_solr):
             "variable",
             "model",
             "ensemble",
+            "fs_type",
         ]
     )
-    relevant = ["cmor_table", "ensemble", "experiment", "realm", "variable"]
+    relevant = [
+        "cmor_table",
+        "ensemble",
+        "experiment",
+        "realm",
+        "variable",
+    ]
     res = sorted(databrowser(attributes=True))
     assert sorted(target) == res
     res = sorted(databrowser(attributes=True, relevant_only=True))
@@ -152,6 +162,7 @@ experiment: decadal2008,decadal2009,historical
 variable: tauu,ua,wetso2
 model: hadcm3
 ensemble: r2i1p1,r7i2p1,r9i3p1
+fs_type: posix
 """.split(
             "\n"
         )
@@ -204,6 +215,7 @@ def test_show_attributes(dummy_solr, capsys):
             "experiment",
             "variable",
             "model",
+            "fs_type",
             "ensemble",
         ]
     )
@@ -231,6 +243,7 @@ experiment: decadal2008
 variable: tauu
 model: hadcm3
 ensemble: r9i3p1
+fs_type: posix
 """.split(
             "\n"
         )

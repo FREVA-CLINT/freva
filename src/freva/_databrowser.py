@@ -1,5 +1,6 @@
 """A Python module to access the apache solr databrowser."""
 from __future__ import annotations
+import json
 from pathlib import Path
 from typing import Any, Optional, Union, Iterator, overload
 from typing_extensions import Literal
@@ -50,6 +51,7 @@ def databrowser(
     relevant_only: bool = False,
     batch_size: int = 5000,
     count: bool = False,
+    uniq_key: Literal["file", "uri"] = "file",
     time: str = "",
     time_select: str = "flexible",
     **search_facets: Union[str, Path, int, list[str]],
@@ -81,6 +83,11 @@ def databrowser(
         ``flexible`` returns those files that have either start or end period
         covered. ``file`` will only return files where the entire time
         period is contained within *one single* file.
+    uniq_key: str, default: file
+        Chose if the solr search query should return paths to files or
+        uris, uris will have the file path along with protocol of the storage
+        system. Uris can be useful if the the search query result should be
+        used libraries like fsspec.
     all_facets: bool, default: False
         Retrieve all facets (attributes & values) instead of the files.
     facet: Union[str, list[str]], default: None
@@ -205,9 +212,14 @@ def databrowser(
     try:
         # If we don't convert a str to a str mypy will complain.
         f = Path(str(search_facets["file"])).expanduser().absolute()
-        search_facets["file"] = f'"\{f}"'
+        search_facets["file"] = str(f)
     except KeyError:
         pass
+    for key in ("file", "uri"):
+        try:
+            search_facets[key] = json.dumps(search_facets[key])
+        except KeyError:
+            pass
     if isinstance(facet, str):
         facet = [facet]
     facet = facet or []
@@ -249,6 +261,7 @@ def databrowser(
     search_results = solr_core._search(
         batch_size=batch_size,
         latest_version=latest,
+        uniq_key=uniq_key,
         **search_facets,
     )
     return search_results
