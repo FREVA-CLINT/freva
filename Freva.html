@@ -200,10 +200,10 @@ was given a value (str or list[str])</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f6016f9d690&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7fc95a115690&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
-[&#39;variable&#39;, &#39;fs_type&#39;, &#39;dataset&#39;, &#39;ensemble&#39;, &#39;institute&#39;, &#39;model&#39;, &#39;cmor_table&#39;, &#39;project&#39;, &#39;product&#39;, &#39;experiment&#39;, &#39;time_frequency&#39;, &#39;realm&#39;]
+[&#39;experiment&#39;, &#39;cmor_table&#39;, &#39;time_frequency&#39;, &#39;dataset&#39;, &#39;model&#39;, &#39;realm&#39;, &#39;product&#39;, &#39;fs_type&#39;, &#39;ensemble&#39;, &#39;institute&#39;, &#39;project&#39;, &#39;variable&#39;]
 </pre></div>
 </div>
 <p>Search for files between a two given time steps:</p>
@@ -247,7 +247,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [&#39;pr&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;realm&#39;: [&#39;atmos&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [&#39;cmorph&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -272,7 +272,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [], &#39;fs_type&#39;: [], &#39;dataset&#39;: [], &#39;ensemble&#39;: [], &#39;institute&#39;: [], &#39;model&#39;: [], &#39;cmor_table&#39;: [], &#39;project&#39;: [], &#39;product&#39;: [], &#39;experiment&#39;: [], &#39;time_frequency&#39;: [], &#39;realm&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [], &#39;cmor_table&#39;: [], &#39;time_frequency&#39;: [], &#39;dataset&#39;: [], &#39;model&#39;: [], &#39;realm&#39;: [], &#39;product&#39;: [], &#39;fs_type&#39;: [], &#39;ensemble&#39;: [], &#39;institute&#39;: [], &#39;project&#39;: [], &#39;variable&#39;: []}
 </pre></div>
 </div>
 <p>Check the number of files in the system</p>
@@ -510,14 +510,15 @@ be deleted from the databrowser and also from the central data location:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="freva.UserData.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">crawl_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fs'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.UserData.index" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">crawl_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.UserData.index" title="Permalink to this definition"></a></dt>
 <dd><p>Index and add user output data to the databrowser.</p>
 <p>This method can be used to update the databrowser for existing user data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>crawl_dirs</strong> – The data path(s) that needs to be crawled</p></li>
+<li><p><strong>crawl_dirs</strong> – The data path(s) that needs to be crawled.</p></li>
 <li><p><strong>dtype</strong> – The data type, currently only files on the file system are supported.</p></li>
+<li><p><strong>continue_on_errors</strong> – Continue indexing on error.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

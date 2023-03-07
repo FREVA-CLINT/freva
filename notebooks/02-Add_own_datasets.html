@@ -653,7 +653,7 @@ delete(*paths: &#39;os.PathLike&#39;, delete_from_fs: &#39;bool&#39; = False) -&
 <div class="highlight"><pre>
 Help on method index in module freva._user_data:
 
-index(*crawl_dirs: &#39;os.PathLike&#39;, dtype: &#39;str&#39; = &#39;fs&#39;) -&gt; &#39;None&#39; method of freva._user_data.UserData instance
+index(*crawl_dirs: &#39;os.PathLike&#39;, dtype: &#39;str&#39; = &#39;fs&#39;, continue_on_errors: &#39;bool&#39; = False) -&gt; &#39;None&#39; method of freva._user_data.UserData instance
     Index and add user output data to the databrowser.
 
     This method can be used to update the databrowser for existing user data
@@ -661,9 +661,11 @@ index(*crawl_dirs: &#39;os.PathLike&#39;, dtype: &#39;str&#39; = &#39;fs&#39;) -
     Parameters
     ----------
     crawl_dirs:
-        The data path(s) that needs to be crawled
+        The data path(s) that needs to be crawled.
     dtype:
         The data type, currently only files on the file system are supported.
+    continue_on_errors:
+        Continue indexing on error.
 
     Raises
     ------
