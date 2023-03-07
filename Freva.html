@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Freva python module &mdash; freva user guide 2210.0.0 documentation</title>
+  <title>Freva python module &mdash; freva user guide 2303.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -200,10 +200,10 @@ was given a value (str or list[str])</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f2bc4289690&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f6016f9d690&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
-[&#39;experiment&#39;, &#39;dataset&#39;, &#39;model&#39;, &#39;fs_type&#39;, &#39;time_frequency&#39;, &#39;project&#39;, &#39;variable&#39;, &#39;realm&#39;, &#39;product&#39;, &#39;ensemble&#39;, &#39;institute&#39;, &#39;cmor_table&#39;]
+[&#39;variable&#39;, &#39;fs_type&#39;, &#39;dataset&#39;, &#39;ensemble&#39;, &#39;institute&#39;, &#39;model&#39;, &#39;cmor_table&#39;, &#39;project&#39;, &#39;product&#39;, &#39;experiment&#39;, &#39;time_frequency&#39;, &#39;realm&#39;]
 </pre></div>
 </div>
 <p>Search for files between a two given time steps:</p>
@@ -247,7 +247,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [&#39;cmorph&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [&#39;pr&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;dataset&#39;: [&#39;testdata&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;realm&#39;: [&#39;atmos&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -272,7 +272,7 @@ start of the time period:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [], &#39;dataset&#39;: [], &#39;model&#39;: [], &#39;fs_type&#39;: [], &#39;time_frequency&#39;: [], &#39;project&#39;: [], &#39;variable&#39;: [], &#39;realm&#39;: [], &#39;product&#39;: [], &#39;ensemble&#39;: [], &#39;institute&#39;: [], &#39;cmor_table&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: [], &#39;fs_type&#39;: [], &#39;dataset&#39;: [], &#39;ensemble&#39;: [], &#39;institute&#39;: [], &#39;model&#39;: [], &#39;cmor_table&#39;: [], &#39;project&#39;: [], &#39;product&#39;: [], &#39;experiment&#39;: [], &#39;time_frequency&#39;: [], &#39;realm&#39;: []}
 </pre></div>
 </div>
 <p>Check the number of files in the system</p>
