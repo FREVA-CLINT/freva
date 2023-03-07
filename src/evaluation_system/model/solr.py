@@ -43,7 +43,9 @@ class SolrFindFiles(object):
     def __str__(self):  # pragma: no cover
         return "<SolrFindFiles %s>" % self.solr
 
-    def _to_solr_query(self, partial_dict: dict[str, Union[str, list[str]]]) -> str:
+    def _to_solr_query(
+        self, partial_dict: dict[str, Union[str, list[str]]]
+    ) -> str:
         """Creates a Solr query assuming the default operator is "AND". See schema.xml for that."""
         params = []
         partial_dict = self._add_time_query(partial_dict)
@@ -59,7 +61,9 @@ class SolrFindFiles(object):
                     key = "-" + key[:-5]
                 if isinstance(value, list):
                     # implies an or
-                    constraint = " OR ".join(["%s:%s" % (key, v) for v in value])
+                    constraint = " OR ".join(
+                        ["%s:%s" % (key, v) for v in value]
+                    )
                 else:
                     constraint = "%s:%s" % (key, value)
                 params.append(
@@ -108,8 +112,12 @@ class SolrFindFiles(object):
         evaluation_system.model.solr.SolrResponse:
           NamedTuple of metadata on the search query results.
         """
-        query = self._get_file_query_parameters(uniq_key=uniq_key, **search_dict)
-        anw = self.solr.get_json("select?facet=true&rows=0&%s" % query)["response"]
+        query = self._get_file_query_parameters(
+            uniq_key=uniq_key, **search_dict
+        )
+        anw = self.solr.get_json("select?facet=true&rows=0&%s" % query)[
+            "response"
+        ]
         return SolrResponse(
             num_objects=anw["numFound"],
             start=anw["start"],
@@ -136,7 +144,9 @@ class SolrFindFiles(object):
         implement a result set object. But that would break the find_files compatibility.
         """
         offset = int(partial_dict.pop("start", "0"))
-        query = self._get_file_query_parameters(uniq_key=uniq_key, **partial_dict)
+        query = self._get_file_query_parameters(
+            uniq_key=uniq_key, **partial_dict
+        )
         metadata = self._retrieve_metadata(uniq_key=uniq_key, **partial_dict)
         if rows:
             results_to_visit = min(metadata.num_objects, rows)
@@ -230,7 +240,7 @@ class SolrFindFiles(object):
 
         if facets is None:
             # get all minus what we don't want
-            facets = set(self.solr.get_solr_fields()) - set(
+            facets = self.solr.get_solr_fields() - set(
                 [
                     "",
                     "_version_",
@@ -242,6 +252,7 @@ class SolrFindFiles(object):
                     "source",
                     "version",
                     "uri",
+                    "dataset",
                     "file",
                     "file_name",
                 ]
@@ -266,7 +277,9 @@ class SolrFindFiles(object):
         return answer
 
     @staticmethod
-    def facets(latest_version=True, facets=None, facet_limit=-1, **partial_dict):
+    def facets(
+        latest_version=True, facets=None, facet_limit=-1, **partial_dict
+    ):
         # use defaults, if other required use _search in the SolrFindFiles instance
         if latest_version:
             s = SolrFindFiles(core="latest")
