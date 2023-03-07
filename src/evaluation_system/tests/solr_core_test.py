@@ -66,7 +66,7 @@ def test_ingest(dummy_solr):
     # doesn't really work, let's turn it off for now
     # assert (set(latest_entries) - set(ff_latest._search())).pop() == dummy_solr.tmpdir + '/' + multiversion_latest
     # test get_solr_fields (facets)
-    facets = dummy_solr.all_files.get_solr_fields().keys()
+    facets = dummy_solr.all_files.get_solr_fields()
     facets_to_be = [
         "model",
         "product",
