@@ -90,11 +90,11 @@ class Cli(BaseParser):
             default=False,
             action="store_true",
         )
-        self.parser.add_argument(
-            "--unique_output",
-            help="Append a freva run id to every output folder",
-            default=True,
-            type=bool,
+        self.parser.add_argument( 
+            "--no_id",
+            "-n",
+            help="Do not append a Freva run id to the output/cache folder(s).",
+            action="store_true", 
         )
         self.parser.add_argument(
             "--debug",
@@ -128,7 +128,7 @@ class Cli(BaseParser):
         other_args: Optional[list[str]] = None,
         **kwargs: Any,
     ) -> None:
-        """Call the databrowser command and print the results."""
+        """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
         if kwargs.pop("list_tools") or not tool_name:
             print(freva.get_tools_list())
@@ -138,6 +138,8 @@ class Cli(BaseParser):
             if len(val) == 1:
                 options[key] = val[0]
         tool_args = {**kwargs, **options}
+        tool_args["unique_output"] = not tool_args["no_id"]
+        tool_args.pop("no_id")
         try:
             if tool_args.pop("doc"):
                 print(freva.plugin_doc(tool_name))
