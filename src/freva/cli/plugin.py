@@ -90,11 +90,11 @@ class Cli(BaseParser):
             default=False,
             action="store_true",
         )
-        self.parser.add_argument( 
-            "--no_id",
-            "-n",
-            help="Do not append a Freva run id to the output/cache folder(s).",
-            action="store_true", 
+        self.parser.add_argument(
+            "--unique_output",
+            choices=["True", "False"],
+            help="Append a Freva run id to the output/cache folder(s).",
+            default="True",
         )
         self.parser.add_argument(
             "--debug",
@@ -137,9 +137,11 @@ class Cli(BaseParser):
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
+        if kwargs["unique_output"].lower() == 'true':
+            kwargs["unique_output"] = True
+        else:
+            kwargs["unique_output"] = False
         tool_args = {**kwargs, **options}
-        tool_args["unique_output"] = not tool_args["no_id"]
-        tool_args.pop("no_id")
         try:
             if tool_args.pop("doc"):
                 print(freva.plugin_doc(tool_name))

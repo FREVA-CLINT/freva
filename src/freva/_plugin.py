@@ -194,7 +194,7 @@ def run_plugin(
     dry_run: bool = False,
     scheduled_id: Optional[int] = None,
     repo_version: bool = False,
-    unique_output: bool = True,
+    unique_output: bool = False,
     batchmode: bool = False,
     caption: str = "",
     tag: Optional[str] = None,

@@ -18,41 +18,34 @@ from evaluation_system.api.parameters import (
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
 
-
-class DummyPlugin(PluginAbstract):
+class DummyPluginFolders(PluginAbstract):
     """Stub class for implementing the abstract one"""
 
-    __short_description__ = "A dummy plugin"
+    __short_description__ = "A dummy plugin with outputdir folder"
     __long_description__ = ""
     __version__ = (0, 0, 0)
     __tags__ = ["foo"]
     __category__ = "statistical"
-    __name__ = "DummyPlugin"
+    __name__ = "DummyPluginFolders"
     __parameters__ = ParameterDictionary(
-        Integer(name="number", help="This is just a number, not really important"),
-        Integer(
-            name="the_number",
-            mandatory=True,
-            help="This is *THE* number. Please provide it",
-        ),
-        String(name="something", default="test"),
-        Float(name="other", default=1.4),
-        InputDirectory(name="input", help="An input file"),
-        String(name="variable", default="tas", help="An input variable"),  
+        String(name="variable", default="tas", help="An input variable"),
+        Directory(                                                                                                                                                                                
+            name="outputdir",                                                                                                                                                                     
+            default="$USER_OUTPUT_DIR/$SYSTEM_DATETIME",                                                                                                                                          
+            mandatory=False,                                                                                                                                                                       
+            help="The default output directory",                                                                                                                                          
+        ),   
     )
     _runs = []
     _template = "${number} - $something - $other"
     tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}
 
     def run_tool(self, config_dict=None):
-        DummyPlugin._runs.append(config_dict)
-        num = config_dict.get("other", 1.4)
-        if num < 0:
-            time.sleep(-num)
+        DummyPluginFolders._runs.append(config_dict)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
         assert "plugin_env" in os.environ["PATH"]
-        print(f"Dummy tool was run with: {config_dict}")
+        print(f"DummyPluginFolders tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),
             "/tmp/dummyfile2": dict(type="data"),
