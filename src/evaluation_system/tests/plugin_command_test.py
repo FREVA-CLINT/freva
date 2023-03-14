@@ -55,6 +55,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         assert "pending" in f.read()
 
     import re, freva
+
     pattern = r"'outputdir': '([^']*)'"
 
     plugin_cli(["dummypluginfolders", "variable=pr"])
@@ -62,21 +63,28 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     match = re.search(pattern, output_str)
     if match:
         folder_path = match.group(1)
-    assert str(freva.history()[0]["id"]) in os.path.basename(os.path.normpath(folder_path))
+    assert str(freva.history()[0]["id"]) in os.path.basename(
+        os.path.normpath(folder_path)
+    )
 
     plugin_cli(["dummypluginfolders", "variable=pr", "--unique_output", "True"])
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
         folder_path = match.group(1)
-    assert str(freva.history()[0]["id"]) in os.path.basename(os.path.normpath(folder_path))
+    assert str(freva.history()[0]["id"]) in os.path.basename(
+        os.path.normpath(folder_path)
+    )
 
     plugin_cli(["dummypluginfolders", "variable=pr", "--unique_output", "False"])
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
         folder_path = match.group(1)
-    assert str(freva.history()[0]["id"]) not in os.path.basename(os.path.normpath(folder_path))
+    assert str(freva.history()[0]["id"]) not in os.path.basename(
+        os.path.normpath(folder_path)
+    )
+
 
 def test_killed_jobs_set_to_broken():
     import freva

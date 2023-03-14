@@ -137,7 +137,7 @@ class Cli(BaseParser):
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
-        if kwargs["unique_output"].lower() == 'true':
+        if kwargs["unique_output"].lower() == "true":
             kwargs["unique_output"] = True
         else:
             kwargs["unique_output"] = False

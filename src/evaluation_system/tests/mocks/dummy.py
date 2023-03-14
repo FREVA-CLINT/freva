@@ -38,7 +38,7 @@ class DummyPlugin(PluginAbstract):
         String(name="something", default="test"),
         Float(name="other", default=1.4),
         InputDirectory(name="input", help="An input file"),
-        String(name="variable", default="tas", help="An input variable"),  
+        String(name="variable", default="tas", help="An input variable"),
     )
     _runs = []
     _template = "${number} - $something - $other"
@@ -57,6 +57,7 @@ class DummyPlugin(PluginAbstract):
             "/tmp/dummyfile1": dict(type="plot"),
             "/tmp/dummyfile2": dict(type="data"),
         }
+
 
 class DummyUser(User):
     """Create a dummy User object that allows testing"""

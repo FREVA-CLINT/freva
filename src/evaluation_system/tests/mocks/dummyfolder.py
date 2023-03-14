@@ -18,6 +18,7 @@ from evaluation_system.api.parameters import (
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
 
+
 class DummyPluginFolders(PluginAbstract):
     """Stub class for implementing the abstract one"""
 
@@ -29,12 +30,12 @@ class DummyPluginFolders(PluginAbstract):
     __name__ = "DummyPluginFolders"
     __parameters__ = ParameterDictionary(
         String(name="variable", default="tas", help="An input variable"),
-        Directory(                                                                                                                                                                                
-            name="outputdir",                                                                                                                                                                     
-            default="$USER_OUTPUT_DIR/$SYSTEM_DATETIME",                                                                                                                                          
-            mandatory=False,                                                                                                                                                                       
-            help="The default output directory",                                                                                                                                          
-        ),   
+        Directory(
+            name="outputdir",
+            default="$USER_OUTPUT_DIR/$SYSTEM_DATETIME",
+            mandatory=False,
+            help="The default output directory",
+        ),
     )
     _runs = []
     _template = "${number} - $something - $other"
@@ -50,6 +51,7 @@ class DummyPluginFolders(PluginAbstract):
             "/tmp/dummyfile1": dict(type="plot"),
             "/tmp/dummyfile2": dict(type="data"),
         }
+
 
 class DummyUser(User):
     """Create a dummy User object that allows testing"""
