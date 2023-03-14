@@ -316,8 +316,10 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
         os.makedirs(os.path.dirname(file), exist_ok=True)
         with open(file, "w"):
             pass
-    for abort_flag in ["--continue-on-errors", "--continue", "-c"]:
-        run(["index", abort_flag])
+    with pytest.raises(SystemExit):
+        run(["index"])
+    for abort_flag in ["--abort_on_errors", "--abort", "-a"]:
+        run(["index", abort_flag, "False"])
         captured = capsys.readouterr()
         assert "Status: crawling ..." in captured.out
         assert "ok" in captured.out
@@ -332,6 +334,9 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
             == len(tmp_files) - 1
         )
         run(["delete", str(user_data.user_dir) + "/observations.station/"])
+        with pytest.raises(SystemExit):
+            run(["index", abort_flag, "True"])
+
     shutil.rmtree(str(user_data.user_dir) + "/observations.station/")
 
 
