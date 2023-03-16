@@ -11,7 +11,6 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
@@ -87,31 +86,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="the-freva-command-line-interface">
+  <section id="the-freva-command-line-interface">
 <h1>The Freva command line interface<a class="headerlink" href="#the-freva-command-line-interface" title="Permalink to this heading"></a></h1>
 <p>This section introduces the usage of the Freva command line interface -
 cli. The tutorial assumes that you have already access to Freva
@@ -125,18 +100,18 @@ available via the <code class="docutils literal notranslate"><span class="pre">-
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: freva [-h] [-V] {esgf,history,plugin,user-data,databrowser} ...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: freva [-h] [-V] {plugin,history,esgf,databrowser,user-data} ...
 
 Free EVAluation system framework (freva)
 
 positional arguments:
-  {esgf,history,plugin,user-data,databrowser}
+  {plugin,history,esgf,databrowser,user-data}
                         Available sub-commands:
-    esgf                Search/Download ESGF the data catalogue.
-    history             Read the plugin application history.
     plugin              Apply data analysis plugin.
-    user-data           Update users project data
+    history             Read the plugin application history.
+    esgf                Search/Download ESGF the data catalogue.
     databrowser         Find data in the system.
+    user-data           Update users project data
 
 options:
   -h, --help            show this help message and exit
@@ -260,16 +235,16 @@ variables available that satisfies a certain constraint (e.g. sampled
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230308/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 /home/runner/work/freva/freva/.docker/data/reanalysis/reanalysis/NOAA/NODC/OC5/mon/ocean/Omon/r1i1p1/v20200101/hc700/hc700_mon_NODC_OC5_r1i1p1_201201-201212.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
@@ -448,18 +423,18 @@ the data). For example to see all facets that are available in the
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cmor_table: 30min,3hr,aday,amon,hr,omon
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>variable: hc700,pr,tas,ua
+ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
+dataset: crawl_my_data,testdata
 product: cmip,eur-11,eur-11b,grid,reanalysis
+cmor_table: 30min,3hr,aday,amon,hr,omon
+realm: atmos,ocean,user_data
 experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
+fs_type: posix
+model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
+time_frequency: 30min,3hr,day,hr,mon
 project: cmip6,cordex,observations,reanalysis,user-runner
 institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
-time_frequency: 30min,3hr,day,hr,mon
-fs_type: posix
-ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
-realm: atmos,ocean,user_data
-variable: hc700,pr,tas,ua
-dataset: crawl_my_data,testdata
-model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
 
 </pre></div>
 </div>
@@ -490,7 +465,7 @@ can be achieved by using the <code class="docutils literal notranslate"><span cl
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;ensemble&#39;: [], &#39;model&#39;: [], &#39;time_frequency&#39;: [], &#39;institute&#39;: [], &#39;cmor_table&#39;: [], &#39;realm&#39;: [], &#39;fs_type&#39;: [], &#39;dataset&#39;: [], &#39;experiment&#39;: [], &#39;product&#39;: [], &#39;variable&#39;: [], &#39;project&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: [], &#39;product&#39;: [], &#39;fs_type&#39;: [], &#39;experiment&#39;: [], &#39;project&#39;: [], &#39;cmor_table&#39;: [], &#39;time_frequency&#39;: [], &#39;variable&#39;: [], &#39;institute&#39;: [], &#39;ensemble&#39;: [], &#39;dataset&#39;: [], &#39;model&#39;: []}
 </pre></div>
 </div>
 </section>
@@ -669,7 +644,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 52 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 42 seconds
 
 </pre></div>
 </div>
@@ -731,7 +706,7 @@ options:
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
 
-2115) dummyplugin [2023-03-08 06:56:10] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+2115) dummyplugin [2023-03-16 19:41:45] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -743,7 +718,7 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2118) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-03-08 06:58:23] scheduled 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2118) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-03-16 19:43:36] scheduled 
 Configuration:
      cbar_label=
            cmap=Blues
