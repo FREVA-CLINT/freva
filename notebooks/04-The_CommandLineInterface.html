@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Freva command line interface &mdash; freva user guide 2303.0.0 documentation</title>
+  <title>The Freva command line interface &mdash; freva user guide 2303.0.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -326,18 +326,18 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-cmor_table: 30min
-institute: cpc
-product: grid
-realm: atmos
-fs_type: posix
-dataset: testdata
 variable: pr
 ensemble: r1i1p1
-project: observations
-time_frequency: 30min
-model: cpc
+product: grid
+realm: atmos
 experiment: cmorph
+institute: cpc
+cmor_table: 30min
+project: observations
+model: cpc
+dataset: testdata
+fs_type: posix
+time_frequency: 30min
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -395,7 +395,7 @@ variable: pr (24)
 <div class="highlight"><pre>
 usage: freva-plugin [-h] [--repo-version] [--caption CAPTION] [--save]
                     [--save-config SAVE_CONFIG] [--show-config] [--dry-run]
-                    [--batchmode] [--unique_output UNIQUE_OUTPUT] [--debug]
+                    [--batchmode] [--unique-output {true,false}] [--debug]
                     [--list-tools] [--doc] [-V]
                     [plugin_name]
 
@@ -419,9 +419,9 @@ options:
                         (default: False)
   --batchmode           Create a Batch job and submit it to the scheduling
                         system. (default: False)
-  --unique_output UNIQUE_OUTPUT
-                        Append a freva run id to every output folder (default:
-                        True)
+  --unique-output {true,false}
+                        Append a Freva run id to the output/cache folder(s).
+                        (default: true)
   --debug, -v, -d, --verbose
                         Use verbose output. (default: False)
   --list-tools, --list, -l
@@ -575,7 +575,8 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 45 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 51 seconds
+Recieved termination signal: exiting
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -595,7 +596,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_2
 Scheduled job with history id: 2121
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-14024.out
+tail -f /tmp/share/slurm/animator/Animator-29704.out
 </pre></div></div>
 </div>
 </section>
@@ -616,7 +617,7 @@ tail -f /tmp/share/slurm/animator/Animator-14024.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2023-03-16 19:41:45] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2023-03-17 15:27:35] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -752,16 +753,16 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230316/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
