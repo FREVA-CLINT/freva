@@ -12,6 +12,7 @@ from evaluation_system.api.parameters import (
     Float,
     String,
     InputDirectory,
+    Directory,
 )
 
 from evaluation_system.model.user import User

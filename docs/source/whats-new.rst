@@ -5,6 +5,28 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2303.0.1
+~~~~~~~~~
+
+New Features
+++++++++++++
+
+Breaking changes
+++++++++++++++++
+
+Deprecations
+++++++++++++
+
+Bug fixes
++++++++++
+- cli ``freva plugin --unique-output False`` feature reinstated, working as within python module.
+
+Documentations
+++++++++++++++
+
+Internal Changes
+++++++++++++++++
+
 v2303.0.0
 ~~~~~~~~~
 

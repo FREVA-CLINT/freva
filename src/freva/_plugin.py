@@ -222,7 +222,7 @@ def run_plugin(
     batchmode:
         Create a Batch job and submit it to the scheduling system.
     unique_output:
-        Append a Freva run id to every output folder
+        Append a Freva run id to the output/cache folder(s).
     return_result:
         Return the plugin result, this can be useful for pipelining.
     repo_version:

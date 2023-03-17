@@ -502,9 +502,9 @@ class PluginAbstract(abc.ABC):
         The following facets are fixed:
 
         - project: ``user-<user_name>``
-        - product: ``<plugin_name>``
+        - product: ``<project>.<produc>``
+        - realm: ``<plugin_name>``
         - dataset version: ``<history_id>``
-        - realm: ``plugins``
 
         Parameters
         ----------
@@ -553,7 +553,7 @@ class PluginAbstract(abc.ABC):
             project=root_dir.name,
             product=product_dir,
             model=model,
-            experiment=experiment or "frev-plugin",
+            experiment=experiment or "freva-plugin",
             realm=plugin,
             institute=institute or project_name,
             ensemble=ensemble,
@@ -1193,7 +1193,7 @@ class PluginAbstract(abc.ABC):
             cmd_param.append(f"--caption '{quote_caption}'")
 
         # append the unique_output param
-        cmd_param.append(f"--unique_output {unique_output}")
+        cmd_param.append(f"--unique-output {unique_output}")
 
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:

@@ -21,8 +21,6 @@ from evaluation_system.misc.exceptions import (
 @mock.patch("os.getpid", lambda: 12345)
 def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     from freva.cli.plugin import main as plugin_cli
-    import time
-    from evaluation_system.misc.exceptions import ValidationError
     from evaluation_system.misc import config
 
     with pytest.raises(ValidationError):
@@ -55,6 +53,37 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     assert out_f.exists()
     with out_f.open() as f:
         assert "pending" in f.read()
+
+    import re, freva
+
+    pattern = r"'outputdir': '([^']*)'"
+
+    plugin_cli(["dummypluginfolders", "variable=pr"])
+    output_str = capsys.readouterr().out
+    match = re.search(pattern, output_str)
+    if match:
+        folder_path = match.group(1)
+    assert str(freva.history()[0]["id"]) in os.path.basename(
+        os.path.normpath(folder_path)
+    )
+
+    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "true"])
+    output_str = capsys.readouterr().out
+    match = re.search(pattern, output_str)
+    if match:
+        folder_path = match.group(1)
+    assert str(freva.history()[0]["id"]) in os.path.basename(
+        os.path.normpath(folder_path)
+    )
+
+    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "false"])
+    output_str = capsys.readouterr().out
+    match = re.search(pattern, output_str)
+    if match:
+        folder_path = match.group(1)
+    assert str(freva.history()[0]["id"]) not in os.path.basename(
+        os.path.normpath(folder_path)
+    )
 
 
 def test_killed_jobs_set_to_broken():
