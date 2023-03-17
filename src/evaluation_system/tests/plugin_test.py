@@ -574,7 +574,7 @@ def test_compose_command():
         " ".join(command),
         (
             "dummpyplugin the_number=22 something=test other=1.4 variable=tas "
-            "--caption 'This is the caption' --unique_output True"
+            "--caption 'This is the caption' --unique-output true"
         ),
     )
 

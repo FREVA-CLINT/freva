@@ -1193,7 +1193,7 @@ class PluginAbstract(abc.ABC):
             cmd_param.append(f"--caption '{quote_caption}'")
 
         # append the unique_output param
-        cmd_param.append(f"--unique_output {unique_output}")
+        cmd_param.append(f"--unique-output {unique_output}")
 
         # a scheduled id overrides the dictionary behavior
         if scheduled_id:

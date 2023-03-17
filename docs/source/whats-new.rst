@@ -13,14 +13,13 @@ New Features
 
 Breaking changes
 ++++++++++++++++
-- cli ``freva user-data index --continue-on-errors`` renamed to ``--abort-on-errors False`` to go on par with the python syntax.
 
 Deprecations
 ++++++++++++
 
 Bug fixes
 +++++++++
-- cli ``freva plugin --unique_output False`` feature reinstated, working as within python module.
+- cli ``freva plugin --unique-output False`` feature reinstated, working as within python module.
 
 Documentations
 ++++++++++++++

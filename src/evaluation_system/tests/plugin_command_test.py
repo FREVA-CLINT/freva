@@ -67,7 +67,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         os.path.normpath(folder_path)
     )
 
-    plugin_cli(["dummypluginfolders", "variable=pr", "--unique_output", "True"])
+    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "true"])
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
@@ -76,7 +76,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         os.path.normpath(folder_path)
     )
 
-    plugin_cli(["dummypluginfolders", "variable=pr", "--unique_output", "False"])
+    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "false"])
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
