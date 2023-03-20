@@ -217,7 +217,7 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
 
 
 def test_add_my_data(valid_data_files, time_mock):
-    from freva import UserData, databrowser
+    from freva import UserData, count_values
     from freva.cli.user_data import main as run
 
     defaults = [
@@ -243,7 +243,7 @@ def test_add_my_data(valid_data_files, time_mock):
         run(["add", "foo-product", str(valid_data_files), "-d"])
 
     user_data = UserData()
-    assert databrowser(product="foo-product", count=True) == len(input_files)
+    assert count_values(product="foo-product") == len(input_files)
     with pytest.raises(ValueError):
         user_data.add("foo-product", valid_data_files, how="foo")
     with pytest.warns(UserWarning):
