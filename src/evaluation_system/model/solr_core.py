@@ -19,11 +19,17 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Iterator, Optional, Tuple
+import warnings
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.utils import get_solr_time_range
 from evaluation_system.misc.exceptions import CommandError
+
+warnings.warn(
+    ("The evaluation_system.model.solr_core module will be removed from " "v2304.0.0"),
+    category=PendingDeprecationWarning,
+)
 
 
 class SolrCore:
@@ -145,7 +151,8 @@ class SolrCore:
         :param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
         :param config: The configuration file (expected in instance_dir/conf)
         :param schema: The schema file (expected in instance_dir/conf)
-        :param check_if_exist: check for the existence of the instance directorie"""
+        :param check_if_exist: check for the existence of the instance directorie
+        """
         # check basic configuration (it must exists!)
         if instance_dir is None and self.instance_dir is None:
             raise ValueError("No Instance directory defined!")
@@ -185,7 +192,8 @@ class SolrCore:
     def swap(self, other_core):
         """Will swap this core with the given one (that means rename their references)
 
-        :param other_core: the name of the other core that this will be swapped with."""
+        :param other_core: the name of the other core that this will be swapped with.
+        """
         return self.get_json(
             "admin/cores?action=SWAP&core=%s&other=%s" % (self.core, other_core),
             use_core=False,
