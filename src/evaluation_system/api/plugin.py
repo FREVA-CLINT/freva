@@ -683,6 +683,7 @@ class PluginAbstract(abc.ABC):
                     metadata["todo"] = "copy"
                 elif ext in [".html", ".xhtml"]:
                     metadata["todo"] = "copy"
+                    metadata["type"] = "html"
 
     @deprecated_method("PluginAbstract", "get_help")
     def getHelp(self, **kwargs) -> str:
