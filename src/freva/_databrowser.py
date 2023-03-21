@@ -9,7 +9,9 @@ import warnings
 import lazy_import
 from evaluation_system.misc import logger
 
-SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
+SolrFindFiles = lazy_import.lazy_class(
+    "evaluation_system.model.solr.SolrFindFiles"
+)
 
 
 __all__ = ["databrowser", "search_facets", "count_values"]
@@ -135,20 +137,30 @@ def count_values(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning("Turning latest off when searching for a specific version.")
+        logger.warning(
+            "Turning latest off when searching for a specific version."
+        )
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     if count_all:
         with warnings.catch_warnings():
-            warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+            warnings.filterwarnings(
+                action="ignore", category=PendingDeprecationWarning
+            )
             return (
-                SolrFindFiles(core=core)._retrieve_metadata(**search_facets).num_objects
+                SolrFindFiles(core=core)
+                ._retrieve_metadata(**search_facets)
+                .num_objects
             )
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
-        results = SolrFindFiles(core=core)._facets(facet or None, **search_facets)
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
+        )
+        results = SolrFindFiles(core=core)._facets(
+            facet or None, **search_facets
+        )
     out: dict[str, dict[str, int]] = {}
     for att in facet or results.keys():
         values = results[att]
@@ -212,7 +224,7 @@ def facet_search(
         all_facets = freva.facet_search(project='obs*')
         print(all_facets)
         spec_facets = freva.facet_search(project='obs*',
-                                        facet=["time_frequency", "variable"])
+                                         facet=["time_frequency", "variable"])
         print(spec_facets)
 
     Get all models that have a given time step:
@@ -246,13 +258,17 @@ def facet_search(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning("Turning latest off when searching for a specific version.")
+        logger.warning(
+            "Turning latest off when searching for a specific version."
+        )
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
+        )
         results = SolrFindFiles(core=core)._facets(
             facets=facet or None, latest_version=False, **search_facets
         )
@@ -301,7 +317,9 @@ def databrowser(
     time: str = "",
     time_select: Literal["flexible", "strict", "file"] = "flexible",
     **search_facets: Union[str, list[str], int],
-) -> Union[dict[str, dict[str, int]], dict[str, list[str]], Iterator[str], int]:
+) -> Union[
+    dict[str, dict[str, int]], dict[str, list[str]], Iterator[str], int
+]:
     """Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -378,8 +396,6 @@ def databrowser(
         for file in files:
             print(file)
             break
-        facets = freva.databrowser(project='obs*', attributes=True)
-        print(list(facets))
 
     Search for files between a two given time steps:
 
@@ -440,7 +456,9 @@ def databrowser(
         )
         # select all is none defined but this flag was set
         with warnings.catch_warnings():
-            warnings.filterwarnings(category=PendingDeprecationWarning, action="ignore")
+            warnings.filterwarnings(
+                category=PendingDeprecationWarning, action="ignore"
+            )
 
             results = SolrFindFiles(core=core)._facets(
                 facets=facet or None, latest_version=False, **search_facets
@@ -468,7 +486,9 @@ def databrowser(
         time_select=time_select, time=time, **search_facets
     )
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
+        )
         search_results = SolrFindFiles(core=core)._search(
             batch_size=batch_size,
             latest_version=not multiversion,
