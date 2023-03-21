@@ -92,7 +92,8 @@ class Cli(BaseParser):
         )
         self.parser.add_argument(
             "--unique-output",
-            choices=["true", "false"],
+            "--unique_output",
+            choices=["true", "false", "True", "False"],
             help="Append a Freva run id to the output/cache folder(s).",
             default="true",
         )
