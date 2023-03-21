@@ -209,10 +209,10 @@ def facet_search(
     .. execute_code::
 
         import freva
-        all_facets = freva.search_facets(project='obs*')
+        all_facets = freva.facet_search(project='obs*')
         print(all_facets)
-        spec_facets = freva.search_facets(project='obs*',
-                                          facet=["time_frequency", "variable"])
+        spec_facets = freva.facet_search(project='obs*',
+                                        facet=["time_frequency", "variable"])
         print(spec_facets)
 
     Get all models that have a given time step:
@@ -220,7 +220,7 @@ def facet_search(
     .. execute_code::
 
         import freva
-        model = list(freva.search_facets(project="obs*", time="2016-09-02T22:10"))
+        model = list(freva.facet_search(project="obs*", time="2016-09-02T22:10"))
         print(model)
 
     Reverse search: retrieving meta data from a known file
@@ -230,7 +230,7 @@ def facet_search(
         import freva
         from pathlib import Path
         file = ".docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
-        res = freva.search_facets(file=str(Path(file).absolute()))
+        res = freva.facet_search(file=str(Path(file).absolute()))
         print(res)
 
     """
