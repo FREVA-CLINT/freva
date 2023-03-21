@@ -326,17 +326,17 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-variable: pr
 ensemble: r1i1p1
-product: grid
-realm: atmos
-experiment: cmorph
-institute: cpc
 cmor_table: 30min
-project: observations
-model: cpc
-dataset: testdata
 fs_type: posix
+model: cpc
+institute: cpc
+dataset: testdata
+product: grid
+experiment: cmorph
+variable: pr
+realm: atmos
+project: observations
 time_frequency: 30min
 </pre></div></div>
 </div>
@@ -395,8 +395,8 @@ variable: pr (24)
 <div class="highlight"><pre>
 usage: freva-plugin [-h] [--repo-version] [--caption CAPTION] [--save]
                     [--save-config SAVE_CONFIG] [--show-config] [--dry-run]
-                    [--batchmode] [--unique-output {true,false}] [--debug]
-                    [--list-tools] [--doc] [-V]
+                    [--batchmode] [--unique-output {true,false,True,False}]
+                    [--debug] [--list-tools] [--doc] [-V]
                     [plugin_name]
 
 Apply data analysis plugin.
@@ -419,7 +419,7 @@ options:
                         (default: False)
   --batchmode           Create a Batch job and submit it to the scheduling
                         system. (default: False)
-  --unique-output {true,false}
+  --unique-output {true,false,True,False}, --unique_output {true,false,True,False}
                         Append a Freva run id to the output/cache folder(s).
                         (default: true)
   --debug, -v, -d, --verbose
@@ -575,7 +575,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 51 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 46 seconds
 Recieved termination signal: exiting
 </pre></div></div>
 </div>
@@ -596,7 +596,7 @@ Recieved termination signal: exiting
 Scheduled job with history id: 2121
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-29704.out
+tail -f /tmp/share/slurm/animator/Animator-394.out
 </pre></div></div>
 </div>
 </section>
@@ -617,7 +617,7 @@ tail -f /tmp/share/slurm/animator/Animator-29704.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2023-03-17 15:27:35] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2023-03-21 16:00:59] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -753,16 +753,16 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230317/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230321/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
