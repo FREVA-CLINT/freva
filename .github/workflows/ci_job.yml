@@ -58,7 +58,7 @@ jobs:
         name: Gather dependabot metadata
         id: matadata
         if: ${{ github.actor == 'dependabot[bot]' }}
-        users: dependabot/fetch-metadata@v1
+        uses: dependabot/fetch-metadata@v1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       -
