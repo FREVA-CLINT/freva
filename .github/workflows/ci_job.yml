@@ -13,64 +13,66 @@ jobs:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive
     strategy:
-        max-parallel: 4
-        matrix:
-          python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
+      max-parallel: 5
+      matrix:
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
     steps:
-    -
-      name: Ceckout
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    -
-      name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{matrix.python-versoin}}
-    -
-      name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    -
-      name: Creating conda python ${{ matrix.python-version }} env
-      run: |
-        conda create -n test -c conda-forge -q -y python=${{matrix.python-version}} xarray netcdf4 gitpython mysqlclient make
-    -
-      name: Set up services
-      run: |
-        docker-compose up -d --remove-orphans
-    -
-      name: Install dependencies on python ${{matrix.python-version}}
-      run: |
-        conda run -n test python3 -m pip install -e .[test]
-    -
-      name: Running tests for python ${{ matrix.python-version }}
-      run: |
-        conda run -n test make test_coverage
-    -
-      name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-    -
-      name: Gather dependabot metadata
-      id: matadata
-      if: ${{ github.actor == 'dependabot[bot]' }}
-      users: dependabot/fetch-metadata@v1
-      with:
-         github-token: "${{ secrets.GITHUB_TOKEN }}"
-    -
-      name: Approve dependabots PR
-      if: ${{ github.actor == 'dependabot[bot]' }}
-      run: gh pr review --approve "${{github.event.pull_request.html_url}}"
-      env:
+      -
+        name: Ceckout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      -
+        name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{matrix.python-versoin}}
+      -
+        name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the
+          # miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
+      -
+        name: Creating conda python ${{ matrix.python-version }} env
+        run: |
+          conda create -n test -c conda-forge -q -y \
+          python=${{matrix.python-version}} xarray netcdf4 gitpython \
+          mysqlclient make
+      -
+        name: Set up services
+        run: |
+          docker-compose up -d --remove-orphans
+      -
+        name: Install dependencies on python ${{matrix.python-version}}
+        run: |
+          conda run -n test python3 -m pip install -e .[test]
+      -
+        name: Running tests for python ${{ matrix.python-version }}
+        run: |
+          conda run -n test make test_coverage
+      -
+        name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+      -
+        name: Gather dependabot metadata
+        id: matadata
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        users: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      -
+        name: Approve dependabots PR
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        run: gh pr review --approve "${{github.event.pull_request.html_url}}"
+        env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  -
-    name: Merge dependabots PR
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    run: gh pr merge --auto --merge "${{github.event.pull_request.html_url}}"
-    env:
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      -
+        name: Merge dependabots PR
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        run: gh pr merge --auto --merge "${{github.event.pull_request.html_url}}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 
   docs:
@@ -83,49 +85,49 @@ jobs:
       GIT_SUBMODULE_STRATEGY: recursive
       DJANGO_ALLOW_ASYNC_UNSAFE: 1
     steps:
-    -
-      name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    -
-      name: Set up Python
-      uses: actions/setup-python@v3
-    -
-      name: Add conda to system path
-      run: |
-        echo $CONDA/bin >> $GITHUB_PATH
-    -
-      name: Install freva
-      run: |
-        conda create -c conda-forge -n docs -y -q freva cartopy make
-    -
-      name: Set up services
-      run: |
-        docker-compose up -d --remove-orphans
-    -
-      name: Preparing docs
-      run: |
-        conda run -n docs make prepdocs
-    -
-      name: Creating docs
-      run: |
-        conda run -n docs make docs
-    -
-      name: Setup Pages
-      uses: actions/configure-pages@v2
-      if: github.event.pull_request.merged == true
-    -
-      name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
-      if: github.event.pull_request.merged == true
-      with:
-        # Upload entire repository
-        path: './docs/build/html'
-    -
-      name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      if: github.event.pull_request.merged == true
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/build/html
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      -
+        name: Set up Python
+        uses: actions/setup-python@v3
+      -
+        name: Add conda to system path
+        run: |
+          echo $CONDA/bin >> $GITHUB_PATH
+      -
+        name: Install freva
+        run: |
+          conda create -c conda-forge -n docs -y -q freva cartopy make
+      -
+        name: Set up services
+        run: |
+          docker-compose up -d --remove-orphans
+      -
+        name: Preparing docs
+        run: |
+          conda run -n docs make prepdocs
+      -
+        name: Creating docs
+        run: |
+          conda run -n docs make docs
+      -
+        name: Setup Pages
+        uses: actions/configure-pages@v2
+        if: github.event.pull_request.merged == true
+      -
+        name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        if: github.event.pull_request.merged == true
+        with:
+          # Upload entire repository
+          path: './docs/build/html'
+      -
+        name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.event.pull_request.merged == true
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
