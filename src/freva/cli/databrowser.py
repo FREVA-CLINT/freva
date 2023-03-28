@@ -5,6 +5,7 @@ from typing import Any, Optional
 
 import lazy_import
 from evaluation_system import __version__
+from evaluation_system.misc import logger
 from .utils import BaseParser, BaseCompleter
 
 freva = lazy_import.lazy_module("freva")
@@ -51,14 +52,18 @@ class Cli(BaseParser):
             action="store_true",
             help=(
                 "Retrieve all possible attributes for the current "
-                "search instead of the files."
+                "search instead of the files. Deprecated, to be removed in "
+                "v2304.0.0"
             ),
         )
         self.parser.add_argument(
             "--all-facets",
             default=False,
             action="store_true",
-            help=("retrieve all facets (attributes & values) instead of " "the files"),
+            help=(
+                "retrieve all facets (attributes & values) instead of "
+                "the files (deprecated, to be removed in v2304.0.0.0)"
+            ),
         )
         self.parser.add_argument(
             "--facet",
@@ -106,13 +111,44 @@ class Cli(BaseParser):
     ) -> None:
         """Call the databrowser command and print the results."""
         facets: dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
+        if args.relevant_only:
+            logger.warning(
+                "The relevant-only flag will be made deprecated",
+            )
+        if args.attributes:
+            logger.warning(
+                "The attributes flag will be made deprecated",
+            )
         facet_limit = kwargs.pop("facet_limit")
-        _ = kwargs.pop("facets")
+        for key in (
+            "facets",
+            "all_facets",
+            "count",
+            "attributes",
+            "relevant_only",
+            "batch_size",
+        ):
+            _ = kwargs.pop(key, "")
         for key, values in facets.items():
             if len(values) == 1:
                 facets[key] = values[0]
         merged_args: dict[str, Any] = {**kwargs, **facets}
-        out = freva.databrowser(**merged_args)
+        if args.all_facets:
+            logger.warning(
+                "The all-facets flag will be made deprecated use"
+                "user --facet '*' or --facet all instead"
+            )
+            args.facet = "*"
+        if args.count:
+            _ = merged_args.pop("facet", "")
+            out = freva.count_values(facet=args.facet, **merged_args)
+        elif args.facet:
+            _ = merged_args.pop("facet", "")
+            out = freva.facet_search(facet=args.facet, **merged_args)
+        elif args.attributes:
+            out = freva.databrowser(attributes=True, **merged_args)
+        else:
+            out = freva.databrowser(batch_size=args.batch_size, **merged_args)
         # flush stderr in case we have something pending
         sys.stderr.flush()
         if isinstance(out, dict):

@@ -5,6 +5,15 @@ Created on 21.04.2015
 """
 from django.db import models
 from django.contrib.auth.models import User
+import warnings
+
+warnings.warn(
+    (
+        "The evaluation_system.model.solr_models module will be removed from "
+        "v2304.0.0"
+    ),
+    category=PendingDeprecationWarning,
+)
 
 
 class UserCrawl(models.Model):

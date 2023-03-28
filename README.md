@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/freva.svg)](https://badge.fury.io/py/freva)
 [![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://github.com/FREVA-CLINT/freva)
-[![Conda](https://anaconda.org/conda-forge/freva/badges/installer/conda.svg)](https://anaconda.org/conda-forge/freva)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/freva/badges/version.svg)](https://anaconda.org/conda-forge/freva)
 [![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva-clint.github.io/freva)
 [![codecov](https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg)](https://codecov.io/gh/FREVA-CLINT/freva)
 [![Pipeline](https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg)](https://github.com/FREVA-CLINT/freva/actions)

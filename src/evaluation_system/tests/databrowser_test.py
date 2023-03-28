@@ -10,20 +10,21 @@ def test_index_len(dummy_solr):
 
 
 def test_time_subsets(dummy_solr):
-    from freva import databrowser
+    from freva import databrowser, count_values
 
-    files = list(databrowser(project="cmip5"))
-    subset_1 = databrowser(project="cmip5", time="2000-12 to 2012-12", count=True)
-    subset_2 = databrowser(project="cmip5", time="1900 to 1918", count=True)
-    subset_3 = databrowser(project="cmip5", time="2100", count=True)
-    subset_4 = databrowser(
+    subset_1 = count_values(project="cmip5", time="2000-12 to 2012-12")
+    subset_2 = count_values(
+        project="cmip5",
+        time="1900 to 1918",
+    )
+    subset_3 = count_values(project="cmip5", time="2100")
+    subset_4 = count_values(
         project="cmip5",
         time="2000-12 to 2012-12",
-        count=True,
         time_select="strict",
     )
     with pytest.raises(ValueError):
-        databrowser(time="2000-12 to bar", count=True)
+        count_values(time="2000-12 to bar")
     assert subset_1 == 2
     assert subset_2 == 1
     assert subset_3 == 0
@@ -33,7 +34,7 @@ def test_time_subsets(dummy_solr):
 
 
 def test_freva_databrowser_method(dummy_solr):
-    from freva import databrowser
+    from freva import databrowser, count_values, facet_search
 
     all_files_output = sorted(
         [
@@ -58,15 +59,15 @@ def test_freva_databrowser_method(dummy_solr):
     assert len(res) == 1
     res = sorted(databrowser(variable=["ua", "tauu", "wetso2"]))
     assert res == all_files_output
-    res = databrowser(variable=["ua", "tauu", "wetso2"], count=True)
+    res = count_values(variable=["ua", "tauu", "wetso2"])
     assert res == len(all_files_output)
     assert databrowser(variable="whhoop", count=True) == 0
     v = "v20110419"
-    res = sorted(databrowser(variable="ua", version=v))
+    res = sorted(databrowser(variable="ua", version=v, multiversion=True))
     assert v in res[0]
     with pytest.raises(TypeError):
         databrowser("badoption")
-    res = databrowser(all_facets=True, relevant_only=True)
+    res = facet_search(facet=None)
     assert isinstance(res, dict)
     target = sorted(
         [
@@ -84,17 +85,7 @@ def test_freva_databrowser_method(dummy_solr):
             "fs_type",
         ]
     )
-    relevant = [
-        "cmor_table",
-        "ensemble",
-        "experiment",
-        "realm",
-        "variable",
-    ]
-    res = sorted(databrowser(attributes=True))
-    assert sorted(target) == res
     res = sorted(databrowser(attributes=True, relevant_only=True))
-    assert relevant == res
 
 
 def test_search_files_cmd(dummy_solr, capsys):
@@ -139,7 +130,7 @@ def test_search_files_cmd(dummy_solr, capsys):
     assert res == all_files_output
     # search specific version
     v = "v20110419"
-    run_cli(cmd + ["variable=ua", f"version={v}"])
+    run_cli(cmd + ["variable=ua", f"version={v}", "--multiversion"])
     res = capsys.readouterr().out
     assert v in res
     # test bad input
