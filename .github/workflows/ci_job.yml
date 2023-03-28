@@ -116,18 +116,18 @@ jobs:
       -
         name: Setup Pages
         uses: actions/configure-pages@v2
-        if: github.event.pull_request.merged == true
+        if: ${{ github.ref == 'refs/heads/main' }}
       -
         name: Upload artifact
         uses: actions/upload-pages-artifact@v1
-        if: github.event.pull_request.merged == true
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           # Upload entire repository
           path: './docs/build/html'
       -
         name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.event.pull_request.merged == true
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
