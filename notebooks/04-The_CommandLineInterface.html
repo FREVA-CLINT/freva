@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Freva command line interface &mdash; freva user guide 2303.0.1 documentation</title>
+  <title>The Freva command line interface &mdash; freva user guide 2304.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -149,9 +149,11 @@ options:
   --count               Show the number of files for each search result
                         (default: False)
   --attributes          Retrieve all possible attributes for the current
-                        search instead of the files. (default: False)
+                        search instead of the files. Deprecated, to be removed
+                        in v2304.0.0 (default: False)
   --all-facets          retrieve all facets (attributes &amp; values) instead of
-                        the files (default: False)
+                        the files (deprecated, to be removed in v2304.0.0.0)
+                        (default: False)
   --facet FACET         Retrieve values of given facet instead of files
                         (default: None)
   --facet-limit FACET_LIMIT
@@ -203,9 +205,11 @@ options:
   --count               Show the number of files for each search result
                         (default: False)
   --attributes          Retrieve all possible attributes for the current
-                        search instead of the files. (default: False)
+                        search instead of the files. Deprecated, to be removed
+                        in v2304.0.0 (default: False)
   --all-facets          retrieve all facets (attributes &amp; values) instead of
-                        the files (default: False)
+                        the files (deprecated, to be removed in v2304.0.0.0)
+                        (default: False)
   --facet FACET         Retrieve values of given facet instead of files
                         (default: None)
   --facet-limit FACET_LIMIT
@@ -225,7 +229,7 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser<span class="w"> </span><span class="nv">project</span><span class="o">=</span>observations<span class="w"> </span><span class="nv">variable</span><span class="o">=</span>pr<span class="w"> </span><span class="nv">model</span><span class="o">=</span>cp*
+<div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-databrowser<span class="w"> </span><span class="nv">project</span><span class="o">=</span>observations<span class="w"> </span><span class="nv">variable</span><span class="o">=</span>pr<span class="w"> </span><span class="nv">model</span><span class="o">=</span><span class="s1">&#39;cp*&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -326,18 +330,19 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+WARNING:freva:The all-facets flag will be made deprecated useuser --facet &#39;*&#39; or --facet all instead
+product: grid
+model: cpc
+realm: atmos
+experiment: cmorph
 dataset: testdata
+project: observations
 variable: pr
-fs_type: posix
 institute: cpc
 ensemble: r1i1p1
-experiment: cmorph
-model: cpc
-project: observations
 cmor_table: 30min
+fs_type: posix
 time_frequency: 30min
-product: grid
-realm: atmos
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -444,6 +449,10 @@ options:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
 Animator: Animate data on lon/lat grids
 DummyPlugin: A dummy plugin
 </pre></div></div>
@@ -462,6 +471,10 @@ DummyPlugin: A dummy plugin
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
 Animator (v2022.7.15): Create animations (in gif or mp4 format) This tool creates plots of solr facets and an animation.
 Options:
 input_file              (default: &lt;undefined&gt;)
@@ -570,12 +583,18 @@ extra_scheduler_options (default: --qos=test, --array=20)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr.py:29: PendingDeprecationWarning: The evaluation_system.model.solr module will be removed from v2304.0.0
+  warnings.warn(
 Setp 1: Collecting all files
 Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2120/pr_20160902T0000-20160902T2330.gif in 45 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_20160902T0000-20160902T2330.gif in 46 seconds
 Recieved termination signal: exiting
 </pre></div></div>
 </div>
@@ -593,10 +612,14 @@ Recieved termination signal: exiting
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Scheduled job with history id: 2121
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+Scheduled job with history id: 2123
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-615.out
+tail -f /tmp/share/slurm/animator/Animator-29021.out
 </pre></div></div>
 </div>
 </section>
@@ -617,7 +640,11 @@ tail -f /tmp/share/slurm/animator/Animator-615.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2023-03-23 08:29:05] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+2115) dummyplugin [2023-03-28 07:49:23] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -634,16 +661,31 @@ INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history, limit=10, since=None, until=None, entry_ids=[&#39;1&#39;]
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
 </pre></div></div>
 </div>
 <p>To re-run a command of a past configuration you can use the –return-command option to get the command that was used:</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-bash notranslate"><div class="highlight"><pre><span></span>freva-history<span class="w">  </span>--entry-ids<span class="w"> </span><span class="m">136</span><span class="w"> </span>--return-command
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+</pre></div></div>
 </div>
 </section>
 <section id="Managing-your-own-datasets:-the-freva-user-data-command">
@@ -752,17 +794,21 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+Status: crawling .../home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+ok
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
@@ -800,7 +846,7 @@ options:
 </pre></div></div>
 </div>
 <p>Any data in the central user directory that belongs to the user can be deleted from the databrowser and also from the central data location:</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
@@ -808,6 +854,17 @@ options:
 freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span class="o">=</span>bias-correct
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+</pre></div></div>
 </div>
 </section>
 <section id="(Re)-Index-existing-data-to-the-databrowser">
@@ -846,7 +903,7 @@ options:
                         Use verbose output. (default: False)
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
@@ -854,6 +911,17 @@ options:
 freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span class="o">=</span>bias-correct
 <br/></pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+</pre></div></div>
 </div>
 </section>
 </section>

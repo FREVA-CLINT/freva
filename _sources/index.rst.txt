@@ -11,7 +11,7 @@ Welcome to Freva's documentation!
    :target: https://badge.fury.io/py/freva
 .. image:: https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg
    :target: https://github.com/FREVA-CLINT/freva
-.. image:: https://anaconda.org/conda-forge/freva/badges/installer/conda.svg
+.. image:: https://anaconda.org/conda-forge/freva/badges/version.svg
    :target: https://anaconda.org/conda-forge/freva
 .. image:: https://img.shields.io/badge/Freva-Docs-green.svg
    :target: https://freva-clint.github.io/freva

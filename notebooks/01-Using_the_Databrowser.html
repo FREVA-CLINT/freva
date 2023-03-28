@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Searching for data: the databrowser method &mdash; freva user guide 2303.0.1 documentation</title>
+  <title>Searching for data: the databrowser method &mdash; freva user guide 2304.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -103,7 +103,7 @@
 <div class="highlight"><pre>
 Help on function databrowser in module freva._databrowser:
 
-databrowser(*, attributes: &#39;bool&#39; = False, all_facets: &#39;bool&#39; = False, facet: &#39;Optional[Union[str, list[str]]]&#39; = None, multiversion: &#39;bool&#39; = False, relevant_only: &#39;bool&#39; = False, batch_size: &#39;int&#39; = 5000, count: &#39;bool&#39; = False, uniq_key: &#34;Literal[&#39;file&#39;, &#39;uri&#39;]&#34; = &#39;file&#39;, time: &#39;str&#39; = &#39;&#39;, time_select: &#39;str&#39; = &#39;flexible&#39;, **search_facets: &#39;Union[str, Path, int, list[str]]&#39;) -&gt; &#39;Union[dict[Any, dict[Any, Any]], Iterator[str], int]&#39;
+databrowser(*, attributes: &#39;bool&#39; = False, all_facets: &#39;bool&#39; = False, facet: &#39;Optional[Union[str, list[str]]]&#39; = None, multiversion: &#39;bool&#39; = False, relevant_only: &#39;bool&#39; = False, batch_size: &#39;int&#39; = 5000, count: &#39;bool&#39; = False, uniq_key: &#34;Literal[&#39;file&#39;, &#39;uri&#39;]&#34; = &#39;file&#39;, time: &#39;str&#39; = &#39;&#39;, time_select: &#34;Literal[&#39;flexible&#39;, &#39;strict&#39;, &#39;file&#39;]&#34; = &#39;flexible&#39;, **search_facets: &#39;Union[str, list[str], int]&#39;) -&gt; &#39;Union[dict[str, dict[str, int]], dict[str, list[str]], Iterator[str], int]&#39;
     Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -180,8 +180,6 @@ databrowser(*, attributes: &#39;bool&#39; = False, all_facets: &#39;bool&#39; = 
         for file in files:
             print(file)
             break
-        facets = freva.databrowser(project=&#39;obs*&#39;, attributes=True)
-        print(list(facets))
 
     Search for files between a two given time steps:
 
@@ -206,44 +204,6 @@ databrowser(*, attributes: &#39;bool&#39; = False, all_facets: &#39;bool&#39; = 
         for file in file_range:
             print(file)
 
-
-    Search for facets in the system:
-
-    .. execute_code::
-
-        import freva
-        all_facets = freva.databrowser(project=&#39;obs*&#39;, all_facets=True)
-        print(all_facets)
-        spec_facets = freva.databrowser(project=&#39;obs*&#39;,
-                                        facet=[&#34;time_frequency&#34;, &#34;variable&#34;])
-        print(spec_facets)
-
-    Get all models that have a given time step:
-
-    .. execute_code::
-
-        import freva
-        model = list(freva.databrowser(project=&#34;obs*&#34;, time=&#34;2016-09-02T22:10&#34;))
-        print(model)
-
-    Reverse search: retrieving meta data from a known file
-
-    .. execute_code::
-
-        import freva
-        from pathlib import Path
-        file = &#34;.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc&#34;
-        res = freva.databrowser(file=file, all_facets=True)
-        print(res)
-
-    Check the number of files in the system
-
-    .. execute_code::
-
-        import freva
-        num_files = freva.databrowser(experiment=&#34;cmorph&#34;, count=True)
-        print(num_files)
-
 </pre></div></div>
 </div>
 <p>The databrowser expects a list of <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pairs. The order of the pairs doesn’t really matter. Most important is that you don’t need to split the search according to the type of data you are searching for. You can search for any files, both observations, reanalysis, and model data, all at the same time. Also important is that all searches are case insensitive. You can also search for attributes themselves instead of file paths. For example you can search for the list of variables available
@@ -263,7 +223,7 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;generator object SolrFindFiles._search at 0x7f1c901aa3b0&gt;
+&lt;generator object SolrFindFiles._search at 0x7fa418472650&gt;
 </pre></div></div>
 </div>
 <p>This will return a so called iterator. The advantage of an iterator is that the data can be loaded into memory if needed. Nothing is pre loaded. To access the files you can either loop through the Iterator or convert it to a list:</p>
@@ -315,6 +275,15 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;cp*&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/freva/_databrowser.py:450: DeprecationWarning: The &lt;count&gt; arguments will be made deprecated in version 2304.0.0 please use the &lt;freva.count_values&gt; method instead.
+  warnings.warn(
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -372,24 +341,33 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/freva/_databrowser.py:407: DeprecationWarning: The &lt;facet&gt; and &lt;all_facets&gt; arguments will be made deprecated from version 2304.0.0 if you want toquery databrowser facets use the *freva.facet_search* method
+  warnings.warn(
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;product&#39;: [&#39;grid&#39;],
+{&#39;fs_type&#39;: [&#39;posix&#39;],
  &#39;cmor_table&#39;: [&#39;30min&#39;],
- &#39;model&#39;: [&#39;cpc&#39;],
  &#39;realm&#39;: [&#39;atmos&#39;],
- &#39;fs_type&#39;: [&#39;posix&#39;],
  &#39;institute&#39;: [&#39;cpc&#39;],
- &#39;project&#39;: [&#39;observations&#39;],
- &#39;experiment&#39;: [&#39;cmorph&#39;],
  &#39;variable&#39;: [&#39;pr&#39;],
+ &#39;time_frequency&#39;: [&#39;30min&#39;],
+ &#39;product&#39;: [&#39;grid&#39;],
+ &#39;experiment&#39;: [&#39;cmorph&#39;],
+ &#39;project&#39;: [&#39;observations&#39;],
  &#39;dataset&#39;: [&#39;testdata&#39;],
  &#39;ensemble&#39;: [&#39;r1i1p1&#39;],
- &#39;time_frequency&#39;: [&#39;30min&#39;]}
+ &#39;model&#39;: [&#39;cpc&#39;]}
 </pre></div></div>
 </div>
 <p>Likewise you can inspect all model <code class="docutils literal notranslate"><span class="pre">facet</span></code> flags in the databrowser:</p>
@@ -400,6 +378,15 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">facet</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/freva/_databrowser.py:407: DeprecationWarning: The &lt;facet&gt; and &lt;all_facets&gt; arguments will be made deprecated from version 2304.0.0 if you want toquery databrowser facets use the *freva.facet_search* method
+  warnings.warn(
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -425,6 +412,15 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">facet</span><span class="o">=</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/freva/_databrowser.py:407: DeprecationWarning: The &lt;facet&gt; and &lt;all_facets&gt; arguments will be made deprecated from version 2304.0.0 if you want toquery databrowser facets use the *freva.facet_search* method
+  warnings.warn(
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
@@ -457,7 +453,7 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230323/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc&#39;
+&#39;/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230328/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc&#39;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -468,24 +464,33 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/freva/_databrowser.py:407: DeprecationWarning: The &lt;facet&gt; and &lt;all_facets&gt; arguments will be made deprecated from version 2304.0.0 if you want toquery databrowser facets use the *freva.facet_search* method
+  warnings.warn(
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;product&#39;: [&#39;eur-11b&#39;],
+{&#39;fs_type&#39;: [&#39;posix&#39;],
  &#39;cmor_table&#39;: [&#39;hr&#39;],
- &#39;model&#39;: [&#39;um-ra2t&#39;],
  &#39;realm&#39;: [&#39;user_data&#39;],
- &#39;fs_type&#39;: [&#39;posix&#39;],
  &#39;institute&#39;: [&#39;clex&#39;],
- &#39;project&#39;: [&#39;user-runner&#39;],
- &#39;experiment&#39;: [&#39;bias-correct&#39;],
  &#39;variable&#39;: [&#39;tas&#39;],
+ &#39;time_frequency&#39;: [&#39;hr&#39;],
+ &#39;product&#39;: [&#39;eur-11b&#39;],
+ &#39;experiment&#39;: [&#39;bias-correct&#39;],
+ &#39;project&#39;: [&#39;user-runner&#39;],
  &#39;dataset&#39;: [&#39;crawl_my_data&#39;],
  &#39;ensemble&#39;: [&#39;r0i0p0&#39;],
- &#39;time_frequency&#39;: [&#39;hr&#39;]}
+ &#39;model&#39;: [&#39;um-ra2t&#39;]}
 </pre></div></div>
 </div>
 <section id="Example:-Using-the-databrowser-to-open-datasets-with-xarray">
@@ -889,7 +894,7 @@ Attributes: (12/44)
     calendar:               gregorian
     cmor_version:           2.9.1
     initialization_method:  1
-    physics_version:        1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-43f28582-84f4-4c7a-900a-9199f9bd2dc1' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-43f28582-84f4-4c7a-900a-9199f9bd2dc1' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lon</span>: 687</li><li><span class='xr-has-index'>lat</span>: 412</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-4c4c27ce-5a3d-4567-a000-2c3a2b5d2c3c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-4c4c27ce-5a3d-4567-a000-2c3a2b5d2c3c' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-2b3d8f0c-2a76-46be-82dd-bbd5755adf3e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2b3d8f0c-2a76-46be-82dd-bbd5755adf3e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ba8cfff7-914c-4860-b9ae-c3b071e83777' class='xr-var-data-in' type='checkbox'><label for='data-ba8cfff7-914c-4860-b9ae-c3b071e83777' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
+    physics_version:        1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-2575c16c-3187-4fd7-a870-eac1e57baead' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-2575c16c-3187-4fd7-a870-eac1e57baead' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lon</span>: 687</li><li><span class='xr-has-index'>lat</span>: 412</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-3f247035-1c0d-43ac-8b31-fa19fa904efc' class='xr-section-summary-in' type='checkbox'  checked><label for='section-3f247035-1c0d-43ac-8b31-fa19fa904efc' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-034256c9-2217-4c43-86ea-736bf3d98779' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-034256c9-2217-4c43-86ea-736bf3d98779' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-df39e101-4058-46e7-9031-1b8125b92095' class='xr-var-data-in' type='checkbox'><label for='data-df39e101-4058-46e7-9031-1b8125b92095' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
        &#x27;2016-09-02T01:00:00.000000000&#x27;, &#x27;2016-09-02T01:30:00.000000000&#x27;,
        &#x27;2016-09-02T02:00:00.000000000&#x27;, &#x27;2016-09-02T02:30:00.000000000&#x27;,
        &#x27;2016-09-02T03:00:00.000000000&#x27;, &#x27;2016-09-02T03:30:00.000000000&#x27;,
@@ -913,9 +918,9 @@ Attributes: (12/44)
        &#x27;2016-09-02T21:00:00.000000000&#x27;, &#x27;2016-09-02T21:30:00.000000000&#x27;,
        &#x27;2016-09-02T22:00:00.000000000&#x27;, &#x27;2016-09-02T22:30:00.000000000&#x27;,
        &#x27;2016-09-02T23:00:00.000000000&#x27;, &#x27;2016-09-02T23:30:00.000000000&#x27;],
-      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-1da77d9e-d488-490e-9636-145f46a97fd6' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1da77d9e-d488-490e-9636-145f46a97fd6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-964bfc80-4601-459b-8baf-c17005a5785f' class='xr-var-data-in' type='checkbox'><label for='data-964bfc80-4601-459b-8baf-c17005a5785f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
-      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-98c057a0-84b7-4e64-9591-72d412c5697f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-98c057a0-84b7-4e64-9591-72d412c5697f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b57d3835-1a6a-47a0-84a4-75f5b0e7839e' class='xr-var-data-in' type='checkbox'><label for='data-b57d3835-1a6a-47a0-84a4-75f5b0e7839e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
-      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-bc30e5c7-586d-4184-b7e8-83be14086628' class='xr-section-summary-in' type='checkbox'  checked><label for='section-bc30e5c7-586d-4184-b7e8-83be14086628' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>pr</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</div><input id='attrs-37e82acc-f72b-4207-a9bc-ab4f64b75112' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-37e82acc-f72b-4207-a9bc-ab4f64b75112' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-727d4f3c-061e-4988-8f1e-739d3ffbafb1' class='xr-var-data-in' type='checkbox'><label for='data-727d4f3c-061e-4988-8f1e-739d3ffbafb1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div><div class='xr-var-data'><table>
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-c1c80cb1-23c6-4474-900f-780c87ad5f56' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c1c80cb1-23c6-4474-900f-780c87ad5f56' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1d53fd02-b796-4aff-97b8-793743e91659' class='xr-var-data-in' type='checkbox'><label for='data-1d53fd02-b796-4aff-97b8-793743e91659' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-3827473e-45eb-438d-b43f-6a9bd671ccd4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3827473e-45eb-438d-b43f-6a9bd671ccd4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c57c6dc9-143f-4cd6-8258-9eb71fc413ae' class='xr-var-data-in' type='checkbox'><label for='data-c57c6dc9-143f-4cd6-8258-9eb71fc413ae' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
+      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4a9d1543-388d-494c-b270-6203b89e6068' class='xr-section-summary-in' type='checkbox'  checked><label for='section-4a9d1543-388d-494c-b270-6203b89e6068' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>pr</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</div><input id='attrs-58438b4a-c83a-49b2-b25b-7516571fdf72' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-58438b4a-c83a-49b2-b25b-7516571fdf72' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8e67e8ab-093e-4a8c-96c4-5a0bfab55514' class='xr-var-data-in' type='checkbox'><label for='data-8e67e8ab-093e-4a8c-96c4-5a0bfab55514' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1029,7 +1034,7 @@ Attributes: (12/44)
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-dc3634b6-398e-44fc-96f8-361b3e8a25a3' class='xr-section-summary-in' type='checkbox'  ><label for='section-dc3634b6-398e-44fc-96f8-361b3e8a25a3' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-857b6499-a498-47d4-ad33-2a8160eece7a' class='xr-index-data-in' type='checkbox'/><label for='index-857b6499-a498-47d4-ad33-2a8160eece7a' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-4bea018c-b82b-4ec6-a91a-bc50e56d7ebe' class='xr-section-summary-in' type='checkbox'  ><label for='section-4bea018c-b82b-4ec6-a91a-bc50e56d7ebe' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-046af626-c417-4868-973b-6b19831cbce6' class='xr-index-data-in' type='checkbox'/><label for='index-046af626-c417-4868-973b-6b19831cbce6' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
                &#x27;2016-09-02 01:00:00&#x27;, &#x27;2016-09-02 01:30:00&#x27;,
                &#x27;2016-09-02 02:00:00&#x27;, &#x27;2016-09-02 02:30:00&#x27;,
                &#x27;2016-09-02 03:00:00&#x27;, &#x27;2016-09-02 03:30:00&#x27;,
@@ -1053,7 +1058,7 @@ Attributes: (12/44)
                &#x27;2016-09-02 21:00:00&#x27;, &#x27;2016-09-02 21:30:00&#x27;,
                &#x27;2016-09-02 22:00:00&#x27;, &#x27;2016-09-02 22:30:00&#x27;,
                &#x27;2016-09-02 23:00:00&#x27;, &#x27;2016-09-02 23:30:00&#x27;],
-              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-5feb70f7-c34f-4d5b-9735-327562f1b97c' class='xr-index-data-in' type='checkbox'/><label for='index-5feb70f7-c34f-4d5b-9735-327562f1b97c' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
+              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-d3cf251a-0eb4-4098-ac49-5ac3077de2e4' class='xr-index-data-in' type='checkbox'/><label for='index-d3cf251a-0eb4-4098-ac49-5ac3077de2e4' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
                255.2667694091797, 255.33953857421875, 255.41229248046875,
               255.48504638671875, 255.55780029296875, 255.63055419921875,
               255.70330810546875,
@@ -1062,7 +1067,7 @@ Attributes: (12/44)
                304.5230407714844,  304.5957946777344,  304.6685485839844,
                304.7413024902344,  304.8140563964844,  304.8868103027344,
                304.9595947265625],
-             dtype=&#x27;float64&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-5ed16b42-d33d-4a3f-bc49-e3f3291b95f9' class='xr-index-data-in' type='checkbox'/><label for='index-5ed16b42-d33d-4a3f-bc49-e3f3291b95f9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
+             dtype=&#x27;float64&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-89624504-cc58-41c7-ab94-203295ea58ea' class='xr-index-data-in' type='checkbox'/><label for='index-89624504-cc58-41c7-ab94-203295ea58ea' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
               15.281989097595215, 15.354761123657227, 15.427532196044922,
               15.500303268432617, 15.573075294494629, 15.645846366882324,
                15.71861743927002,
@@ -1071,7 +1076,7 @@ Attributes: (12/44)
                44.53608322143555, 44.608856201171875,  44.68162536621094,
               44.754398345947266,  44.82716751098633, 44.899940490722656,
                44.97270965576172],
-             dtype=&#x27;float64&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-b4289087-0484-4737-9b73-05146b5f11c1' class='xr-section-summary-in' type='checkbox'  ><label for='section-b4289087-0484-4737-9b73-05146b5f11c1' class='xr-section-summary' >Attributes: <span>(44)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>CDI :</span></dt><dd>Climate Data Interface version 1.9.8 (https://mpimet.mpg.de/cdi)</dd><dt><span>history :</span></dt><dd>Fri Jun 18 18:30:24 2021: cdo -O -s -f nc4 -z zip_6 --cmor cmorlite,/tmp/tmp7hpo_y4a.txt /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc tmp/py-cmorlite/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc
+             dtype=&#x27;float64&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-aa88534e-e982-4ba3-a4ba-e036dc300555' class='xr-section-summary-in' type='checkbox'  ><label for='section-aa88534e-e982-4ba3-a4ba-e036dc300555' class='xr-section-summary' >Attributes: <span>(44)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>CDI :</span></dt><dd>Climate Data Interface version 1.9.8 (https://mpimet.mpg.de/cdi)</dd><dt><span>history :</span></dt><dd>Fri Jun 18 18:30:24 2021: cdo -O -s -f nc4 -z zip_6 --cmor cmorlite,/tmp/tmp7hpo_y4a.txt /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc tmp/py-cmorlite/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc
 Fri Jun 18 18:30:23 2021: cdo -f nc4 sellonlatbox,255,305,15,45 -selvar,pr bal/pr_30min_CMORPH_V1_2016090200.nc /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc
 Fri Jun 18 18:18:11 2021: cdo splithour -selvar,pr /work/mh0731/m300765/CMORPH/2016/pr_30min_CMORPH_V1_20160902.nc bal/pr_30min_CMORPH_V1_20160902
 Original dataset is CMORPH V1 30min-8km downloaded from the &#x27;source&#x27; n binary format and converted to netcdf using NCL. Original data is precipitation rate in mm/hhr units, this version is precipitation flux obtained dividing by 3600, new units are kg m^-2 s^-1</dd><dt><span>Conventions :</span></dt><dd>CF-1.6</dd><dt><span>geospatial_bounds :</span></dt><dd>POLYGON ((-59.363 -180, 59.363 -180, 59.363 180, -59.363 180, -59.363 -180))</dd><dt><span>time_coverage_end :</span></dt><dd>1998-01-31:00.00</dd><dt><span>time_coverage_start :</span></dt><dd>1998-01-01:00.00</dd><dt><span>citation :</span></dt><dd>CMORPH 8 Km: A Method that Produces Global Precipitation Estimates from Passive Microwave and Infrared Data at High Spatial and Temporal Resolution</dd><dt><span>publisher_institution :</span></dt><dd>ARC Centre of excellence for Climate System Science</dd><dt><span>publisher_mail :</span></dt><dd>paola.petrelli@utas.edu.au</dd><dt><span>publisher_name :</span></dt><dd>Paola Petrelli</dd><dt><span>creator_type :</span></dt><dd>institution</dd><dt><span>creator_name :</span></dt><dd>US Climate Prediction Center</dd><dt><span>date_created :</span></dt><dd>Thu Aug 31 15:55:10 AEST 2017</dd><dt><span>Title :</span></dt><dd>CMORPH V1.0: Climate Prediction Center morphing method 30 minutes mean precipitation flux (kg m^-2 s^-1 converted from mm/hr) at 8km resolution</dd><dt><span>Comment :</span></dt><dd>netCDF version of 8km half-hourly file binary file(s)</dd><dt><span>summary :</span></dt><dd>CMORPH (CPC MORPHing technique) produces global precipitation analyses at very high spatial and temporal resolution. This technique uses precipitation estimates that have been derived from low orbiter satellite microwave observations exclusively, and whose features are transported via spatial propagation information that is obtained entirely from geostationary satellite IR data.</dd><dt><span>Readme :</span></dt><dd>ftp://ftp.cpc.ncep.noaa.gov/precip/global_CMORPH/README.cmorph.8km_30minute

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Applying data analysis Plugins &mdash; freva user guide 2303.0.1 documentation</title>
+  <title>Applying data analysis Plugins &mdash; freva user guide 2304.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -95,6 +95,17 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freva</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/file.py:30: PendingDeprecationWarning: The evaluation_system.model.file module will be removed from v2304.0.0
+  warnings.warn(
+/home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
+  warnings.warn(
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -226,6 +237,15 @@ extra_scheduler_options (default: --qos=test, --array=20)
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/work/freva/freva/src/evaluation_system/model/solr.py:29: PendingDeprecationWarning: The evaluation_system.model.solr module will be removed from v2304.0.0
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Setp 1: Collecting all files
@@ -233,7 +253,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2119/pr_20160902T0000-20160902T2330.mp4 in 42 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2121/pr_20160902T0000-20160902T2330.mp4 in 43 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -354,20 +374,20 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
   5: &#39;not_scheduled&#39;,
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
- &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7fb42a517190&gt;,
- &#39;id&#39;: 2111,
- &#39;timestamp&#39;: datetime.datetime(2023, 3, 23, 8, 29, 2),
+ &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7f55c63bc750&gt;,
+ &#39;id&#39;: 2112,
+ &#39;timestamp&#39;: datetime.datetime(2023, 3, 28, 7, 49, 21),
  &#39;tool&#39;: &#39;dummyplugin&#39;,
  &#39;version&#39;: &#39;(0, 0, 0)&#39;,
  &#39;version_details_id&#39;: 123,
  &#39;configuration&#39;: {&#39;number&#39;: None,
-  &#39;the_number&#39;: 1,
+  &#39;the_number&#39;: 2,
   &#39;something&#39;: &#39;test&#39;,
   &#39;other&#39;: 1.4,
   &#39;input&#39;: None,
   &#39;variable&#39;: &#39;tas&#39;},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5284.local&#39;,
- &#39;host&#39;: &#39;fv-az736-808&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5357.local&#39;,
+ &#39;host&#39;: &#39;fv-az642-342&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,
@@ -389,7 +409,7 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 {&#39;number&#39;: None,
- &#39;the_number&#39;: 1,
+ &#39;the_number&#39;: 2,
  &#39;something&#39;: &#39;test&#39;,
  &#39;other&#39;: 1.4,
  &#39;input&#39;: None,
