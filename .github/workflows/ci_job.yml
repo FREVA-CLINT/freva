@@ -52,23 +52,17 @@ jobs:
           # miniconda directory
           echo $CONDA/bin >> $GITHUB_PATH
       -
-        name: Creating conda python ${{ matrix.python-version }} env
-        run: |
-          conda create -n test -c conda-forge -q -y \
-          python=${{matrix.python-version}} xarray netcdf4 gitpython \
-          mysqlclient make
-      -
         name: Set up services
         run: |
           docker-compose up -d --remove-orphans
       -
         name: Install dependencies on python ${{matrix.python-version}}
         run: |
-          conda run -n test python3 -m pip install -e .[test]
+          python3 -m pip install -e .[test]
       -
         name: Running tests for python ${{ matrix.python-version }}
         run: |
-          conda run -n test make test_coverage
+          make test_coverage
       -
         name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -134,14 +128,19 @@ jobs:
     needs: [test, docs, lint]
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v1.1.1
+      - name: automerge
+        uses: actions/github-script@0.2.0
         with:
+          script: |
+            github.pullRequests.createReview({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number,
+              event: 'APPROVE'
+            })
+            github.pullRequests.merge({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number
+            })
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Enable auto-merge for Dependabot PRs
-        if: ${{contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
