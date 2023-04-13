@@ -52,23 +52,17 @@ jobs:
           # miniconda directory
           echo $CONDA/bin >> $GITHUB_PATH
       -
-        name: Creating conda python ${{ matrix.python-version }} env
-        run: |
-          conda create -n test -c conda-forge -q -y \
-          python=${{matrix.python-version}} xarray netcdf4 gitpython \
-          mysqlclient make
-      -
         name: Set up services
         run: |
           docker-compose up -d --remove-orphans
       -
         name: Install dependencies on python ${{matrix.python-version}}
         run: |
-          conda run -n test python3 -m pip install -e .[test]
+          python3 -m pip install -e .[test]
       -
         name: Running tests for python ${{ matrix.python-version }}
         run: |
-          conda run -n test make test_coverage
+          make test_coverage
       -
         name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
