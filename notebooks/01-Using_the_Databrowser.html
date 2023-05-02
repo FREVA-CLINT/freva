@@ -1,83 +1,216 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Searching for data: the databrowser method &mdash; freva user guide 2304.0.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+    <link rel="shortcut icon" href="../_static/logo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+        <title>Searching for data: the databrowser method - freva user guide 2304.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: tomato;
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            freva user guide
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">freva user guide 2304.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">freva user guide 2304.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Freva.html">Freva python module</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Freva.html">Freva python module</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../FrevaCli.html">The Freva command line interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../developers_guide.html">Plugin Developer Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../plugin_api.html">API Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../developers_guide.html">Plugin Developer Guide</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../plugin_api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">Frequently Ask Questions and best practices</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../whats-new.html">What’s new</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../whats-new.html">What’s new</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">freva user guide</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Searching for data: the databrowser method</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/notebooks/01-Using_the_Databrowser.ipynb.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="Searching-for-data:-the-databrowser-method">
-<h1>Searching for data: the databrowser method<a class="headerlink" href="#Searching-for-data:-the-databrowser-method" title="Permalink to this heading"></a></h1>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="Searching-for-data:-the-databrowser-method">
+<h1>Searching for data: the databrowser method<a class="headerlink" href="#Searching-for-data:-the-databrowser-method" title="Permalink to this heading">#</a></h1>
 <p>All files available on in the project are scanned and indexed via a data search server. This allows you to query the server with almost immediate response time. To search for data you can either use the <code class="docutils literal notranslate"><span class="pre">databrowser</span></code> method of the, <code class="docutils literal notranslate"><span class="pre">freva</span></code> python module. Let’s import the <code class="docutils literal notranslate"><span class="pre">freva</span></code> module first:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -223,7 +356,7 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;generator object SolrFindFiles._search at 0x7f9ad04374c0&gt;
+&lt;generator object SolrFindFiles._search at 0x7f7d681934c0&gt;
 </pre></div></div>
 </div>
 <p>This will return a so called iterator. The advantage of an iterator is that the data can be loaded into memory if needed. Nothing is pre loaded. To access the files you can either loop through the Iterator or convert it to a list:</p>
@@ -356,18 +489,18 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;variable&#39;: [&#39;pr&#39;],
- &#39;time_frequency&#39;: [&#39;30min&#39;],
- &#39;experiment&#39;: [&#39;cmorph&#39;],
- &#39;model&#39;: [&#39;cpc&#39;],
- &#39;realm&#39;: [&#39;atmos&#39;],
- &#39;project&#39;: [&#39;observations&#39;],
- &#39;fs_type&#39;: [&#39;posix&#39;],
+{&#39;time_frequency&#39;: [&#39;30min&#39;],
  &#39;institute&#39;: [&#39;cpc&#39;],
- &#39;product&#39;: [&#39;grid&#39;],
+ &#39;project&#39;: [&#39;observations&#39;],
+ &#39;experiment&#39;: [&#39;cmorph&#39;],
+ &#39;cmor_table&#39;: [&#39;30min&#39;],
  &#39;ensemble&#39;: [&#39;r1i1p1&#39;],
- &#39;dataset&#39;: [&#39;testdata&#39;],
- &#39;cmor_table&#39;: [&#39;30min&#39;]}
+ &#39;product&#39;: [&#39;grid&#39;],
+ &#39;fs_type&#39;: [&#39;posix&#39;],
+ &#39;model&#39;: [&#39;cpc&#39;],
+ &#39;variable&#39;: [&#39;pr&#39;],
+ &#39;realm&#39;: [&#39;atmos&#39;],
+ &#39;dataset&#39;: [&#39;testdata&#39;]}
 </pre></div></div>
 </div>
 <p>Likewise you can inspect all model <code class="docutils literal notranslate"><span class="pre">facet</span></code> flags in the databrowser:</p>
@@ -453,7 +586,7 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&#39;/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230413/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc&#39;
+&#39;/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230502/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc&#39;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -479,22 +612,22 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;variable&#39;: [&#39;tas&#39;],
- &#39;time_frequency&#39;: [&#39;hr&#39;],
- &#39;experiment&#39;: [&#39;bias-correct&#39;],
- &#39;model&#39;: [&#39;um-ra2t&#39;],
- &#39;realm&#39;: [&#39;user_data&#39;],
- &#39;project&#39;: [&#39;user-runner&#39;],
- &#39;fs_type&#39;: [&#39;posix&#39;],
+{&#39;time_frequency&#39;: [&#39;hr&#39;],
  &#39;institute&#39;: [&#39;clex&#39;],
- &#39;product&#39;: [&#39;eur-11b&#39;],
+ &#39;project&#39;: [&#39;user-runner&#39;],
+ &#39;experiment&#39;: [&#39;bias-correct&#39;],
+ &#39;cmor_table&#39;: [&#39;hr&#39;],
  &#39;ensemble&#39;: [&#39;r0i0p0&#39;],
- &#39;dataset&#39;: [&#39;crawl_my_data&#39;],
- &#39;cmor_table&#39;: [&#39;hr&#39;]}
+ &#39;product&#39;: [&#39;eur-11b&#39;],
+ &#39;fs_type&#39;: [&#39;posix&#39;],
+ &#39;model&#39;: [&#39;um-ra2t&#39;],
+ &#39;variable&#39;: [&#39;tas&#39;],
+ &#39;realm&#39;: [&#39;user_data&#39;],
+ &#39;dataset&#39;: [&#39;crawl_my_data&#39;]}
 </pre></div></div>
 </div>
 <section id="Example:-Using-the-databrowser-to-open-datasets-with-xarray">
-<h2>Example: Using the databrowser to open datasets with xarray<a class="headerlink" href="#Example:-Using-the-databrowser-to-open-datasets-with-xarray" title="Permalink to this heading"></a></h2>
+<h2>Example: Using the databrowser to open datasets with xarray<a class="headerlink" href="#Example:-Using-the-databrowser-to-open-datasets-with-xarray" title="Permalink to this heading">#</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -894,7 +1027,7 @@ Attributes: (12/44)
     calendar:               gregorian
     cmor_version:           2.9.1
     initialization_method:  1
-    physics_version:        1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-6dfcb9ce-44c5-4bd5-86b4-497d8d1e577f' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-6dfcb9ce-44c5-4bd5-86b4-497d8d1e577f' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lon</span>: 687</li><li><span class='xr-has-index'>lat</span>: 412</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-8a6e3000-15a4-4c04-86a5-c3ce3690fbc1' class='xr-section-summary-in' type='checkbox'  checked><label for='section-8a6e3000-15a4-4c04-86a5-c3ce3690fbc1' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-99006267-1d25-4110-97c6-2a21b3d7d473' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-99006267-1d25-4110-97c6-2a21b3d7d473' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f8072d53-11d6-4dcc-8e05-f7dd9ca39c7d' class='xr-var-data-in' type='checkbox'><label for='data-f8072d53-11d6-4dcc-8e05-f7dd9ca39c7d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
+    physics_version:        1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-e5972e1d-24e4-4cd5-aed0-bb7f030d9da9' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-e5972e1d-24e4-4cd5-aed0-bb7f030d9da9' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 48</li><li><span class='xr-has-index'>lon</span>: 687</li><li><span class='xr-has-index'>lat</span>: 412</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-779a803e-e983-439e-bb2c-72f7867b3134' class='xr-section-summary-in' type='checkbox'  checked><label for='section-779a803e-e983-439e-bb2c-72f7867b3134' class='xr-section-summary' >Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2016-09-02 ... 2016-09-02T23:30:00</div><input id='attrs-0fe89abb-9324-4366-ad38-6700ffee1aab' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0fe89abb-9324-4366-ad38-6700ffee1aab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9d8ab961-ba87-4f1c-9045-2280f4976a98' class='xr-var-data-in' type='checkbox'><label for='data-9d8ab961-ba87-4f1c-9045-2280f4976a98' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2016-09-02T00:00:00.000000000&#x27;, &#x27;2016-09-02T00:30:00.000000000&#x27;,
        &#x27;2016-09-02T01:00:00.000000000&#x27;, &#x27;2016-09-02T01:30:00.000000000&#x27;,
        &#x27;2016-09-02T02:00:00.000000000&#x27;, &#x27;2016-09-02T02:30:00.000000000&#x27;,
        &#x27;2016-09-02T03:00:00.000000000&#x27;, &#x27;2016-09-02T03:30:00.000000000&#x27;,
@@ -918,9 +1051,9 @@ Attributes: (12/44)
        &#x27;2016-09-02T21:00:00.000000000&#x27;, &#x27;2016-09-02T21:30:00.000000000&#x27;,
        &#x27;2016-09-02T22:00:00.000000000&#x27;, &#x27;2016-09-02T22:30:00.000000000&#x27;,
        &#x27;2016-09-02T23:00:00.000000000&#x27;, &#x27;2016-09-02T23:30:00.000000000&#x27;],
-      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-9046bf5c-63c8-45cf-8f68-b8e1cd7f512b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9046bf5c-63c8-45cf-8f68-b8e1cd7f512b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-503238f7-3426-46d3-8ffb-71bd86ce2451' class='xr-var-data-in' type='checkbox'><label for='data-503238f7-3426-46d3-8ffb-71bd86ce2451' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
-      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-38e68aef-1a6a-4e63-8d83-445262051688' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-38e68aef-1a6a-4e63-8d83-445262051688' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e24a3dd9-73b1-48a8-af6c-653b97c2b117' class='xr-var-data-in' type='checkbox'><label for='data-e24a3dd9-73b1-48a8-af6c-653b97c2b117' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
-      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-5a3a4be8-7af2-444a-bb61-6cc138fa5d06' class='xr-section-summary-in' type='checkbox'  checked><label for='section-5a3a4be8-7af2-444a-bb61-6cc138fa5d06' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>pr</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</div><input id='attrs-97426d4a-811d-4ecd-b9e9-ffa48e6198ac' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-97426d4a-811d-4ecd-b9e9-ffa48e6198ac' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-33854e15-15b6-4766-9cb2-dbdc9d5f5a45' class='xr-var-data-in' type='checkbox'><label for='data-33854e15-15b6-4766-9cb2-dbdc9d5f5a45' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div><div class='xr-var-data'><table>
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>255.0 255.1 255.2 ... 304.9 305.0</div><input id='attrs-7bc0a760-eabb-44a0-b442-628a2cef5635' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7bc0a760-eabb-44a0-b442-628a2cef5635' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-85d35d16-eed5-46d0-a649-5dac34687420' class='xr-var-data-in' type='checkbox'><label for='data-85d35d16-eed5-46d0-a649-5dac34687420' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class='xr-var-data'><pre>array([255.04851, 255.12126, 255.19402, ..., 304.81406, 304.8868 , 304.9596 ],
+      dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>15.06 15.14 15.21 ... 44.9 44.97</div><input id='attrs-373eccc5-7e0a-4995-b84c-1b810de779c6' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-373eccc5-7e0a-4995-b84c-1b810de779c6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8b01ca98-7180-4e94-b88b-bad56fcff6d5' class='xr-var-data-in' type='checkbox'><label for='data-8b01ca98-7180-4e94-b88b-bad56fcff6d5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class='xr-var-data'><pre>array([15.063675, 15.136447, 15.209218, ..., 44.827168, 44.89994 , 44.97271 ],
+      dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-611e7bb6-5bdc-4f53-9012-34768e38c86e' class='xr-section-summary-in' type='checkbox'  checked><label for='section-611e7bb6-5bdc-4f53-9012-34768e38c86e' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>pr</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(2, 412, 687), meta=np.ndarray&gt;</div><input id='attrs-9390c6bf-f52e-4bb6-80da-bb1bc298af9c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9390c6bf-f52e-4bb6-80da-bb1bc298af9c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4a6bee0b-8e36-4fb7-a4cc-d5c907e756ab' class='xr-var-data-in' type='checkbox'><label for='data-4a6bee0b-8e36-4fb7-a4cc-d5c907e756ab' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>standard_name :</span></dt><dd>precipitation_flux</dd><dt><span>long_name :</span></dt><dd>Precipitation</dd><dt><span>units :</span></dt><dd>kg m-2 s-1</dd></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1034,7 +1167,7 @@ Attributes: (12/44)
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-7a19f92c-7476-4114-a2fd-e0e72df25a2b' class='xr-section-summary-in' type='checkbox'  ><label for='section-7a19f92c-7476-4114-a2fd-e0e72df25a2b' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-70b2d42a-ac8b-43b5-9d84-6fbe18d61c02' class='xr-index-data-in' type='checkbox'/><label for='index-70b2d42a-ac8b-43b5-9d84-6fbe18d61c02' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-3a944a2f-3736-4acb-9ab1-29634b9f16f4' class='xr-section-summary-in' type='checkbox'  ><label for='section-3a944a2f-3736-4acb-9ab1-29634b9f16f4' class='xr-section-summary' >Indexes: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-db96d71c-38b5-4e19-8ba9-ce51cbf36067' class='xr-index-data-in' type='checkbox'/><label for='index-db96d71c-38b5-4e19-8ba9-ce51cbf36067' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2016-09-02 00:00:00&#x27;, &#x27;2016-09-02 00:30:00&#x27;,
                &#x27;2016-09-02 01:00:00&#x27;, &#x27;2016-09-02 01:30:00&#x27;,
                &#x27;2016-09-02 02:00:00&#x27;, &#x27;2016-09-02 02:30:00&#x27;,
                &#x27;2016-09-02 03:00:00&#x27;, &#x27;2016-09-02 03:30:00&#x27;,
@@ -1058,25 +1191,25 @@ Attributes: (12/44)
                &#x27;2016-09-02 21:00:00&#x27;, &#x27;2016-09-02 21:30:00&#x27;,
                &#x27;2016-09-02 22:00:00&#x27;, &#x27;2016-09-02 22:30:00&#x27;,
                &#x27;2016-09-02 23:00:00&#x27;, &#x27;2016-09-02 23:30:00&#x27;],
-              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-4c7789f4-c91d-4f2b-aaca-e063c1e1ce49' class='xr-index-data-in' type='checkbox'/><label for='index-4c7789f4-c91d-4f2b-aaca-e063c1e1ce49' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
-               255.2667694091797, 255.33953857421875, 255.41229248046875,
-              255.48504638671875, 255.55780029296875, 255.63055419921875,
-              255.70330810546875,
-              ...
-               304.3047790527344,  304.3775329589844,  304.4502868652344,
-               304.5230407714844,  304.5957946777344,  304.6685485839844,
-               304.7413024902344,  304.8140563964844,  304.8868103027344,
-               304.9595947265625],
-             dtype=&#x27;float64&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-b76f5b12-c4b1-4e87-8b14-43d3b92ddc5b' class='xr-index-data-in' type='checkbox'/><label for='index-b76f5b12-c4b1-4e87-8b14-43d3b92ddc5b' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Float64Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
-              15.281989097595215, 15.354761123657227, 15.427532196044922,
-              15.500303268432617, 15.573075294494629, 15.645846366882324,
-               15.71861743927002,
-              ...
-               44.31776809692383, 44.390541076660156,  44.46331024169922,
-               44.53608322143555, 44.608856201171875,  44.68162536621094,
-              44.754398345947266,  44.82716751098633, 44.899940490722656,
-               44.97270965576172],
-             dtype=&#x27;float64&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-0e01c207-c067-46e7-8b0f-9608fd92fd35' class='xr-section-summary-in' type='checkbox'  ><label for='section-0e01c207-c067-46e7-8b0f-9608fd92fd35' class='xr-section-summary' >Attributes: <span>(44)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>CDI :</span></dt><dd>Climate Data Interface version 1.9.8 (https://mpimet.mpg.de/cdi)</dd><dt><span>history :</span></dt><dd>Fri Jun 18 18:30:24 2021: cdo -O -s -f nc4 -z zip_6 --cmor cmorlite,/tmp/tmp7hpo_y4a.txt /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc tmp/py-cmorlite/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc
+              dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-da22acfc-8010-45ed-8f1b-fcf00aee3c51' class='xr-index-data-in' type='checkbox'/><label for='index-da22acfc-8010-45ed-8f1b-fcf00aee3c51' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 255.0485076904297,  255.1212615966797,  255.1940155029297,
+        255.2667694091797, 255.33953857421875, 255.41229248046875,
+       255.48504638671875, 255.55780029296875, 255.63055419921875,
+       255.70330810546875,
+       ...
+        304.3047790527344,  304.3775329589844,  304.4502868652344,
+        304.5230407714844,  304.5957946777344,  304.6685485839844,
+        304.7413024902344,  304.8140563964844,  304.8868103027344,
+        304.9595947265625],
+      dtype=&#x27;float32&#x27;, name=&#x27;lon&#x27;, length=687))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-62c7f86b-3469-4d31-9fd4-063e5126e83a' class='xr-index-data-in' type='checkbox'/><label for='index-62c7f86b-3469-4d31-9fd4-063e5126e83a' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([15.063674926757812, 15.136446952819824,  15.20921802520752,
+       15.281989097595215, 15.354761123657227, 15.427532196044922,
+       15.500303268432617, 15.573075294494629, 15.645846366882324,
+        15.71861743927002,
+       ...
+        44.31776809692383, 44.390541076660156,  44.46331024169922,
+        44.53608322143555, 44.608856201171875,  44.68162536621094,
+       44.754398345947266,  44.82716751098633, 44.899940490722656,
+        44.97270965576172],
+      dtype=&#x27;float32&#x27;, name=&#x27;lat&#x27;, length=412))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-2c68a653-d297-4dbd-b9bf-31649c727315' class='xr-section-summary-in' type='checkbox'  ><label for='section-2c68a653-d297-4dbd-b9bf-31649c727315' class='xr-section-summary' >Attributes: <span>(44)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>CDI :</span></dt><dd>Climate Data Interface version 1.9.8 (https://mpimet.mpg.de/cdi)</dd><dt><span>history :</span></dt><dd>Fri Jun 18 18:30:24 2021: cdo -O -s -f nc4 -z zip_6 --cmor cmorlite,/tmp/tmp7hpo_y4a.txt /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc tmp/py-cmorlite/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc
 Fri Jun 18 18:30:23 2021: cdo -f nc4 sellonlatbox,255,305,15,45 -selvar,pr bal/pr_30min_CMORPH_V1_2016090200.nc /scratch/k/k204230/pycmorlite_c4z9vg89/process_ghpo3h3o/temp_file.nc
 Fri Jun 18 18:18:11 2021: cdo splithour -selvar,pr /work/mh0731/m300765/CMORPH/2016/pr_30min_CMORPH_V1_20160902.nc bal/pr_30min_CMORPH_V1_20160902
 Original dataset is CMORPH V1 30min-8km downloaded from the &#x27;source&#x27; n binary format and converted to netcdf using NCL. Original data is precipitation rate in mm/hhr units, this version is precipitation flux obtained dividing by 3600, new units are kg m^-2 s^-1</dd><dt><span>Conventions :</span></dt><dd>CF-1.6</dd><dt><span>geospatial_bounds :</span></dt><dd>POLYGON ((-59.363 -180, 59.363 -180, 59.363 180, -59.363 180, -59.363 -180))</dd><dt><span>time_coverage_end :</span></dt><dd>1998-01-31:00.00</dd><dt><span>time_coverage_start :</span></dt><dd>1998-01-01:00.00</dd><dt><span>citation :</span></dt><dd>CMORPH 8 Km: A Method that Produces Global Precipitation Estimates from Passive Microwave and Infrared Data at High Spatial and Temporal Resolution</dd><dt><span>publisher_institution :</span></dt><dd>ARC Centre of excellence for Climate System Science</dd><dt><span>publisher_mail :</span></dt><dd>paola.petrelli@utas.edu.au</dd><dt><span>publisher_name :</span></dt><dd>Paola Petrelli</dd><dt><span>creator_type :</span></dt><dd>institution</dd><dt><span>creator_name :</span></dt><dd>US Climate Prediction Center</dd><dt><span>date_created :</span></dt><dd>Thu Aug 31 15:55:10 AEST 2017</dd><dt><span>Title :</span></dt><dd>CMORPH V1.0: Climate Prediction Center morphing method 30 minutes mean precipitation flux (kg m^-2 s^-1 converted from mm/hr) at 8km resolution</dd><dt><span>Comment :</span></dt><dd>netCDF version of 8km half-hourly file binary file(s)</dd><dt><span>summary :</span></dt><dd>CMORPH (CPC MORPHing technique) produces global precipitation analyses at very high spatial and temporal resolution. This technique uses precipitation estimates that have been derived from low orbiter satellite microwave observations exclusively, and whose features are transported via spatial propagation information that is obtained entirely from geostationary satellite IR data.</dd><dt><span>Readme :</span></dt><dd>ftp://ftp.cpc.ncep.noaa.gov/precip/global_CMORPH/README.cmorph.8km_30minute
@@ -1093,32 +1226,62 @@ Available online at
 </section>
 </section>
 
-
-           </div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, CLINT
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
           </div>
-          <footer>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Searching for data: the databrowser method</a><ul>
+<li><a class="reference internal" href="#Example:-Using-the-databrowser-to-open-datasets-with-xarray">Example: Using the databrowser to open datasets with xarray</a></li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2022, CLINT.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+          </div>
         </div>
       </div>
-    </section>
+      
+      
+    </aside>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
 </html>

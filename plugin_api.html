@@ -1,172 +1,219 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Frequently Ask Questions and best practices" href="FAQ.html" /><link rel="prev" title="Plugin Developer Guide" href="developers_guide.html" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; freva user guide 2304.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+    <link rel="shortcut icon" href="_static/logo.png"/><!-- Generated with Sphinx 6.2.1 and Furo 2023.03.27 -->
+        <title>API Reference - freva user guide 2304.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: tomato;
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Frequently Ask Questions and best practices" href="FAQ.html" />
-    <link rel="prev" title="Plugin Developer Guide" href="developers_guide.html" /> 
-</head>
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          
-          <a href="index.html" class="icon icon-home">
-            freva user guide
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">freva user guide 2304.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">freva user guide 2304.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Freva.html">Freva python module</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Freva.html">Freva python module</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="FrevaCli.html">The Freva command line interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-evaluation_system.api.plugin">Plugin API Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract"><code class="docutils literal notranslate"><span class="pre">PluginAbstract</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__category__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__category__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__long_description__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__parameters__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__short_description__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__tags__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__version__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__version__</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.add_output_to_databrowser()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.call"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.call()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.class_basedir</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getClassBaseDir()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.getHelp"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getHelp()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.linkmydata()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.plugin_output_file</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepareOutput()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepare_output()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.readConfiguration()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.run_tool()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.setupConfiguration()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.special_variables"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.special_variables</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.tool_developer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.user"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.user</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.wrapper_file</span></code></a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#module-evaluation_system.api.parameters">Parameter API Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Bool"><code class="docutils literal notranslate"><span class="pre">Bool</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Bool.base_type"><code class="docutils literal notranslate"><span class="pre">Bool.base_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Bool.parse"><code class="docutils literal notranslate"><span class="pre">Bool.parse()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.CacheDirectory"><code class="docutils literal notranslate"><span class="pre">CacheDirectory</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Date"><code class="docutils literal notranslate"><span class="pre">Date</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.File"><code class="docutils literal notranslate"><span class="pre">File</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Float"><code class="docutils literal notranslate"><span class="pre">Float</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Float.base_type"><code class="docutils literal notranslate"><span class="pre">Float.base_type</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.InputDirectory"><code class="docutils literal notranslate"><span class="pre">InputDirectory</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Integer"><code class="docutils literal notranslate"><span class="pre">Integer</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Integer.base_type"><code class="docutils literal notranslate"><span class="pre">Integer.base_type</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterBaseType"><code class="docutils literal notranslate"><span class="pre">ParameterBaseType</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.get_help"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.get_help()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.get_parameter"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.get_parameter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parameters"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parameters()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parseArguments"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parseArguments()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parse_arguments"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parse_arguments()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.synchronize"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.synchronize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.validate_errors"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.validate_errors()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType"><code class="docutils literal notranslate"><span class="pre">ParameterType</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.base_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.base_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.format"><code class="docutils literal notranslate"><span class="pre">ParameterType.format()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.get_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.get_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.infer_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.infer_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.parse"><code class="docutils literal notranslate"><span class="pre">ParameterType.parse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.synchronize"><code class="docutils literal notranslate"><span class="pre">ParameterType.synchronize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.to_str"><code class="docutils literal notranslate"><span class="pre">ParameterType.to_str()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Range"><code class="docutils literal notranslate"><span class="pre">Range</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Range.parse"><code class="docutils literal notranslate"><span class="pre">Range.parse()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.Range.to_str"><code class="docutils literal notranslate"><span class="pre">Range.to_str()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.SelectField"><code class="docutils literal notranslate"><span class="pre">SelectField</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.SelectField.parse"><code class="docutils literal notranslate"><span class="pre">SelectField.parse()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.SolrField"><code class="docutils literal notranslate"><span class="pre">SolrField</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.String"><code class="docutils literal notranslate"><span class="pre">String</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#evaluation_system.api.parameters.String.base_type"><code class="docutils literal notranslate"><span class="pre">String.base_type</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#evaluation_system.api.parameters.Unknown"><code class="docutils literal notranslate"><span class="pre">Unknown</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Ask Questions and best practices</a></li>
-<li class="toctree-l1"><a class="reference internal" href="whats-new.html">What’s new</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="whats-new.html">What’s new</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 </ul>
 
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">freva user guide</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">API Reference</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/plugin_api.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="api-reference">
-<span id="apireference"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="api-reference">
+<span id="apireference"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="module-evaluation_system.api.plugin">
-<span id="plugin-api-reference"></span><span id="pluginapi"></span><h2>Plugin API Reference<a class="headerlink" href="#module-evaluation_system.api.plugin" title="Permalink to this heading"></a></h2>
+<span id="plugin-api-reference"></span><span id="pluginapi"></span><h2>Plugin API Reference<a class="headerlink" href="#module-evaluation_system.api.plugin" title="Permalink to this heading">#</a></h2>
 <p>Definition of the base class that is used to implement user plugins.</p>
 <p>The plugin API (Application Program Interface) is the central connection
 of a user plugin code and the Freva system infrastructure. The API
@@ -187,7 +234,7 @@ excecuted via:</p>
 <p>With help of this API a Freva plugin can be created in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugin/new_plugin/plugin.py</span></code></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Base class that is used as a template for all Freva plugins.
 Any api wrapper class defining Freva plugins must inherit from this class.</p>
@@ -294,25 +341,25 @@ class in the <span class="xref std std-ref">__metaclass__</span> attribute when 
 class is implemented.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__category__">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__category__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__category__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__category__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__category__" title="Permalink to this definition">#</a></dt>
 <dd><p>Optional category this plugin belongs to.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__long_description__">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__long_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__long_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="Permalink to this definition">#</a></dt>
 <dd><p>Optional long description of this plugin.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__parameters__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__parameters__</span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__parameters__</span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="Permalink to this definition">#</a></dt>
 <dd><p>Mandatory definitions of all known configurable parameters.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__short_description__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__short_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__short_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="Permalink to this definition">#</a></dt>
 <dd><p>Mandatory short description of this plugin.</p>
 <p>It will be displayed to the user in the help and
 when listing all plugins.</p>
@@ -320,13 +367,13 @@ when listing all plugins.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__tags__">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__tags__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__tags__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__tags__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__tags__" title="Permalink to this definition">#</a></dt>
 <dd><p>Optional tags, that are the plugin can be described with.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__version__">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__version__" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__version__" title="Permalink to this definition">#</a></dt>
 <dd><p>3-value tuple representing the plugin version.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span>   <span class="n">verion</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -336,7 +383,7 @@ when listing all plugins.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser">
-<span class="sig-name descname"><span class="pre">add_output_to_databrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'freva'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r1i1p1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_output_to_databrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'freva'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r1i1p1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser" title="Permalink to this definition">#</a></dt>
 <dd><p>Add Plugin output data to the solr database.</p>
 <p>This methods crawls the plugin output data directory and adds
 any files that were found to the apache solr database.</p>
@@ -390,7 +437,7 @@ will be retrieved from the output files.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Popen</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.call" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Popen</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.call" title="Permalink to this definition">#</a></dt>
 <dd><p>Run command with arguments and return a CompletedProcess instance.</p>
 <p>The returned instance will have attributes args, returncode, stdout and
 stderr. By default, stdout and stderr are not captured, and those
@@ -420,39 +467,39 @@ attributes if those streams were captured.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.class_basedir">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_basedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_basedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir" title="Permalink to this definition">#</a></dt>
 <dd><p>Get absolute path to the module defining the plugin class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.getClassBaseDir">
-<span class="sig-name descname"><span class="pre">getClassBaseDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">getClassBaseDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.getHelp">
-<span class="sig-name descname"><span class="pre">getHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getHelp" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">getHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getHelp" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.linkmydata">
-<span class="sig-name descname"><span class="pre">linkmydata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">linkmydata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.plugin_output_file">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_output_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_output_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Filename where stdout is written to.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.prepareOutput">
-<span class="sig-name descname"><span class="pre">prepareOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">prepareOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.prepare_output">
-<span class="sig-name descname"><span class="pre">prepare_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">prepare_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output" title="Permalink to this definition">#</a></dt>
 <dd><p>Prepare output for files supposedly created.</p>
 <p>This method checks if the files exist and returns a dictionary with
 information about them:</p>
@@ -481,12 +528,12 @@ key and a dictionary as value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.readConfiguration">
-<span class="sig-name descname"><span class="pre">readConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">readConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.run_tool">
-<span class="sig-name descname"><span class="pre">run_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.run_tool" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.run_tool" title="Permalink to this definition">#</a></dt>
 <dd><p>Method executing the tool.</p>
 <p>The method should be overidden by the custom plugin tool method.</p>
 <dl class="field-list simple">
@@ -505,15 +552,16 @@ which the tool will be run with</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.setupConfiguration">
-<span class="sig-name descname"><span class="pre">setupConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">setupConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.special_variables">
-<span class="sig-name descname"><span class="pre">special_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.special_variables" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">special_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.special_variables" title="Permalink to this definition">#</a></dt>
 <dd><p>This dictionary resolves the <em>special variables</em> that are available</p>
 <p>to the plugins in a standardized manner. These variables are initialized per user and
 plugin. They go as follow:</p>
+<div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Variables</p></th>
@@ -550,6 +598,7 @@ plugin. They go as follow:</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>A plugin/user might then use them to define a value in the following way:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_file</span><span class="o">=</span><span class="s1">&#39;$USER_OUTPUT_DIR/myfile_$</span><span class="si">{SYSTEM_DATETIME}</span><span class="s1">blah.nc&#39;</span>
 </pre></div>
@@ -558,19 +607,19 @@ plugin. They go as follow:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.tool_developer">
-<span class="sig-name descname"><span class="pre">tool_developer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">tool_developer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer" title="Permalink to this definition">#</a></dt>
 <dd><p>Name of the developer who is responsible for the tool.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.user">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">User</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.user" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">User</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.user" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the user class for which this instance was generated.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.wrapper_file">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrapper_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrapper_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the location of the wrapper file.</p>
 </dd></dl>
 
@@ -578,14 +627,14 @@ plugin. They go as follow:</p>
 
 </section>
 <section id="module-evaluation_system.api.parameters">
-<span id="parameter-api-reference"></span><span id="parameterapi"></span><h2>Parameter API Reference<a class="headerlink" href="#module-evaluation_system.api.parameters" title="Permalink to this heading"></a></h2>
+<span id="parameter-api-reference"></span><span id="parameterapi"></span><h2>Parameter API Reference<a class="headerlink" href="#module-evaluation_system.api.parameters" title="Permalink to this heading">#</a></h2>
 <p>Definitions of parameters types to configure custom <code class="docutils literal notranslate"><span class="pre">Freva</span></code> plugins.</p>
 <p>Plugin parameters are defined in the plugin wrapper class. Please refer to
 <a class="reference internal" href="#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> for more information on how to set up a
 plugin wrapper class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Bool">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Bool" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Bool" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a></p>
 <p>A boolean parameter.</p>
 <dl class="field-list simple">
@@ -607,13 +656,13 @@ plugin wrapper class.</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Bool.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Bool.base_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Bool.base_type" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Bool.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Bool.parse" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Bool.parse" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert a string to a boolean value.</p>
 <p>The following values will be mapped</p>
 <blockquote>
@@ -635,7 +684,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.CacheDirectory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">CacheDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.CacheDirectory" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">CacheDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.CacheDirectory" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Directory</span></code></p>
 <p>A parameter representing a cache directory in the system.</p>
 <dl class="field-list simple">
@@ -659,7 +708,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Date">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Date" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Date" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>A date parameter.</p>
 <dl class="field-list simple">
@@ -683,7 +732,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.File">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.File" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.File" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>A parameter representing a file in the system.</p>
 <dl class="field-list simple">
@@ -711,7 +760,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Float">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Float" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Float" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a></p>
 <p>A float parameter.</p>
 <dl class="field-list simple">
@@ -733,7 +782,7 @@ true, false, t, y, f, …</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Float.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Float.base_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Float.base_type" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd></dl>
 
@@ -741,7 +790,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.InputDirectory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">InputDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.InputDirectory" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">InputDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.InputDirectory" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>A parameter representing a input directory in the system.</p>
 <dl class="field-list simple">
@@ -766,7 +815,7 @@ true, false, t, y, f, …</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Integer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Integer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Integer" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a></p>
 <p>An integer parameter.</p>
 <dl class="field-list simple">
@@ -788,7 +837,7 @@ true, false, t, y, f, …</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Integer.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Integer.base_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.Integer.base_type" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd></dl>
 
@@ -796,14 +845,14 @@ true, false, t, y, f, …</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterBaseType">
-<span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterBaseType</span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterBaseType" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterBaseType</span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterBaseType" title="Permalink to this definition">#</a></dt>
 <dd><p>Type definitions of all possible parameter types.</p>
 <p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">PrintableList</span></code>]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterDictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">ParameterType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterDictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">ParameterType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Directory holding all plugin parameters for a <code class="docutils literal notranslate"><span class="pre">Freva</span></code> plugin.</p>
 <p>This class behaves like a built-in <code class="docutils literal notranslate"><span class="pre">dict</span></code> with additional features.
@@ -827,7 +876,7 @@ Note: The order of the parameters will be preseverd.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.get_help">
-<span class="sig-name descname"><span class="pre">get_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.get_help" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.get_help" title="Permalink to this definition">#</a></dt>
 <dd><p>Render plugin help string to be displayed in a cli context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -844,7 +893,7 @@ Note: The order of the parameters will be preseverd.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.get_parameter">
-<span class="sig-name descname"><span class="pre">get_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">ParameterType</span></a></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.get_parameter" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">ParameterType</span></a></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.get_parameter" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the parameter object from the given name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -858,18 +907,18 @@ Note: The order of the parameters will be preseverd.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">evaluation_system.api.parameters.ParameterType</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parameters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><span class="pre">evaluation_system.api.parameters.ParameterType</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parameters" title="Permalink to this definition">#</a></dt>
 <dd><p>All parameters stored in <a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary" title="evaluation_system.api.parameters.ParameterDictionary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterDictionary</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.parseArguments">
-<span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parseArguments" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parseArguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parseArguments" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.parse_arguments">
-<span class="sig-name descname"><span class="pre">parse_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt_arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complete_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parse_arguments" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parse_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt_arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complete_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.parse_arguments" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse a list of strings to a parameter dictionary.</p>
 <p>The strings are of the type: <code class="docutils literal notranslate"><span class="pre">key1=val1</span></code> or <code class="docutils literal notranslate"><span class="pre">key2</span></code>
 multiple values can be defined by either defining the same key
@@ -899,7 +948,7 @@ provided parameters that has no defaults.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.synchronize">
-<span class="sig-name descname"><span class="pre">synchronize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.synchronize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">synchronize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.synchronize" title="Permalink to this definition">#</a></dt>
 <dd><p>Synchronize all entries for a plugin configuration of a given tool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -910,7 +959,7 @@ provided parameters that has no defaults.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterDictionary.validate_errors">
-<span class="sig-name descname"><span class="pre">validate_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_exception</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.validate_errors" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate_errors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_exception</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterDictionary.validate_errors" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if the given configuration dictionary is valied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -937,7 +986,7 @@ message is elevated (this could be changed)</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">initOrder</span></code></p>
 <p>Base class for all prameter types.</p>
 <blockquote>
@@ -993,14 +1042,14 @@ Impact.no_effects</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.base_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.base_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Type of this parameter.</p>
 <p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.format">
-<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.format" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.format" title="Permalink to this definition">#</a></dt>
 <dd><p>Format the default value or the given one to a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1023,19 +1072,19 @@ being displayed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.get_type">
-<span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.get_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.get_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the name of the class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.infer_type">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infer_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.infer_type" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infer_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.infer_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Infer the type of a given default.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PrintableList</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.parse" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">evaluation_system.misc.utils.PrintableList</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PrintableList</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.parse" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse a parameter value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1052,7 +1101,7 @@ being displayed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.synchronize">
-<span class="sig-name descname"><span class="pre">synchronize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.synchronize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">synchronize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.synchronize" title="Permalink to this definition">#</a></dt>
 <dd><p>Read the id of a tool from the database</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1069,7 +1118,7 @@ being displayed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.ParameterType.to_str">
-<span class="sig-name descname"><span class="pre">to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.to_str" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType.to_str" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform this value in a serializable string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1088,7 +1137,7 @@ being displayed.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Range">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Range" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Range" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>A range parameter, e.g passing experiment lists (1970,1975,…,2000).</p>
 <p>:param see <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a> parameters for more details.:</p>
@@ -1106,7 +1155,7 @@ being displayed.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Range.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PrintableList</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Range.parse" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PrintableList</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Range.parse" title="Permalink to this definition">#</a></dt>
 <dd><p>Parses a “RangeString” and returns a “PrintableList”.</p>
 <p>Values can be a comma separated string, colon separated or a combination
 Values after “-” are deleted from the resulting list</p>
@@ -1128,7 +1177,7 @@ Values after “-” are deleted from the resulting list</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Range.to_str">
-<span class="sig-name descname"><span class="pre">to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Range.to_str" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.Range.to_str" title="Permalink to this definition">#</a></dt>
 <dd><p>Conevert input value to string.</p>
 </dd></dl>
 
@@ -1136,7 +1185,7 @@ Values after “-” are deleted from the resulting list</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.SelectField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">SelectField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.SelectField" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">SelectField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.SelectField" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>Select field to select parameter from predefined vlaues.</p>
 <dl class="field-list simple">
@@ -1162,7 +1211,7 @@ Values after “-” are deleted from the resulting list</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.SelectField.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.SelectField.parse" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#evaluation_system.api.parameters.SelectField.parse" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse a parameter value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1184,7 +1233,7 @@ Values after “-” are deleted from the resulting list</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.SolrField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">SolrField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predefined_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">editable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.SolrField" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">SolrField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predefined_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">editable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.SolrField" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>A parameter using solr for finding valid values.</p>
 <dl class="field-list simple">
@@ -1221,7 +1270,7 @@ multi model ensemble</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.String">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">String</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.String" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">String</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.String" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a></p>
 <p>A simple string parameter.</p>
 <dl class="field-list simple">
@@ -1244,7 +1293,7 @@ multi model ensemble</p></li>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.String.base_type">
-<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.String.base_type" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#evaluation_system.api.parameters.String.base_type" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd></dl>
 
@@ -1252,7 +1301,7 @@ multi model ensemble</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.parameters.Unknown">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Unknown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Unknown" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">Unknown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.Unknown" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#evaluation_system.api.parameters.String" title="evaluation_system.api.parameters.String"><code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></a></p>
 <p>An unknown parameter for conversions.</p>
 <p>:param see <a class="reference internal" href="#evaluation_system.api.parameters.ParameterType" title="evaluation_system.api.parameters.ParameterType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterType</span></code></a> parameters for more details.:</p>
@@ -1261,35 +1310,161 @@ multi model ensemble</p></li>
 </section>
 </section>
 
-
-           </div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="FAQ.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Frequently Ask Questions and best practices</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="developers_guide.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Plugin Developer Guide</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, CLINT
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="developers_guide.html" class="btn btn-neutral float-left" title="Plugin Developer Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="FAQ.html" class="btn btn-neutral float-right" title="Frequently Ask Questions and best practices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
     </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#module-evaluation_system.api.plugin">Plugin API Reference</a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract"><code class="docutils literal notranslate"><span class="pre">PluginAbstract</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__category__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__category__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__long_description__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__parameters__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__short_description__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__tags__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__version__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__version__</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.add_output_to_databrowser()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.call"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.call()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.class_basedir</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getClassBaseDir()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.getHelp"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getHelp()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.linkmydata()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.plugin_output_file</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepareOutput()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepare_output()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.readConfiguration()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.run_tool()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.setupConfiguration()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.special_variables"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.special_variables</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.tool_developer</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.user"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.user</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.wrapper_file</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-evaluation_system.api.parameters">Parameter API Reference</a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Bool"><code class="docutils literal notranslate"><span class="pre">Bool</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Bool.base_type"><code class="docutils literal notranslate"><span class="pre">Bool.base_type</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Bool.parse"><code class="docutils literal notranslate"><span class="pre">Bool.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.CacheDirectory"><code class="docutils literal notranslate"><span class="pre">CacheDirectory</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Date"><code class="docutils literal notranslate"><span class="pre">Date</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.File"><code class="docutils literal notranslate"><span class="pre">File</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Float"><code class="docutils literal notranslate"><span class="pre">Float</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Float.base_type"><code class="docutils literal notranslate"><span class="pre">Float.base_type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.InputDirectory"><code class="docutils literal notranslate"><span class="pre">InputDirectory</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Integer"><code class="docutils literal notranslate"><span class="pre">Integer</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Integer.base_type"><code class="docutils literal notranslate"><span class="pre">Integer.base_type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterBaseType"><code class="docutils literal notranslate"><span class="pre">ParameterBaseType</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.get_help"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.get_help()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.get_parameter"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.get_parameter()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parameters"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parameters()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parseArguments"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parseArguments()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.parse_arguments"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.parse_arguments()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.synchronize"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.synchronize()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterDictionary.validate_errors"><code class="docutils literal notranslate"><span class="pre">ParameterDictionary.validate_errors()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType"><code class="docutils literal notranslate"><span class="pre">ParameterType</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.base_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.base_type</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.format"><code class="docutils literal notranslate"><span class="pre">ParameterType.format()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.get_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.get_type()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.infer_type"><code class="docutils literal notranslate"><span class="pre">ParameterType.infer_type()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.parse"><code class="docutils literal notranslate"><span class="pre">ParameterType.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.synchronize"><code class="docutils literal notranslate"><span class="pre">ParameterType.synchronize()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.ParameterType.to_str"><code class="docutils literal notranslate"><span class="pre">ParameterType.to_str()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Range"><code class="docutils literal notranslate"><span class="pre">Range</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Range.parse"><code class="docutils literal notranslate"><span class="pre">Range.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Range.to_str"><code class="docutils literal notranslate"><span class="pre">Range.to_str()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.SelectField"><code class="docutils literal notranslate"><span class="pre">SelectField</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.SelectField.parse"><code class="docutils literal notranslate"><span class="pre">SelectField.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.SolrField"><code class="docutils literal notranslate"><span class="pre">SolrField</span></code></a></li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.String"><code class="docutils literal notranslate"><span class="pre">String</span></code></a><ul>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.String.base_type"><code class="docutils literal notranslate"><span class="pre">String.base_type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evaluation_system.api.parameters.Unknown"><code class="docutils literal notranslate"><span class="pre">Unknown</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2022, CLINT.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+          </div>
         </div>
       </div>
-    </section>
+      
+      
+    </aside>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
 </html>
