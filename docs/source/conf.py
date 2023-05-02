@@ -20,7 +20,9 @@ from recommonmark.parser import CommonMarkParser
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
 os.environ.setdefault(
     "EVALUATION_SYSTEM_CONFIG_FILE",
-    os.path.abspath(os.path.join("..", "..", "compose", "local-eval-system.conf")),
+    os.path.abspath(
+        os.path.join("..", "..", "compose", "local-eval-system.conf")
+    ),
 )
 os.environ.setdefault(
     "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
@@ -68,12 +70,20 @@ nbsphinx_allow_errors = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
-
+html_static_path = ["_static"]
+html_theme = "furo"
+html_theme_options = {
+    "navigation_with_keys": True,
+    "top_of_page_button": "edit",
+    "light_css_variables": {
+        "color-brand-primary": "tomato",
+    },
+}
+html_logo = os.path.join(html_static_path[0], "logo.png")
+html_favicon = html_logo
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
 
 source_parsers = {
     ".md": CommonMarkParser,
