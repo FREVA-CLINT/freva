@@ -11,6 +11,8 @@
 !.docker/
 !.envrc
 coverage.xml
+compose/activate_*
+compose/completions/*
 coverage_report.xml
 dist/
 coverage_report/*

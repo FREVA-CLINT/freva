@@ -72,7 +72,7 @@ and best practices when it comes to plugin development.
 
    `Freva intro talk <https://freva-clint.github.io/Talks/FrevaIntro/index.slides.html#/>`_
         A short introduction given at the Julich computing centre.
-   `Freva admin docs <https://freva.gitlab-pages.dkrz.de/deployment/index.html>`_
+   `Freva admin docs <https://freva-deployment.readthedocs.io>`_
         Installation and configuration of the freva services.
 
 Indices and tables
