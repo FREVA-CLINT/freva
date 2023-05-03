@@ -200,6 +200,7 @@ class UserData:
 
         Parameters
         ----------
+
         *paths: os.PathLike
             Filename(s) or Directories that are going to be from  the
             databrowser.

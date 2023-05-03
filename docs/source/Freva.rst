@@ -50,7 +50,7 @@ to get an overview over existing plugins and the documentation of each plugins.
 
 This specific plugin has created the following output:
 
-.. image:: _static/animator_output.mp4
+.. image:: _static/animator_output.gif
    :width: 400
 
 .. _plugin:
