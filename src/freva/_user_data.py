@@ -200,8 +200,7 @@ class UserData:
 
         Parameters
         ----------
-
-         *paths: os.PathLike
+        *paths: os.PathLike
             Filename(s) or Directories that are going to be from  the
             databrowser.
         delete_from_fs: bool, default : False
@@ -210,7 +209,6 @@ class UserData:
 
         Raises
         ------
-
         ValidationError:
             If crawl_dirs do not belong to current user.
 

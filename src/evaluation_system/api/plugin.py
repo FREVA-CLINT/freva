@@ -11,7 +11,8 @@ the possible definition options below.
 
 Here we assume that the above mentioned cli code is stored in a directory
 name ``/mnt/freva/plugins/new_plugin`` furthermore the actual cli code can be
-excecuted via:
+executed via:
+
     .. code-block:: console
 
         cli/calculate -c 5 -n 6.4 --overwrite --name=Test

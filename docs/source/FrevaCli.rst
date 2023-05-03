@@ -363,7 +363,7 @@ animate its content.
 
 The plugin will produce the following output:
 
-.. image:: _static/animator_output.gif
+.. image:: _static/animator_output.mp4
    :width: 400
 
 This plugin will run in so called interactive mode. That means that it
