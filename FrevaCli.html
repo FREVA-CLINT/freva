@@ -551,18 +551,18 @@ the data). For example to see all facets that are available in the
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>time_frequency: 30min,3hr,day,hr,mon
-experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
-dataset: crawl_my_data,testdata
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>fs_type: posix
 model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
 institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
-ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
 realm: atmos,ocean,user_data
+variable: hc700,pr,tas,ua
+project: cmip6,cordex,observations,reanalysis,user-runner
+time_frequency: 30min,3hr,day,hr,mon
+experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
 product: cmip,eur-11,eur-11b,grid,reanalysis
 cmor_table: 30min,3hr,aday,amon,hr,omon
-project: cmip6,cordex,observations,reanalysis,user-runner
-variable: hc700,pr,tas,ua
-fs_type: posix
+ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
+dataset: crawl_my_data,testdata
 
 </pre></div>
 </div>
@@ -773,7 +773,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2119/pr_20160902T0000-20160902T2330.mp4 in 38 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2119/pr_20160902T0000-20160902T2330.mp4 in 42 seconds
 
 </pre></div>
 </div>
@@ -843,7 +843,7 @@ options:
 /home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
   warnings.warn(
 
-2115) dummyplugin [2023-05-07 21:35:02] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+2115) dummyplugin [2023-05-07 21:35:33] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -855,7 +855,7 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2120) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-05-07 21:37:37] scheduled 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2120) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-05-07 21:38:10] scheduled 
 Configuration:
      cbar_label=
            cmap=Blues
