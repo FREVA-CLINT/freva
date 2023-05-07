@@ -465,17 +465,17 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="highlight"><pre>
 WARNING:freva:The all-facets flag will be made deprecated useuser --facet &#39;*&#39; or --facet all instead
 fs_type: posix
-cmor_table: 30min
-dataset: testdata
-institute: cpc
-model: cpc
-variable: pr
 ensemble: r1i1p1
 time_frequency: 30min
+institute: cpc
+variable: pr
+model: cpc
 realm: atmos
-product: grid
-project: observations
+dataset: testdata
+cmor_table: 30min
 experiment: cmorph
+project: observations
+product: grid
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -727,8 +727,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_20160902T0000-20160902T2330.gif in 43 seconds
-Recieved termination signal: exiting
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_20160902T0000-20160902T2330.gif in 39 seconds
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -752,7 +751,7 @@ Recieved termination signal: exiting
 Scheduled job with history id: 2123
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-26635.out
+tail -f /tmp/share/slurm/animator/Animator-10352.out
 </pre></div></div>
 </div>
 </section>
@@ -777,7 +776,7 @@ INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
   warnings.warn(
 /home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
   warnings.warn(
-2115) dummyplugin [2023-05-07 21:35:33] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2023-05-07 21:45:09] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
