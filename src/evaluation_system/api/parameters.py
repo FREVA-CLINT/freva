@@ -32,47 +32,47 @@ ParameterBaseType = Union[str, int, float, bool, PrintableList]
 class ParameterType(initOrder):
     """Base class for all prameter types.
 
-     All available parameter types inherit from this class. The class creates
-     a parameter object holding the following user defined information.
+    All available parameter types inherit from this class. The class creates
+    a parameter object holding the following user defined information.
 
-     Parameters
-     ----------
+    Parameters
+    ----------
 
-     name: str
-         Name of the parameter.
-     default: ParameterBaseType, default: str
-         the default value of the given parameter. **Note**: this value must be
-         a *valid* parameter value!
+    name: str
+        Name of the parameter.
+    default: ParameterBaseType, default: str
+        the default value of the given parameter. **Note**: this value must be
+        a *valid* parameter value!
     mandatory: bool, default: False
-         boolean indicating if this parameter is required
-     max_items: int, default: 1
-         If set to > 1 it will cause the values to be returned in a
-         list (even if the user only provided 1). Raises an error if more than
-         than ``max_items`` values are parsed.
-     item_separator: str, default: ,
-         The string used to separate multiple values for this
-         parameter. In some cases (at the shell, web interface, etc) the user have
-         always the option to provide multiple values by re-using the same parameter
-         name (e.g. ``param1=a param1=b`` produces ``{'param1': ['a', 'b']}``). But the
-         configuration file does not allow this at this time. Therefore is better
-         to setup a separator, even though the user might not use it while giving
-         input. It must not be a character, it can be any string
-         (make sure it's not a valid value!!)
-     regex: Optional[str], default: None
-         A regular expression defining valid "string" values before
-         parsing them to their defining classes (e.g. an Integer might define a
-         regex of "[0-9]+" to prevent getting negative numbers). This will be used
-         also on Javascript so don't use fancy expressions or make sure they are
-         understood by both python and Javascript.
-     help: str, default: No help available
-         The help string describing what this parameter is good for.
-     print_format: str, default %s
-         String format used to display parameter values, e.g. ``%.2f`` to
-         display always 2 decimals for floats
-     impact:
-         The impact of the parameter to the output, possible values are
-         Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.
-         Impact.no_effects
+        boolean indicating if this parameter is required
+    max_items: int, default: 1
+        If set to > 1 it will cause the values to be returned in a
+        list (even if the user only provided 1). Raises an error if more than
+        than ``max_items`` values are parsed.
+    item_separator: str, default: ,
+        The string used to separate multiple values for this
+        parameter. In some cases (at the shell, web interface, etc) the user have
+        always the option to provide multiple values by re-using the same parameter
+        name (e.g. ``param1=a param1=b`` produces ``{'param1': ['a', 'b']}``). But the
+        configuration file does not allow this at this time. Therefore is better
+        to setup a separator, even though the user might not use it while giving
+        input. It must not be a character, it can be any string
+        (make sure it's not a valid value!!)
+    regex: Optional[str], default: None
+        A regular expression defining valid "string" values before
+        parsing them to their defining classes (e.g. an Integer might define a
+        regex of "[0-9]+" to prevent getting negative numbers). This will be used
+        also on Javascript so don't use fancy expressions or make sure they are
+        understood by both python and Javascript.
+    help: str, default: No help available
+        The help string describing what this parameter is good for.
+    print_format: str, default %s
+        String format used to display parameter values, e.g. ``%.2f`` to
+        display always 2 decimals for floats
+    impact: int
+        The impact of the parameter to the output, possible values are
+        Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.
+        Impact.no_effects
 
 
      Properties

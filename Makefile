@@ -41,10 +41,7 @@ prepdocs:
 	python3 -m ipykernel install --user --name freva
 	python3 -m bash_kernel.install
 	make dummy-data
-	freva plugin animator project=observations variable=pr; echo 0
-
-
-
+	compose/animator_plugin_run.sh
 
 
 lint:
