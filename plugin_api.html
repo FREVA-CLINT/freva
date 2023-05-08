@@ -225,7 +225,7 @@ set up a interface to Freva must be defined. This reference will introduce
 the possible definition options below.</p>
 <p>Here we assume that the above mentioned cli code is stored in a directory
 name <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins/new_plugin</span></code> furthermore the actual cli code can be
-excecuted via:</p>
+executed via:</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cli/calculate -c 5 -n 6.4 --overwrite --name=Test</span>
 </pre></div>
@@ -989,55 +989,38 @@ message is elevated (this could be changed)</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.parameters.</span></span><span class="sig-name descname"><span class="pre">ParameterType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mandatory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'No</span> <span class="pre">help</span> <span class="pre">available.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.parameters.ParameterType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">initOrder</span></code></p>
 <p>Base class for all prameter types.</p>
-<blockquote>
-<div><p>All available parameter types inherit from this class. The class creates
+<p>All available parameter types inherit from this class. The class creates
 a parameter object holding the following user defined information.</p>
-<dl class="simple">
-<dt>name: str</dt><dd><p>Name of the parameter.</p>
-</dd>
-<dt>default: ParameterBaseType, default: str</dt><dd><p>the default value of the given parameter. <strong>Note</strong>: this value must be
-a <em>valid</em> parameter value!</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl>
-<dt>mandatory: bool, default: False</dt><dd><blockquote>
-<div><p>boolean indicating if this parameter is required</p>
-</div></blockquote>
-<dl class="simple">
-<dt>max_items: int, default: 1</dt><dd><p>If set to &gt; 1 it will cause the values to be returned in a
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the parameter.</p></li>
+<li><p><strong>default</strong> (<em>ParameterBaseType</em><em>, </em><em>default: str</em>) – the default value of the given parameter. <strong>Note</strong>: this value must be
+a <em>valid</em> parameter value!</p></li>
+<li><p><strong>mandatory</strong> (<em>bool</em><em>, </em><em>default: False</em>) – boolean indicating if this parameter is required</p></li>
+<li><p><strong>max_items</strong> (<em>int</em><em>, </em><em>default: 1</em>) – If set to &gt; 1 it will cause the values to be returned in a
 list (even if the user only provided 1). Raises an error if more than
-than <code class="docutils literal notranslate"><span class="pre">max_items</span></code> values are parsed.</p>
-</dd>
-<dt>item_separator: str, default: ,</dt><dd><p>The string used to separate multiple values for this
+than <code class="docutils literal notranslate"><span class="pre">max_items</span></code> values are parsed.</p></li>
+<li><p><strong>item_separator</strong> (<em>str</em><em>, </em><em>default:</em><em> ,</em>) – The string used to separate multiple values for this
 parameter. In some cases (at the shell, web interface, etc) the user have
 always the option to provide multiple values by re-using the same parameter
 name (e.g. <code class="docutils literal notranslate"><span class="pre">param1=a</span> <span class="pre">param1=b</span></code> produces <code class="docutils literal notranslate"><span class="pre">{'param1':</span> <span class="pre">['a',</span> <span class="pre">'b']}</span></code>). But the
 configuration file does not allow this at this time. Therefore is better
 to setup a separator, even though the user might not use it while giving
 input. It must not be a character, it can be any string
-(make sure it’s not a valid value!!)</p>
-</dd>
-<dt>regex: Optional[str], default: None</dt><dd><p>A regular expression defining valid “string” values before
+(make sure it’s not a valid value!!)</p></li>
+<li><p><strong>regex</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default: None</em>) – A regular expression defining valid “string” values before
 parsing them to their defining classes (e.g. an Integer might define a
 regex of “[0-9]+” to prevent getting negative numbers). This will be used
 also on Javascript so don’t use fancy expressions or make sure they are
-understood by both python and Javascript.</p>
-</dd>
-<dt>help: str, default: No help available</dt><dd><p>The help string describing what this parameter is good for.</p>
-</dd>
-<dt>print_format: str, default %s</dt><dd><p>String format used to display parameter values, e.g. <code class="docutils literal notranslate"><span class="pre">%.2f</span></code> to
-display always 2 decimals for floats</p>
-</dd>
-<dt>impact:</dt><dd><p>The impact of the parameter to the output, possible values are
+understood by both python and Javascript.</p></li>
+<li><p><strong>help</strong> (<em>str</em><em>, </em><em>default: No help available</em>) – The help string describing what this parameter is good for.</p></li>
+<li><p><strong>print_format</strong> (<em>str</em><em>, </em><em>default %s</em>) – String format used to display parameter values, e.g. <code class="docutils literal notranslate"><span class="pre">%.2f</span></code> to
+display always 2 decimals for floats</p></li>
+<li><p><strong>impact</strong> – The impact of the parameter to the output, possible values are
 Parameter.Impact.affects_values, Parameter.Impact.affects_plots, Parameter.
-Impact.no_effects</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>base_type:</dt><dd><p>Type of this parameter</p>
-</dd>
-</dl>
+Impact.no_effects</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py attribute">

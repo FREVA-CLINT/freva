@@ -377,10 +377,10 @@ add(product: &#39;str&#39;, *paths: &#39;os.PathLike&#39;, how: &#39;str&#39; = 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Status: crawling ...
+Status: crawling ...ok
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
@@ -389,14 +389,6 @@ Status: crawling ...
   warnings.warn(
 /home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
   warnings.warn(
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-ok
 </pre></div></div>
 </div>
 <p>Let’s check if the data has been added to the data browser</p>
@@ -454,7 +446,7 @@ delete(*paths: &#39;os.PathLike&#39;, delete_from_fs: &#39;bool&#39; = False) -&
     Parameters
     ----------
 
-     *paths: os.PathLike
+    *paths: os.PathLike
         Filename(s) or Directories that are going to be from  the
         databrowser.
     delete_from_fs: bool, default : False
@@ -463,7 +455,6 @@ delete(*paths: &#39;os.PathLike&#39;, delete_from_fs: &#39;bool&#39; = False) -&
 
     Raises
     ------
-
     ValidationError:
         If crawl_dirs do not belong to current user.
 
