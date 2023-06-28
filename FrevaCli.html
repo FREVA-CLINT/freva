@@ -553,16 +553,16 @@ the data). For example to see all facets that are available in the
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
 institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
-variable: hc700,pr,tas,ua
-cmor_table: 30min,3hr,aday,amon,hr,omon
 fs_type: posix
+dataset: crawl_my_data,testdata
+product: cmip,eur-11,eur-11b,grid,reanalysis
+cmor_table: 30min,3hr,aday,amon,hr,omon
+realm: atmos,ocean,user_data
+variable: hc700,pr,tas,ua
+time_frequency: 30min,3hr,day,hr,mon
+model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
 project: cmip6,cordex,observations,reanalysis,user-runner
 experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
-product: cmip,eur-11,eur-11b,grid,reanalysis
-dataset: crawl_my_data,testdata
-model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
-time_frequency: 30min,3hr,day,hr,mon
-realm: atmos,ocean,user_data
 
 </pre></div>
 </div>
@@ -843,7 +843,7 @@ options:
 /home/runner/work/freva/freva/src/evaluation_system/model/solr_core.py:29: PendingDeprecationWarning: The evaluation_system.model.solr_core module will be removed from v2304.0.0
   warnings.warn(
 
-2115) dummyplugin [2023-06-28 05:19:57] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+2115) dummyplugin [2023-06-28 05:31:06] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -855,7 +855,7 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2120) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-06-28 05:22:24] scheduled 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2120) animator(2022, 7, 15) c6897a9cea27578ef88bbca26f079cef0f85c8d4 [2023-06-28 05:33:36] scheduled 
 Configuration:
      cbar_label=
            cmap=Blues
