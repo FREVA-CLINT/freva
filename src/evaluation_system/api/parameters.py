@@ -870,8 +870,9 @@ class DateRange(String):
 
     base_type = tuple
 
-    def __init__(self):
-        self.dateparse = Date()
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.dateparse = Date()        
 
     def parse(self, value: str) -> Tuple[Union[datetime, None], Union[datetime, None]]:
         """
@@ -907,7 +908,7 @@ class DateRange(String):
             else:
                 return (None, None)
         except Exception as ex:
-            raise ValueError(f'Error parsing date range: {str(value)} - {str(ex)}') from ex
+            raise ValueError(f'Error parsing date range: [{str(value)}] - {str(ex)}') from ex
     
 
 class Bool(ParameterType):
