@@ -56,7 +56,10 @@ def test_parsing(dummy_env):
         InputDirectory,
         Unknown,
         ValidationError,
+        # Date,
+        # DateRange,
     )
+    # from datetime import datetime
 
     test_cases = [
         (String(), [("asd", "asd"), (None, "None"), (1, "1"), (True, "True")], []),
@@ -133,6 +136,34 @@ def test_parsing(dummy_env):
         (SolrField(facet="variable"), [("tas", "tas"), ("pr", "pr")], []),
         (InputDirectory(), [("/home/user", "/home/user")], []),
         (Unknown(), [("test", "test")], []),
+        # (
+        #     Date(),
+        #     [
+        #         (1991, datetime(1991,1,1,0,0)),  
+        #         ("1991", datetime(1991,1,1,0,0)),
+        #         ("1991-06", datetime(1991,6,1,0,0)), 
+        #         ("1991-01-01", datetime(1991,1,1,0,0)), 
+        #         ("1991-07-31T00", datetime(1991,7,31,0,0)), 
+        #         ("1991-12-12 00:00", datetime(1991,12,12,0,0)),
+        #         ("19910101", datetime(1991,1,1,0,0)),
+        #         ("19910321 00:54", datetime(1991,3,21,0,54)),
+        #         ("1", datetime(1978,1,1,0,0)),
+        #         ("14921012", datetime(1492,10,12,0,0)),       
+        #     ],
+        #     ["199o", "1991-06-31T00:00", "", None]
+        # ),
+        # (
+        #     DateRange(),
+        #     [
+        #         ("19910101,1992", (datetime(1991,1,1,0,0),datetime(1992,1,1,0,0))),  
+        #         ("19910101, 1992-03-02", (datetime(1991,1,1,0,0),datetime(1992,3,2,0,0))),
+        #         ("19920304 00:00, 1991-12-31T03:56", (datetime(1991,12,31,3,0),datetime(1992,3,4,0,0))), 
+        #         ("1961,1990", (datetime(1961,1,1,0,0),datetime(1990,1,1,0,0))), 
+        #         (",1991", (None, datetime(1991,1,1,0,0))), 
+        #         ("1991,", (datetime(1991,1,1,0,0), None)),    
+        #     ],
+        #     ["", ",", None, "1992, 199o"]
+        # ),   
     ]
     for case_type, positive_cases, negative_cases in test_cases:
         for expected, result in positive_cases:
@@ -206,6 +237,7 @@ def test_parse_arguments(dummy_env):
         Range,
         ValidationError,
     )
+    from datetime import datetime
 
     p_dict = ParameterDictionary(String(name="a"), String(name="b"))
     res = p_dict.parse_arguments("a=1 b=2".split())
@@ -225,12 +257,12 @@ def test_parse_arguments(dummy_env):
         File(name="file", default="/tmp/file1"),
         Date(name="date"),
         Range(name="range"),
-    )
-    res = p_dict.parse_arguments("int=1 date=1 bool=1".split())
-    assert res == dict(int=1, date="1", bool=True)
-    res = p_dict.parse_arguments("int=1 date=1 bool=1".split(), use_defaults=True)
+    )   
+    res = p_dict.parse_arguments('int=1 date=1 bool=1'.split())
+    assert res == dict(int=1, date=datetime(1978, 1, 1, 0, 0), bool=True)
+    res = p_dict.parse_arguments("int=1 date=19910203 bool=1".split(), use_defaults=True)
     assert res == dict(
-        int=1, date="1", bool=True, extra_scheduler_options="", file="/tmp/file1"
+        int=1, date=datetime(1991,2,3,0,0), bool=True, extra_scheduler_options="", file="/tmp/file1"
     )
     p_dict2 = ParameterDictionary(
         Bool(name="init"),
@@ -247,7 +279,7 @@ def test_parse_arguments(dummy_env):
     )
     assert res == dict(
         int=1,
-        date="1",
+        date=datetime(1978,1,1,0,0),
         bool=True,
         extra_scheduler_options="",
         range=list(range(1, 6)),
@@ -290,7 +322,7 @@ def test_parse_arguments(dummy_env):
         p_dict.parse_arguments(["file=a", "file=b", "file=c"])
     # this should still work since max_items defaults to 1
     # and in that case no splitting happens
-    assert p_dict.parse_arguments(["date=a/b"]) == dict(date="a/b")
+    assert p_dict.parse_arguments(['date=19780101 03:00']) == dict(date=datetime(1978,1,1,3,0))
     assert p_dict.parse_arguments(["file=a", "file=b"]) == dict(file=["a", "b"])
 
 
@@ -343,6 +375,7 @@ def test_defaults(dummy_env):
         Float,
         ValidationError,
     )
+    from datetime import datetime
 
     # All these should cause no exception
     Bool(name="a", default=True)
@@ -367,7 +400,7 @@ def test_defaults(dummy_env):
     with pytest.raises(ValidationError):
         p_dict.parse_arguments(["date=2"], use_defaults=False)
     assert p_dict.parse_arguments(["date=2"], use_defaults=True) == {
-        "date": "2",
+        "date": datetime(1978,1,2,0,0),
         "extra_scheduler_options": "",
         "file": ["/tmp/file1"],
     }
