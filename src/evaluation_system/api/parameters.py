@@ -12,6 +12,8 @@ import re
 import textwrap
 from typing import Any, Optional, Union, Type
 import warnings
+from dateutil.parser import parse
+from datetime import datetime
 
 from evaluation_system.misc.utils import (
     find_similar_words,
@@ -809,10 +811,104 @@ class Date(String):
             )
 
     """
+    base_type = datetime
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def parse(self, value: str) -> Union[datetime, None]:
+        """
+        Parse a string value into a datetime object.
 
+        Parameters
+        ----------
+        value : str
+            The string value representing a date.
+
+        Returns
+        -------
+        Union[datetime, None]
+            The parsed datetime object if the parsing is successful,
+            otherwise returns None.
+
+        Raises
+        ------
+        ValueError
+            If the value cannot be converted to a datetime object.
+
+        """
+
+        try:
+            if value:
+                return parse(str(value), default=datetime(1978, 1, 1, 0, 0), fuzzy=False)
+            else:
+                return None
+        except Exception as ex:
+            raise ValueError(f"'{value}' (type {type(value).__name__}) can't be converted to a datetime object") from ex
+
+class DateRange(String):
+    """A tuple containing a date range.
+
+    Parameters
+    ----------
+    kwargs:
+        Additional :class:`ParameterType` parameters.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        from evaluation_system.api import plugin, parameters
+        class MyPlugin(plugin.PluginAbstract):
+            __parameters__ = parameters.ParameterDictionary(
+                parameters.DateRange(
+                            name="time-range",
+                            default="1950-01-10, 1961",
+                            help="Select a time range separated by comma, YYYY to YYYY-MM-DD HH:mm",
+                            ),
+            )
+
+    """
+
+    base_type = tuple
+
+    def __init__(self):
+        self.dateparse = Date()
+
+    def parse(self, value: str) -> Tuple[Union[datetime, None], Union[datetime, None]]:
+        """
+        Parse a string value representing a date range.
+
+        Parameters
+        ----------
+        value : str
+            A string representing a date range in the format "ini_date, end_date".
+            The ini_date and end_date should be in a format compatible with the
+            `dateparse` object used for parsing.
+
+        Returns
+        -------
+        Tuple[Union[datetime, None], Union[datetime, None]]
+            A tuple containing the sorted and parsed initial date and end date if the parsing
+            is successful. If the value is None, a tuple of (None, None) is returned.
+
+        Raises
+        ------
+        ValueError
+            If the value has an incorrect date format or parsing fails.
+
+        """
+        try:
+            if value:
+                dates = list(map(self.dateparse.parse, value.split(",")))
+                if all(date is not None for date in dates):
+                    ini_date, end_date = sorted(dates)
+                    return (ini_date, end_date)
+                else:
+                    return tuple(dates)
+            else:
+                return (None, None)
+        except Exception as ex:
+            raise ValueError(f'Error parsing date range: {str(value)} - {str(ex)}') from ex
+    
 
 class Bool(ParameterType):
     """A boolean parameter.
