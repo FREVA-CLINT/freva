@@ -1,5 +1,5 @@
 Django==4.2.3
-GitPython==3.1.31
+GitPython==3.1.32
 Pillow==10.0.0
 PyPDF2==3.0.1
 appdirs==1.4.4
