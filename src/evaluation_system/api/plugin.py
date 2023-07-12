@@ -488,6 +488,7 @@ class PluginAbstract(abc.ABC):
         time_frequency: Optional[str] = None,
         variable: Optional[str] = None,
         experiment: Optional[str] = None,
+        index_data: bool = True,
     ) -> Path:
         """Add Plugin output data to the solr database.
 
@@ -538,6 +539,10 @@ class PluginAbstract(abc.ABC):
         variable: str, default: None
             Default variable facet. If None is given (default) the variable
             will be retrieved from the output files.
+        index_data: bool, default: True
+            Update the freva data browser (default: True). Setting this
+            flag to false can be useful if the data structure should only be
+            created but the databrowser should not be updated yet.
 
         Returns
         -------
@@ -569,7 +574,10 @@ class PluginAbstract(abc.ABC):
             new_file = user_data.file_name_from_metdata(output_file)
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             shutil.copy(str(output_file), str(new_file))
-        SolrCore.load_fs(root_dir / product_dir, drs_type=user_data.drs_specification)
+        if index_data:
+            SolrCore.load_fs(
+                root_dir / product_dir, drs_type=user_data.drs_specification
+            )
         return root_dir / product_dir
 
     @deprecated_method("PluginAbstract", "prepare_output")
