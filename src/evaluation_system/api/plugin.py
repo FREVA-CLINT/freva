@@ -459,15 +459,6 @@ class PluginAbstract(abc.ABC):
                     )
         return config_dict
 
-    def quitnkill(self):
-        """If error occurs quit python and kill child processes by group ID
-
-        :meta private:
-        """
-        PID = os.getpid()
-        self.call(f'setsid nohup bash -c "kill -9 -- -{PID}"  </dev/null &>/dev/null &')
-        raise SystemExit
-
     @deprecated_method("PluginAbstract", "add_output_to_databrowser")
     def linkmydata(self, *args, **kwargs):  # pragma: no cover
         """Deprecated version of the :class:`add_output_to_databrowser` method.
