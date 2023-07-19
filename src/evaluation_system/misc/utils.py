@@ -38,7 +38,7 @@ def convert_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
          %Y %Y-%m-%d or %Y-%m-%dT%H%M%S
     """
 
-    # Strip anything that's not a number from the stringi
+    # Strip anything that's not a number from the string
     if not time_str:
         return alternative
     time_str = "".join(filter(str.isdigit, time_str))
@@ -60,7 +60,7 @@ def convert_str_to_timestamp(time_str: str, alternative: str = "0") -> str:
     if len(time) <= 2:
         time = time.zfill(2)
     else:
-        # Alaways drop seconds
+        # Always drop seconds
         time = time[:2] + ":" + time[2 : min(4, len(time))].zfill(2)
     return f"{date}T{time}"
 
@@ -73,7 +73,7 @@ def get_solr_time_range(time: str, sep: str = "-") -> str:
     time: str
         string representation of the time range
     sep: str, default: -
-        seperator for start and end time
+        separator for start and end time
 
     Returns
     -------
@@ -128,7 +128,7 @@ def supermakedirs(path, mode):
     using os.makedirs.
     This routine overcomes this problem.
     """
-    # this is a neccessary condition,
+    # this is a necessary condition,
     # otherwise the path will be created twice
     try:
         if path[-1] == "/":
@@ -185,7 +185,7 @@ class Struct:
         return value in self.__dict__.values()
 
     def toDict(self):
-        """Transfrom this struct into a dictionary."""
+        """Transform this struct into a dictionary."""
         result = {}
         for i in self.__dict__:
             if isinstance(self.__dict__[i], Struct):

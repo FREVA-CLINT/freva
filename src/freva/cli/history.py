@@ -34,7 +34,7 @@ class Cli(BaseParser):
             action="store_true",
             help=(
                 "Show freva commands belonging to the history entries "
-                "instead of the entries themself."
+                "instead of the entries themselves."
             ),
         )
         self.parser.add_argument(

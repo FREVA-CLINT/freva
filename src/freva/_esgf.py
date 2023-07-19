@@ -92,7 +92,7 @@ def esgf(
         return sorted(p2p.get_datasets_names(**search_constraints))
     if isinstance(query, str):
         if len(query.split(",")) > 1:
-            # we get multiple fields queried, return in a tructured fashion
+            # we get multiple fields queried, return in a structured fashion
             return p2p.show(
                 p2p.get_datasets(fields=query, **search_constraints), return_str=True
             )

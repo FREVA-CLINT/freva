@@ -147,7 +147,7 @@ class UserDB(object):
             the user id
         slurmFileName:
             The std out file belonging to the history entry
-        stauts:
+        status:
             Overwrite the default status (scheduled) with this status.
         """
 

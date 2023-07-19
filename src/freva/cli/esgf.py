@@ -51,7 +51,7 @@ class Cli(BaseParser):
             "--opendap",
             default=False,
             action="store_true",
-            help="Show opendap endpoints instead of http onse.",
+            help="Show opendap endpoints instead of http ones.",
         )
         self.parser.add_argument(
             "--gridftp",

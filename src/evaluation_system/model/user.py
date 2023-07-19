@@ -214,7 +214,7 @@ file that is handled by :class:`evaluation_system.api.config`."""
     def getUserToolConfig(self, tool, **kwargs):
         """Returns the path to the configuration file.
 
-        :param kwargs: ``create`` := If ``True`` assure the underlaying directory exists after the call is done.
+        :param kwargs: ``create`` := If ``True`` assure the underlying directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned.
         :type tool: str
         :returns: path to the configuration file."""
@@ -226,8 +226,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         :param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned. If None, then the directory
-                     where all information for all tools reside is returned insted (normally, that would
-                     be the parent directrory).
+                     where all information for all tools reside is returned instead (normally, that would
+                     be the parent directory).
         :type tool: str
         :returns: path to the directory."""
         return self._getUserDir("config", tool, **kwargs)
@@ -237,8 +237,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         :param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned. If None, then the directory
-                     where all information for all tools reside is returned insted (normally, that would
-                     be the parent directrory).
+                     where all information for all tools reside is returned instead (normally, that would
+                     be the parent directory).
         :type tool: str
         :returns: path to the directory."""
         return self._getUserDir("cache", tool, **kwargs)
@@ -249,8 +249,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         :param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned. If None, then the directory
-                     where all information for all tools reside is returned insted (normally, that would
-                     be the parent directrory).
+                     where all information for all tools reside is returned instead (normally, that would
+                     be the parent directory).
         :type tool: str
         :returns: path to the directory."""
         return self._getUserDir("processes", tool, **kwargs)
@@ -260,8 +260,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         :param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned. If None, then the directory
-                     where all information for all tools reside is returned insted (normally, that would
-                     be the parent directrory).
+                     where all information for all tools reside is returned instead (normally, that would
+                     be the parent directory).
         :type tool: str
         :returns: path to the directory."""
         return self._getUserDir("output", tool, **kwargs)
@@ -271,8 +271,8 @@ file that is handled by :class:`evaluation_system.api.config`."""
 
         :param kwargs: ``create`` := If ``True`` assure the  directory exists after the call is done.
         :param tool: tool/plug-in for which the information is returned. If None, then the directory
-                     where all information for all tools reside is returned insted (normally, that would
-                     be the parent directrory).
+                     where all information for all tools reside is returned instead (normally, that would
+                     be the parent directory).
         :type tool: str
         :returns: path to the directory."""
         return self._getUserDir("plots", tool, **kwargs)

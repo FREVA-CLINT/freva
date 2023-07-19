@@ -191,7 +191,7 @@ class JobStatus:
     submit_status: int, default: 0
         Status of the job submission
     error_msg: str, default: ""
-        Error message fo the job submisstion if
+        Error message fo the job submission if
         `submit_status` is != 0.
     """
 

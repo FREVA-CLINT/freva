@@ -264,7 +264,7 @@ class SolrFindFiles(object):
             query += "&group=true&group.field=file_no_version&group.facet=true"
 
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
-        # TODO: why is there a language facit in the solr serach?
+        # TODO: why is there a language facet in the solr search?
         answer = answer["facet_counts"]["facet_fields"]
         try:
             del answer["language"]

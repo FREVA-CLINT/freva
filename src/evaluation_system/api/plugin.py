@@ -267,7 +267,7 @@ class PluginAbstract(abc.ABC):
         Example
         -------
 
-        >>>    verion = (1, 0, 3)
+        >>>    version = (1, 0, 3)
         """
         raise NotImplementedError("This attribute must be implemented")
 
@@ -305,7 +305,7 @@ class PluginAbstract(abc.ABC):
     def run_tool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
         """Method executing the tool.
 
-        The method should be overidden by the custom plugin tool method.
+        The method should be overridden by the custom plugin tool method.
 
         Parameters
         ----------
@@ -369,7 +369,7 @@ class PluginAbstract(abc.ABC):
     def _set_environment(
         self, rowid: Optional[int], is_interactive_job: bool
     ) -> Iterator[None]:
-        """Set the environement."""
+        """Set the environment."""
         env_path = os.environ["PATH"]
         stdout = [sys.stdout]
         stderr = [sys.stderr]
@@ -489,13 +489,13 @@ class PluginAbstract(abc.ABC):
         ..note::
             Use the ``ensemble`` and ``model``
             arguments to specify the search facets that are going to be
-            added to the solr server for this pluign run. This will help
+            added to the solr server for this plugin run. This will help
             users better to better distinguish their plugin result search.
 
         The following facets are fixed:
 
         - project: ``user-<user_name>``
-        - product: ``<project>.<produc>``
+        - product: ``<project>.<product>``
         - realm: ``<plugin_name>``
         - dataset version: ``<history_id>``
 
@@ -537,7 +537,7 @@ class PluginAbstract(abc.ABC):
 
         Returns
         -------
-            Path: Path to the new directory that containes the data.
+            Path: Path to the new directory that contains the data.
         """
         _, plugin_version = repository.get_version(self.wrapper_file)
         plugin_version = plugin_version or "no_plugin_version"
@@ -725,7 +725,7 @@ class PluginAbstract(abc.ABC):
         )
 
     def get_current_config(self, config_dict: Optional[ConfigDictType] = None) -> str:
-        """Retreive the plugin configuration as string representation.
+        """Retrieve the plugin configuration as string representation.
 
         Parameters
         ----------
@@ -890,7 +890,7 @@ class PluginAbstract(abc.ABC):
         check_cfg:
             whether the method checks that the resulting configuration
             dictionary (i.e. the default updated by `config_dict`) has no None
-            values after all substituions are made.
+            values after all substitutions are made.
         recursion:
             Whether when resolving the template recursion will be applied,
             i.e. variables can be set with the values of other variables,

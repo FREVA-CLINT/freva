@@ -30,7 +30,7 @@ ParameterBaseType = Union[str, int, float, bool, PrintableList]
 
 
 class ParameterType(initOrder):
-    """Base class for all prameter types.
+    """Base class for all parameter types.
 
     All available parameter types inherit from this class. The class creates
     a parameter object holding the following user defined information.
@@ -82,7 +82,7 @@ class ParameterType(initOrder):
          Type of this parameter
     """
 
-    _pattern = None  # laizy init.
+    _pattern = None  # lazy init.
     base_type: Type[ParameterBaseType] = str
     """Type of this parameter."""
 
@@ -136,7 +136,7 @@ class ParameterType(initOrder):
         Parameters
         ----------
         tool:
-            name of the plugin that is synchronised.
+            name of the plugin that is synchronized.
 
         Returns
         -------
@@ -261,8 +261,8 @@ class ParameterType(initOrder):
         Parameters
         ----------
         value: Optional[str], default: None
-            the value to be formated, if set to None the default value
-            of this paramter will be used.
+            the value to be formatted, if set to None the default value
+            of this parameter will be used.
 
         Returns
         -------
@@ -272,7 +272,7 @@ class ParameterType(initOrder):
 
         .. note::
 
-            This can be overwriten to provide more control over how values are
+            This can be overwritten to provide more control over how values are
             being displayed.
         """
         if value is None:
@@ -305,14 +305,14 @@ class ParameterDictionary(dict):
     """Directory holding all plugin parameters for a ``Freva`` plugin.
 
     This class behaves like a built-in ``dict`` with additional features.
-    The most prominent feature is that the order of added items is preseverd,
+    The most prominent feature is that the order of added items is preserved,
     as opposed to a normal build-in ``dict``.
 
     Parameters
     ----------
     parameters: :class:`ParameterType`
         collection of parameters of type :class:`ParameterType`.
-        Note: The order of the parameters will be preseverd.
+        Note: The order of the parameters will be preserved.
 
     Example
     -------
@@ -340,7 +340,7 @@ class ParameterDictionary(dict):
             default=extra,
             help=(
                 "Set additional options for the job submission to the "
-                "workload manager (, seperated). Note: batchmode and web only."
+                "workload manager (, separated). Note: batchmode and web only."
             ),
         )
         self._params: dict[str, ParameterType] = dict()
@@ -413,7 +413,7 @@ class ParameterDictionary(dict):
         config_dict: dict[str, Any],
         raise_exception: bool = False,
     ) -> dict[str, list[tuple[str, int]]]:
-        """Checks if the given configuration dictionary is valied.
+        """Checks if the given configuration dictionary is valid.
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class ParameterDictionary(dict):
         Returns
         -------
         dict:
-            a dictionary with missing items and those having to manay of them or
+            a dictionary with missing items and those having to many of them or
 
         Raises
         ------
@@ -940,7 +940,7 @@ class Range(String):
         ----------
 
         string: str
-            comma seperated values that are converted to list
+            comma separated values that are converted to list
 
         Returns
         -------
@@ -1068,7 +1068,7 @@ class SolrField(String):
 
 
 class SelectField(String):
-    """Select field to select parameter from predefined vlaues.
+    """Select field to select parameter from predefined values.
 
     Parameters
     ----------
@@ -1118,7 +1118,7 @@ class SelectField(String):
         Returns
         -------
         ParameterBaseType:
-            Parsed paramter value
+            Parsed parameter value
 
         Raises
         ------

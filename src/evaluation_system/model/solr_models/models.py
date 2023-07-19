@@ -37,7 +37,7 @@ class UserCrawl(models.Model):
     status = models.CharField(max_length=10, choices=STATUS)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE
-    )  # Modified 10-05-2021 Mahesh
+    )
     path_to_crawl = models.CharField(max_length=1000)
     tar_file = models.CharField(max_length=255, blank=True)
     ingest_msg = models.TextField(blank=True)

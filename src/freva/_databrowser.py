@@ -164,7 +164,7 @@ def facet_search(
     facet: str | list[str] | None = None,
     **search_facets: str | list[str] | int,
 ) -> dict[str, list[str]]:
-    """Search for data attributes (factes) in the databrowser.
+    """Search for data attributes (facets) in the databrowser.
 
     The method queries the databrowser for available search facets (keys)
     like model, experiment etc.
@@ -346,7 +346,7 @@ def databrowser(
     relevant_only: bool, default: False
         Show only facets that filter more than one result.
     batch_size: int, default: 10
-        Size of the search querey.
+        Size of the search query.
     count: bool, default: False
         Display only this amount for search results.
 
@@ -355,17 +355,12 @@ def databrowser(
     Iterator :
         If ``all_facets`` is False and ``facet`` is None an
         iterator with results.
-    int :
-        If ``all_facets`` is False and ``facet`` is None and ``count`` is True
-    dict[Any, dict[str, Any] :
-        dictionary for facet results, if ``all_facets`` is True or ``facet``
-        was given a value (str or list[str])
 
 
     Example
     -------
 
-    Seach for files in the system:
+    Search for files in the system:
 
     .. execute_code::
 

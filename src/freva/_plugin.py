@@ -228,7 +228,7 @@ def run_plugin(
     repo_version:
         show the version number from the repository.
     tag:
-       Use git commit hash to specify a specific versrion of this tool.
+       Use git commit hash to specify a specific version of this tool.
 
     Returns
     -------
