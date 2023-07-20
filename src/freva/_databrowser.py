@@ -29,7 +29,7 @@ def _proc_search_facets(
         search_facets["time_select"] = select_methods[time_select]
     except KeyError as error:
         methods = ", ".join(select_methods.keys())
-        raise ValueError(f"Time select method has one of {methods}") from error
+        raise ValueError(f"Time select method has to be one of {methods}") from error
     search_facets["time"] = search_facets.get("time", "")
     for key in ("file", "uri"):
         try:

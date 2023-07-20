@@ -136,7 +136,7 @@ class ParameterType(initOrder):
         Parameters
         ----------
         tool:
-            name of the plugin that is synchronized.
+            name of the plugin that is synchronised.
 
         Returns
         -------

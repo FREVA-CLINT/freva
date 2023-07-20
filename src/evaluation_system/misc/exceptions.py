@@ -38,7 +38,7 @@ class ConfigurationException(Exception):
 
 
 class PluginNotFoundError(Exception):
-    """Exception Definition for missing Plugins."""
+    """Exception definition for missing Plugins."""
 
 
 class ValidationError(Exception):
