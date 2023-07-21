@@ -166,6 +166,7 @@ setup(
             "sphinx",
             "sphinxcontrib_github_alt",
             "sphinx-execute-code-python3",
+            "sphinx-copybutton",
             "xarray",
             "h5netcdf",
         ],

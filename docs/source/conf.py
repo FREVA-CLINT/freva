@@ -35,7 +35,7 @@ from freva import __version__
 # -- Project information -----------------------------------------------------
 
 project = "freva user guide"
-copyright = "2022, CLINT"
+copyright = "2023, CLINT"
 author = "CLINT"
 
 # The full version, including alpha/beta/rc tags
@@ -54,6 +54,7 @@ extensions = [
     "recommonmark",
     "sphinx_execute_code",
     "sphinxcontrib_github_alt",
+    'sphinx_copybutton',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
