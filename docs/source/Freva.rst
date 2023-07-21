@@ -36,8 +36,8 @@ Below you can find a more detailed documentation.
 .. _databrowser:
 
 
-Runing analysis plugins
-=======================
+Running analysis plugins
+========================
 Already defined data analysis tools can be started with the :py:meth:`freva.run_plugin`
 method. Besides the :py:meth:`freva.run_plugin` method two more utility methods
 (:py:meth:`freva.list_plugins` and :py:meth:`freva.plugin_doc`) are available
@@ -69,4 +69,11 @@ The ``UserData`` class
 .. automodule:: freva
    :members: UserData
    :undoc-members:
+   :show-inheritance:
+
+Searching for ESGF data
+=======================
+
+.. automodule:: freva
+   :members: esgf
    :show-inheritance:

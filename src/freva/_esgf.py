@@ -34,41 +34,152 @@ def esgf(
 ) -> Union[str, list[tuple[str, str]], dict[str, list[str]]]:
     """Find data in the ESGF.
 
-    ::
-        import freva
-        files = freva.esgf(model='MPI-ESM-LR',
-                           experiment='decadal2001',
-                           variable='tas'
-                )
+    The method queries the ESGF nodes for file URLs, facet
+    information, or dataset/opendap/gridftp information.
+    It can also create a bash script wrapper of a wget query.
+    The key=value syntax follows that of ``freva.databrowser`` 
+    but the key names follow the ESGF standards for each dataset.
 
     Parameters:
     -----------
-    datasets:
+    datasets: bool, default: False
         List the name of the datasets instead of showing the urls.
-    show_facet:
+    show_facet: Union[str, list[str]], default: None
         List all values for the given facet (might be
         defined multiple times). The results show the possible
         values of the selected facet according to the given
         constraints and the number of *datasets* (not files)
         that selecting such value as a constraint will result
         (faceted search)
-    opendap:
-        List the name of the datasets instead of showing the urls.
-    gridftp:
-        Show Opendap endpoints instead of the http default
+    opendap: bool, default: False
+        List opendap endpoints instead of http ones.
+    gridftp: bool, default: False
+        Show gridftp endpoints instead of the http default
         ones (or skip them if none found)
-    download_script:
+    download_script: Union[str, Path], default: None
         Download wget_script for getting the files
         instead of displaying anything (only http)
-    query:
+    query: str, default: None
         Display results from <list> queried fields
-    **search_constraints:
+    **search_constraints: Union[str, Path, in, list[str]]
         Search facets to be applied in the data search.
 
     Returns:
     --------
-    Collection of files, facets or attributes
+    list :
+        Collection of files, facets or attributes
 
+    Example
+    -------
+
+    Similarly to ``freva.databrowser``, ``freva.esgf`` expects 
+    a list of ``key=value`` pairs in no particular order, 
+    but unlike the former it *is* case sensitive.
+    
+    Given that your Freva instance is configured at DKRZ,
+    if we want to search the URLs of all the files stored
+    at the (DKRZ) local node (``distrib=false``) holding the latest version
+    (``latest=true``) of the variable tas (``variable=tas``) for the
+    experiment ``decadal1960`` and project ``CMIP5`` 
+    (these all are search facets from the API):
+
+    .. execute_code::
+
+        import freva
+        files = freva.esgf(project="CMIP5", 
+                           experiment="decadal1960", 
+                           variable="tas", distrib=False, latest=True)
+        print(len(files))
+        for file in files[:5]:
+            print(file)
+
+    
+    Show the values of the attributes ``variable`` and ``time_frequency``:
+
+    .. execute_code::
+
+        import freva
+        facets = freva.esgf(project="CMIP5", distrib=False, latest=True,
+                           show_facet=["variable", "time_frequency"])
+        print(facets)
+            
+    
+    List the name of the datasets instead:
+
+    .. execute_code::
+
+        import freva
+        datasets = freva.esgf(project="CMIP5", 
+                           experiment="decadal1960", 
+                           variable="tas", distrib=False, latest=True,
+                           datasets=True)
+        print(len(datasets))
+        for dataset in datasets[:5]:
+            print(dataset)
+
+    List the opendap endpoints:
+
+    .. execute_code::
+
+        import freva
+        opendap = freva.esgf(
+            mip_era="CMIP6",
+            activity_id="ScenarioMIP",
+            source_id="CNRM-CM6-1",
+            institution_id="CNRM-CERFACS",
+            experiment_id="ssp585",
+            frequency="3hr",
+            variable="uas",
+            variant_label="r1i1p1f2",
+            distrib=False,
+            latest=True,
+            opendap=True,
+        )
+        print(opendap)
+        
+    Or the gridftp endpoints instead:
+
+    .. execute_code::
+        :hide_code:
+
+        import freva
+        gridftp = freva.esgf(
+            mip_era="CMIP6",
+            activity_id="ScenarioMIP",
+            source_id="CNRM-CM6-1",
+            institution_id="CNRM-CERFACS",
+            experiment_id="ssp585",
+            frequency="3hr",
+            variable="uas",
+            variant_label="r1i1p1f2",
+            distrib=False,
+            latest=True,
+            gridftp=True,
+        )
+        print(gridftp)   
+
+    Create a wget script to download the queried URLs:
+
+    .. execute_code::
+
+        import freva
+        freva.esgf(project="CMIP5", 
+                    experiment="decadal1960", 
+                    variable="tas", distrib=False, latest=True,
+                    download_script="/tmp/script.get")
+
+        with open('/tmp/script.get', 'r') as f:
+            content = f.readlines()
+            print(" ".join(content[:10]))
+
+    .. note::
+
+        You will need an OpenID account to download the data,
+        for example `here <https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/>`_.
+
+        There is a `ESGF PyClient <https://esgf-pyclient.readthedocs.io/en/latest/index.html>`_ as well.
+            
+            
     """
 
     result_url = []
