@@ -92,56 +92,56 @@ variables available that satisfies a certain constraint (e.g. sampled
 
 There are many more options for defining a value for a given key:
 
-+---------------------------------------------+------------------------+
-| Attribute syntax                            | Meaning                |
-+=============================================+========================+
-| attribute=value                             | Search for files       |
-|                                             | containing exactly     |
-|                                             | that attribute         |
-+---------------------------------------------+------------------------+
-| attribute='val\*'                           | Search for files       |
-|                                             | containing a value for |
-|                                             | attribute that starts  |
-|                                             | with the prefix val    |
-+---------------------------------------------+------------------------+
-| attribute='*lue'                            | Search for files       |
-|                                             | containing a value for |
-|                                             | attribute that ends    |
-|                                             | with the suffix lue    |
-+---------------------------------------------+------------------------+
-| attribute='*alu\*'                          | Search for files       |
-|                                             | containing a value for |
-|                                             | attribute that has alu |
-|                                             | somewhere              |
-+---------------------------------------------+------------------------+
-| attribute='/.*alu.*/'                       | Search for files       |
-|                                             | containing a value for |
-|                                             | attribute that matches |
-|                                             | the given regular      |
-|                                             | expression (yes! you   |
-|                                             | might use any regular  |
-|                                             | expression to find     |
-|                                             | what you want.)        |
-+---------------------------------------------+------------------------+
-| attribute=value1 attribute=value2           | Search for files       |
-|                                             | containing either      |
-|                                             | value1 OR value2 for   |
-|                                             | the given attribute    |
-|                                             | (note that’s the same  |
-|                                             | attribute twice!)      |
-+---------------------------------------------+------------------------+
-| attribute1=value1 attribute2=value2         | Search for files       |
-|                                             | containing value1 for  |
-|                                             | attribute1 AND value2  |
-|                                             | for attribute2         |
-+---------------------------------------------+------------------------+
-| attribute_not_=value                        | Search for files NOT   |
-|                                             | containing value       |
-+---------------------------------------------+------------------------+
-| attribute_not_=value1 attribute_not_=value2 | Search for files       |
-|                                             | containing neither     |
-|                                             | value1 nor value2      |
-+---------------------------------------------+------------------------+
++-------------------------------------------------+------------------------+
+| Attribute syntax                                | Meaning                |
++=================================================+========================+
+| ``attribute=value``                             | Search for files       |
+|                                                 | containing exactly     |
+|                                                 | that attribute         |
++-------------------------------------------------+------------------------+
+| ``attribute='val\*'``                           | Search for files       |
+|                                                 | containing a value for |
+|                                                 | attribute that starts  |
+|                                                 | with the prefix val    |
++-------------------------------------------------+------------------------+
+| ``attribute='*lue'``                            | Search for files       |
+|                                                 | containing a value for |
+|                                                 | attribute that ends    |
+|                                                 | with the suffix lue    |
++-------------------------------------------------+------------------------+
+| ``attribute='*alu\*'``                          | Search for files       |
+|                                                 | containing a value for |
+|                                                 | attribute that has alu |
+|                                                 | somewhere              |
++-------------------------------------------------+------------------------+
+| ``attribute='/.*alu.*/'``                       | Search for files       |
+|                                                 | containing a value for |
+|                                                 | attribute that matches |
+|                                                 | the given regular      |
+|                                                 | expression (yes! you   |
+|                                                 | might use any regular  |
+|                                                 | expression to find     |
+|                                                 | what you want.)        |
++-------------------------------------------------+------------------------+
+| ``attribute=value1 attribute=value2``           | Search for files       |
+|                                                 | containing either      |
+| OR:                                             | value1 OR value2 for   |
+|                                                 | the given attribute    |
+| ``attribute={value1,value2}``                   | (note that's the same  |
+|                                                 | attribute twice!)      |
++-------------------------------------------------+------------------------+
+| ``attribute1=value1 attribute2=value2``         | Search for files       |
+|                                                 | containing value1 for  |
+|                                                 | attribute1 AND value2  |
+|                                                 | for attribute2         |
++-------------------------------------------------+------------------------+
+| ``attribute_not_=value``                        | Search for files NOT   |
+|                                                 | containing value       |
++-------------------------------------------------+------------------------+
+| ``attribute_not_=value1 attribute_not_=value2`` | Search for files       |
+|                                                 | containing neither     |
+|                                                 | value1 nor value2      |
++-------------------------------------------------+------------------------+
 
 .. note::
 
@@ -270,23 +270,23 @@ can be achieved by using the ``file=`` search facet:
 
 .. code:: console
 
-    freva-databrowser file=.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --all-facets
+    freva-databrowser file=../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --all-facets
 
 .. execute_code::
    :hide_code:
 
-   import freva
-   from pathlib import Path
-   file = Path(".") / ".docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
-   res = freva.databrowser(file=file.absolute(), all_facets=True)
-   print(res)
+   import os, freva
+   file = "../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
+   res = freva.facet_search(file=str(os.path.abspath(file)))
+   for key, value in res.items():
+       print(f"{key}: {', '.join(value)}")
 
 
 Running data analysis plugins: the ``freva-plugin`` command
 -----------------------------------------------------------
 
 Already defined data analysis tools can be started with the
-``freva-plugin`` command or the ``freva plugin`` sub-command. Let’s
+``freva-plugin`` command or the ``freva plugin`` sub-command. Let's
 inspect the help menu of the ``plugin`` command:
 
 .. code:: console
@@ -481,7 +481,7 @@ central data location, (re)-index or delete data in the databrowser.
     Any data that has been added by users will be assigned a special project
     name: ``project=user-$USER``.
 
-Let’s inspect the help menu of the ``freva-user-data`` or ``freva user-data``
+Let's inspect the help menu of the ``freva-user-data`` or ``freva user-data``
 command:
 
 .. code:: console
@@ -616,3 +616,258 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
    user_data = UserData()
    user_data.index(user_data.user_dir)
    run(["freva-databrowser", "experiment=bias-correct"], check=True, stderr=PIPE)
+
+
+Searching for ESGF data: the ``freva-esgf`` command
+--------------------------------------------------------
+
+The ``freva-esgf`` command or the ``freva esgf`` sub-command provides 
+a search syntax to look the model data through all the ESGF portals and 
+it is derived from
+`ESGF's rest API <https://github.com/ESGF/esgf.github.io/wiki/ESGF_Search_REST_API>`__,
+although it has been simplified to be used from the command line and
+resembles ``freva-databrowser`` as close as possible.
+Despite the similarities, the two commands rely on different backends
+which have different query possibilities.
+
+.. note::
+
+    The `Earth System Grid Federation <http://esgf.llnl.gov/>`_ (ESGF)
+    maintains a global system of federated data centers that allow access to
+    the largest archive of model climate data world-wide. ESGF portals 
+    are an interface for users to access model data that are distributed in several
+    data centers, also called data nodes, although they themselves do not
+    host any data (e.g. `DKRZ <https://esgf-data.dkrz.de/projects/esgf-dkrz/>`_).
+    Through them we can access to the output of the climate
+    models contributing to the next assessment report of the
+    Intergovernmental Panel on Climate Change `IPCC <http://www.ipcc.ch/>`__
+    through the Coupled Model Intercomparison Project
+    `CMIP <https://wcrp-cmip.org/>`_.
+
+
+Let's inspect the help menu of the ``esgf`` sub-command:
+
+.. code:: console
+
+    freva-esgf --help
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "esgf", "--help"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+
+Similarly to ``freva-databrowser``, ``freva-esgf`` expects a list of ``key=value`` pairs
+in no particular order, but unlike the former it *is* case sensitive.
+
+For example, given that your Freva instance is configured at DKRZ,
+if we want to search the URLs of all the files stored
+at the (DKRZ) local node (``distrib=false``) holding the latest version
+(``latest=true``) of the variable tas (``variable=tas``) for the
+experiment ``decadal1960`` and project ``CMIP5``, then:
+
+.. code:: console
+
+    freva-esgf project=CMIP5 experiment=decadal1960 variable=tas distrib=false latest=true
+
+.. execute_code::
+    :hide_code:
+
+    import freva
+    files = freva.esgf(project="CMIP5", experiment="decadal1960", variable="tas", distrib=False, latest=True)
+    print("\n".join(files[:5]))
+    print("...")
+
+However, be aware that the syntax of the query may change depending 
+on the targeted dataset, for instance for ``CMIP6``:
+
+.. code:: console
+    
+    freva esgf project=cmip6 product=scenariomip model=cnrm-cm6-1 institute=cnrm-cerfacs experiment=ssp585 time_frequency=3hr variable=uas ensemble=r1i1p1f2 distrib=false latest=true
+
+.. execute_code::
+    :hide_code:
+
+    import freva
+    files = freva.esgf(
+        project="cmip6",
+        product="scenariomip",
+        experiment="ssp585",
+        model="cnrm-cm6-1",
+        institute="cnrm-cerfacs",
+        ensemble="r1i1p1f2",
+        variable="uas",
+        distrib=False,
+        latest=True
+    )
+
+will not produce any result, while 
+
+.. code:: console
+
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true
+
+.. execute_code::
+    :hide_code:
+
+    import freva
+
+    files = freva.esgf(
+        mip_era="CMIP6",
+        activity_id="ScenarioMIP",
+        source_id="CNRM-CM6-1",
+        institution_id="CNRM-CERFACS",
+        experiment_id="ssp585",
+        frequency="3hr",
+        variable="uas",
+        variant_label="r1i1p1f2",
+        distrib=False,
+        latest=True
+    )
+    print("\n".join(files[:5]))
+    print("...")
+
+will yield the desired output. Note that not only the facets are different from
+``freva-databrowser`` but also each value is case sensitive. The naming of the
+facets can be, for example, consulted at the corresponding ESGF portal 
+(e.g. for `CMIP6 at DKRZ <https://esgf-data.dkrz.de/search/cmip6-dkrz/>`_).
+
+
+To show the values of certain attributes you can use the ``--show-facet FACET`` flag. 
+For example, for ``time_frequency`` :
+
+.. code:: console
+    
+    freva esgf --mip_era=CMIP5 --activity_id=decadal1960 --variable=tas --distrib=false --latest=true --show-facet=time_frequency
+
+
+.. execute_code::
+    :hide_code:
+
+    from subprocess import run, PIPE
+    res = run(["freva", "esgf", "project=CMIP5", 
+                        "experiment=decadal1960", 
+                        "variable=tas", "--distrib=false", "--latest=true",
+                        "--show-facet=time_frequency"], 
+                check=True, stdout=PIPE, stderr=PIPE)
+    print(res.stdout.decode())
+
+
+To show the name of the datasets instead of the URLs use the ``--datasets`` flag:
+
+.. code:: console
+    
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --datasets
+
+.. execute_code::
+    :hide_code:
+
+    from subprocess import run, PIPE
+    res = run(["freva", "esgf", "mip_era=CMIP6", "activity_id=ScenarioMIP", 
+                "source_id=CNRM-CM6-1", "institution_id=CNRM-CERFACS", 
+                "experiment_id=ssp585", "frequency=3hr", "variable=uas", 
+                "variant_label=r1i1p1f2", "distrib=false", "latest=true",
+                "--datasets"], check=True, stdout=PIPE, stderr=PIPE)
+    print(res.stdout.decode())
+
+
+One can retrieve the opendap endpoints instead of the urls as well with ``--opendap``, for example:
+
+.. code:: console
+    
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --opendap
+
+.. execute_code::
+    :hide_code:
+
+    import freva
+    files = freva.esgf(
+        mip_era="CMIP6",
+        activity_id="ScenarioMIP",
+        source_id="CNRM-CM6-1",
+        institution_id="CNRM-CERFACS",
+        experiment_id="ssp585",
+        frequency="3hr",
+        variable="uas",
+        variant_label="r1i1p1f2",
+        distrib=False,
+        latest=True,
+        opendap=True,
+    )
+    print("\n".join(files))
+
+
+Or the gridftp endpoints instead (``--gridftp``):
+
+.. code:: console
+    
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --gridftp
+
+.. execute_code::
+    :hide_code:
+
+    import freva
+    files = freva.esgf(
+        mip_era="CMIP6",
+        activity_id="ScenarioMIP",
+        source_id="CNRM-CM6-1",
+        institution_id="CNRM-CERFACS",
+        experiment_id="ssp585",
+        frequency="3hr",
+        variable="uas",
+        variant_label="r1i1p1f2",
+        distrib=False,
+        latest=True,
+        gridftp=True,
+    )
+    print("\n".join(files))
+
+
+Since the queries yield a list of URLs to the netCDF files
+there are not readily available to use. Freva can create a bash script written 
+around wget to simplify data download with the ``--download-script /foo/bar.wget`` 
+option, where ``/foo/bar.wget`` is the destination wget file:
+
+.. code:: console
+
+    freva esgf --download-script /tmp/script.wget project=CMIP5 experiment=decadal1960 variable=tas distrib=false latest=true
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "esgf", "--download-script", "/tmp/script.wget", "project=CMIP5", "experiment=decadal1960", 
+              "variable=tas", "distrib=false", "latest=true"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+
+.. note::
+
+    In order to download the data you will need an ESGF account 
+    (e.g. via `DKRZ's portal <https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/>`_), 
+    where after entering a ``<username>`` and ``password`` 
+    you will get an openID (``https://esgf-data.dkrz.de/esgf-idp/openid/<username>``) 
+    to use while running the script with the ``-H`` flag, e.g.:
+
+    .. code:: console
+
+        > /tmp/script.wget.sh -H
+
+        Running script.wget version: 1.3.2
+        Use script.wget -h for help.
+ 
+        Warning! The total number of files was 2338 but this script will only process 1000.
+        There were files with the same name which were requested to be download to the same directory. To avoid overwriting the previous downloaded one they were skipped.
+        Please use the parameter 'download_structure' to set up unique directories for them.
+        Script created for 916 file(s)
+        (The count won't match if you manually edit this file!)
+        
+        Enter your openid :  https://esgf-data.dkrz.de/esgf-idp/openid/<username>
+        Enter password : <password>
+
+    Alternatively you can also retrieve the data using certificates, 
+    for example through the `ESGF PyClient <https://esgf-pyclient.readthedocs.io/en/latest/index.html>`_.
+    You will still need your openID for that.
+    
