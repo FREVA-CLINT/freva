@@ -78,17 +78,26 @@ def esgf(
     
     Given that your Freva instance is configured at DKRZ,
     if we want to search the URLs of all the files stored
-    at the (DKRZ) local node (``distrib=false``) holding the latest version
-    (``latest=true``) of the variable tas (``variable=tas``) for the
-    experiment ``decadal1960`` and project ``CMIP5`` 
-    (these all are search facets from the API):
+    at the (DKRZ) local node (``distrib=false``) holding 
+    the latest version (``latest=true``) of the variable 
+    uas (``variable=uas``) for a particular realization 
+    within the project ``CMIP6``:
 
     .. execute_code::
 
         import freva
-        files = freva.esgf(project="CMIP5", 
-                           experiment="decadal1960", 
-                           variable="tas", distrib=False, latest=True)
+        files = freva.esgf(
+            mip_era="CMIP6",
+            activity_id="ScenarioMIP",
+            source_id="CNRM-CM6-1",
+            institution_id="CNRM-CERFACS",
+            experiment_id="ssp585",
+            frequency="3hr",
+            variable="uas",
+            variant_label="r1i1p1f2",
+            distrib=False,
+            latest=True,
+        )
         print(len(files))
         for file in files[:5]:
             print(file)
@@ -99,8 +108,15 @@ def esgf(
     .. execute_code::
 
         import freva
-        facets = freva.esgf(project="CMIP5", distrib=False, latest=True,
-                           show_facet=["variable", "time_frequency"])
+        facets = freva.esgf(
+            mip_era="CMIP6",
+            activity_id="ScenarioMIP",
+            source_id="CNRM-CM6-1",
+            institution_id="CNRM-CERFACS",
+            experiment_id="ssp585",
+            distrib=False,
+            latest=True,
+            show_facet=["variable", "time_frequency"])
         print(facets)
             
     
@@ -109,10 +125,19 @@ def esgf(
     .. execute_code::
 
         import freva
-        datasets = freva.esgf(project="CMIP5", 
-                           experiment="decadal1960", 
-                           variable="tas", distrib=False, latest=True,
-                           datasets=True)
+        datasets = freva.esgf(
+            mip_era="CMIP6",
+            activity_id="ScenarioMIP",
+            source_id="CNRM-CM6-1",
+            institution_id="CNRM-CERFACS",
+            experiment_id="ssp585",
+            frequency="3hr",
+            variable="uas",
+            variant_label="r1i1p1f2",
+            distrib=False,
+            latest=True,
+            datasets=True
+            )
         print(len(datasets))
         for dataset in datasets[:5]:
             print(dataset)
