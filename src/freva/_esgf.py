@@ -37,7 +37,7 @@ def esgf(
     The method queries the ESGF nodes for file URLs, facet
     information, or dataset/opendap/gridftp information.
     It can also create a bash script wrapper of a wget query.
-    The key=value syntax follows that of ``freva.databrowser`` 
+    The key=value syntax follows that of ``freva.databrowser``
     but the key names follow the ESGF standards for each dataset.
 
     Parameters:
@@ -72,15 +72,15 @@ def esgf(
     Example
     -------
 
-    Similarly to ``freva.databrowser``, ``freva.esgf`` expects 
-    a list of ``key=value`` pairs in no particular order, 
+    Similarly to ``freva.databrowser``, ``freva.esgf`` expects
+    a list of ``key=value`` pairs in no particular order,
     but unlike the former it *is* case sensitive.
-    
+
     Given that your Freva instance is configured at DKRZ,
     if we want to search the URLs of all the files stored
-    at the (DKRZ) local node (``distrib=false``) holding 
-    the latest version (``latest=true``) of the variable 
-    uas (``variable=uas``) for a particular realization 
+    at the (DKRZ) local node (``distrib=false``) holding
+    the latest version (``latest=true``) of the variable
+    uas (``variable=uas``) for a particular realization
     within the project ``CMIP6``:
 
     .. execute_code::
@@ -102,7 +102,7 @@ def esgf(
         for file in files[:5]:
             print(file)
 
-    
+
     Show the values of the attributes ``variable`` and ``time_frequency``:
 
     .. execute_code::
@@ -118,8 +118,8 @@ def esgf(
             latest=True,
             show_facet=["variable", "time_frequency"])
         print(facets)
-            
-    
+
+
     List the name of the datasets instead:
 
     .. execute_code::
@@ -161,7 +161,7 @@ def esgf(
             opendap=True,
         )
         print(opendap)
-        
+
     Or the gridftp endpoints instead:
 
     .. execute_code::
@@ -181,15 +181,15 @@ def esgf(
             latest=True,
             gridftp=True,
         )
-        print(gridftp)   
+        print(gridftp)
 
     Create a wget script to download the queried URLs:
 
     .. execute_code::
 
         import freva
-        freva.esgf(project="CMIP5", 
-                    experiment="decadal1960", 
+        freva.esgf(project="CMIP5",
+                    experiment="decadal1960",
                     variable="tas", distrib=False, latest=True,
                     download_script="/tmp/script.get")
 
@@ -203,8 +203,8 @@ def esgf(
         for example `here <https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/>`_.
 
         There is a `ESGF PyClient <https://esgf-pyclient.readthedocs.io/en/latest/index.html>`_ as well.
-            
-            
+
+
     """
 
     result_url = []
