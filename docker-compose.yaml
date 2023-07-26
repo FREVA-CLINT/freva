@@ -20,3 +20,4 @@ services:
     volumes:
       - ./compose/config/solr/managed-schema.xml:/opt/solr/managed-schema.xml:ro
       - ./compose/config/solr/create_cores.sh:/docker-entrypoint-initdb.d/create_cores.sh:ro
+      - ./compose/config/solr/synonyms.txt:/opt/solr/synonyms.txt:ro

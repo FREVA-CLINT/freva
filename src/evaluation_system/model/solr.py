@@ -260,9 +260,6 @@ class SolrFindFiles(object):
                 + "&facet.field=".join(facets)
             )
 
-        if latest_version:  # pragma: no cover (see above)
-            query += "&group=true&group.field=file_no_version&group.facet=true"
-
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
         # TODO: why is there a language facit in the solr serach?
         answer = answer["facet_counts"]["facet_fields"]

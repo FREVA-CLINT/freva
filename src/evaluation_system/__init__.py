@@ -37,4 +37,4 @@ warnings.filterwarnings(
 )
 
 
-__version__ = "2307.0.0"
+__version__ = "2307.0.1"

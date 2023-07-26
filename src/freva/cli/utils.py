@@ -34,11 +34,11 @@ def get_cli_class(name: str) -> Optional[Type[BaseParser]]:
     module: The imported module
     """
     mod_name = name.replace("-", "_")
-    try:  # First try importing a module extensions
-        mod = __import__(f"{mod_name}.cli", fromlist=[""])
+    try:  # First try importing the freva core functionality
+        mod = __import__(f"freva.cli.{mod_name}", fromlist=[""])
     except ImportError:
-        try:  # Freva core module?
-            mod = __import__(f"freva.cli.{mod_name}", fromlist=[""])
+        try:  # Then additional modules
+            mod = __import__(f"{mod_name}.cli", fromlist=[""])
         except ImportError:
             return None
     if hasattr(mod, "Cli") and hasattr(mod.Cli, "desc"):
