@@ -251,8 +251,6 @@ class SolrFindFiles(object):
                     "uri",
                     "file",
                     "file_name",
-                    "time_aggregation",
-                    "grid_label",
                 ]
             )
 
