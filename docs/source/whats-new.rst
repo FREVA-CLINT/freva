@@ -5,7 +5,7 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2303.0.1
+v2307.0.2
 ~~~~~~~~~
 
 New Features
@@ -16,6 +16,7 @@ Breaking changes
 
 Deprecations
 ++++++++++++
+- cli ``freva databrowser --all-facets`` is made depricated use ``--facet '*'`` or ``--facet all`` instead
 
 Bug fixes
 +++++++++
