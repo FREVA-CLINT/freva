@@ -10,7 +10,6 @@ from __future__ import annotations
 import urllib
 from typing import cast, Union, List, NamedTuple
 from typing_extensions import Literal
-import warnings
 
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.misc import logger, utils
@@ -23,12 +22,6 @@ SolrResponse = NamedTuple(
         ("exact", bool),
         ("docs", List[str]),
     ],
-)
-
-
-warnings.warn(
-    "The evaluation_system.model.solr module will be removed from v2304.0.0",
-    category=PendingDeprecationWarning,
 )
 
 

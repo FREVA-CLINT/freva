@@ -638,7 +638,7 @@ class PluginAbstract(abc.ABC):
                     if filemetadata.get("type", "data") != "data":
                         result[os.path.abspath(file_path)] = filemetadata
             else:
-                if filemetadata.get("type", "data") != "data":
+                if metadata.get("type", "data") != "data":
                     result[os.path.abspath(file_path)] = metadata
         return result
 

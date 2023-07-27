@@ -19,17 +19,11 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Iterator, Optional, Tuple
-import warnings
 
 from evaluation_system.model.file import DRSFile
 from evaluation_system.misc import config, logger as log
 from evaluation_system.misc.utils import get_solr_time_range
 from evaluation_system.misc.exceptions import CommandError
-
-warnings.warn(
-    ("The evaluation_system.model.solr_core module will be removed from " "v2304.0.0"),
-    category=PendingDeprecationWarning,
-)
 
 
 class SolrCore:
