@@ -46,4 +46,4 @@ prepdocs:
 
 lint:
 	mypy --install-types --non-interactive
-	black --check -t py310 src
+	black --check -t py311 src

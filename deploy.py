@@ -13,7 +13,7 @@ from subprocess import CalledProcessError, PIPE, run
 import urllib.request
 from tempfile import TemporaryDirectory
 
-DEFAULT_PYTHON = "3.10"
+DEFAULT_PYTHON = "3.11"
 MINICONDA_URL = "https://repo.anaconda.com/miniconda/"
 ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2022.05")
@@ -91,7 +91,6 @@ endif
 
 
 def get_data_dirs(install_prefix, user):
-
     install_prefix = Path(install_prefix or sys.prefix)
     if user:
         import appdirs
@@ -119,7 +118,6 @@ def find_files(path, glob_pattern="*"):
 
 
 def find_version(*parts):
-
     vers_file = read(*parts)
     old_path = sys.path.copy()
     with TemporaryDirectory() as td:
@@ -224,7 +222,6 @@ def parse_args(argv=None):
 class Installer:
     @property
     def conda_name(self):
-
         return self.install_prefix.name
 
     def run_cmd(self, cmd, **kwargs):
