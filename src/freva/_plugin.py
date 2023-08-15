@@ -15,6 +15,7 @@ import time
 import appdirs
 import lazy_import
 from evaluation_system.misc import logger
+from .utils import is_jupyter
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -87,7 +88,7 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     Parameters
     ----------
     tool_name:
-        The name of the tool that should be documented
+        The name of the tool that should be documented.
 
     Returns
     -------
@@ -112,7 +113,44 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     tool_name = (tool_name or "").lower()
     _write_plugin_cache()
     _check_if_plugin_exists(tool_name)
-    return pm.get_plugin_instance(tool_name).get_help()
+
+    class help_cls:
+        def __init__(self, tool_name: str) -> None:
+            self._plugin = pm.get_plugin_instance(tool_name)
+            self._help = (
+                self._plugin.__long_description__.strip()
+                or self._plugin.__short_description__.strip()
+            )
+            self._version = ".".join(
+                [str(i) for i in self._plugin.__version__]
+            )
+            self._name = self._plugin.__class__.__name__
+
+        def __str__(self) -> str:
+            return "{} (v{}): {}\n{}".format(
+                self._name,
+                self._version,
+                self._help,
+                self._plugin.__parameters__.get_help(),
+            )
+
+        def __repr__(self) -> str:
+            return "{} (v{}): {}\n{}".format(
+                self._plugin.__class__.__name__,
+                self._version,
+                self._help,
+                self._plugin.__parameters__.get_help(),
+            )
+
+        def _repr_html_(self) -> str:
+            return "<b>{}</b> (v{}): {}</p>{}".format(
+                self._plugin.__class__.__name__,
+                self._version,
+                self._help,
+                self._plugin.__parameters__.get_help(notebook=True),
+            )
+
+    return help_cls(tool_name)
 
 
 def list_plugins() -> list[str]:
@@ -155,12 +193,16 @@ def get_tools_list() -> str:
     offset = name_width + 2
     result = []
     for key, plugin in sorted(plugins.items()):
-        lines = textwrap.wrap("%s" % plugin.description, env["columns"] - offset)
+        lines = textwrap.wrap(
+            "%s" % plugin.description, env["columns"] - offset
+        )
         if not lines:
             lines = ["No description."]
         if len(lines) > 1:
             # multi-line
-            result.append(f"{plugin.name}: {lines[0]}\n{' '*offset}\n{' '*offset}")
+            result.append(
+                f"{plugin.name}: {lines[0]}\n{' '*offset}\n{' '*offset}"
+            )
         else:
             result.append(f"{plugin.name}: {lines[0]}")
     return "\n".join(result)
@@ -174,7 +216,9 @@ def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
         error = "Available tools are:\n"
         tool_list = "\n".join(list_plugins())
     else:
-        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
+        tool_list = "\n".join(
+            utils.find_similar_words(tool_name, list_plugins())
+        )
         error = f"{tool_name} plugin not found, did you mean:\n"
     raise PluginNotFoundError(f"\n{error}{tool_list}")
 
@@ -282,7 +326,9 @@ def run_plugin(
     elif show_config:
         return _return_value(
             0,
-            pm.get_plugin_instance(tool_name).get_current_config(config_dict=tool_dict),
+            pm.get_plugin_instance(tool_name).get_current_config(
+                config_dict=tool_dict
+            ),
         )
     if scheduled_id and not dry_run:
         logger.info(
@@ -295,7 +341,9 @@ def run_plugin(
         )
         return _return_value(0, out, return_result)
     extra_options: list[str] = [
-        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
+        opt.strip()
+        for opt in extra_scheduler_options.split(",")
+        if opt.strip()
     ]
     # now run the tool
     (error, warning) = pm.get_error_warning(tool_name)

@@ -7,6 +7,7 @@ plugin wrapper class.
 """
 from __future__ import annotations
 from collections import defaultdict
+import html
 import json
 import re
 import textwrap
@@ -105,7 +106,8 @@ class ParameterType(initOrder):
         self.mandatory = mandatory
         if max_items < 1:
             raise ValidationError(
-                "max_items must be set to a value >= 1. Current='%s'" % max_items
+                "max_items must be set to a value >= 1. Current='%s'"
+                % max_items
             )
         self.max_items = max_items
         self.item_separator = item_separator
@@ -170,7 +172,8 @@ class ParameterType(initOrder):
 
         if len(values) > self.max_items:
             raise ValidationError(
-                "Expected %s items at most, got %s" % (self.max_items, len(values))
+                "Expected %s items at most, got %s"
+                % (self.max_items, len(values))
             )
 
         if (
@@ -233,12 +236,15 @@ class ParameterType(initOrder):
                 if self.item_separator is not None:
                     return [
                         self.base_type(v)
-                        for v in self._verified(value.split(self.item_separator))
+                        for v in self._verified(
+                            value.split(self.item_separator)
+                        )
                     ]
                 elif value[0] == "[":
                     # assume is a json array:
                     return [
-                        self.base_type(v) for v in self._verified(json.loads(value))
+                        self.base_type(v)
+                        for v in self._verified(json.loads(value))
                     ]
                 else:
                     # this is a single string, but we expect multiple,
@@ -277,7 +283,7 @@ class ParameterType(initOrder):
         """
         if value is None:
             if self.default is None:
-                return "<undefined>"
+                return "<null>"
             value = self.default
         return self.print_format % value
 
@@ -332,7 +338,11 @@ class ParameterDictionary(dict):
     def __init__(self, *parameters: ParameterType) -> None:
         """Instantiate ParameterDictionary with the given list of parameters."""
         super().__init__()
-        extra = config.get_section("scheduler_options").get("extra_options", "").strip()
+        extra = (
+            config.get_section("scheduler_options")
+            .get("extra_options", "")
+            .strip()
+        )
         if extra.lower() == "none":
             extra = ""
         extra_scheduler_options = String(
@@ -348,18 +358,24 @@ class ParameterDictionary(dict):
             # check name is unique
             if param.name in self._params:
                 raise ValueError(
-                    "Parameters name must be unique. Got second %s key." % param.name
+                    "Parameters name must be unique. Got second %s key."
+                    % param.name
                 )
             self._params[param.name] = param
             self[param.name] = param.default
         self.setdefault("extra_scheduler_options", extra)
-        self._params.setdefault("extra_scheduler_options", extra_scheduler_options)
+        self._params.setdefault(
+            "extra_scheduler_options", extra_scheduler_options
+        )
 
     def __str__(self):
         return "%s(%s)" % (
             self.__class__.__name__,
             ", ".join(
-                ["%s<%s>: %s" % (k, self._params[k], v) for k, v in self.items()]
+                [
+                    "%s<%s>: %s" % (k, self._params[k], v)
+                    for k, v in self.items()
+                ]
             ),
         )
 
@@ -453,12 +469,15 @@ class ParameterDictionary(dict):
                         missing_values
                     )
                 if too_many_items:
-                    msg += "Too many entries for these parameters: %s" % ", ".join(
-                        [
-                            "%s(max:%s, found:%s)"
-                            % (param, max, len(config_dict[param]))
-                            for param, max in too_many_items
-                        ]
+                    msg += (
+                        "Too many entries for these parameters: %s"
+                        % ", ".join(
+                            [
+                                "%s(max:%s, found:%s)"
+                                % (param, max, len(config_dict[param]))
+                                for param, max in too_many_items
+                            ]
+                        )
                     )
                 raise ValidationError(msg)
             return dict(missing=missing, too_many_items=too_many_items)
@@ -520,7 +539,9 @@ class ParameterDictionary(dict):
             try:
                 parsed_values: Any = self._params[key].parse(value)
             except KeyError as error:
-                raise ValidationError(f"{key} is not a valid parameter") from error
+                raise ValidationError(
+                    f"{key} is not a valid parameter"
+                ) from error
             if isinstance(parsed_values, list):
                 if isinstance(param_config[key], list):
                     param_config[key] = param_config[key] + parsed_values
@@ -533,18 +554,22 @@ class ParameterDictionary(dict):
             else:
                 param_config[key].append(parsed_values)
         if use_defaults:
-            self._complete(param_config, add_missing_defaults=complete_defaults)
+            self._complete(
+                param_config, add_missing_defaults=complete_defaults
+            )
         if check_errors:
             self.validate_errors(param_config, raise_exception=True)
         return param_config
 
-    def get_help(self, width: int = 80) -> str:
+    def get_help(self, width: int = 80, notebook: bool = False) -> str:
         """Render plugin help string to be displayed in a cli context.
 
         Parameters
         ----------
-        width: int, default 80
+        width: int, default: 80
             Column width used to wrap the help text.
+        notebook: bool, default: False
+            Optimise output for jupyter notebooks
 
         Returns
         -------
@@ -562,19 +587,41 @@ class ParameterDictionary(dict):
                 subsequent_indent=" " * (max_size + 1),
                 replace_whitespace=False,
             )
-            help_str.append("Options:")
+            if notebook:
+                help_str.append(
+                    (
+                        '<table><tr><th style="text-align: center;">Option</th>'
+                        '<th style="text-align: center;">Description</th></tr>'
+                    )
+                )
+                split_str = ""
+            else:
+                help_str.append("Options:")
+                split_str = "\n"
 
             for key, param in self._params.items():
                 param_format = "%%-%ss (default: %%s)" % (max_size)
-                help_str.append(param_format % (key, param.format()))
+                param_str = param.format()
                 if param.mandatory:
-                    help_str[-1] = help_str[-1] + " [mandatory]"
-
-                # wrap it properly
-                help_str.append(
-                    "\n".join(wrapper.fill(line) for line in param.help.splitlines())
+                    param_str += " [mandatory]"
+                param_desc = split_str.join(
+                    wrapper.fill(l) for l in param.help.splitlines()
                 )
-        return "\n".join(help_str)
+                if not notebook:
+                    help_str.append(param_format % (key, param_str))
+                    help_str.append(param_desc)
+                else:
+                    help_str.append(
+                        (
+                            '<tr><td style="text-align: left;">'
+                            "{} (default: {})</td>"
+                            '<td style="text-align: left;">'
+                            "{}</td></tr>"
+                        ).format(key, html.escape(param_str), param_desc)
+                    )
+        if notebook:
+            help_str.append("</table>")
+        return split_str.join(help_str)
 
     def synchronize(self, tool: str) -> None:
         """Synchronize all entries for a plugin configuration of a given tool
@@ -982,9 +1029,13 @@ class Range(String):
             del_list = PrintableList()
             for part in main_parts[1:]:
                 del_list += self._parse_comma(part)
-            return PrintableList(sorted([x for x in result if x not in del_list]))
+            return PrintableList(
+                sorted([x for x in result if x not in del_list])
+            )
         except AttributeError as err:
-            raise ValueError(f"'{value}' is no recognized as a range value") from err
+            raise ValueError(
+                f"'{value}' is no recognized as a range value"
+            ) from err
 
     def to_str(self, value: Any) -> str:
         """Conevert input value to string."""

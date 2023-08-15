@@ -716,7 +716,7 @@ class PluginAbstract(abc.ABC):
         """
         help_txt = self.__long_description__.strip()
         if not help_txt:
-            help_txt = self.__short_description__
+            help_txt = self.__short_description__.strip()
         return "{} (v{}): {}\n{}".format(
             self.__class__.__name__,
             ".".join([str(i) for i in self.__version__]),

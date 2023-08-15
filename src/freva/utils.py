@@ -9,7 +9,10 @@ try:
 except ImportError:
     get_python = lambda: None
 
-from ._plugin import config as cfg, pm
+import lazy_import
+
+pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+cfg = lazy_import.lazy_module("evaluation_system.misc.config")
 
 
 def is_jupyter() -> bool:
@@ -51,14 +54,11 @@ class config:
     """
 
     def __init__(self, config_file: Union[str, Path]) -> None:
-        raise ValueError("foo")
         self._config_file = Path(config_file).expanduser().absolute()
         cfg.reloadConfiguration(self._config_file)
         pm.reload_plugins()
-        print(pm.__plugins_meta_user, self._config_file)
 
     def __enter__(self) -> "config":
-        raise ValueError("foo")
         return self
 
     @property
@@ -75,5 +75,5 @@ class config:
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        reloadConfiguration(self._original_config)
+        cfg.reloadConfiguration(self._original_config)
         pm.reload_plugins()
