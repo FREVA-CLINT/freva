@@ -4,7 +4,7 @@
 This module manages the central configuration of the system.
 """
 from __future__ import annotations
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 import os
 import os.path as osp
@@ -25,7 +25,9 @@ from evaluation_system.misc import (
 )
 from evaluation_system.misc.exceptions import ConfigurationException
 
-DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch")
+DIRECTORY_STRUCTURE = Struct(
+    LOCAL="local", CENTRAL="central", SCRATCH="scratch"
+)
 """Type of directory structure that will be used to maintain state::
 
     local   := <home>/<base_dir>...
@@ -40,7 +42,9 @@ USER_CONFIG_FILE_LOC = osp.join(
 )
 if Path(USER_CONFIG_FILE_LOC).exists():
     _DEFAULT_CONFIG_FILE_LOCATION = USER_CONFIG_FILE_LOC
-EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
+EVALUATION_SYSTEM_HOME = (os.sep).join(
+    osp.abspath(__file__).split(osp.sep)[:-4]
+)
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 
 _DEFAULT_DRS_CONFIG_FILE = os.environ.get(
@@ -156,11 +160,16 @@ the history database entries."""
 
 
 def _get_public_key(project_name: str) -> str:
-    key_file = os.environ.get("PUBKEY", None) or _PUBLIC_KEY_DIR / f"{project_name}.crt"
+    key_file = (
+        os.environ.get("PUBKEY", None)
+        or _PUBLIC_KEY_DIR / f"{project_name}.crt"
+    )
     sha = ""
     try:
         with Path(key_file).open() as f:
-            key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
+            key = "".join(
+                [k.strip() for k in f.readlines() if not k.startswith("-")]
+            )
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
         warnings.warn(
@@ -187,7 +196,10 @@ def _read_secrets(
         url = f"{protocol}://{db_host}:{port}/vault/data/{sha}"
         try:
             req = requests.get(url).json()
-        except (requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.InvalidURL,
+        ):
             req = {}
         try:
             return req[key]
@@ -196,7 +208,7 @@ def _read_secrets(
     return None
 
 
-def reloadConfiguration() -> None:
+def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
     """Reloads the configuration.
     This can be used for reloading a new configuration from disk.
     At the present time it has no use other than setting different configurations
@@ -210,7 +222,7 @@ def reloadConfiguration() -> None:
         PLUGINS: {},
     }
 
-    config_file = os.environ.get(
+    config_file = config_file or os.environ.get(
         "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
     )
     log.debug("Loading configuration file from: %s" % config_file)
@@ -229,7 +241,9 @@ def reloadConfiguration() -> None:
             else:
                 _config.update(config_parser.items(CONFIG_SECTION_NAME))
                 for plugin_section in [
-                    s for s in config_parser.sections() if s.startswith(PLUGINS)
+                    s
+                    for s in config_parser.sections()
+                    if s.startswith(PLUGINS)
                 ]:
                     _config[PLUGINS][
                         plugin_section[len(PLUGINS) :]
@@ -239,7 +253,8 @@ def reloadConfiguration() -> None:
 
                 db_hosts = (
                     config_parser[CONFIG_SECTION_NAME]["db.host"],
-                    config_parser[CONFIG_SECTION_NAME]["project_name"] + "_vault",
+                    config_parser[CONFIG_SECTION_NAME]["project_name"]
+                    + "_vault",
                 )
                 # This will look first for secrets set in the config file. It will only
                 # load the public key for the vault if any are missing and it will only
@@ -261,8 +276,9 @@ def reloadConfiguration() -> None:
                         _config[secret] = _read_secrets(sha, secret, *db_hosts)
             log.debug("Configuration loaded from %s", config_file)
     else:
-        log.debug(
-            "No configuration file found in %s. Using default values.", config_file
+        log.warning(
+            "No configuration file found in %s. Using default values.",
+            config_file,
         )
 
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
@@ -322,7 +338,8 @@ def get_plugin(plugin_name, config_prop, default=_nothing):
             return default
         else:
             raise ConfigurationException(
-                "No configuration for %s for plug-in %s" % (config_prop, plugin_name)
+                "No configuration for %s for plug-in %s"
+                % (config_prop, plugin_name)
             )
     else:
         raise ConfigurationException("No plug-in named %s" % plugin_name)
@@ -343,7 +360,9 @@ def get_section(section_name, config_file=None):
     try:
         section = dict(conf.items(section_name))
     except NoSectionError:
-        raise NoSectionError(f'There is no "{section_name}" section in config file')
+        raise NoSectionError(
+            f'There is no "{section_name}" section in config file'
+        )
     return SPECIAL_VARIABLES.substitute(section)
 
 

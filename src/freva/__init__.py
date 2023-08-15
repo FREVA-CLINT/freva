@@ -1,3 +1,6 @@
+import os
+import warnings
+
 from evaluation_system import __version__
 from ._user_data import UserData
 from ._databrowser import databrowser, count_values, facet_search
@@ -10,12 +13,18 @@ from ._plugin import (
 )
 from ._esgf import esgf
 from ._history import history
-import warnings
+from .utils import config, is_jupyter
 
-warnings.filterwarnings("always", category=DeprecationWarning, module="freva.*")
+warnings.filterwarnings(
+    "always", category=DeprecationWarning, module="freva.*"
+)
+
+if is_jupyter():
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
 __all__ = [
+    "config",
     "UserData",
     "databrowser",
     "count_values",
