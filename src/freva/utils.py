@@ -4,15 +4,12 @@ from pathlib import Path
 from typing import Optional, Union, Type
 from types import TracebackType
 
-from evaluation_system.misc.config import (
-    reloadConfiguration,
-    _DEFAULT_CONFIG_FILE_LOCATION,
-)
-
 try:
     from IPython import get_ipython  # type: ignore
 except ImportError:
     get_python = lambda: None
+
+from ._plugin import config as cfg, pm
 
 
 def is_jupyter() -> bool:
@@ -54,17 +51,22 @@ class config:
     """
 
     def __init__(self, config_file: Union[str, Path]) -> None:
+        raise ValueError("foo")
         self._config_file = Path(config_file).expanduser().absolute()
-        reloadConfiguration(self._config_file)
+        cfg.reloadConfiguration(self._config_file)
+        pm.reload_plugins()
+        print(pm.__plugins_meta_user, self._config_file)
 
     def __enter__(self) -> "config":
+        raise ValueError("foo")
         return self
 
     @property
     def _original_config(self) -> str:
         """Define the original configuration file path."""
         return os.environ.get(
-            "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
+            "EVALUATION_SYSTEM_CONFIG_FILE",
+            cfg._DEFAULT_CONFIG_FILE_LOCATION,
         )
 
     def __exit__(
@@ -74,3 +76,4 @@ class config:
         traceback: Optional[TracebackType],
     ) -> None:
         reloadConfiguration(self._original_config)
+        pm.reload_plugins()
