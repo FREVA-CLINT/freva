@@ -3,12 +3,17 @@ import argparse
 from pathlib import Path
 import sys
 from typing import Any, Optional
+
+from rich.console import Console
+
+console = Console()
 import lazy_import
 
 
 from evaluation_system import __version__
 from evaluation_system.misc import logger
 from .utils import BaseParser, BaseCompleter
+
 
 freva = lazy_import.lazy_module("freva")
 PluginNotFoundError = lazy_import.lazy_class(
@@ -132,7 +137,7 @@ class Cli(BaseParser):
         """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
         if kwargs.pop("list_tools") or not tool_name:
-            print(freva.get_tools_list())
+            console.print(freva.get_tools_list())
             return
         options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
         for key, val in options.items():
@@ -145,7 +150,7 @@ class Cli(BaseParser):
         tool_args = {**kwargs, **options}
         try:
             if tool_args.pop("doc"):
-                print(freva.plugin_doc(tool_name))
+                console.print(freva.plugin_doc(tool_name))
                 return
             value, out = freva.run_plugin(tool_name or "", **tool_args)
         except (

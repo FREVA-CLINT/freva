@@ -144,6 +144,7 @@ setup(
         "Pillow",
         "PyPDF2!=2.10.1",
         "requests",
+        "rich",
         "toml",
         "toolz",
         "typing_extensions",

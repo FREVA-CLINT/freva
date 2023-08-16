@@ -9,12 +9,17 @@ import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Union, List, Optional, NamedTuple, Tuple
+from typing import Any, Dict, Union, List, Optional, NamedTuple, Tuple
 import time
+
 
 import appdirs
 import lazy_import
 from evaluation_system.misc import logger
+import rich.layout
+import rich.table
+import rich.panel
+
 from .utils import is_jupyter
 
 django = lazy_import.lazy_module("django")
@@ -146,9 +151,46 @@ def plugin_doc(tool_name: Optional[str]) -> str:
             return "<b>{}</b> (v{}): {}</p>{}".format(
                 self._plugin.__class__.__name__,
                 self._version,
-                self._help,
+                self._help.replace("\n", "<br>"),
                 self._plugin.__parameters__.get_help(notebook=True),
             )
+
+        def __rich__(self) -> rich.table.Table:
+            help_text = rich.table.Text(
+                self._help,
+                overflow="fold",
+                style="normal",
+                justify="left",
+            )
+            title_text = rich.table.Text(
+                overflow="fold", style="normal", justify="left"
+            )
+            title_text.append(
+                self._plugin.__class__.__name__,
+                style="bold",
+            )
+            title_text.append(" (")
+            title_text.append(f"v{self._version}", style="italic")
+            title_text.append("): ")
+            title_text += help_text
+            table = rich.table.Table(
+                highlight=True,
+                title=title_text,
+                title_style="normal",
+            )
+            table.add_column("Option")
+            table.add_column("Description")
+            for key, param in self._plugin.__parameters__._params.items():
+                param_str = param.format()
+                var_name = key
+                if param.mandatory:
+                    var_name = f"[red][b]{var_name}[/b][/red]"
+                param_desc = rich.table.Text(
+                    f"{param.help} (default: {param_str})",
+                    overflow="fold",
+                )
+                table.add_row(var_name, param_desc)
+            return table
 
     return help_cls(tool_name)
 
@@ -184,28 +226,72 @@ def get_tools_list() -> str:
     :meta private:
     """
     _write_plugin_cache()
-    env = utils.get_console_size()
-    # we just have to show the list and stop processing
-    name_width = 0
-    plugins = pm.get_plugins()
-    for key in plugins:
-        name_width = max(name_width, len(key))
-    offset = name_width + 2
-    result = []
-    for key, plugin in sorted(plugins.items()):
-        lines = textwrap.wrap(
-            "%s" % plugin.description, env["columns"] - offset
-        )
-        if not lines:
-            lines = ["No description."]
-        if len(lines) > 1:
-            # multi-line
-            result.append(
-                f"{plugin.name}: {lines[0]}\n{' '*offset}\n{' '*offset}"
-            )
-        else:
-            result.append(f"{plugin.name}: {lines[0]}")
-    return "\n".join(result)
+
+    class help_cls:
+        def __init__(self) -> None:
+            env = utils.get_console_size()
+            # we just have to show the list and stop processing
+            name_width = 0
+            self.plugins = pm.get_plugins()
+            for key in self.plugins:
+                name_width = max(name_width, len(key))
+            self.offset = name_width + 2
+            self.column_width = env["columns"] - self.offset
+            self.result = self.constructor()
+
+        def constructor(self) -> Dict[str, str]:
+            """Construct the things that should be displayed."""
+            results = {}
+            for key, plugin in sorted(self.plugins.items()):
+                lines = textwrap.wrap(
+                    "%s" % plugin.description,
+                    self.column_width,
+                )
+                if not lines:
+                    lines = ["No description."]
+                results[plugin.name] = [lines[0]]
+                if len(lines) > 1:
+                    # multi-line
+                    results[plugin.name] += [
+                        f"{' '*(len(plugin.name)+2)}{line}"
+                        for line in lines[1:]
+                    ]
+            return results
+
+        def __rich__(self) -> rich.table.Table:
+            table = rich.table.Table(highlight=True)
+            table.add_column("Tool")
+            table.add_column("Description")
+            for plugin, desc in self.result.items():
+                text = " ".join(" ".join(desc).split())
+                table.add_row(plugin, rich.table.Text(text, overflow="fold"))
+            return table
+
+        def __str__(self) -> str:
+            results = []
+            for plugin, desc in self.result.items():
+                results.append(f"{plugin}: " + "\n".join(desc))
+            return "\n".join(results)
+
+        def __repr__(self) -> str:
+            return self.__str__()
+
+        def _repr_html_(self) -> str:
+
+            result = ["<table>"]
+            for key, plugin in sorted(self.plugins.items()):
+                result.append(
+                    (
+                        '<tr><td style="text-align: left;"><b>{}</b></td>'
+                        '<td style="text-align: left;">{}</td></tr>'
+                    ).format(
+                        plugin.name, plugin.description or "No description."
+                    )
+                )
+            result.append("</table>")
+            return "".join(result)
+
+    return help_cls()
 
 
 def _check_if_plugin_exists(tool_name: Optional[str]) -> None:

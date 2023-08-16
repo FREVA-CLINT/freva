@@ -590,8 +590,8 @@ class ParameterDictionary(dict):
             if notebook:
                 help_str.append(
                     (
-                        '<table><tr><th style="text-align: center;">Option</th>'
-                        '<th style="text-align: center;">Description</th></tr>'
+                        '<table><tr><th style="text-align: left;">Option</th>'
+                        '<th style="text-align: left;">Description</th></tr>'
                     )
                 )
                 split_str = ""
@@ -602,8 +602,12 @@ class ParameterDictionary(dict):
             for key, param in self._params.items():
                 param_format = "%%-%ss (default: %%s)" % (max_size)
                 param_str = param.format()
+                text_color = ""
                 if param.mandatory:
-                    param_str += " [mandatory]"
+                    if not notebook:
+                        param_str += " [mandatory]"
+                    else:
+                        text_color = "color: red;"
                 param_desc = split_str.join(
                     wrapper.fill(l) for l in param.help.splitlines()
                 )
@@ -613,11 +617,16 @@ class ParameterDictionary(dict):
                 else:
                     help_str.append(
                         (
-                            '<tr><td style="text-align: left;">'
-                            "{} (default: {})</td>"
+                            '<tr><td style="text-align: left;{}">'
+                            "{}</td>"
                             '<td style="text-align: left;">'
-                            "{}</td></tr>"
-                        ).format(key, html.escape(param_str), param_desc)
+                            "{} (default: {})</td></tr>"
+                        ).format(
+                            text_color,
+                            html.escape(key),
+                            html.escape(param_desc),
+                            html.escape(param_str),
+                        )
                     )
         if notebook:
             help_str.append("</table>")
