@@ -20,7 +20,7 @@ import rich.layout
 import rich.table
 import rich.panel
 
-from .utils import is_jupyter
+from .utils import PluginStatus, is_jupyter
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")

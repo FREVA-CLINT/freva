@@ -28,6 +28,51 @@ def is_jupyter() -> bool:
     return getattr(get_ipython(), "kernel", None) is not None
 
 
+class PluginStatus:
+    """The state of a plugin application."""
+
+    def __init__(self, metadict: Optional[utils.metadict], history_id: int) -> None:
+
+        self._metadict = metadict
+        self._id: int = history_id
+
+    @property
+    def _hist(self) -> dict[str, Any]:
+        try:
+            hist = cast(list[dict[str, Any]], history(entry_ids=self._id))[0]
+        except IndexError as error:
+            raise ValueError(f"Could not find entry {self.row_id}") from error
+        return hist
+
+    @property
+    def status(self) -> str:
+        """Get the state of the current plugin run."""
+        hist = self._hist
+        return cast(str, hist["status_dict"][hist["status"]])
+
+    @property
+    def configuration(self) -> dict[str, Any]:
+        """Get the plugin configuration."""
+        return self._hist["configuration"]
+
+    @property
+    def stdout(self) -> str:
+        """Get the stdout of the plugin."""
+        try:
+            return Path(self._hist["slurm_output"]).read_text()
+        except FileNotFoundError:
+            return ""
+
+    def get_result(self, dtype: str = "data") -> Optional[list[Path]]:
+        """Get all created paths of a certain data type.
+
+        Parameters
+        ----------
+        dtype: str
+            The data type for the returned paths. This should be one
+        """
+
+
 class config:
     """Override the default evaluation system configuration file.
 
