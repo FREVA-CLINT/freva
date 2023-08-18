@@ -137,8 +137,7 @@ class AddData(BaseParser):
             type=str,
             default=None,
             help=(
-                "Set the <model> information if they can't be found in the "
-                "meta data"
+                "Set the <model> information if they can't be found in the " "meta data"
             ),
         )
         self.parser.add_argument(
@@ -151,6 +150,7 @@ class AddData(BaseParser):
             ),
         )
         self.parser.add_argument(
+            "--time-frequency",
             "--time_frequency",
             type=str,
             default=None,
@@ -166,6 +166,24 @@ class AddData(BaseParser):
             help=(
                 "Set the <ensemble> information if they can't be found in the "
                 "meta data"
+            ),
+        )
+        self.parser.add_argument(
+            "--cmor-table",
+            "--cmor_table",
+            type=str,
+            default=None,
+            help=(
+                "Set the <cmor-table> information if they can't be found in the "
+                "meta data"
+            ),
+        )
+        self.parser.add_argument(
+            "--realm",
+            type=str,
+            default=None,
+            help=(
+                "Set the <realm> information if they can't be found in the " "meta data"
             ),
         )
         self.parser.add_argument(
@@ -265,9 +283,7 @@ class Cli(SubCommandParser):
             "add": AddData,
             "delete": DeleteData,
         }
-        super().__init__(
-            parser, sub_parsers=subcommands, command="freva-user-data"
-        )
+        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
@@ -288,9 +304,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print(
-            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
-        )
+        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

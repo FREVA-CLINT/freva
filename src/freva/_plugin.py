@@ -9,7 +9,8 @@ import logging
 from pathlib import Path
 import json
 import textwrap
-from typing import Any, Dict, Union, List, Optional, NamedTuple, Tuple
+from tempfile import NamedTemporaryFile
+from typing import Any, Dict, Union, List, Literal, Optional, NamedTuple, Tuple
 import time
 
 
@@ -129,7 +130,9 @@ def plugin_doc(tool_name: Optional[str]) -> str:
                 self._plugin.__long_description__.strip()
                 or self._plugin.__short_description__.strip()
             )
-            self._version = ".".join([str(i) for i in self._plugin.__version__])
+            self._version = ".".join(
+                [str(i) for i in self._plugin.__version__]
+            )
             self._name = self._plugin.__class__.__name__
 
         def __str__(self) -> str:
@@ -265,7 +268,8 @@ def get_tools_list() -> str:
                 if len(lines) > 1:
                     # multi-line
                     results[str(plugin.name)] += [
-                        f"{' '*(len(plugin.name)+2)}{line}" for line in lines[1:]
+                        f"{' '*(len(plugin.name)+2)}{line}"
+                        for line in lines[1:]
                     ]
             return results
 
@@ -294,7 +298,9 @@ def get_tools_list() -> str:
                     (
                         '<tr><td style="text-align: left;"><b>{}</b></td>'
                         '<td style="text-align: left;">{}</td></tr>'
-                    ).format(plugin.name, plugin.description or "No description.")
+                    ).format(
+                        plugin.name, plugin.description or "No description."
+                    )
                 )
             result.append("</table>")
             return "".join(result)
@@ -311,16 +317,95 @@ def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
         error = "Available tools are:\n"
         tool_list = "\n".join(list_plugins())
     else:
-        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
+        tool_list = "\n".join(
+            utils.find_similar_words(tool_name, list_plugins())
+        )
         error = f"{tool_name} plugin not found, did you mean:\n"
     raise PluginNotFoundError(f"\n{error}{tool_list}")
 
 
 @handled_exception
-def _return_value(value: int, result: Any, return_result: bool = True) -> Any:
-    if return_result:
-        return value, result
+def _return_value(value: int, result: Any) -> Any:
+    return value, result
     return value, ""
+
+
+def _get_tool_dict(
+    tool_name: str, **options: Union[str, float, int, bool]
+) -> Dict[str, Any]:
+    options_str, tool_dict = [], {}
+    for k, v in options.items():
+        options_str.append(f"{k}={v}")
+    tool_dict = pm.parse_arguments(tool_name, options_str)
+    if logger.level == logging.DEBUG:
+        tool_dict["debug"] = True
+    return tool_dict
+
+
+@handled_exception
+def plugin_info(
+    tool_name: str,
+    what: Literal["repository", "config"] = "repository",
+    **options: Union[str, float, int, bool],
+) -> str:
+    """Get additional information on a specific plugin.
+
+    This is a utility function that lets you inspect additional information
+    of a specific plugin. You can either get information on the plugin
+    repository or get the current plugin configuration if you want to save
+    the configuration to a file and use this file instead of calling the
+    :py:meth:`freva.run_plugin` with the same options all over again.
+
+    Parameters
+    ----------
+    tool_name: str
+        The name of the plugin.
+    what: str, default: repo_version
+        What information should be returned. This can either be ``repo_version``
+        for getting information on the tool repository or ``config`` for
+        creating a string representing the current tool configuration that
+        can then be saved to a file.
+    **options:
+        Parameters that should be passed to the tool.
+
+    Returns
+    -------
+    str: The information that was requested.
+
+
+    Example
+    -------
+
+    Get the repository and the last commit hash of a specific plugin:
+
+    .. execute_code::
+
+        import freva
+        print(freva.plugin_info("animator", "repository"))
+
+    Get the configuration for a plugin so it can be saved to a config file.
+
+    .. execute_code::
+
+        from tempfile import NamedTemporaryFile
+        import freva
+        config = freva.plugin_info("animator", what="config", variabel="pr")
+        print(config)
+        with NamedTemporaryFile(suffix=".conf") as tf:
+            with open(tf.name, "w") as f_obj:
+                f_obj.write(config)
+
+    """
+    choices = ("repository", "config")
+    if what not in choices:
+        raise ValueError(f"what argument must be one of {', '.join(choices)}")
+    if what == "repository":
+        (repos, version) = pm.get_plugin_version(tool_name)
+        return f"Repository and version of :{tool_name}\n{repos}\n{version}"
+    tool_dict = _get_tool_dict(tool_name, **options)
+    with NamedTemporaryFile() as tf:
+        pm.write_setup(tool_name, tool_dict, config_file=tf.name)
+        return Path(tf.name).read_text()
 
 
 @handled_exception
@@ -330,15 +415,12 @@ def run_plugin(
     save: bool = False,
     save_config: Optional[Union[str, Path]] = None,
     show_config: bool = False,
-    dry_run: bool = False,
     scheduled_id: Optional[int] = None,
-    repo_version: bool = False,
-    unique_output: bool = False,
+    unique_output: bool = True,
     batchmode: bool = False,
     caption: str = "",
     tag: Optional[str] = None,
-    return_result: bool = False,
-    **options: dict[str, Union[str, float, int]],
+    **options: Union[str, float, int, bool],
 ) -> tuple[int, Any]:
     """Apply an available data analysis plugin.
 
@@ -352,20 +434,12 @@ def run_plugin(
         Save the plugin configuration to default destination.
     save_config:
         Save the plugin configuration.
-    show_config:
-        Show the resulting configuration (implies dry-run).
     scheduled_id:
         Run a scheduled job from database
-    dry_run:
-        Perform no computation. Useful for development.
     batchmode:
         Create a Batch job and submit it to the scheduling system.
     unique_output:
         Append a Freva run id to the output/cache folder(s).
-    return_result:
-        Return the plugin result, this can be useful for pipelining.
-    repo_version:
-        show the version number from the repository.
     tag:
        Use git commit hash to specify a specific versrion of this tool.
 
@@ -398,18 +472,12 @@ def run_plugin(
     """
     tool_name = tool_name.lower()
     _check_if_plugin_exists(tool_name)
+    results = ""
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
-    if repo_version:
-        (repos, version) = pm.get_plugin_version(tool_name)
-        return _return_value(
-            0, "Repository and version of " f":{tool_name}\n{repos}\n{version}"
-        )
-    options_str, tool_dict = [], {}
-    for k, v in options.items():
-        options_str.append(f"{k}={v}")
+    tool_dict: Dict[str, Any] = {}
     if scheduled_id is None:
-        tool_dict = pm.parse_arguments(tool_name, options_str)
+        tool_dict = _get_tool_dict(tool_name, **options)
     if logger.level == logging.DEBUG:
         tool_dict["debug"] = True
     extra_scheduler_options = tool_dict.pop("extra_scheduler_options", "")
@@ -418,12 +486,7 @@ def run_plugin(
     if save_config or save:
         save_in = pm.write_setup(tool_name, tool_dict, config_file=save_config)
         logger.info("Configuration file saved in %s", save_in)
-    elif show_config:
-        return _return_value(
-            0,
-            pm.get_plugin_instance(tool_name).get_current_config(config_dict=tool_dict),
-        )
-    if scheduled_id and not dry_run:
+    if scheduled_id:
         logger.info(
             "Running %s as scheduled in history with ID %i",
             tool_name,
@@ -432,9 +495,11 @@ def run_plugin(
         out = pm.run_tool(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
         )
-        return _return_value(0, out, return_result)
+        return _return_value(0, out)
     extra_options: list[str] = [
-        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
+        opt.strip()
+        for opt in extra_scheduler_options.split(",")
+        if opt.strip()
     ]
     # now run the tool
     (error, warning) = pm.get_error_warning(tool_name)
@@ -443,7 +508,7 @@ def run_plugin(
     if error:
         logger.error(error)
     logger.debug("Running %s with configuration: %s", tool_name, tool_dict)
-    if not dry_run and not error:
+    if not error:
         # we check if the user is external and activate batchmode
         django_user = django.contrib.auth.models.User.objects.get(
             username=user.User().getName()
@@ -478,4 +543,4 @@ def run_plugin(
             logger.warning(warning)
     logger.debug("Arguments: %s", options)
     logger.debug("Current configuration:\n%s", json.dumps(tool_dict, indent=4))
-    return _return_value(0, results, return_result)
+    return _return_value(0, results)

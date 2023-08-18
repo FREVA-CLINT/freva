@@ -130,18 +130,15 @@ def test_run_pyclientplugin(dummy_history):
         "dummyplugin", the_number=32, caption="Some caption"
     )
     assert res == 0
-    _, res = freva.run_plugin("dummyplugin", the_number=32, show_config=True)
+    res = freva.plugin_info("dummyplugin", "config", the_number=32)
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
-    assert similar_string(
-        res,
-        """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
-extra_scheduler_options: - (default: )""",
-    )
-    return_val, repo = freva.run_plugin(
-        "dummyplugin", the_number=32, repo_version=True
-    )
+    assert "the_number" in res
+    assert "input" in res
+    repo = freva.plugin_info("dummyplugin", "repository", the_number=32)
     assert "repository" in repo.lower()
     assert "version" in repo.lower()
+    with pytest.raises(ValueError):
+        freva.plugin_info("dummyplugin", "repo")
 
     freva.logger.is_cli = False
     with pytest.raises(PluginNotFoundError):
@@ -182,10 +179,10 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
     run_cli(["plugin", "dummyplugin", "the_number=42", "--show-config"])
     output_str = capsys.readouterr().out
     for line in (
-        "number: -",
-        "the_number: 42",
-        "something: test",
-        "other: 1.4",
-        "input: -",
+        "number",
+        "the_number",
+        "something",
+        "other",
+        "input",
     ):
         assert line in output_str

@@ -147,7 +147,7 @@ fs_type: posix
         )
         if f
     ]
-    run_cli(cmd + ["--all-facets"])
+    run_cli(cmd + ["--facet", "all"])
     res = capsys.readouterr().out
     res = [map(str.strip, f.split(":")) for f in res.split("\n") if f]
     all_facets = {
@@ -165,7 +165,7 @@ fs_type: posix
     run_cli(cmd + ["--facet=variable"])
     res = capsys.readouterr().out
     assert res == "variable: tauu,ua,wetso2\n"
-    run_cli(cmd + ["--facet=variable", "experiment=historical"])
+    run_cli(cmd + ["--facet", "variable", "experiment=historical"])
     res = capsys.readouterr().out
     assert res == "variable: wetso2\n"
     run_cli(cmd + ["--facet=variable", "--facet-limit=2"])

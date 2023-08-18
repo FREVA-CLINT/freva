@@ -91,7 +91,7 @@ class PluginStatus:
         try:
             hist = cast(list[dict[str, Any]], history(entry_ids=self._id))[0]
         except IndexError as error:
-            raise ValueError(f"Could not find entry {self.row_id}") from error
+            raise ValueError(f"Could not find entry {self.row_id}") from None
         return hist
 
     @property

@@ -73,7 +73,7 @@ class Cli(BaseParser):
         )
         self.parser.add_argument(
             "--show-config",
-            help="Show the resulting configuration (implies dry-run).",
+            help="Show the resulting configuration.",
             action="store_true",
             default=False,
         )
@@ -82,12 +82,6 @@ class Cli(BaseParser):
             default=None,
             type=int,
             help=argparse.SUPPRESS,
-        )
-        self.parser.add_argument(
-            "--dry-run",
-            default=False,
-            action="store_true",
-            help="Perform no computation. Useful for development.",
         )
         self.parser.add_argument(
             "--batchmode",
@@ -126,20 +120,23 @@ class Cli(BaseParser):
             action="store_true",
             help="Display plugin documentation",
         )
+        self.parser.add_argument("tool-options", nargs="*", help="Tool options")
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
         args: argparse.Namespace,
-        other_args: Optional[list[str]] = None,
         **kwargs: Any,
     ) -> None:
         """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
+        tool_options = kwargs.pop("tool-options", [])
+        repo_version: bool = kwargs.pop("repo_version", False)
+        show_config: bool = kwargs.pop("show_config", False)
         if kwargs.pop("list_tools") or not tool_name:
             console.print(freva.get_tools_list())
             return
-        options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
+        options: dict[str, Any] = BaseCompleter.arg_to_dict(tool_options)
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
@@ -152,7 +149,13 @@ class Cli(BaseParser):
             if tool_args.pop("doc"):
                 console.print(freva.plugin_doc(tool_name))
                 return
-            value, out = freva.run_plugin(tool_name or "", **tool_args)
+            value = 0
+            if repo_version:
+                print(freva.plugin_info(tool_name or "", "repository", **options))
+            elif show_config:
+                print(freva.plugin_info(tool_name or "", "config", **options))
+            else:
+                value, _ = freva.run_plugin(tool_name or "", **tool_args)
         except (
             PluginNotFoundError,
             ValidationError,
@@ -165,8 +168,6 @@ class Cli(BaseParser):
                 raise SystemExit
         if value != 0:
             logger.warning("Tool failed to run")
-        if out:
-            print(out)
 
 
 def main(argv: Optional[list[str]] = None) -> None:
@@ -182,9 +183,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        console.print(
-            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
-        )
+        console.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

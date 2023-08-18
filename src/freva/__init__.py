@@ -8,6 +8,7 @@ from ._user_data import UserData
 from ._databrowser import databrowser, count_values, facet_search
 from ._plugin import (
     run_plugin,
+    plugin_info,
     list_plugins,
     plugin_doc,
     read_plugin_cache,
@@ -34,6 +35,7 @@ __all__ = [
     "facet_search",
     "run_plugin",
     "list_plugins",
+    "plugin_info",
     "plugin_doc",
     "esgf",
     "history",

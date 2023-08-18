@@ -140,11 +140,10 @@ class BaseParser(metaclass=abc.ABCMeta):
         self, argv: Optional[list[str]] = None
     ) -> argparse.Namespace:
         """Parse the command line arguments."""
-        args, other_args = self.parser.parse_known_args(argv)
+        args = self.parser.parse_args(argv)
         self.kwargs = {
             k: v for (k, v) in args._get_kwargs() if k != "apply_func"
         }
-        self.kwargs["other_args"] = other_args
         self.set_debug(self.kwargs.pop("debug", False))
         return args
 
@@ -419,6 +418,7 @@ class BaseCompleter:
                 "facets",
                 "tool-name",
                 "options",
+                "tool-options",
                 "==suppress==",
                 "-h",
             ):

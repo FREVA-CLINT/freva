@@ -83,7 +83,6 @@ class Cli(BaseParser):
     @staticmethod
     def run_cmd(
         args: argparse.Namespace,
-        other_args: Optional[list[str]],
         **kwargs: Any,
     ) -> None:
         """Call the databrowser command and print the results."""
