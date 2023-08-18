@@ -11,16 +11,22 @@ import warnings
 
 import lazy_import
 from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
+from evaluation_system.misc.exceptions import (
+    ConfigurationException,
+    ValidationError,
+)
 
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
-DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
+DataReader = lazy_import.lazy_class(
+    "evaluation_system.api.user_data.DataReader"
+)
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
+from .utils import handled_exception
 
 __all__ = ["UserData"]
 
@@ -40,22 +46,26 @@ class UserData:
             config.reloadConfiguration()
             return get_output_directory() / f"user-{User().getName()}"
 
-    def _validate_user_dirs(self, *crawl_dirs: os.PathLike) -> tuple[Path, ...]:
+    def _validate_user_dirs(
+        self, *crawl_dirs: os.PathLike
+    ) -> tuple[Path, ...]:
         root_path = self.user_dir
         user_paths: tuple[Path, ...] = ()
         for crawl_dir in crawl_dirs or (root_path,):
             crawl_dir = Path(crawl_dir or root_path).expanduser().absolute()
             try:
                 _ = crawl_dir.relative_to(root_path)
-            except ValueError as error:
+            except ValueError:
                 raise ValidationError(
                     f"You are only allowed to crawl data in {root_path}"
-                ) from error
+                )
             user_paths += (crawl_dir,)
         return user_paths
 
     @staticmethod
-    def _set_add_method(how: str) -> Callable[[os.PathLike, os.PathLike], None]:
+    def _set_add_method(
+        how: str,
+    ) -> Callable[[os.PathLike, os.PathLike], None]:
         choices = "copy, link, move, symlink, cp, ln, mv"
         if how in ["copy", "cp"]:
             return shutil.copy
@@ -67,6 +77,7 @@ class UserData:
             return os.link
         raise ValueError(f"Invalid Method: valid methods are {choices}")
 
+    @handled_exception
     def add(
         self,
         product: str,
@@ -181,7 +192,9 @@ class UserData:
             p_path = Path(path).expanduser().absolute()
             u_reader = DataReader(p_path, **search_keys)
             for file in u_reader:
-                new_file = u_reader.file_name_from_metdata(file, override=override)
+                new_file = u_reader.file_name_from_metdata(
+                    file, override=override
+                )
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
                 if new_file.exists() and override:
                     new_file.unlink()
@@ -193,7 +206,10 @@ class UserData:
             return
         self.index(*crawl_dirs)
 
-    def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
+    @handled_exception
+    def delete(
+        self, *paths: os.PathLike, delete_from_fs: bool = False
+    ) -> None:
         """Delete data from the databrowser.
 
         The methods deletes user data from the databrowser.
@@ -234,6 +250,7 @@ class UserData:
                 if delete_from_fs:
                     file.unlink()
 
+    @handled_exception
     def index(
         self,
         *crawl_dirs: os.PathLike,
@@ -272,7 +289,9 @@ class UserData:
 
         """
         if dtype not in ("fs",):
-            raise NotImplementedError("Only data on POSIX file system is supported")
+            raise NotImplementedError(
+                "Only data on POSIX file system is supported"
+            )
         log_level = logger.level
         try:
             logger.setLevel(logging.ERROR)

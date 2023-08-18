@@ -43,7 +43,9 @@ def test_subcommand_help(dummy_env, capsys):
             main_cli([subcmd, "--help"])
         doc_string = capsys.readouterr().out
         for shell, sep in {"bash": "", "zsh": "[", "fish": ":"}.items():
-            print_choices(["--shell", shell, "--flags-only", f"freva-{subcmd}"])
+            print_choices(
+                ["--shell", shell, "--flags-only", f"freva-{subcmd}"]
+            )
             choices = capsys.readouterr().out.split("\n")
             for choice in [s.strip() for s in choices if s.strip()]:
                 if sep:
@@ -60,7 +62,9 @@ def test_subcommand_help(dummy_env, capsys):
             if subcmd not in ("databrowser", "plugin"):
                 print_choices(["--shell", shell, "--strip", f"freva-{subcmd}"])
                 out = [
-                    s.strip() for s in capsys.readouterr().out.split("\n") if s.strip()
+                    s.strip()
+                    for s in capsys.readouterr().out.split("\n")
+                    if s.strip()
                 ]
                 if subcmd == "user-data":
                     assert len(out) == 3
@@ -72,7 +76,7 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
     from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
 
-    main_cli(["databrowser", "--all-facets"])
+    main_cli(["databrowser", "--facet", "all"])
     facets = capsys.readouterr().out
     for shell in ("bash", "zsh", "fish"):
         print_choices(["--shell", shell, "--strip", "freva", "databrowser"])
@@ -103,7 +107,9 @@ def test_plugin(dummy_env, capsys):
         print_choices(["--shell", shell, "--strip", "freva", "plugin"])
         choices = capsys.readouterr().out
         assert "dummyplugin" in choices
-        print_choices(["--shell", shell, "--strip", "freva", "plugin", "dummyplugin"])
+        print_choices(
+            ["--shell", shell, "--strip", "freva", "plugin", "dummyplugin"]
+        )
         choices = capsys.readouterr().out
         assert "the_number" in choices
         print_choices(

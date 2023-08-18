@@ -326,7 +326,12 @@ def temp_user(dummy_settings):
 
 @pytest.fixture(scope="function")
 def dummy_user(
-    dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user
+    dummy_env,
+    dummy_settings,
+    config_dict,
+    dummy_plugin,
+    dummy_history,
+    temp_user,
 ):
     from django.contrib.auth.models import User
 

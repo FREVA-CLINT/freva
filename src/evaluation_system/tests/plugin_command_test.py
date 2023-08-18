@@ -23,7 +23,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
     from freva.cli.plugin import main as plugin_cli
     from evaluation_system.misc import config
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(SystemExit):
         plugin_cli(["dummyplugin"])
     plugin_cli(["dummyplugin", "the_number=13"])
     output = capsys.readouterr().out
@@ -67,7 +67,9 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         os.path.normpath(folder_path)
     )
 
-    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "true"])
+    plugin_cli(
+        ["dummypluginfolders", "variable=pr", "--unique-output", "true"]
+    )
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
@@ -76,7 +78,9 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         os.path.normpath(folder_path)
     )
 
-    plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "false"])
+    plugin_cli(
+        ["dummypluginfolders", "variable=pr", "--unique-output", "false"]
+    )
     output_str = capsys.readouterr().out
     match = re.search(pattern, output_str)
     if match:
@@ -111,27 +115,10 @@ def test_list_tools(capsys, dummy_env):
     assert "DummyPlugin" in plugin_list
     run_cli(["plugin", "dummyplugin", "--doc"])
     help_str = capsys.readouterr().out
-    assert similar_string(
-        help_str,
-        """DummyPlugin (v0.0.0): A dummy plugin
-Options:
-number                  (default: <undefined>)
-                        This is just a number, not really important
-the_number              (default: <undefined>) [mandatory]
-                        This is *THE* number. Please provide it
-something               (default: test)
-                        No help available.
-other                   (default: 1.4)
-                        No help available.
-input                   (default: <undefined>)
-                        An input file
-variable                (default: tas)
-                        An input variable
-extra_scheduler_options (default: --qos=test, --array=20)
-                        Set additional options for the job submission to the
-                        workload manager (, seperated). Note: batchmode and web
-                        only.""",
-    )
+    assert "number" in help_str
+    assert "the_number" in help_str
+    assert "Option" in help_str
+    assert "Description" in help_str
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -139,7 +126,9 @@ def test_run_pyclientplugin(dummy_history):
     import freva
     from evaluation_system.misc import config
 
-    res, _ = freva.run_plugin("dummyplugin", the_number=32, caption="Some caption")
+    res, _ = freva.run_plugin(
+        "dummyplugin", the_number=32, caption="Some caption"
+    )
     assert res == 0
     _, res = freva.run_plugin("dummyplugin", the_number=32, show_config=True)
     res = "\n".join([l.strip() for l in res.split("\n") if l.strip()])
@@ -148,10 +137,13 @@ def test_run_pyclientplugin(dummy_history):
         """    number: -the_number: 32 something: test other: 1.4 input: -variable: tas
 extra_scheduler_options: - (default: )""",
     )
-    return_val, repo = freva.run_plugin("dummyplugin", the_number=32, repo_version=True)
+    return_val, repo = freva.run_plugin(
+        "dummyplugin", the_number=32, repo_version=True
+    )
     assert "repository" in repo.lower()
     assert "version" in repo.lower()
 
+    freva.logger.is_cli = False
     with pytest.raises(PluginNotFoundError):
         freva.run_plugin("dummyplugin0")
 
@@ -160,10 +152,18 @@ extra_scheduler_options: - (default: )""",
 def test_run_plugin(capsys, dummy_history, dummy_env):
     from evaluation_system.misc import config
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(SystemExit):
         run_cli(["plugin", "dummyplugin"])
     # test run tool
-    run_cli(["plugin", "dummyplugin", "the_number=32", '--caption="Some caption"'])
+    run_cli(
+        [
+            "plugin",
+            "dummyplugin",
+            "the_number=32",
+            '--caption="Some caption"',
+            "--debug",
+        ]
+    )
     output_str = capsys.readouterr().out
     assert "Dummy tool was run" in output_str
     assert "the_number" in output_str

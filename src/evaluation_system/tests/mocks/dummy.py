@@ -18,6 +18,8 @@ from evaluation_system.api.parameters import (
 from evaluation_system.model.user import User
 from evaluation_system.model.db import UserDB
 
+from freva import logger
+
 
 class DummyPlugin(PluginAbstract):
     """Stub class for implementing the abstract one"""
@@ -29,7 +31,9 @@ class DummyPlugin(PluginAbstract):
     __category__ = "statistical"
     __name__ = "DummyPlugin"
     __parameters__ = ParameterDictionary(
-        Integer(name="number", help="This is just a number, not really important"),
+        Integer(
+            name="number", help="This is just a number, not really important"
+        ),
         Integer(
             name="the_number",
             mandatory=True,
@@ -51,8 +55,8 @@ class DummyPlugin(PluginAbstract):
             time.sleep(-num)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
-        assert "plugin_env" in os.environ["PATH"]
         print(f"Dummy tool was run with: {config_dict}")
+        assert "plugin_env" in os.environ["PATH"]
         return {
             "/tmp/dummyfile1": dict(type="plot"),
             "/tmp/dummyfile2": dict(type="data"),
@@ -75,7 +79,9 @@ class DummyUser(User):
         self.username = override.get("pw_name", None)
         if random_home:
             if "pw_dir" in override:
-                raise Exception("Can't define random_home and provide a home directory")
+                raise Exception(
+                    "Can't define random_home and provide a home directory"
+                )
             override["pw_dir"] = tempfile.mkdtemp("_dummyUser")
             self._random_home = override["pw_dir"]
         super().__init__(uid=uid)

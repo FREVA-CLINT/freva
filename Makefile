@@ -14,11 +14,11 @@ install:
 	python3 -m pip install .[test]
 
 test:
-	python3 -m pytest -vv $(PWD)/src/evaluation_system/tests
+	python3 -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
 
 test_coverage:
 	python3 -m pytest -vv \
-	    --cov=$(PWD)/src --cov-report=html:coverage_report \
+		--nbval --current-env --cov=$(PWD)/src --cov-report=html:coverage_report \
 	    --junitxml report.xml --current-env --cov-report xml \
 		$(PWD)/src/evaluation_system/tests
 	python3 -m coverage report
@@ -38,7 +38,9 @@ prepdocs:
 	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
 	mkdir -p /tmp/animator/plugin_env/bin
 	ln -s $(PYTHON3) /tmp/animator/plugin_env/bin/python
-	python3 -m ipykernel install --user --name freva
+	python3 -m ipykernel install --user --name freva \
+		--env EVALUATION_SYSTEM_CONFIG_FILE $(EVALUATION_SYSTEM_CONFIG_FILE) \
+		--env EVALUATION_SYSTEM_PLUGINS $(EVALUATION_SYSTEM_PLUGINS)
 	python3 -m bash_kernel.install
 	make dummy-data
 	compose/animator_plugin_run.sh

@@ -20,7 +20,7 @@ import rich.layout
 import rich.table
 import rich.panel
 
-from .utils import PluginStatus, is_jupyter
+from .utils import PluginStatus, is_jupyter, handled_exception
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -67,6 +67,7 @@ def _write_plugin_cache() -> dict[str, dict[str, Any]]:
     return out
 
 
+@handled_exception
 def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
     """Cache plugin list."""
     CACHE_FILE.parent.mkdir(exist_ok=True, parents=True)
@@ -87,6 +88,7 @@ def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
     return plugin_cache
 
 
+@handled_exception
 def plugin_doc(tool_name: Optional[str]) -> str:
     """Display the documentation of a given plugin.
 
@@ -111,7 +113,8 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     .. execute_code::
 
         import freva
-        print(freva.plugin_doc("animator"))
+        import rich
+        rich.print(freva.plugin_doc("animator"))
 
 
     """
@@ -119,16 +122,14 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     _write_plugin_cache()
     _check_if_plugin_exists(tool_name)
 
-    class help_cls:
+    class HelpCls:
         def __init__(self, tool_name: str) -> None:
             self._plugin = pm.get_plugin_instance(tool_name)
             self._help = (
                 self._plugin.__long_description__.strip()
                 or self._plugin.__short_description__.strip()
             )
-            self._version = ".".join(
-                [str(i) for i in self._plugin.__version__]
-            )
+            self._version = ".".join([str(i) for i in self._plugin.__version__])
             self._name = self._plugin.__class__.__name__
 
         def __str__(self) -> str:
@@ -192,9 +193,10 @@ def plugin_doc(tool_name: Optional[str]) -> str:
                 table.add_row(var_name, param_desc)
             return table
 
-    return help_cls(tool_name)
+    return HelpCls(tool_name)
 
 
+@handled_exception
 def list_plugins() -> list[str]:
     """Get the plugins that are available on the system.
 
@@ -209,12 +211,14 @@ def list_plugins() -> list[str]:
     .. execute_code::
 
         import freva
-        print(freva.list_plugins())
+        import rich
+        rich.print(freva.list_plugins())
     """
     _write_plugin_cache()
     return list([k.lower() for k in pm.get_plugins().keys()])
 
 
+@handled_exception
 def get_tools_list() -> str:
     """Get a list of plugins with their short description.
 
@@ -223,11 +227,19 @@ def get_tools_list() -> str:
     str:
         String representation of all available plugins.
 
-    :meta private:
+    Example
+    -------
+
+    .. execute_code::
+
+        import freva
+        import rich
+        rich.print(freva.get_tools_list())
+
     """
     _write_plugin_cache()
 
-    class help_cls:
+    class HelpCls:
         def __init__(self) -> None:
             env = utils.get_console_size()
             # we just have to show the list and stop processing
@@ -239,22 +251,21 @@ def get_tools_list() -> str:
             self.column_width = env["columns"] - self.offset
             self.result = self.constructor()
 
-        def constructor(self) -> Dict[str, str]:
+        def constructor(self) -> Dict[str, List[str]]:
             """Construct the things that should be displayed."""
             results = {}
-            for key, plugin in sorted(self.plugins.items()):
+            for _, plugin in sorted(self.plugins.items()):
                 lines = textwrap.wrap(
-                    "%s" % plugin.description,
+                    str(plugin.description),
                     self.column_width,
                 )
                 if not lines:
                     lines = ["No description."]
-                results[plugin.name] = [lines[0]]
+                results[str(plugin.name)] = [lines[0]]
                 if len(lines) > 1:
                     # multi-line
-                    results[plugin.name] += [
-                        f"{' '*(len(plugin.name)+2)}{line}"
-                        for line in lines[1:]
+                    results[str(plugin.name)] += [
+                        f"{' '*(len(plugin.name)+2)}{line}" for line in lines[1:]
                     ]
             return results
 
@@ -277,23 +288,21 @@ def get_tools_list() -> str:
             return self.__str__()
 
         def _repr_html_(self) -> str:
-
             result = ["<table>"]
-            for key, plugin in sorted(self.plugins.items()):
+            for _, plugin in sorted(self.plugins.items()):
                 result.append(
                     (
                         '<tr><td style="text-align: left;"><b>{}</b></td>'
                         '<td style="text-align: left;">{}</td></tr>'
-                    ).format(
-                        plugin.name, plugin.description or "No description."
-                    )
+                    ).format(plugin.name, plugin.description or "No description.")
                 )
             result.append("</table>")
             return "".join(result)
 
-    return help_cls()
+    return HelpCls()
 
 
+@handled_exception
 def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
     """Check if a given plugin name is part of the plugin stack."""
     if tool_name in pm.get_plugins():
@@ -302,19 +311,19 @@ def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
         error = "Available tools are:\n"
         tool_list = "\n".join(list_plugins())
     else:
-        tool_list = "\n".join(
-            utils.find_similar_words(tool_name, list_plugins())
-        )
+        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
         error = f"{tool_name} plugin not found, did you mean:\n"
     raise PluginNotFoundError(f"\n{error}{tool_list}")
 
 
+@handled_exception
 def _return_value(value: int, result: Any, return_result: bool = True) -> Any:
     if return_result:
         return value, result
     return value, ""
 
 
+@handled_exception
 def run_plugin(
     tool_name: str,
     *,
@@ -412,9 +421,7 @@ def run_plugin(
     elif show_config:
         return _return_value(
             0,
-            pm.get_plugin_instance(tool_name).get_current_config(
-                config_dict=tool_dict
-            ),
+            pm.get_plugin_instance(tool_name).get_current_config(config_dict=tool_dict),
         )
     if scheduled_id and not dry_run:
         logger.info(
@@ -427,9 +434,7 @@ def run_plugin(
         )
         return _return_value(0, out, return_result)
     extra_options: list[str] = [
-        opt.strip()
-        for opt in extra_scheduler_options.split(",")
-        if opt.strip()
+        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
     ]
     # now run the tool
     (error, warning) = pm.get_error_warning(tool_name)

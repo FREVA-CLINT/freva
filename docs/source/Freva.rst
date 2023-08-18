@@ -39,12 +39,13 @@ Below you can find a more detailed documentation.
 Runing analysis plugins
 =======================
 Already defined data analysis tools can be started with the :py:meth:`freva.run_plugin`
-method. Besides the :py:meth:`freva.run_plugin` method two more utility methods
-(:py:meth:`freva.list_plugins` and :py:meth:`freva.plugin_doc`) are available
-to get an overview over existing plugins and the documentation of each plugins.
+method. Besides the :py:meth:`freva.run_plugin` method three more utility methods
+(:py:meth:`freva.list_plugins`, :py:meth:`freva.get_tools_list`,
+:py:meth:`freva.plugin_doc`) are available to get an overview over
+existing plugins and the documentation of each plugins.
 
 .. automodule:: freva
-   :members: list_plugins, plugin_doc, run_plugin
+   :members: list_plugins, get_tools_list, plugin_doc, run_plugin
    :undoc-members:
    :show-inheritance:
 
@@ -70,3 +71,15 @@ The ``UserData`` class
    :members: UserData
    :undoc-members:
    :show-inheritance:
+
+Overriding or using a freva configuration
+=========================================
+If you want to install and maintain an instance of the freva client in your
+own python environment you will most likely have to load the freva configuration
+to be able to use the freva infrastructure. To do so you can use the
+:py:class:`freva.config` class. This class allows you to either override or
+set the path to the freva configuration file.
+
+.. automodule:: freva
+   :members: config
+   :undoc-members:

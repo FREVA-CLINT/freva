@@ -161,7 +161,8 @@ class Cli(BaseParser):
             if args.debug:
                 raise e
             with hide_exception():
-                raise e
+                logger.error(e)
+                raise SystemExit
         if value != 0:
             logger.warning("Tool failed to run")
         if out:
@@ -181,5 +182,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        console.print(
+            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
+        )
         sys.exit(130)
+    except Exception as error:  # pragma: no cover
+        freva.utils.exception_handler(error, True)  # pragma: no cover

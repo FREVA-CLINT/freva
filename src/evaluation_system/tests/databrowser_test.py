@@ -61,7 +61,7 @@ def test_freva_databrowser_method(dummy_solr):
     assert res == all_files_output
     res = count_values(variable=["ua", "tauu", "wetso2"])
     assert res == len(all_files_output)
-    assert databrowser(variable="whhoop", count=True) == 0
+    assert count_values(variable="whhoop") == 0
     v = "v20110419"
     res = sorted(databrowser(variable="ua", version=v, multiversion=True))
     assert v in res[0]
@@ -69,28 +69,14 @@ def test_freva_databrowser_method(dummy_solr):
         databrowser("badoption")
     res = facet_search(facet=None)
     assert isinstance(res, dict)
-    target = sorted(
-        [
-            "cmor_table",
-            "product",
-            "realm",
-            "dataset",
-            "institute",
-            "project",
-            "time_frequency",
-            "experiment",
-            "variable",
-            "model",
-            "ensemble",
-            "fs_type",
-        ]
-    )
-    res = sorted(databrowser(attributes=True, relevant_only=True))
 
 
 def test_search_files_cmd(dummy_solr, capsys):
     from evaluation_system.misc.exceptions import CommandError
     from freva.cli.databrowser import main as run
+    from freva import logger
+
+    logger.setLevel(20)
 
     cmd = shlex.split("databrowser")
     all_files_output = sorted(
@@ -103,8 +89,10 @@ def test_search_files_cmd(dummy_solr, capsys):
     run_cli(cmd)
     res = sorted([f for f in capsys.readouterr().out.split("\n") if f])
     assert res == all_files_output
+    logger.setLevel(20)
     run_cli(["databrowser", "--count"])
     res = capsys.readouterr().out.split("\n")
+    logger.setLevel(20)
     assert int(res[0]) == len(all_files_output)
     run(["variable=whooop", "--count"])
     assert int(capsys.readouterr().out.split("\n")[0]) == 0
@@ -134,7 +122,7 @@ def test_search_files_cmd(dummy_solr, capsys):
     res = capsys.readouterr().out
     assert v in res
     # test bad input
-    with pytest.raises(ValueError):
+    with pytest.raises(SystemExit):
         run_cli(cmd + ["badoption"])
 
 
@@ -188,18 +176,8 @@ fs_type: posix
     assert res == "variable: tauu (1),ua (1),wetso2 (1)\n"
 
 
-def test_show_attributes(dummy_solr, capsys):
-    cmd = shlex.split("databrowser --attributes")
-    run_cli(cmd)
-    res = capsys.readouterr().out
-    res = sorted([f.strip() for f in res.split(",") if f])
-    assert "ensemble" in res
-    assert "time_frequency" in res
-    assert "institute" in res
-
-
 def test_solr_backwards(dummy_solr, capsys):
-    cmd = shlex.split("databrowser --all-facets")
+    cmd = shlex.split("databrowser --facet all")
     cmd += [
         f"file={dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc"
     ]

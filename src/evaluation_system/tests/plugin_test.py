@@ -12,6 +12,7 @@ import mock
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 import sys
 
+import rich.table
 from evaluation_system.tests import similar_string
 
 
@@ -47,7 +48,9 @@ def test_setup_configuration(dummy_plugin):
 
     with DummyUser(random_home=True) as user:
         dummy = DummyPlugin(user=user)
-        dummy.__parameters__ = ParameterDictionary(String(name="a", mandatory=True))
+        dummy.__parameters__ = ParameterDictionary(
+            String(name="a", mandatory=True)
+        )
         # the default behavior is to check for None values and fail if found
         with pytest.raises(ValidationError):
             dummy.setup_configuration()
@@ -61,7 +64,9 @@ def test_setup_configuration(dummy_plugin):
         assert 1 == res["num"]
 
         # check indirect resolution
-        res = dummy.setup_configuration(dict(num="${a}x", a=1), check_cfg=False)
+        res = dummy.setup_configuration(
+            dict(num="${a}x", a=1), check_cfg=False
+        )
         assert "1x" == res["num"]
 
         # check indirect resolution can also be turned off
@@ -71,7 +76,9 @@ def test_setup_configuration(dummy_plugin):
         assert "${a}x" == res["num"]
 
         # check user special values work
-        res = dummy.setup_configuration(dict(num="$USER_BASE_DIR"), check_cfg=False)
+        res = dummy.setup_configuration(
+            dict(num="$USER_BASE_DIR"), check_cfg=False
+        )
         assert user.getUserBaseDir() == res["num"]
 
         res = dummy.setup_configuration(
@@ -91,7 +98,9 @@ def test_parse_arguments(dummy_plugin):
     )
 
     dummy = dummy_plugin
-    dummy.__parameters__ = ParameterDictionary(String(name="a"), String(name="b"))
+    dummy.__parameters__ = ParameterDictionary(
+        String(name="a"), String(name="b")
+    )
     res = dummy.__parameters__.parse_arguments("a=1 b=2".split())
     assert res == dict(a="1", b="2")
     dummy.__parameters__ = ParameterDictionary(
@@ -119,7 +128,10 @@ def test_parse_arguments(dummy_plugin):
         ("a=False", False),
     ]:
         res = dummy.__parameters__.parse_arguments(arg.split())
-        assert res == dict(a=parsed_val), "Error when parsing %s, got %s" % (arg, res)
+        assert res == dict(a=parsed_val), "Error when parsing %s, got %s" % (
+            arg,
+            res,
+        )
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -190,7 +202,11 @@ def test_read_config_parser(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_save_config(dummy_plugin):
-    from evaluation_system.api.parameters import ParameterDictionary, Integer, String
+    from evaluation_system.api.parameters import (
+        ParameterDictionary,
+        Integer,
+        String,
+    )
     from io import StringIO
 
     batchmode_options = """#: Set additional options for the job submission to the workload manager (,
@@ -322,7 +338,10 @@ def test_read_config(dummy_plugin):
             open(tf.name, "w").write(resource)
             with open(tf.name, "r") as f:
                 conf_dict = dummy.read_configuration(f)
-                assert conf_dict == {**expected_dict, **{"extra_scheduler_options": ""}}
+                assert conf_dict == {
+                    **expected_dict,
+                    **{"extra_scheduler_options": ""},
+                }
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -348,7 +367,11 @@ def testSubstitution(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_help(dummy_plugin):
-    from evaluation_system.api.parameters import ParameterDictionary, Integer, String
+    from evaluation_system.api.parameters import (
+        ParameterDictionary,
+        Integer,
+        String,
+    )
 
     dummy = dummy_plugin
     dummy.__version__ = (1, 2, 3)
@@ -373,7 +396,7 @@ def test_help(dummy_plugin):
 Options:
 a       (default: 1)
     This is the value of a
-b       (default: <undefined>)
+b       (default: <null>)
     This is not the value of b
 example (default: test)
     let's hope people write some useful help...#
@@ -442,7 +465,11 @@ extra_scheduler_options: - (default: )""",
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_usage(dummy_plugin):
-    from evaluation_system.api.parameters import ParameterDictionary, Integer, String
+    from evaluation_system.api.parameters import (
+        ParameterDictionary,
+        Integer,
+        String,
+    )
 
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
@@ -490,6 +517,20 @@ def test_run(dummy_plugin):
 
 
 @mock.patch("os.getpid", lambda: 12345)
+def test_plugin_help():
+    """Test various help aspects of generating the help string."""
+
+    import freva
+
+    for out in (freva.plugin_doc("dummyplugin"), freva.get_tools_list()):
+        assert out.__repr__() == out.__str__()
+        assert hasattr(out, "__rich__")
+        assert hasattr(out, "_repr_html_")
+        assert "table" in out._repr_html_()
+        assert isinstance(out.__rich__(), rich.table.Table)
+
+
+@mock.patch("os.getpid", lambda: 12345)
 def test_get_class_base_dir(dummy_plugin):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -503,11 +544,13 @@ def test_get_class_base_dir(dummy_plugin):
     import os
     import re
 
-    assert evaluation_system.tests.mocks.dummy.__file__.startswith(dummy.class_basedir)
+    assert evaluation_system.tests.mocks.dummy.__file__.startswith(
+        dummy.class_basedir
+    )
     # module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" or ".py"
-    module_name = os.path.abspath(evaluation_system.tests.mocks.dummy.__file__)[
-        len(dummy.class_basedir) + 1 :
-    ].replace("/", ".")
+    module_name = os.path.abspath(
+        evaluation_system.tests.mocks.dummy.__file__
+    )[len(dummy.class_basedir) + 1 :].replace("/", ".")
     print(module_name, "blablabla")
     module_name = re.sub("\\.pyc?$", "", module_name)
     assert module_name == "evaluation_system.tests.mocks.dummy"
@@ -633,7 +676,11 @@ def test_prepare_output(dummy_plugin):
         InputDirectory,
     )
 
-    fn = Path(__file__).absolute().parent / "test_output" / "vecap_test_output.pdf"
+    fn = (
+        Path(__file__).absolute().parent
+        / "test_output"
+        / "vecap_test_output.pdf"
+    )
     types_to_check = [
         {"suffix": ".jpg", "type": "plot", "todo": "copy"},
         {"suffix": ".eps", "type": "plot", "todo": "convert"},
