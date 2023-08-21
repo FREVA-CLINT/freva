@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="../_static/logo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>Applying data analysis Plugins - freva user guide 2307.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -210,7 +210,7 @@
         </div>
         <article role="main">
           <section id="Applying-data-analysis-Plugins">
-<h1>Applying data analysis Plugins<a class="headerlink" href="#Applying-data-analysis-Plugins" title="Permalink to this heading">#</a></h1>
+<h1>Applying data analysis Plugins<a class="headerlink" href="#Applying-data-analysis-Plugins" title="Link to this heading">#</a></h1>
 <p>Already defined data analysis tools can be started with the <code class="docutils literal notranslate"><span class="pre">freva.run_plugin</span></code> method. Besides the <code class="docutils literal notranslate"><span class="pre">run_plugin</span></code> method two more utility methods (<code class="docutils literal notranslate"><span class="pre">list_plugins</span></code> and <code class="docutils literal notranslate"><span class="pre">plugin_doc</span></code>) are available to get an overview over existing plugins and the documentation of each plugins.</p>
 <p>First let’s get an overview of the plugins that are available in the system:</p>
 <div class="nbinput nblast docutils container">
@@ -366,7 +366,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2121/pr_20160902T0000-20160902T2330.mp4 in 38 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2121/pr_20160902T0000-20160902T2330.mp4 in 47 seconds
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -388,7 +388,7 @@ Recieved termination signal: exiting
 </div>
 </section>
 <section id="Search-the-history-of-previously-applied-plugins">
-<h1>Search the history of previously applied plugins<a class="headerlink" href="#Search-the-history-of-previously-applied-plugins" title="Permalink to this heading">#</a></h1>
+<h1>Search the history of previously applied plugins<a class="headerlink" href="#Search-the-history-of-previously-applied-plugins" title="Link to this heading">#</a></h1>
 <p>To access the configurations of previously applied freva plugins freva offers the <code class="docutils literal notranslate"><span class="pre">history</span></code> method which displays plugin entries with a one-line compact description. The first number you see is the entry id, which you might use to select single entries for further details. Again, let’s inspect the help first:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -495,9 +495,9 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
   5: &#39;not_scheduled&#39;,
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
- &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7f6220258610&gt;,
+ &#39;_state&#39;: &lt;django.db.models.base.ModelState at 0x7fbb1164c3d0&gt;,
  &#39;id&#39;: 2112,
- &#39;timestamp&#39;: datetime.datetime(2023, 8, 16, 13, 19, 48),
+ &#39;timestamp&#39;: datetime.datetime(2023, 8, 21, 4, 23, 29),
  &#39;tool&#39;: &#39;dummyplugin&#39;,
  &#39;version&#39;: &#39;(0, 0, 0)&#39;,
  &#39;version_details_id&#39;: 123,
@@ -507,8 +507,8 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
   &#39;other&#39;: 1.4,
   &#39;input&#39;: None,
   &#39;variable&#39;: &#39;tas&#39;},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5606.local&#39;,
- &#39;host&#39;: &#39;fv-az627-448&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/dummyplugin/DummyPlugin-5710.local&#39;,
+ &#39;host&#39;: &#39;fv-az301-694&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,
@@ -588,9 +588,9 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=None
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=3a4e2f4e"></script>
+</div><script src="../_static/documentation_options.js?v=6d5ebfd8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>

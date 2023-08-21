@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
-    <link rel="shortcut icon" href="../_static/logo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="../_static/logo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>The Freva command line interface - freva user guide 2307.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -210,7 +210,7 @@
         </div>
         <article role="main">
           <section id="The-Freva-command-line-interface">
-<h1>The Freva command line interface<a class="headerlink" href="#The-Freva-command-line-interface" title="Permalink to this heading">#</a></h1>
+<h1>The Freva command line interface<a class="headerlink" href="#The-Freva-command-line-interface" title="Link to this heading">#</a></h1>
 <p>This notebook introduces the usage of the Freva command line interface - cli. The tutorial assumes that you have already access to Freva either because you’ve setup an instance yourself or one has been setup by the Freva admin team. Hence it is assumed that you know how to access Freva. If this is not the case please contact one of your Freva admins for help.</p>
 <p>A general usage overview of the available Freva sub-commands is available via the –help option:</p>
 <div class="nbinput docutils container">
@@ -301,7 +301,7 @@ options:
 </div>
 <p><strong>Note</strong>: Instead of using sub-commands you have also the option to use commands. For example the command <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code>, <code class="docutils literal notranslate"><span class="pre">freva-user-data</span></code> to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">user-data</span></code> etc.</p>
 <section id="Searching-for-data:-the-freva-databrowser-command">
-<h2>Searching for data: the freva-databrowser command<a class="headerlink" href="#Searching-for-data:-the-freva-databrowser-command" title="Permalink to this heading">#</a></h2>
+<h2>Searching for data: the freva-databrowser command<a class="headerlink" href="#Searching-for-data:-the-freva-databrowser-command" title="Link to this heading">#</a></h2>
 <p>All files available on in the project are scanned and indexed via a data search server. This allows you to query the server which responds almost immediately. To search for data you can either use the <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code> command or the <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span></code> sub-command. Let’s inspect the help menu of the databrowser sub-command:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -464,19 +464,19 @@ that satisfies a certain constraint (e.g. sampled 6hr, from a certain model, etc
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 WARNING:freva:The all-facets flag will be made deprecated useuser --facet &#39;*&#39; or --facet all instead
-experiment: cmorph
-model: cpc
-ensemble: r1i1p1
 variable: pr
-project: observations
-time_aggregation: mean
-time_frequency: 30min
 institute: cpc
+time_frequency: 30min
+experiment: cmorph
 cmor_table: 30min
-fs_type: posix
-realm: atmos
 product: grid
 grid_label: gn
+realm: atmos
+project: observations
+fs_type: posix
+ensemble: r1i1p1
+model: cpc
+time_aggregation: mean
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -517,7 +517,7 @@ variable: pr (24)
 </section>
 </section>
 <section id="Running-data-analysis-plugins:-the-freva-plugin-command">
-<h1>Running data analysis plugins: the freva-plugin command<a class="headerlink" href="#Running-data-analysis-plugins:-the-freva-plugin-command" title="Permalink to this heading">#</a></h1>
+<h1>Running data analysis plugins: the freva-plugin command<a class="headerlink" href="#Running-data-analysis-plugins:-the-freva-plugin-command" title="Link to this heading">#</a></h1>
 <p>Already defined data analysis tools can be started with the <code class="docutils literal notranslate"><span class="pre">freva-plugin</span></code> command or the <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span></code> sub-command. Let’s inspect the help menu of the plugin command:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -714,7 +714,8 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_20160902T0000-20160902T2330.gif in 41 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_20160902T0000-20160902T2330.gif in 51 seconds
+Recieved termination signal: exiting
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -734,12 +735,12 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2122/pr_2
 Scheduled job with history id: 2123
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-20337.out
+tail -f /tmp/share/slurm/animator/Animator-11805.out
 </pre></div></div>
 </div>
 </section>
 <section id="Inspecting-previous-analysis-jobs:-the-freva-history-command">
-<h1>Inspecting previous analysis jobs: the freva-history command<a class="headerlink" href="#Inspecting-previous-analysis-jobs:-the-freva-history-command" title="Permalink to this heading">#</a></h1>
+<h1>Inspecting previous analysis jobs: the freva-history command<a class="headerlink" href="#Inspecting-previous-analysis-jobs:-the-freva-history-command" title="Link to this heading">#</a></h1>
 <p>Sometimes it can be useful to access the status of past plugin applications. The <code class="docutils literal notranslate"><span class="pre">freva-history</span></code> command or <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">history</span></code> sub-command can do that:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -755,7 +756,7 @@ tail -f /tmp/share/slurm/animator/Animator-20337.out
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 INFO:freva:history of {plugin}, limit=1, since=None, until=None, entry_ids=None
-2115) dummyplugin [2023-08-16 13:19:51] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2023-08-21 04:23:32] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -785,7 +786,7 @@ INFO:freva:history, limit=10, since=None, until=None, entry_ids=[&#39;1&#39;]
 </div>
 </section>
 <section id="Managing-your-own-datasets:-the-freva-user-data-command">
-<h1>Managing your own datasets: the freva-user-data command<a class="headerlink" href="#Managing-your-own-datasets:-the-freva-user-data-command" title="Permalink to this heading">#</a></h1>
+<h1>Managing your own datasets: the freva-user-data command<a class="headerlink" href="#Managing-your-own-datasets:-the-freva-user-data-command" title="Link to this heading">#</a></h1>
 <p>Freva offers the possibility to share custom datasets with other users by making it searchable via <code class="docutils literal notranslate"><span class="pre">freva-databrowser</span></code>. With help of the <code class="docutils literal notranslate"><span class="pre">freva-user-data</span></code> command users can add their own data to the central data location, (re)-index or delete data in the databrowser.</p>
 <p><strong>Note</strong>: Any data that has been added by users will be assigned a special project name: <code class="docutils literal notranslate"><span class="pre">project=user-$USER</span></code>. Let’s inspect the help menu of the freva-user-data or freva user-data command:</p>
 <div class="nbinput docutils container">
@@ -817,7 +818,7 @@ options:
 </pre></div></div>
 </div>
 <section id="Add-new-data-to-the-databrowser">
-<h2>Add new data to the databrowser<a class="headerlink" href="#Add-new-data-to-the-databrowser" title="Permalink to this heading">#</a></h2>
+<h2>Add new data to the databrowser<a class="headerlink" href="#Add-new-data-to-the-databrowser" title="Link to this heading">#</a></h2>
 <p>To be able to add data to the databrowser the file names must follow a strict standard and the files must reside in a specific location. The add sub command takes care about the correct file naming and location. No pre requirements other than the file has to be a valid netCDF or grib file are assumed. In other words this sub command places the user data with the correct naming structure to the correct location.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
@@ -891,21 +892,21 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230816/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230821/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
 <section id="Remove-your-data-from-the-databrowser">
-<h2>Remove your data from the databrowser<a class="headerlink" href="#Remove-your-data-from-the-databrowser" title="Permalink to this heading">#</a></h2>
+<h2>Remove your data from the databrowser<a class="headerlink" href="#Remove-your-data-from-the-databrowser" title="Link to this heading">#</a></h2>
 <p>The delete sub command removes entries from the databrowser and if necessary existing files from the central user data location.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
@@ -949,7 +950,7 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 </div>
 </section>
 <section id="(Re)-Index-existing-data-to-the-databrowser">
-<h2>(Re)-Index existing data to the databrowser<a class="headerlink" href="#(Re)-Index-existing-data-to-the-databrowser" title="Permalink to this heading">#</a></h2>
+<h2>(Re)-Index existing data to the databrowser<a class="headerlink" href="#(Re)-Index-existing-data-to-the-databrowser" title="Link to this heading">#</a></h2>
 <p>The index subcommand can be used to update the databrowser for existing user data. For example, if data has been removed from the databrowser it can be re-added:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
@@ -1054,9 +1055,9 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=3a4e2f4e"></script>
+</div><script src="../_static/documentation_options.js?v=6d5ebfd8"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>

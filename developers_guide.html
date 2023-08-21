@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="plugin_api.html" /><link rel="prev" title="The Freva command line interface" href="FrevaCli.html" />
 
-    <link rel="shortcut icon" href="_static/logo.png"/><!-- Generated with Sphinx 7.1.2 and Furo 2023.07.26 -->
+    <link rel="shortcut icon" href="_static/logo.png"/><!-- Generated with Sphinx 7.2.2 and Furo 2023.08.19 -->
         <title>Plugin Developer Guide - freva user guide 2307.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -209,16 +209,16 @@
         </div>
         <article role="main">
           <section id="plugin-developer-guide">
-<h1>Plugin Developer Guide<a class="headerlink" href="#plugin-developer-guide" title="Permalink to this heading">#</a></h1>
+<h1>Plugin Developer Guide<a class="headerlink" href="#plugin-developer-guide" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <p>This documentation helps to get started with creating user defined <code class="docutils literal notranslate"><span class="pre">Freva</span></code>
 plugins. This section provides a minimal example to turn your <em>existing</em> data
 analysis code into a Freva plugin. Detailed usage information can be found in the
 <a class="reference internal" href="plugin_api.html#apireference"><span class="std std-ref">API Reference</span></a>.</p>
-<section id="module-evaluation_system.api.plugin">
-<span id="a-minimal-example"></span><h2>A Minimal Example<a class="headerlink" href="#module-evaluation_system.api.plugin" title="Permalink to this heading">#</a></h2>
-<p>Definition of the base class that is used to implement user plugins.</p>
+<section id="a-minimal-example">
+<h2>A Minimal Example<a class="headerlink" href="#a-minimal-example" title="Link to this heading">#</a></h2>
+<p id="module-evaluation_system.api.plugin">Definition of the base class that is used to implement user plugins.</p>
 <p>The plugin API (Application Program Interface) is the central connection
 of a user plugin code and the Freva system infrastructure. The API
 enables the users to conveniently set up, run, and keep track of applied plugins.
@@ -238,7 +238,7 @@ executed via:</p>
 <p>With help of this API a Freva plugin can be created in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugin/new_plugin/plugin.py</span></code></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract" title="Link to this definition">#</a></dt>
 <dd><p>Base class that is used as a template for all Freva plugins.
 Any api wrapper class defining Freva plugins must inherit from this class.</p>
 <dl class="field-list simple">
@@ -346,14 +346,14 @@ class is implemented.</p>
 
 </section>
 <section id="setting-up-your-new-plugin">
-<h2>Setting up your new plugin<a class="headerlink" href="#setting-up-your-new-plugin" title="Permalink to this heading">#</a></h2>
+<h2>Setting up your new plugin<a class="headerlink" href="#setting-up-your-new-plugin" title="Link to this heading">#</a></h2>
 <p>This section illustrates the steps that are necessary to turn existing
 data analysis code into a Freva plugin.
 Like above, we assume that the code is stored in a specific location for example
 <code class="docutils literal notranslate"><span class="pre">~/workspace/tracking_tool</span></code>. Also, let’s assume that the analysis tool is written
 in the <em>R</em> script language.</p>
 <section id="creating-a-new-repository-from-a-template">
-<h3>Creating a new repository from a template<a class="headerlink" href="#creating-a-new-repository-from-a-template" title="Permalink to this heading">#</a></h3>
+<h3>Creating a new repository from a template<a class="headerlink" href="#creating-a-new-repository-from-a-template" title="Link to this heading">#</a></h3>
 <p>We have created a <a class="reference external" href="https://gitlab.dkrz.de/freva/plugins4freva/plugintemplate/">template repository</a> that helps
 you getting started with the Freva plugin development. Therefore we
 recommend you to use this repository. Use the following commands to turn this
@@ -384,7 +384,7 @@ the web. A good resource might be the
 </div>
 </section>
 <section id="installing-dependencies">
-<h3>Installing dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this heading">#</a></h3>
+<h3>Installing dependencies<a class="headerlink" href="#installing-dependencies" title="Link to this heading">#</a></h3>
 <p>Once the git repository has been set up and configured, all dependencies the tool
 needs should be installed. Here we assume the analysis tool is based on a gnu-R
 stack. Therefore gnu-R and certain libraries have to be part of the plugin
@@ -493,7 +493,7 @@ create the wrapper file and finalize the creation of the plugin.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Plugin Developer Guide</a><ul>
-<li><a class="reference internal" href="#module-evaluation_system.api.plugin">A Minimal Example</a><ul>
+<li><a class="reference internal" href="#a-minimal-example">A Minimal Example</a><ul>
 <li><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract"><code class="docutils literal notranslate"><span class="pre">PluginAbstract</span></code></a></li>
 </ul>
 </li>
@@ -513,9 +513,9 @@ create the wrapper file and finalize the creation of the plugin.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=3a4e2f4e"></script>
+</div><script src="_static/documentation_options.js?v=6d5ebfd8"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     </body>
