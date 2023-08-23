@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import argparse
-from pathlib import Path
 import sys
-from typing import Optional, Any, cast, Union
+from pathlib import Path
+from typing import Any, Optional, Union, cast
 
 import lazy_import
 import rich
+
 from evaluation_system import __version__
+
 from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")

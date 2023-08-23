@@ -1,10 +1,10 @@
 import logging
 import os
 import sys
-from typing import Union
+from typing import Optional, Union, cast
 
-from rich.logging import RichHandler
 from rich.console import Console
+from rich.logging import RichHandler
 
 logger_stream_handle = RichHandler(
     rich_tracebacks=True,
@@ -37,14 +37,26 @@ class FrevaLogger(logging.Logger):
 
 
 logging.setLoggerClass(FrevaLogger)
-logger: FrevaLogger = logging.getLogger("freva")
+logger: FrevaLogger = cast(FrevaLogger, logging.getLogger("freva"))
 logger.setLevel(logging.INFO)
 logger.propagate = False
 logger.addHandler(logger_stream_handle)
-_DEFAULT_CONFIG_FILE_LOCATION = os.path.join(
-    sys.prefix, "freva", "evaluation_system.conf"
-)
-# now check if we have a configuration file, and read the defaults from there
-CONFIG_FILE = os.environ.get(
-    "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
-)
+
+
+class _ConfigWrapper(str):
+    """Convenience class that helps to dynamically set the location of the
+    evaluation system config file."""
+
+    _env: str = "EVALUATION_SYSTEM_CONFIG_FILE"
+
+    def __init__(
+        self,
+        default_file: str,
+    ):
+        self.default_file = default_file
+
+    def __str__(self) -> str:
+        return os.environ.get(self._env, self.default_file)
+
+    def __repr__(self) -> str:
+        return self.__str__()

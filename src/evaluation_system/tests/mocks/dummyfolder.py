@@ -1,22 +1,24 @@
-import tempfile
-import shutil
-from pathlib import Path
-from subprocess import run, PIPE
 import os
+import shutil
+import tempfile
 import time
+from pathlib import Path
+from subprocess import PIPE, run
 
-from evaluation_system.api.plugin import PluginAbstract
+from netCDF4 import Dataset as nc
+from PIL import Image
+
 from evaluation_system.api.parameters import (
-    ParameterDictionary,
-    Integer,
-    Float,
-    String,
-    InputDirectory,
     Directory,
+    Float,
+    InputDirectory,
+    Integer,
+    ParameterDictionary,
+    String,
 )
-
-from evaluation_system.model.user import User
+from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.model.db import UserDB
+from evaluation_system.model.user import User
 
 
 class DummyPluginFolders(PluginAbstract):
@@ -24,8 +26,8 @@ class DummyPluginFolders(PluginAbstract):
 
     __short_description__ = "A dummy plugin with outputdir folder"
     __long_description__ = ""
-    __version__ = (0, 0, 0)
     __tags__ = ["foo"]
+    __version__ = ("foo", "bar")
     __category__ = "statistical"
     __name__ = "DummyPluginFolders"
     __parameters__ = ParameterDictionary(
@@ -43,11 +45,11 @@ class DummyPluginFolders(PluginAbstract):
 
     def run_tool(self, config_dict=None):
         DummyPluginFolders._runs.append(config_dict)
-        tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
-        res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
-        assert "plugin_env" in os.environ["PATH"]
-        print(f"DummyPluginFolders tool was run with: {config_dict}")
-        return {
-            "/tmp/dummyfile1": dict(type="plot"),
-            "/tmp/dummyfile2": dict(type="data"),
-        }
+        out_dir = Path(config_dict["outputdir"]).absolute().expanduser()
+        out_dir.mkdir(exist_ok=True, parents=True)
+        image = Image.new("RGB", (300, 200), "white")
+        image.save(str(out_dir / "plot.png"))
+        with nc(str(out_dir / "data.nc"), "w") as dataset:
+            dataset.variable = config_dict["variable"]
+        print(f"Processing output in {config_dict['outputdir']}")
+        return self.prepare_output(config_dict["outputdir"])

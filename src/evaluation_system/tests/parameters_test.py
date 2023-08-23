@@ -10,10 +10,10 @@ import pytest
 
 def test_infer_type(dummy_env):
     from evaluation_system.api.parameters import (
-        ParameterType,
-        Integer,
-        Float,
         Bool,
+        Float,
+        Integer,
+        ParameterType,
         String,
         ValidationError,
     )
@@ -46,14 +46,14 @@ def test_parameter_type(dummy_env):
 
 def test_parsing(dummy_env):
     from evaluation_system.api.parameters import (
-        String,
-        Integer,
-        Float,
         Bool,
+        Float,
+        InputDirectory,
+        Integer,
         Range,
         SelectField,
         SolrField,
-        InputDirectory,
+        String,
         Unknown,
         ValidationError,
     )
@@ -157,8 +157,8 @@ def test_parsing(dummy_env):
 
 def test_parameters_dictionary(dummy_env):
     from evaluation_system.api.parameters import (
-        String,
         ParameterDictionary,
+        String,
         ValidationError,
     )
 
@@ -195,15 +195,14 @@ def test_parameters_dictionary(dummy_env):
 
 def test_parse_arguments(dummy_env):
     from evaluation_system.api.parameters import (
-        String,
-        ParameterDictionary,
-        Integer,
-        Float,
         Bool,
-        String,
-        File,
         Date,
+        File,
+        Float,
+        Integer,
+        ParameterDictionary,
         Range,
+        String,
         ValidationError,
     )
 
@@ -296,10 +295,10 @@ def test_parse_arguments(dummy_env):
 
 def test_complete(dummy_env):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        File,
         Date,
+        File,
+        Integer,
+        ParameterDictionary,
     )
 
     p_dict = ParameterDictionary(
@@ -334,13 +333,13 @@ def test_complete(dummy_env):
 
 def test_defaults(dummy_env):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
         Bool,
-        Integer,
-        File,
         Date,
-        Range,
+        File,
         Float,
+        Integer,
+        ParameterDictionary,
+        Range,
         ValidationError,
     )
 
@@ -375,10 +374,10 @@ def test_defaults(dummy_env):
 
 def test_validate_errors(dummy_env):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
         File,
         Float,
+        Integer,
+        ParameterDictionary,
     )
 
     p_dict = ParameterDictionary(
@@ -403,7 +402,7 @@ def test_validate_errors(dummy_env):
 
 
 def test_help(dummy_env):
-    from evaluation_system.api.parameters import ParameterDictionary, Integer, Float
+    from evaluation_system.api.parameters import Float, Integer, ParameterDictionary
 
     p_dict = ParameterDictionary(
         Integer(name="answer", help="just some value", default=42, print_format="%sm"),

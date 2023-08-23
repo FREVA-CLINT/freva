@@ -1,28 +1,24 @@
 """Update user data in the apache solr data search server."""
 
 from __future__ import annotations
-from dataclasses import dataclass
+
 import logging
-from pathlib import Path
 import os
 import shutil
-from typing import Callable, Optional, Union
 import warnings
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Optional, Union
 
 import lazy_import
-from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import (
-    ConfigurationException,
-    ValidationError,
-)
 
+from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
-DataReader = lazy_import.lazy_class(
-    "evaluation_system.api.user_data.DataReader"
-)
+DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
@@ -46,9 +42,7 @@ class UserData:
             config.reloadConfiguration()
             return get_output_directory() / f"user-{User().getName()}"
 
-    def _validate_user_dirs(
-        self, *crawl_dirs: os.PathLike
-    ) -> tuple[Path, ...]:
+    def _validate_user_dirs(self, *crawl_dirs: os.PathLike) -> tuple[Path, ...]:
         root_path = self.user_dir
         user_paths: tuple[Path, ...] = ()
         for crawl_dir in crawl_dirs or (root_path,):
@@ -192,9 +186,7 @@ class UserData:
             p_path = Path(path).expanduser().absolute()
             u_reader = DataReader(p_path, **search_keys)
             for file in u_reader:
-                new_file = u_reader.file_name_from_metdata(
-                    file, override=override
-                )
+                new_file = u_reader.file_name_from_metdata(file, override=override)
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
                 if new_file.exists() and override:
                     new_file.unlink()
@@ -207,9 +199,7 @@ class UserData:
         self.index(*crawl_dirs)
 
     @handled_exception
-    def delete(
-        self, *paths: os.PathLike, delete_from_fs: bool = False
-    ) -> None:
+    def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
         """Delete data from the databrowser.
 
         The methods deletes user data from the databrowser.
@@ -289,9 +279,7 @@ class UserData:
 
         """
         if dtype not in ("fs",):
-            raise NotImplementedError(
-                "Only data on POSIX file system is supported"
-            )
+            raise NotImplementedError("Only data on POSIX file system is supported")
         log_level = logger.level
         try:
             logger.setLevel(logging.ERROR)

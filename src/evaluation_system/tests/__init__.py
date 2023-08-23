@@ -1,9 +1,10 @@
-from difflib import SequenceMatcher
-import mock
 import os
-import sys
 import shlex
-from subprocess import run, PIPE
+import sys
+from difflib import SequenceMatcher
+from subprocess import PIPE, run
+
+import mock
 
 
 def mockenv(**envvars):

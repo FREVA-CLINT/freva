@@ -172,7 +172,7 @@ setup(
         ],
         "test": [
             "allure-pytest",
-            "black",
+            "black[jupyter]",
             "django-stubs",
             "django-stubs-ext",
             "h5netcdf",

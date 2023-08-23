@@ -1,8 +1,10 @@
-from django.conf import settings
-from evaluation_system.misc import config
+import json
+import time
 
-import json, time
 import django
+from django.conf import settings
+
+from evaluation_system.misc import config
 
 SETTINGS = dict(TIME_ZONE="UTC", USE_TZ=False)
 config.reloadConfiguration()

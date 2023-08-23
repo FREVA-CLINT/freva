@@ -3,15 +3,16 @@ Created on 31.05.2016
 
 @author: Sebastian Illing
 """
-import os
-from pathlib import Path
-import tempfile
-import shutil
-import logging
-import time
-import textwrap
 import datetime
+import logging
+import os
+import shutil
+import tempfile
+import textwrap
+import time
+from pathlib import Path
 from tempfile import TemporaryDirectory
+
 import pytest
 
 from evaluation_system.api.plugin_manager import PluginMetadata
@@ -29,8 +30,8 @@ def test_modules(dummy_settings):
 
 
 def test_plugins(dummy_settings, temp_user):
-    from evaluation_system.tests.mocks.dummy import DummyPlugin
     import evaluation_system.api.plugin_manager as pm
+    from evaluation_system.tests.mocks.dummy import DummyPlugin
 
     # force reload to be sure the dummy is loaded
     assert len(pm.get_plugins()) > 0
@@ -342,8 +343,8 @@ def test_preview_generation(dummy_env):
 
 
 def test_get_command_string(dummy_env, django_user):
-    from evaluation_system.model.history.models import History
     import evaluation_system.api.plugin_manager as pm
+    from evaluation_system.model.history.models import History
 
     h = History.objects.create(
         timestamp=datetime.datetime.now(),
@@ -360,8 +361,8 @@ def test_get_command_string(dummy_env, django_user):
 
 
 def test_load_scheduled_conf(dummy_env, django_user, temp_user):
-    from evaluation_system.model.history.models import History
     import evaluation_system.api.plugin_manager as pm
+    from evaluation_system.model.history.models import History
 
     h = History.objects.create(
         timestamp=datetime.datetime.now(),

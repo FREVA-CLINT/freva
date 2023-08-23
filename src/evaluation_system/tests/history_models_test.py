@@ -3,10 +3,10 @@ Created on 23.05.2016
 
 @author: Sebastian Illing
 """
+import os
+import pwd
 import unittest
 from datetime import datetime
-import pwd
-import os
 
 
 def test_history_model(test_user):
@@ -41,7 +41,7 @@ def test_result_model(test_user):
 
 
 def test_similar_results(dummy_user, test_user):
-    from evaluation_system.model.history.models import History, Configuration
+    from evaluation_system.model.history.models import Configuration, History
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
     hists = []

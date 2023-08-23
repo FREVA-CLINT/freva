@@ -1,10 +1,12 @@
-from django.db import models
-from django.contrib.auth.models import User
-from evaluation_system.model.plugins.models import Version, Parameter
-from evaluation_system.misc.utils import PrintableList
-import re
-import os
 import json
+import os
+import re
+
+from django.contrib.auth.models import User
+from django.db import models
+
+from evaluation_system.misc.utils import PrintableList
+from evaluation_system.model.plugins.models import Parameter, Version
 
 
 class History(models.Model):
@@ -35,9 +37,14 @@ class History(models.Model):
         not_scheduled      - an error occurred during scheduling
         """
 
-        finished, finished_no_output, broken, running, scheduled, not_scheduled = list(
-            range(6)
-        )
+        (
+            finished,
+            finished_no_output,
+            broken,
+            running,
+            scheduled,
+            not_scheduled,
+        ) = list(range(6))
 
     class Flag:
         """
@@ -211,7 +218,10 @@ class History(models.Model):
 
     @staticmethod
     def find_similar_entries(
-        config, uid=None, max_impact=Parameter.Impact.affects_plots, max_entries=-1
+        config,
+        uid=None,
+        max_impact=Parameter.Impact.affects_plots,
+        max_entries=-1,
     ):
         """
         Find entries which are similar to a given configuration.
@@ -375,9 +385,14 @@ class HistoryTag(models.Model):
     """
 
     class tagType:
-        [caption, note_public, note_private, note_deleted, follow, unfollow] = list(
-            range(6)
-        )
+        [
+            caption,
+            note_public,
+            note_private,
+            note_deleted,
+            follow,
+            unfollow,
+        ] = list(range(6))
 
     class Meta:
         app_label = "history"
@@ -406,6 +421,36 @@ class HistoryTag(models.Model):
         null=True,
         default=None,
     )
+
+
+class BatchSettings(models.Model):
+    """All information on any batchmode settings of a plugin run."""
+
+    history_id: models.ForeignKey[History, int] = models.ForeignKey(
+        History, on_delete=models.CASCADE
+    )
+    job_script: models.TextField = models.TextField(null=True, blank=True)
+    workload_manager: models.TextField = models.TextField(null=True, blank=True)
+    job_id: models.IntegerField = models.IntegerField()
+    output_file: models.TextField = models.TextField(null=True, blank=True)
+    host: models.TextField = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = "history_batch_settings"
+        app_label = "history"
+
+
+class Output(models.Model):
+    """All information Plugin Output file."""
+
+    history_id: models.ForeignKey[History, int] = models.ForeignKey(
+        History, on_delete=models.CASCADE
+    )
+    result: models.JSONField = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        db_table = "history_output"
+        app_label = "history"
 
 
 class Configuration(models.Model):

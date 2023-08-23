@@ -2,11 +2,12 @@
 """
 This files encapsulates access to the esgf p2p system.
 """
-import json
-import urllib.request
-import sys
-import logging
 import copy
+import json
+import logging
+import sys
+import urllib.request
+
 from evaluation_system.misc.utils import Struct
 
 logging.basicConfig(level=logging.DEBUG)

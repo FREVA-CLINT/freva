@@ -4,15 +4,16 @@ Created on 13.05.2016
 @author: Sebastian Illing
 """
 
-import os
 import datetime
-from pathlib import Path
-import pytest
-import mock
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+import os
 import sys
+from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
+import mock
+import pytest
 import rich.table
+
 from evaluation_system.tests import similar_string
 
 
@@ -39,18 +40,16 @@ def test_complete_abstract(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_setup_configuration(dummy_plugin):
-    from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
     from evaluation_system.api.parameters import (
         ParameterDictionary,
-        ValidationError,
         String,
+        ValidationError,
     )
+    from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
 
     with DummyUser(random_home=True) as user:
         dummy = DummyPlugin(user=user)
-        dummy.__parameters__ = ParameterDictionary(
-            String(name="a", mandatory=True)
-        )
+        dummy.__parameters__ = ParameterDictionary(String(name="a", mandatory=True))
         # the default behavior is to check for None values and fail if found
         with pytest.raises(ValidationError):
             dummy.setup_configuration()
@@ -64,9 +63,7 @@ def test_setup_configuration(dummy_plugin):
         assert 1 == res["num"]
 
         # check indirect resolution
-        res = dummy.setup_configuration(
-            dict(num="${a}x", a=1), check_cfg=False
-        )
+        res = dummy.setup_configuration(dict(num="${a}x", a=1), check_cfg=False)
         assert "1x" == res["num"]
 
         # check indirect resolution can also be turned off
@@ -76,9 +73,7 @@ def test_setup_configuration(dummy_plugin):
         assert "${a}x" == res["num"]
 
         # check user special values work
-        res = dummy.setup_configuration(
-            dict(num="$USER_BASE_DIR"), check_cfg=False
-        )
+        res = dummy.setup_configuration(dict(num="$USER_BASE_DIR"), check_cfg=False)
         assert user.getUserBaseDir() == res["num"]
 
         res = dummy.setup_configuration(
@@ -90,17 +85,15 @@ def test_setup_configuration(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_parse_arguments(dummy_plugin):
     from evaluation_system.api.parameters import (
+        Bool,
+        Integer,
         ParameterDictionary,
         String,
-        Integer,
         ValidationError,
-        Bool,
     )
 
     dummy = dummy_plugin
-    dummy.__parameters__ = ParameterDictionary(
-        String(name="a"), String(name="b")
-    )
+    dummy.__parameters__ = ParameterDictionary(String(name="a"), String(name="b"))
     res = dummy.__parameters__.parse_arguments("a=1 b=2".split())
     assert res == dict(a="1", b="2")
     dummy.__parameters__ = ParameterDictionary(
@@ -137,11 +130,11 @@ def test_parse_arguments(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_parse_metadict(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        String,
-        Integer,
         Bool,
         Float,
+        Integer,
+        ParameterDictionary,
+        String,
         ValidationError,
     )
 
@@ -171,14 +164,15 @@ def test_parse_metadict(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_read_config_parser(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        String,
-        Integer,
-        ValidationError,
-    )
     from configparser import ConfigParser, ExtendedInterpolation
     from io import StringIO
+
+    from evaluation_system.api.parameters import (
+        Integer,
+        ParameterDictionary,
+        String,
+        ValidationError,
+    )
 
     conf = ConfigParser(interpolation=ExtendedInterpolation())
     conf_str = "[DummyPlugin]\na=42\nb=text"
@@ -202,12 +196,9 @@ def test_read_config_parser(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_save_config(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-    )
     from io import StringIO
+
+    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
 
     batchmode_options = """#: Set additional options for the job submission to the workload manager (,
 #:  seperated). Note: batchmode and web only.
@@ -309,10 +300,10 @@ dj1yfk""",
 @mock.patch("os.getpid", lambda: 12345)
 def test_read_config(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         Float,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     dummy = dummy_plugin
@@ -347,10 +338,10 @@ def test_read_config(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def testSubstitution(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     dummy = dummy_plugin
@@ -367,11 +358,7 @@ def testSubstitution(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_help(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-    )
+    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
 
     dummy = dummy_plugin
     dummy.__version__ = (1, 2, 3)
@@ -412,12 +399,12 @@ extra_scheduler_options (default: )
 @mock.patch("os.getpid", lambda: 12345)
 def test_show_config(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         Float,
+        Integer,
+        ParameterDictionary,
+        String,
     )
-    from evaluation_system.tests.mocks.dummy import DummyUser, DummyPlugin
+    from evaluation_system.tests.mocks.dummy import DummyPlugin, DummyUser
 
     user = DummyUser(random_home=True)
     dummy = DummyPlugin(user=user)
@@ -465,11 +452,7 @@ extra_scheduler_options: - (default: )""",
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_usage(dummy_plugin):
-    from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
-    )
+    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
 
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(
@@ -492,10 +475,10 @@ def test_usage(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_run(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
@@ -533,24 +516,23 @@ def test_plugin_help():
 @mock.patch("os.getpid", lambda: 12345)
 def test_get_class_base_dir(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     dummy = dummy_plugin
-    import evaluation_system.tests.mocks
     import os
     import re
 
-    assert evaluation_system.tests.mocks.dummy.__file__.startswith(
-        dummy.class_basedir
-    )
+    import evaluation_system.tests.mocks
+
+    assert evaluation_system.tests.mocks.dummy.__file__.startswith(dummy.class_basedir)
     # module name should be getClassBaseDir() + modulename_with_"/"_instead_of_"." + ".pyc" or ".py"
-    module_name = os.path.abspath(
-        evaluation_system.tests.mocks.dummy.__file__
-    )[len(dummy.class_basedir) + 1 :].replace("/", ".")
+    module_name = os.path.abspath(evaluation_system.tests.mocks.dummy.__file__)[
+        len(dummy.class_basedir) + 1 :
+    ].replace("/", ".")
     print(module_name, "blablabla")
     module_name = re.sub("\\.pyc?$", "", module_name)
     assert module_name == "evaluation_system.tests.mocks.dummy"
@@ -559,10 +541,10 @@ def test_get_class_base_dir(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_special_variables():
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
     from evaluation_system.tests.mocks.dummy import DummyPlugin
 
@@ -604,10 +586,10 @@ def test_compose_command():
 
     dummy_plugin = DummyPlugin()
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     command = dummy_plugin.compose_command(
@@ -625,10 +607,10 @@ def test_compose_command():
 @mock.patch("os.getpid", lambda: 12345)
 def test_append_unique_output():
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
     from evaluation_system.misc import config
     from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -654,10 +636,10 @@ def test_append_unique_output():
 @mock.patch("os.getpid", lambda: 12345)
 def test_run_tool(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     result = dummy_plugin._run_tool({"the_answer": 42})
@@ -670,17 +652,13 @@ def test_run_tool(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_prepare_output(dummy_plugin):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
-    fn = (
-        Path(__file__).absolute().parent
-        / "test_output"
-        / "vecap_test_output.pdf"
-    )
+    fn = Path(__file__).absolute().parent / "test_output" / "vecap_test_output.pdf"
     types_to_check = [
         {"suffix": ".jpg", "type": "plot", "todo": "copy"},
         {"suffix": ".eps", "type": "plot", "todo": "convert"},
@@ -708,10 +686,10 @@ def test_prepare_output(dummy_plugin):
 @mock.patch("os.getpid", lambda: 12345)
 def test_call(dummy_plugin, capsys):
     from evaluation_system.api.parameters import (
-        ParameterDictionary,
-        Integer,
-        String,
         InputDirectory,
+        Integer,
+        ParameterDictionary,
+        String,
     )
 
     _ = dummy_plugin.call("echo /bin/bash")  # .strip('\n')

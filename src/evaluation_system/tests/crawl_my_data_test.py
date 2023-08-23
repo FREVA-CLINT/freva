@@ -1,14 +1,15 @@
 """Tests for ingesting user data."""
 from __future__ import annotations
-from pathlib import Path
+
 import datetime
-import mock
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Generator, Tuple
 
 import cftime
-import pytest
+import mock
 import numpy as np
+import pytest
 import xarray as xr
 
 
@@ -28,9 +29,7 @@ def create_data(
             if "time" in dims:
                 units = "seconds since 1970-01-01 00:00:00"
                 coords["time"] = cftime.num2date(
-                    np.array(
-                        [ntstep + (j * 3600) for j in range(chunk_size[0])]
-                    ),
+                    np.array([ntstep + (j * 3600) for j in range(chunk_size[0])]),
                     units=units,
                 )
                 data["time"] = xr.DataArray(
@@ -69,9 +68,7 @@ def invalid_data_files() -> Generator[Path, None, None]:
     yield from create_data(1, ["tas", "foo"], (10, 10), ("lat", "lon"))
 
 
-def test_invalid_data_files(
-    invalid_data_files: Path, time_mock: mock_datetime
-) -> Path:
+def test_invalid_data_files(invalid_data_files: Path, time_mock: mock_datetime) -> Path:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(invalid_data_files.rglob("*.*"))[0]
@@ -85,9 +82,7 @@ def test_invalid_data_files(
         data_reader.get_metadata(not_a_nc_file)
 
 
-def test_add_valid_data(
-    valid_data_files: Path, time_mock: mock_datetime
-) -> None:
+def test_add_valid_data(valid_data_files: Path, time_mock: mock_datetime) -> None:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
@@ -107,9 +102,7 @@ def test_add_valid_data(
     assert data["time_frequency"] == "fx"
 
 
-def test_get_time_frequency(
-    valid_data_files: Path, time_mock: mock_datetime
-) -> None:
+def test_get_time_frequency(valid_data_files: Path, time_mock: mock_datetime) -> None:
     from evaluation_system.api.user_data import DataReader
 
     data_reader = DataReader(Path("foo/bar.nc"))
@@ -155,9 +148,7 @@ def test_get_file_name_from_metadata(
     assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
     defaults.pop("version")
     data_reader = DataReader(valid_data_files, **defaults)
-    file_part = (
-        "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v19990909/foob"
-    )
+    file_part = "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v19990909/foob"
     assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
     defaults.pop("ensemble")
     data_reader = DataReader(valid_data_files, **defaults)
@@ -196,9 +187,7 @@ def test_versions(valid_data_files: Path, time_mock: mock_datetime) -> None:
     assert new_file3 == new_file2
 
 
-def test_iter_data_files(
-    valid_data_files: Path, time_mock: mock_datetime
-) -> None:
+def test_iter_data_files(valid_data_files: Path, time_mock: mock_datetime) -> None:
     from evaluation_system.api.user_data import DataReader
 
     input_files = list(valid_data_files.rglob("*.*"))
@@ -247,11 +236,7 @@ def test_add_my_data(valid_data_files, time_mock):
         "foo-kingdom",
     ]
     run(["add", "foo-product", str(valid_data_files)] + defaults)
-    run(
-        ["add", "foo-product", str(valid_data_files)]
-        + defaults
-        + ["--override"]
-    )
+    run(["add", "foo-product", str(valid_data_files)] + defaults + ["--override"])
     input_files = list(valid_data_files.rglob("*.nc"))
     with pytest.raises(SystemExit):
         run(["add", "foo-product", str(valid_data_files)])
@@ -267,9 +252,10 @@ def test_add_my_data(valid_data_files, time_mock):
 
 
 def test_add_methods():
-    from freva import UserData
-    import shutil
     import os
+    import shutil
+
+    from freva import UserData
 
     assert UserData._set_add_method("cp") == shutil.copy
     assert UserData._set_add_method("mv") == shutil.move
@@ -281,15 +267,13 @@ def test_add_methods():
 
 def test_delete_my_data(valid_data_files, time_mock):
     import freva
+    from evaluation_system.api.user_data import get_output_directory
+    from evaluation_system.model.user import User
     from freva import UserData
     from freva.cli.user_data import main as run
-    from evaluation_system.model.user import User
-    from evaluation_system.api.user_data import get_output_directory
 
     user_data = UserData()
-    root_path = (
-        get_output_directory() / f"user-{User().getName()}" / "foo-product"
-    )
+    root_path = get_output_directory() / f"user-{User().getName()}" / "foo-product"
     assert freva.count_values(product="foo-product") > 0
     nfiles = len(list(root_path.rglob("*.nc")))
     assert nfiles > 0
@@ -300,25 +284,21 @@ def test_delete_my_data(valid_data_files, time_mock):
     assert len(list(root_path.rglob("*.nc"))) == 0
 
 
-def test_index_my_data(
-    dummy_crawl, capsys, dummy_env, valid_data_files, time_mock
-):
-    from freva import UserData
-    from evaluation_system.tests import run_cli
-    from freva.cli.user_data import main as run
+def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mock):
     from evaluation_system.misc.exceptions import ValidationError
     from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.tests import run_cli
+    from freva import UserData
+    from freva.cli.user_data import main as run
 
     run(["index", "--data-type=fs", "-d"])
     captured = capsys.readouterr()
     assert "Status: crawling ..." in captured.out
     assert "ok" in captured.out
-    assert (
-        len(list(SolrFindFiles.search(product="foo"))) == len(dummy_crawl) - 2
+    assert len(list(SolrFindFiles.search(product="foo"))) == len(dummy_crawl) - 2
+    assert len(list(SolrFindFiles.search(product="foo", latest_version=False))) == len(
+        dummy_crawl
     )
-    assert len(
-        list(SolrFindFiles.search(product="foo", latest_version=False))
-    ) == len(dummy_crawl)
     user_data = UserData()
     with pytest.raises(NotImplementedError):
         user_data.index(dtype="something")
@@ -326,7 +306,8 @@ def test_index_my_data(
         with pytest.raises(ValidationError):
             run_cli(["user-data", "index", "/tmp/forbidden/folder"])
 
-    import os, shutil
+    import os
+    import shutil
 
     tmp_files = [
         "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_189509010000-192412312300.nc",
@@ -358,12 +339,10 @@ def test_index_my_data(
 
 
 def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
-    from evaluation_system.tests import run_cli
     from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.tests import run_cli
 
-    dummy_crawl.append(
-        dummy_crawl[0].parent / "more_info" / dummy_crawl[0].name
-    )
+    dummy_crawl.append(dummy_crawl[0].parent / "more_info" / dummy_crawl[0].name)
     dummy_crawl[-1].parent.mkdir(exist_ok=True, parents=True)
     dummy_crawl[-1].touch()
     with pytest.raises(SystemExit):

@@ -4,22 +4,23 @@
 This modules encapsulates all access to databases.
 """
 
-import evaluation_system.model.history.models as hist
-import evaluation_system.model.plugins.models as pin
+import json
+import re
+import socket
+from datetime import datetime
+from typing import cast
 
+import pandas as pd
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from datetime import datetime
-import json
-import re
-import pandas as pd
-import socket
-from evaluation_system.misc import config
-from evaluation_system.model.history.models import Configuration
-
-from evaluation_system.misc import logger as log
+import evaluation_system.model.history.models as hist
+import evaluation_system.model.plugins.models as pin
 import evaluation_system.settings.database
+from evaluation_system.misc import config
+from evaluation_system.misc import logger as log
+from evaluation_system.misc.utils import metadict
+from evaluation_system.model.history.models import Configuration
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 
@@ -152,7 +153,9 @@ class UserDB(object):
         """
 
         h = hist.History.objects.get(
-            id=row_id, uid_id=uid, status=hist.History.processStatus.not_scheduled
+            id=row_id,
+            uid_id=uid,
+            status=hist.History.processStatus.not_scheduled,
         )
 
         h.slurm_output = slurmFileName
@@ -160,6 +163,25 @@ class UserDB(object):
         h.status = status or hist.History.processStatus.scheduled
 
         h.save()
+
+    def store_batch_settings(
+        self,
+        row_id: int,
+        job_script: str,
+        workload_manager: str,
+        job_id: int,
+        output_file: str,
+    ) -> None:
+        """Store batch settings of the batch job for future interaction."""
+        settings = hist.BatchSettings(
+            history_id_id=row_id,
+            job_script=job_script,
+            workload_manager=workload_manager,
+            job_id=job_id,
+            output_file=output_file,
+            host=socket.gethostname().partition(".")[0],
+        )
+        settings.save()
 
     class ExceptionStatusUpgrade(Exception):
         """
@@ -201,7 +223,13 @@ class UserDB(object):
         h.save()
 
     def getHistory(
-        self, tool_name=None, limit=-1, since=None, until=None, entry_ids=None, uid=None
+        self,
+        tool_name=None,
+        limit=-1,
+        since=None,
+        until=None,
+        entry_ids=None,
+        uid=None,
     ):
         """Returns the stored history (run analysis) for the given tool.
 
@@ -214,7 +242,8 @@ class UserDB(object):
         :type until: datetime.datetime
         :param until: Return only  items stored before this date
         :param entry_ids: ([int] or int) id or list thereof to be selected
-        :returns: ([:class:`HistoryEntry`]) list of entries that match the query."""
+        :returns: ([:class:`HistoryEntry`]) list of entries that match the query.
+        """
         filter_dict = {}
 
         if entry_ids is not None:
@@ -282,7 +311,24 @@ class UserDB(object):
 
         h.save()
 
-    def storeResults(self, rowid, results):
+    def store_output(self, rowid: int, results: metadict) -> None:
+        """Store the output of a plugin run."""
+
+        output = hist.Output(history_id_id=rowid, result=results)
+        output.save()
+        self.storeResults(
+            rowid,
+            cast(
+                metadict,
+                {
+                    k: v
+                    for (k, v) in results.items()
+                    if v.get("type", "data") not in ("data",)
+                },
+            ),
+        )
+
+    def storeResults(self, rowid: int, results: metadict) -> None:
         """
         :type rowid: integer
         :param rowid: the row id of the history entry where the results belong to
@@ -311,7 +357,9 @@ class UserDB(object):
             if preview_path and reg_ex is not None:
                 # We store the relative path for previews only.
                 # Which allows us to move the preview files to a different folder.
-                preview_file = reg_ex.match(preview_path).group(2)
+                preview_match = reg_ex.match(preview_path)
+                if preview_match is not None:
+                    preview_file = preview_match.group(2)
 
             if type_name == "plot":
                 type_number = hist.Result.Filetype.plot
@@ -459,7 +507,9 @@ class UserDB(object):
         from evaluation_system.model.solr_models.models import UserCrawl
 
         crawl = UserCrawl(
-            status="waiting", user_id=self.getUserId(username), path_to_crawl=crawl_dir
+            status="waiting",
+            user_id=self.getUserId(username),
+            path_to_crawl=crawl_dir,
         )
         crawl.save()
         return crawl.id

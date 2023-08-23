@@ -2,11 +2,13 @@
 
 import argparse
 import sys
-from typing import Optional, List
+from typing import List, Optional
 
 import lazy_import
 from rich import print
+
 from evaluation_system import __version__
+
 from .utils import SubCommandParser
 
 freva = lazy_import.lazy_module("freva")

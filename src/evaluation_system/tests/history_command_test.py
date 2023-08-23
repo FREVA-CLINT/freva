@@ -3,12 +3,12 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
-import os
 import datetime
+import os
 import pwd
 import sys
-import pytest
 
+import pytest
 
 from evaluation_system.tests import run_cli
 from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -53,8 +53,8 @@ def test_freva_history_method(dummy_history, dummy_user):
 
 
 def test_history_cmd(capsys, dummy_history, dummy_user):
-    from freva.cli.history import main as run
     from freva import logger
+    from freva.cli.history import main as run
 
     logger.setLevel(20)
     hist_ids = []

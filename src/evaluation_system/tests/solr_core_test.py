@@ -11,9 +11,9 @@ import pytest
 
 
 def test_ingest(dummy_solr):
-    from evaluation_system.model.solr_core import SolrCore
-    from evaluation_system.model.solr import SolrFindFiles
     from evaluation_system.misc.utils import supermakedirs
+    from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.model.solr_core import SolrCore
 
     latest_versions = [
         dummy_solr.files[0],

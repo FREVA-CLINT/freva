@@ -1,19 +1,20 @@
 from __future__ import annotations
+
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any, Optional
 
+from rich import print as pprint
 from rich.console import Console
 
 console = Console()
 import lazy_import
 
-
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser, BaseCompleter
 
+from .utils import BaseCompleter, BaseParser
 
 freva = lazy_import.lazy_module("freva")
 PluginNotFoundError = lazy_import.lazy_class(
@@ -130,7 +131,7 @@ class Cli(BaseParser):
     ) -> None:
         """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
-        tool_options = kwargs.pop("tool-options", [])
+        tool_options = kwargs.pop("tool-options", []) + kwargs.pop("unknown", [])
         repo_version: bool = kwargs.pop("repo_version", False)
         show_config: bool = kwargs.pop("show_config", False)
         if kwargs.pop("list_tools") or not tool_name:
@@ -145,17 +146,18 @@ class Cli(BaseParser):
         else:
             kwargs["unique_output"] = False
         tool_args = {**kwargs, **options}
+        value = 0
         try:
             if tool_args.pop("doc"):
                 console.print(freva.plugin_doc(tool_name))
                 return
-            value = 0
             if repo_version:
                 print(freva.plugin_info(tool_name or "", "repository", **options))
             elif show_config:
                 print(freva.plugin_info(tool_name or "", "config", **options))
             else:
-                value, _ = freva.run_plugin(tool_name or "", **tool_args)
+                plugin_run = freva.run_plugin(tool_name or "", **tool_args)
+                value = int(plugin_run.status == "broken")
         except (
             PluginNotFoundError,
             ValidationError,
@@ -183,7 +185,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        console.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
+        pprint("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

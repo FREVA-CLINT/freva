@@ -1,3 +1,5 @@
+from pathlib import Path
+
 TEST_EVAL = """[evaluation_system]
 base_dir=evaluation_system
 project_name=freva-ces
@@ -6,7 +8,7 @@ scratch_dir=/tmp/scratch/$$USER
 directory_structure_type=central
 scheduler_input_dir=/tmp/slurm
 scheduler_output_dir=/tmp/slurm
-scheduler_system=slurm
+scheduler_system=local
 preview_path=/tmp/preview
 project_data=/tmp/user_data
 db.host=127.0.0.1
@@ -22,9 +24,10 @@ queue=compute
 project=ch1187
 memory=10G
 [plugin:DummyPlugin]
-plugin_path=$$EVALUATION_SYSTEM_HOME/src/evaluation_system/tests/mocks
-python_path=$$EVALUATION_SYSTEM_HOME/src/evaluation_system/tests/mocks
-module=dummy"""
+python_path={dummy_path}
+module=dummy""".format(
+    dummy_path=Path(__file__).parent
+)
 
 TEST_DRS = """
 [cmip5]

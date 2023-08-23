@@ -1,21 +1,32 @@
 """Additional utilities."""
-from functools import wraps
 import logging
 import os
+import shlex
+import subprocess
+import time
+from fnmatch import fnmatch
+from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Optional, Union, Type, cast
 from types import TracebackType
+from typing import Any, Callable, List, Literal, Optional, Tuple, Type, Union, cast
 
 try:
     from IPython import get_ipython
 except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
-from evaluation_system.misc.utils import metadict as meta_type
-from evaluation_system.misc import logger
 import lazy_import
+from rich.live import Live
+from rich.spinner import Spinner
+
+import freva
+from evaluation_system.misc import logger
+from evaluation_system.misc.utils import metadict as meta_type
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+cancel_command = lazy_import.lazy_callable(
+    "evaluation_system.api.workload_manager.cancel_command"
+)
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
 
 
@@ -42,7 +53,6 @@ def handled_exception(func: Callable[..., Any]) -> Callable[..., Any]:
             return func(*args, **kwargs)
         except BaseException as error:
             exception_handler(error)
-            raise  # Optionally re-raise the exception after handling
 
     return wrapper
 
@@ -80,47 +90,240 @@ def exception_handler(exception: BaseException, cli: bool = False) -> None:
 
 
 class PluginStatus:
-    """The state of a plugin application."""
+    """A class to interact with the status of a plugin application.
 
-    def __init__(self, metadict: Optional[meta_type], history_id: int) -> None:
-        self._metadict = metadict
+    With help of this class you can:
+
+        - Check if a plugin is still running.
+        - Get all results (data or plot files) of a plugin.
+        - Check the configuration of a plugin.
+        - Wait until the plugin is finished.
+
+    Example
+    -------
+
+    The output of the ``freva.run_plugin`` method is an instance of the
+    ``PluginStatus`` class. That means you can directly use the output of
+    :py:meth:``freva.run_plugin`` to interact with the plugin status:
+
+    .. execute_code::
+
+        import freva
+        res = freva.run_plugin("dummypluginfolders")
+        print(res.status)
+
+    You can also create an instance of the class yourself, if you know the
+    ``history_id`` of a specific plugin run. Note that you can query these ids
+    by making use of the :py:meth:``freva.history`` method:
+
+    .. execute_code::
+
+        import freva
+        # Get the last run of the dummypluginfolders plugin
+        hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
+        res = freva.PluginStatus(hist["id"])
+        print(rest.status)
+    """
+
+    def __init__(self, history_id: int) -> None:
         self._id: int = history_id
+
+    def __repr__(self) -> str:
+        return (
+            f"PluginStatus('{self.plugin}', "
+            f"config={str(self.configuration)}, status={self.status})"
+        )
 
     @property
     def _hist(self) -> dict[str, Any]:
+        log_level = logger.level
+        logger.setLevel(logging.WARNING)
         try:
-            hist = cast(list[dict[str, Any]], history(entry_ids=self._id))[0]
-        except IndexError as error:
-            raise ValueError(f"Could not find entry {self.row_id}") from None
+            hist = cast(
+                list[dict[str, Any]],
+                freva.history(entry_ids=self._id, return_results=True),
+            )[0]
+        except IndexError:
+            return {}
+        finally:
+            logger.setLevel(log_level)
+        hist["batch_settings"] = pm.get_batch_settings(self._id)
         return hist
 
     @property
     def status(self) -> str:
         """Get the state of the current plugin run."""
         hist = self._hist
-        return cast(str, hist["status_dict"][hist["status"]])
+        status_dict = hist.get("status_dict", {})
+        status = hist.get("status")
+        return cast(str, status_dict.get(status, "unkown"))
 
     @property
     def configuration(self) -> dict[str, Any]:
         """Get the plugin configuration."""
-        return self._hist["configuration"]
+        return self._hist.get("configuration", {})
 
     @property
     def stdout(self) -> str:
-        """Get the stdout of the plugin."""
+        """Get the stdout of the plugin.
+
+        Example
+        -------
+        Read the output of the plugin
+
+        .. execute_code::
+
+            import freva
+            res = freva.run_plugin("dummypluginfolders")
+            print(res.stdout)
+
+        """
         try:
-            return Path(self._hist["slurm_output"]).read_text()
-        except FileNotFoundError:
+            return Path(self._hist["slurm_output"]).read_text(encoding="utf-8")
+        except (FileNotFoundError, KeyError):
             return ""
 
-    def get_result(self, dtype: str = "data") -> Optional[list[Path]]:
+    @property
+    def batch_id(self) -> Optional[int]:
+        """Get the id of the batch job, if the plugin was a batchmode jobs."""
+        return self._hist.get("batch_settings", {}).get("job_id")
+
+    @property
+    def job_script(self) -> str:
+        """Get the content of the job_script, if it was a batchmod job."""
+        return self._hist.get("batch_settings", {}).get("job_script", "")
+
+    def kill(self) -> None:
+        """Kill a running batch job.
+
+        This method has only affect on jobs there have been submitted using the
+        ``batchmode=True`` flag.
+        """
+        if self.batch_id is not None:
+            kill_cmd = cancel_command(
+                self._hist["batch_settings"]["workload_manager"], self.batch_id
+            )
+            try:
+                _ = subprocess.run(
+                    shlex.split(kill_cmd),
+                    stderr=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    check=True,
+                )
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                logger.warning("Could not kill job with id %i", self.batch_id)
+
+    @property
+    def plugin(self) -> str:
+        """Get the plugin name."""
+        return self._hist.get("tool", "")
+
+    @property
+    def version(self) -> Tuple[int, int, int]:
+        """Get the version of the plugin."""
+        try:
+            return cast(
+                Tuple[int, int, int],
+                tuple(
+                    int(v.strip().strip("(").strip(")"))
+                    for v in self._hist["version"].split(",")
+                ),
+            )
+        except (KeyError, ValueError, TypeError):
+            return (0, 0, 0)
+
+    def wait(self, timeout: Union[float, int] = 28800) -> None:
+        """Wait for a plugin to finish.
+
+        This method will block until the plugin is running.
+
+        Parameters
+        ----------
+        timeout: int, default: 28800
+            Wait ``timeout`` seconds for the plugin to finish. If the plugin
+            hasn't been finish raise a ValueError.
+
+        Raises
+        ------
+        ValueError: If the plugin took longer than ``timeout`` seconds to finish
+
+        Example
+        -------
+
+        This can be useful if a plugin was started using the ``batchmode=True``
+        option and the execution of the code should wait until the plugin is
+        finished.
+
+
+        .. execute_code::
+
+            import freva
+            res = freva.run_plugin("dummypluginfolders", batchmode=True)
+            res.wait(timeout=60) # Give the plugin 60 seconds to finish.
+
+        """
+        dt, n_itt = 0.5, 0
+        max_itt = float(timeout) / dt
+        text = "Waiting for plugin to finish... "
+        spinner = Spinner("weather", text=text)
+        with Live(spinner, refresh_per_second=3):
+            while self.status in ("running", "scheduled"):
+                time.sleep(dt)
+                n_itt += 1
+                if n_itt > max_itt:
+                    spinner.update(text=text + "ouch")
+                    raise ValueError("Plugin did not finish")
+            spinner.update(text=text + "ok")
+
+    def get_result_paths(
+        self,
+        dtype: Literal["data", "plot"] = "data",
+        glob_pattern: str = "*.nc",
+    ) -> List[Path]:
         """Get all created paths of a certain data type.
+
+        This method let's you query all output files of the plugin run. You
+        can either search for data files or plotted output.
 
         Parameters
         ----------
         dtype: str
-            The data type for the returned paths. This should be one
+            The data type for the returned paths. This should be either
+            data or plot
+        glob_pattern: str, default: *.nc
+            Fine grain the output by filtering the returned files by the given
+            glob pattern. By default only netCDF files ("*.nc") will be added
+            to the list.
+
+        Returns
+        -------
+        List[Path]: A list of paths that match the search constraints.
+
+        Example
+        -------
+
+        We are going to apply a plugin called ``dummypluginfolders`` that creats
+        plots and netCDF files. In this example we want to open all netCDF files
+        (``dtype = 'data'``) that match the file name constraint ``*data.nc``.
+
+
+        .. execute_code::
+
+            import freva
+            import xarray as xr
+            res = freva.run_plugin("dummypluginfolders", variable="pr")
+            dset = xr.open_mfdataset(
+                res.get_result_paths(dtype="data", glob_pattern="*data.nc")
+            )
+            print(dset.attrs["variable"])
+
+
         """
+        return [
+            Path(path)
+            for (path, metadata) in self._hist.get("result", {}).items()
+            if metadata.get("type") == dtype and fnmatch(path, glob_pattern)
+        ]
 
 
 class config:
@@ -159,9 +362,9 @@ class config:
 
     """
 
-    _original_config = os.environ.get(
+    _original_config_env = os.environ.get(
         "EVALUATION_SYSTEM_CONFIG_FILE",
-        cfg._DEFAULT_CONFIG_FILE_LOCATION,
+        cfg.CONFIG_FILE,
     )
 
     def __init__(self, config_file: Union[str, Path]) -> None:
@@ -179,6 +382,6 @@ class config:
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config
-        cfg.reloadConfiguration(self._original_config)
+        os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
+        cfg.reloadConfiguration(self._original_config_env)
         pm.reload_plugins()

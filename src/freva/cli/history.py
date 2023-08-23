@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import argparse
 import sys
 from typing import Any, Optional
 
 import lazy_import
 import rich
+
 from evaluation_system import __version__
 from evaluation_system.misc import logger
+
 from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")

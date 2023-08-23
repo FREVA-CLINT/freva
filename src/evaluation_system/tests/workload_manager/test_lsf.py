@@ -1,13 +1,13 @@
 import os
-from shutil import rmtree
 import sys
-from textwrap import dedent
 import tempfile
+from shutil import rmtree
+from textwrap import dedent
 
 import pytest
 
-from evaluation_system.api.workload_manager.lsf import LSFJob, lsf_format_bytes_ceil
 from evaluation_system.api.workload_manager.core import parse_bytes
+from evaluation_system.api.workload_manager.lsf import LSFJob, lsf_format_bytes_ceil
 
 
 def test_header():

@@ -1,9 +1,9 @@
 """Definitions of custom exections and warnings."""
 
-from contextlib import contextmanager
 import logging
 import sys
 import warnings
+from contextlib import contextmanager
 from typing import Any, Callable
 
 from evaluation_system.misc import logger
@@ -47,19 +47,6 @@ class ValidationError(Exception):
 
 class ParameterNotFoundError(Exception):
     """Thrown if some parameter is not in the database."""
-
-
-class CommandError(Exception):
-    """
-    Generic exception to raise and log different fatal errors.
-    """
-
-    def __init__(self, msg):
-        super(CommandError).__init__(type(self))
-        self.msg = f"{msg}\nUse --help for getting help"
-
-    def __str__(self):
-        return self.msg
 
 
 class PluginManagerException(Exception):

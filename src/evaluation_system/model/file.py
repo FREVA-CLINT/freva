@@ -6,21 +6,16 @@ The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
 from __future__ import annotations
-from typing import (
-    Optional,
-    Generator,
-    List,
-    Union,
-    Any,
-    ClassVar,
-    cast,
-)
-from dataclasses import dataclass, field
+
 import json
-from pathlib import Path
-import os
 import logging
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, ClassVar, Generator, List, Optional, Union, cast
+
 from typing_extensions import Literal, TypedDict
+
 from evaluation_system.misc import config
 
 log = logging.getLogger(__name__)

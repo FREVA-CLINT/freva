@@ -1,6 +1,7 @@
 import os
-import pytest
+
 import mock
+import pytest
 
 SUBCOMMANDS = ("databrowser", "esgf", "user-data", "history", "plugin")
 
@@ -35,17 +36,15 @@ def test_main_complete(dummy_env, capsys):
 
 
 def test_subcommand_help(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     for subcmd in SUBCOMMANDS:
         with pytest.raises(SystemExit):
             main_cli([subcmd, "--help"])
         doc_string = capsys.readouterr().out
         for shell, sep in {"bash": "", "zsh": "[", "fish": ":"}.items():
-            print_choices(
-                ["--shell", shell, "--flags-only", f"freva-{subcmd}"]
-            )
+            print_choices(["--shell", shell, "--flags-only", f"freva-{subcmd}"])
             choices = capsys.readouterr().out.split("\n")
             for choice in [s.strip() for s in choices if s.strip()]:
                 if sep:
@@ -62,9 +61,7 @@ def test_subcommand_help(dummy_env, capsys):
             if subcmd not in ("databrowser", "plugin"):
                 print_choices(["--shell", shell, "--strip", f"freva-{subcmd}"])
                 out = [
-                    s.strip()
-                    for s in capsys.readouterr().out.split("\n")
-                    if s.strip()
+                    s.strip() for s in capsys.readouterr().out.split("\n") if s.strip()
                 ]
                 if subcmd == "user-data":
                     assert len(out) == 3
@@ -73,8 +70,8 @@ def test_subcommand_help(dummy_env, capsys):
 
 
 def test_databrowser(dummy_env, capsys, dummy_solr):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     main_cli(["databrowser", "--facet", "all"])
     facets = capsys.readouterr().out
@@ -97,9 +94,9 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
 
 
 def test_plugin(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva._plugin import _write_plugin_cache
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     _write_plugin_cache()
 
@@ -107,9 +104,7 @@ def test_plugin(dummy_env, capsys):
         print_choices(["--shell", shell, "--strip", "freva", "plugin"])
         choices = capsys.readouterr().out
         assert "dummyplugin" in choices
-        print_choices(
-            ["--shell", shell, "--strip", "freva", "plugin", "dummyplugin"]
-        )
+        print_choices(["--shell", shell, "--strip", "freva", "plugin", "dummyplugin"])
         choices = capsys.readouterr().out
         assert "the_number" in choices
         print_choices(
@@ -128,8 +123,8 @@ def test_plugin(dummy_env, capsys):
 
 
 def test_wrong_choice(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     for shell in ("bash", "zsh", "fish"):
         for cmd in (["solr"], ["plugin", "nplg"]):

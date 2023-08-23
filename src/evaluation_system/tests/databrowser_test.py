@@ -1,4 +1,5 @@
 import shlex
+
 import pytest
 
 from evaluation_system.tests import run_cli
@@ -10,7 +11,7 @@ def test_index_len(dummy_solr):
 
 
 def test_time_subsets(dummy_solr):
-    from freva import databrowser, count_values
+    from freva import count_values, databrowser
 
     subset_1 = count_values(project="cmip5", time="2000-12 to 2012-12")
     subset_2 = count_values(
@@ -34,7 +35,7 @@ def test_time_subsets(dummy_solr):
 
 
 def test_freva_databrowser_method(dummy_solr):
-    from freva import databrowser, count_values, facet_search
+    from freva import count_values, databrowser, facet_search
 
     all_files_output = sorted(
         [
@@ -72,9 +73,8 @@ def test_freva_databrowser_method(dummy_solr):
 
 
 def test_search_files_cmd(dummy_solr, capsys):
-    from evaluation_system.misc.exceptions import CommandError
-    from freva.cli.databrowser import main as run
     from freva import logger
+    from freva.cli.databrowser import main as run
 
     logger.setLevel(20)
 

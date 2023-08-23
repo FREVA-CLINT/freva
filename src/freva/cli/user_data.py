@@ -1,13 +1,16 @@
 from __future__ import annotations
+
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any, Optional, Type
 
 import lazy_import
 import rich
+
 from evaluation_system import __version__
 from evaluation_system.misc import logger
+
 from .utils import BaseParser, SubCommandParser
 
 UserData = lazy_import.lazy_class("freva.UserData")

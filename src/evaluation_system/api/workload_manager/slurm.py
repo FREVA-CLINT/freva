@@ -1,8 +1,9 @@
 """Submit jobs to the slurm workload manager."""
 from __future__ import annotations
+
 import logging
 import math
-from typing import Optional, ClassVar, Union
+from typing import ClassVar, Optional, Union
 
 from .core import Job
 

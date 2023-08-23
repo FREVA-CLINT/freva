@@ -1,8 +1,10 @@
 """Manage the abstraction of a system user."""
 from __future__ import annotations
-import pwd
+
 import os
-from configparser import ConfigParser as Config, ExtendedInterpolation
+import pwd
+from configparser import ConfigParser as Config
+from configparser import ExtendedInterpolation
 from typing import Optional, Union
 
 from evaluation_system.misc import config, utils

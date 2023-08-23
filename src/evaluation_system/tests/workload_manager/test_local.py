@@ -1,5 +1,6 @@
-from evaluation_system.api.workload_manager.local import LocalJob
 import pytest
+
+from evaluation_system.api.workload_manager.local import LocalJob
 
 
 def test_header():

@@ -5,23 +5,25 @@ by you, the Freva admins or your collegues. If you want to create a plugin
 pleas refer to the :class:`evaluation_system.api.plugin` section.
 """
 from __future__ import annotations
-import logging
-from pathlib import Path
-import json
-import textwrap
-from tempfile import NamedTemporaryFile
-from typing import Any, Dict, Union, List, Literal, Optional, NamedTuple, Tuple
-import time
 
+import abc
+import json
+import logging
+import textwrap
+import time
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple, Union
 
 import appdirs
 import lazy_import
-from evaluation_system.misc import logger
 import rich.layout
-import rich.table
 import rich.panel
+import rich.table
 
-from .utils import PluginStatus, is_jupyter, handled_exception
+from evaluation_system.misc import logger
+
+from .utils import PluginStatus, handled_exception, is_jupyter, meta_type
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -45,6 +47,26 @@ PluginInfo = NamedTuple(
 )
 
 __all__ = ["run_plugin", "list_plugins", "plugin_doc"]
+
+
+class HelpStr:
+    """A helper class that makes the string output prettier."""
+
+    @abc.abstractmethod
+    def __str__(self) -> str:
+        """String conversion of the class."""
+
+    @abc.abstractmethod
+    def __repr__(self) -> str:
+        """String representation of the class."""
+
+    @abc.abstractmethod
+    def _repr_html_(self) -> str:
+        """Jupyter notebook representation of the class."""
+
+    @abc.abstractmethod
+    def __rich__(self) -> rich.table.Table:
+        """Rich implementation of the class."""
 
 
 def _write_plugin_cache() -> dict[str, dict[str, Any]]:
@@ -90,7 +112,7 @@ def read_plugin_cache(max_mtime: int = 180) -> list[PluginInfo]:
 
 
 @handled_exception
-def plugin_doc(tool_name: Optional[str]) -> str:
+def plugin_doc(tool_name: Optional[str]) -> HelpStr:
     """Display the documentation of a given plugin.
 
     Parameters
@@ -123,16 +145,14 @@ def plugin_doc(tool_name: Optional[str]) -> str:
     _write_plugin_cache()
     _check_if_plugin_exists(tool_name)
 
-    class HelpCls:
+    class HelpCls(HelpStr):
         def __init__(self, tool_name: str) -> None:
             self._plugin = pm.get_plugin_instance(tool_name)
             self._help = (
                 self._plugin.__long_description__.strip()
                 or self._plugin.__short_description__.strip()
             )
-            self._version = ".".join(
-                [str(i) for i in self._plugin.__version__]
-            )
+            self._version = ".".join([str(i) for i in self._plugin.__version__])
             self._name = self._plugin.__class__.__name__
 
         def __str__(self) -> str:
@@ -222,7 +242,7 @@ def list_plugins() -> list[str]:
 
 
 @handled_exception
-def get_tools_list() -> str:
+def get_tools_list() -> HelpStr:
     """Get a list of plugins with their short description.
 
     Returns
@@ -242,7 +262,7 @@ def get_tools_list() -> str:
     """
     _write_plugin_cache()
 
-    class HelpCls:
+    class HelpCls(HelpStr):
         def __init__(self) -> None:
             env = utils.get_console_size()
             # we just have to show the list and stop processing
@@ -268,8 +288,7 @@ def get_tools_list() -> str:
                 if len(lines) > 1:
                     # multi-line
                     results[str(plugin.name)] += [
-                        f"{' '*(len(plugin.name)+2)}{line}"
-                        for line in lines[1:]
+                        f"{' '*(len(plugin.name)+2)}{line}" for line in lines[1:]
                     ]
             return results
 
@@ -298,9 +317,7 @@ def get_tools_list() -> str:
                     (
                         '<tr><td style="text-align: left;"><b>{}</b></td>'
                         '<td style="text-align: left;">{}</td></tr>'
-                    ).format(
-                        plugin.name, plugin.description or "No description."
-                    )
+                    ).format(plugin.name, plugin.description or "No description.")
                 )
             result.append("</table>")
             return "".join(result)
@@ -317,17 +334,9 @@ def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
         error = "Available tools are:\n"
         tool_list = "\n".join(list_plugins())
     else:
-        tool_list = "\n".join(
-            utils.find_similar_words(tool_name, list_plugins())
-        )
+        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
         error = f"{tool_name} plugin not found, did you mean:\n"
     raise PluginNotFoundError(f"\n{error}{tool_list}")
-
-
-@handled_exception
-def _return_value(value: int, result: Any) -> Any:
-    return value, result
-    return value, ""
 
 
 def _get_tool_dict(
@@ -421,7 +430,7 @@ def run_plugin(
     caption: str = "",
     tag: Optional[str] = None,
     **options: Union[str, float, int, bool],
-) -> tuple[int, Any]:
+) -> PluginStatus:
     """Apply an available data analysis plugin.
 
     Parameters
@@ -457,22 +466,24 @@ def run_plugin(
     .. execute_code::
 
         import freva
-        freva.run_plugin("animator", variable="pr", project="obs*")
+        res = freva.run_plugin("animator", variable="pr", project="obs*")
+        output = res.get_result_paths("plot", "*.*") # Check the plot output
 
-    Run a plugin in the background
+    Run a plugin in the background. You can interact with the plugin using
+    the ``.wait`` method of the :py:class:``freva.PluginStatus`` class.
 
     .. execute_code::
 
         import freva
-        freva.run_plugin("animator",
-                         variable="pr",
-                         project="observations",
-                         batchmode=True)
+        res = freva.run_plugin("animator",
+                               variable="pr",
+                               project="observations",
+                               batchmode=True)
+        res.wait() # Wait until the plugin has finished
 
     """
     tool_name = tool_name.lower()
     _check_if_plugin_exists(tool_name)
-    results = ""
     if save_config:
         save_config = str(Path(save_config).expanduser().absolute())
     tool_dict: Dict[str, Any] = {}
@@ -492,16 +503,15 @@ def run_plugin(
             tool_name,
             scheduled_id,
         )
-        out = pm.run_tool(
+        tool_id, result = pm.run_tool(
             tool_name, scheduled_id=scheduled_id, unique_output=unique_output
         )
-        return _return_value(0, out)
+        return PluginStatus(tool_id)
     extra_options: list[str] = [
-        opt.strip()
-        for opt in extra_scheduler_options.split(",")
-        if opt.strip()
+        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
     ]
     # now run the tool
+    result, tool_id = None, -1
     (error, warning) = pm.get_error_warning(tool_name)
     if warning:
         logger.warning(warning)
@@ -530,17 +540,18 @@ def run_plugin(
             print("You can view the job's status with the command squeue")
             print("Your job's progress will be shown with the command")
             print(f"tail -f {job_file}")
-            return 0, ""
-        results = pm.run_tool(
+            return PluginStatus(scheduled_id or 0)
+        tool_id, result = pm.run_tool(
             tool_name,
             config_dict=tool_dict,
             caption=caption,
             unique_output=unique_output,
         )
+
         # repeat the warning at the end of the run
         # for readability don't show the warning in debug mode
         if warning:
             logger.warning(warning)
     logger.debug("Arguments: %s", options)
     logger.debug("Current configuration:\n%s", json.dumps(tool_dict, indent=4))
-    return _return_value(0, results)
+    return PluginStatus(tool_id)

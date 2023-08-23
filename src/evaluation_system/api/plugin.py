@@ -21,58 +21,48 @@ With help of this API a Freva plugin can be created in ``/mnt/freva/plugin/new_p
 
 """
 from __future__ import annotations
+
 import abc
+import logging
+import os
+import re
+import shlex
+import shutil
+import socket
+import stat
+import subprocess as sub
+import sys
+import tempfile
+import textwrap
 from configparser import ConfigParser, ExtendedInterpolation
 from contextlib import contextmanager
 from datetime import datetime
 from functools import partial
-import logging
-import os
 from pathlib import Path
-import re
-import subprocess as sub
-import sys
-import stat
-import shlex
-import shutil
-import socket
-import tempfile
-import textwrap
 from time import time
-from typing import (
-    cast,
-    Any,
-    Dict,
-    IO,
-    Optional,
-    Union,
-    Iterator,
-    Iterable,
-    TextIO,
-)
+from typing import IO, Any, Dict, Iterable, Iterator, Optional, TextIO, Union, cast
 from uuid import uuid4
-
 
 from PyPDF2 import PdfReader
 from rich.console import Console
 from rich.file_proxy import FileProxy
 from rich.traceback import Traceback
 
-from evaluation_system.model.user import User
 import evaluation_system.model.history.models as hist_model
 import evaluation_system.model.repository as repository
-from evaluation_system.misc.utils import TemplateDict
-from evaluation_system.misc import config, logger as log
+from evaluation_system.misc import config
+from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import (
     ConfigurationException,
     deprecated_method,
     hide_exception,
 )
-
-from evaluation_system.misc.utils import PIPE_OUT
+from evaluation_system.misc.utils import PIPE_OUT, TemplateDict
 from evaluation_system.model.solr_core import SolrCore
-from .workload_manager import schedule_job, JobStatus
+from evaluation_system.model.user import User
+
 from .user_data import DataReader
+from .workload_manager import JobStatus, schedule_job
 
 __version__ = (1, 0, 0)
 
@@ -304,9 +294,7 @@ class PluginAbstract(abc.ABC):
         """Optional tags, that are the plugin can be described with."""
         return [""]
 
-    def run_tool(
-        self, config_dict: Optional[ConfigDictType] = None
-    ) -> Optional[Any]:
+    def run_tool(self, config_dict: Optional[ConfigDictType] = None) -> Optional[Any]:
         """Method executing the tool.
 
         The method should be overidden by the custom plugin tool method.
@@ -355,9 +343,7 @@ class PluginAbstract(abc.ABC):
                 self._user.getUserSchedulerOutputDir(),
                 plugin_name.lower(),
             )
-            self._plugin_out = (
-                Path(log_directory) / f"{plugin_name}-{pid}.local"
-            )
+            self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
         return self._plugin_out
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):
@@ -449,15 +435,12 @@ class PluginAbstract(abc.ABC):
     def _append_unique_id(
         self, config_dict: Optional[ConfigDictType], unique_output: bool
     ) -> ConfigDictType:
-        from evaluation_system.api.parameters import Directory, CacheDirectory
+        from evaluation_system.api.parameters import CacheDirectory, Directory
 
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
             tmp_param = self.__parameters__.get_parameter(key)
-            if (
-                isinstance(tmp_param, (Directory, CacheDirectory))
-                and unique_output
-            ):
+            if isinstance(tmp_param, (Directory, CacheDirectory)) and unique_output:
                 if key in config_dict.keys() and config_dict[key] is not None:
                     config_dict[key] = os.path.join(
                         str(config_dict[key]), str(self.rowid)
@@ -550,9 +533,7 @@ class PluginAbstract(abc.ABC):
         project_name = config.get("project_name", "").replace("_", "-")
 
         product_dir = f"{project}.{product}"
-        root_dir = (
-            DataReader.get_output_directory() / f"user-{self._user.getName()}"
-        )
+        root_dir = DataReader.get_output_directory() / f"user-{self._user.getName()}"
         drs_config = dict(
             project=root_dir.name,
             product=product_dir,
@@ -627,8 +608,7 @@ class PluginAbstract(abc.ABC):
                 metadata = output_files[file_path]
             if os.path.isfile(file_path):
                 self._extend_output_metadata(file_path, metadata)
-                if metadata.get("type", "data") != "data":
-                    result[os.path.abspath(file_path)] = metadata
+                result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
                 # ok, we got a directory, so parse the contents recursively
                 for file_path in [
@@ -642,11 +622,9 @@ class PluginAbstract(abc.ABC):
                     # update meta data with user entries
                     usermetadata = result.get(os.path.abspath(file_path), {})
                     filemetadata.update(usermetadata)
-                    if filemetadata.get("type", "data") != "data":
-                        result[os.path.abspath(file_path)] = filemetadata
+                    result[os.path.abspath(file_path)] = filemetadata
             else:
-                if metadata.get("type", "data") != "data":
-                    result[os.path.abspath(file_path)] = metadata
+                result[os.path.abspath(file_path)] = metadata
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
@@ -731,9 +709,7 @@ class PluginAbstract(abc.ABC):
             self.__parameters__.get_help(),
         )
 
-    def get_current_config(
-        self, config_dict: Optional[ConfigDictType] = None
-    ) -> str:
+    def get_current_config(self, config_dict: Optional[ConfigDictType] = None) -> str:
         """Retreive the plugin configuration as string representation.
 
         Parameters
@@ -807,9 +783,7 @@ class PluginAbstract(abc.ABC):
     def class_basedir(self) -> str:
         """Get absolute path to the module defining the plugin class."""
         return os.path.join(
-            *self._split_path(self.wrapper_file)[
-                : -len(self.__module__.split("."))
-            ]
+            *self._split_path(self.wrapper_file)[: -len(self.__module__.split("."))]
         )
 
     @property
@@ -867,9 +841,7 @@ class PluginAbstract(abc.ABC):
             return str_value
 
         else:
-            return self.__parameters__.get_parameter(param_name).parse(
-                str_value
-            )
+            return self.__parameters__.get_parameter(param_name).parse(str_value)
 
     @deprecated_method("PluginAbstract", "setup_configuration")
     def setupConfiguration(
@@ -937,9 +909,7 @@ class PluginAbstract(abc.ABC):
 
         return results
 
-    def read_from_config_parser(
-        self, config_parser: ConfigParser
-    ) -> dict[str, str]:
+    def read_from_config_parser(self, config_parser: ConfigParser) -> dict[str, str]:
         """Reads a configuration from a config parser object.
 
         The values are assumed to be in a section named just like the
@@ -974,9 +944,7 @@ class PluginAbstract(abc.ABC):
         return result
 
     @deprecated_method("PluginAbstract", "read_configuration")
-    def readConfiguration(
-        self, **kwargs
-    ) -> dict[str, str]:  # pragma: no cover
+    def readConfiguration(self, **kwargs) -> dict[str, str]:  # pragma: no cover
         """Deprecated version of the :class:`read_configuration` method.
 
         :meta private:
@@ -1032,9 +1000,7 @@ class PluginAbstract(abc.ABC):
         # store the section header
         if config_dict is None:
             # a default incomplete one
-            config_dict = self.setup_configuration(
-                check_cfg=False, substitute=False
-            )
+            config_dict = self.setup_configuration(check_cfg=False, substitute=False)
         fp.write("[%s]\n" % self.__class__.__name__)
         wrapper = textwrap.TextWrapper(
             width=80,
@@ -1053,9 +1019,7 @@ class PluginAbstract(abc.ABC):
                     help_lines = param.help.splitlines()
                     if param.mandatory:
                         help_lines[0] = "[mandatory] " + help_lines[0]
-                    fp.write(
-                        "\n".join([wrapper.fill(line) for line in help_lines])
-                    )
+                    fp.write("\n".join([wrapper.fill(line) for line in help_lines]))
                     fp.write("\n")
                 value = config_dict.get(param_name, None)
                 if value is None:
@@ -1076,9 +1040,7 @@ class PluginAbstract(abc.ABC):
                     help_lines = key_help.splitlines()
                     if param.mandatory:
                         help_lines[0] = "[mandatory] " + help_lines[0]
-                    fp.write(
-                        "\n".join([wrapper.fill(line) for line in help_lines])
-                    )
+                    fp.write("\n".join([wrapper.fill(line) for line in help_lines]))
                     fp.write("\n")
                 if value is None:
                     # means this is not setup

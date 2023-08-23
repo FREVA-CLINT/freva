@@ -228,13 +228,13 @@ the data). For example to see all facets that are available in the
 
 .. code:: console
 
-    freva-databrowser project=observations --all-facets
+    freva-databrowser project=observations --facet all
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "--all-facets"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "--facet", "all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 Instead of querying all facet to you get information on certain facets only:
@@ -270,7 +270,7 @@ can be achieved by using the ``file=`` search facet:
 
 .. code:: console
 
-    freva-databrowser file=.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --all-facets
+    freva-databrowser file=.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --facet all
 
 .. execute_code::
    :hide_code:

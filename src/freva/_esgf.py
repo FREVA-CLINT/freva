@@ -1,12 +1,13 @@
 """Module to access the esgf data catalogue."""
 from __future__ import annotations
+
 from pathlib import Path
-from typing import Union, Optional, overload
-from typing_extensions import Literal
+from typing import Optional, Union, overload
 
 import lazy_import
-from .utils import handled_exception
+from typing_extensions import Literal
 
+from .utils import handled_exception
 
 P2P = lazy_import.lazy_class("evaluation_system.model.esgf.P2P")
 

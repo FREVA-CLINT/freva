@@ -1,12 +1,12 @@
 from evaluation_system.api import parameters
-from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.api.parameters import (
-    ParameterDictionary,
-    Integer,
-    Float,
-    String,
     Directory,
+    Float,
+    Integer,
+    ParameterDictionary,
+    String,
 )
+from evaluation_system.api.plugin import PluginAbstract
 
 
 class ResultTagTest(PluginAbstract):

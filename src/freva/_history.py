@@ -1,9 +1,11 @@
 """This module queries the database for plugin history entries."""
 from __future__ import annotations
+
 import json
 from typing import Any, Optional, Union
 
 import lazy_import
+
 from evaluation_system.misc import logger
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -19,6 +21,7 @@ def history(
     until: Optional[str] = None,
     entry_ids: Union[int, list[int], None] = None,
     full_text: bool = False,
+    return_results: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
 ) -> Union[list[Any], dict[str, Any]]:
@@ -47,6 +50,8 @@ def history(
        Select entries whose ids are in "ids",
     full_text: bool, default: False
       Show the complete configuration.
+    return_results: bool, default: False
+      Also return the plugin results.
     return_command: bool, default: False
       Return the commands instead of history objects
     _return_dict: bool, default: True
@@ -114,6 +119,12 @@ def history(
                             command_dicts[nn][key] = json.loads(value)
                         except (json.JSONDecodeError, TypeError):
                             pass
+                    if return_results:
+                        command_dicts[nn]["result"] = pm.get_result_output(
+                            command_dicts[nn]["id"]
+                        )
+                    else:
+                        command_dicts[nn]["result"] = {}
                 return command_dicts
             else:
                 return [row for row in rows]

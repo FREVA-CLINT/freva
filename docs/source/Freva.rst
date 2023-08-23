@@ -38,6 +38,8 @@ Below you can find a more detailed documentation.
 
 Runing analysis plugins
 =======================
+.. _plugin:
+
 Already defined data analysis tools can be started with the :py:meth:`freva.run_plugin`
 method. Besides the :py:meth:`freva.run_plugin` method three more utility methods
 (:py:meth:`freva.list_plugins`, :py:meth:`freva.get_tools_list`,
@@ -54,7 +56,18 @@ This specific plugin has created the following output:
 .. image:: _static/animator_output.gif
    :width: 400
 
-.. _plugin:
+
+After the application of a data analysis plugin you can check the status of the
+plugin and make use of any of the plugin output either by directly using the
+return value of the :py:meth:`freva.run_plugin` method or create an instance
+of the :py:class:`freva.PluginStatus` status class with help of a history id.
+
+.. automodule:: freva
+   :members: PluginStatus
+   :undoc-members:
+   :show-inheritance:
+
+
 
 Accessing the previous plugin runs
 ==================================
