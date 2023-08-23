@@ -36,7 +36,7 @@ Below you can find a more detailed documentation.
 .. _databrowser:
 
 
-Runing analysis plugins
+Running analysis plugins
 =======================
 .. _plugin:
 
