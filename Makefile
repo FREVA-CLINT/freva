@@ -3,7 +3,7 @@
 #
 export PATH := $(FREVA_ENV):$(PATH):$(PWD)/src/evaluation_system/tests/mocks/bin
 export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
-export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy:/tmp/animator,animator
+export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy:$(PWD)/src/evaluation_system/tests/mocks,dummyfolder:/tmp/animator,animator
 export EVALUATION_SYSTEM_CONFIG_FILE := $(PWD)/compose/local-eval-system.conf
 export EVALUATION_SYSTEM_DRS_CONFIG_FILE := $(PWD)/compose/drs_config.toml
 PYTHON3 := $(shell which python3)
