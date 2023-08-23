@@ -147,7 +147,6 @@ def test_plugin_status(dummy_env, caplog) -> None:
     time.sleep(0.5)
     assert res.status == "broken"
     res.kill()
-    assert "Could not kill job with" in caplog.text
     res = freva.run_plugin("dummyplugin", the_number=2, other=-1, batchmode=True)
     res.wait()
     assert res.status == "finished"

@@ -14,15 +14,14 @@
 # sys.path.insert(0, os.path.abspath('.'))
 import os
 import sys
+from datetime import date
 import subprocess
 from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
 os.environ.setdefault(
     "EVALUATION_SYSTEM_CONFIG_FILE",
-    os.path.abspath(
-        os.path.join("..", "..", "compose", "local-eval-system.conf")
-    ),
+    os.path.abspath(os.path.join("..", "..", "compose", "local-eval-system.conf")),
 )
 os.environ.setdefault(
     "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
@@ -35,8 +34,8 @@ from freva import __version__
 # -- Project information -----------------------------------------------------
 
 project = "freva user guide"
-copyright = "2022, CLINT"
-author = "CLINT"
+copyright = f"{date.today().year}, DKRZ"
+author = "DKRZ"
 
 # The full version, including alpha/beta/rc tags
 release = __version__
@@ -54,6 +53,7 @@ extensions = [
     "recommonmark",
     "sphinx_execute_code",
     "sphinxcontrib_github_alt",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -71,13 +71,33 @@ nbsphinx_allow_errors = True
 # a list of builtin themes.
 #
 html_static_path = ["_static"]
-html_theme = "furo"
+html_theme = "pydata_sphinx_theme"
 html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/FREVA-CLINT/freva",
+            "icon": "fa-brands fa-github",
+        }
+    ],
     "navigation_with_keys": True,
     "top_of_page_button": "edit",
+    "collapse_navigation": False,
+    "navigation_depth": 4,
+    "navbar_align": "left",
+    "show_nav_level": 4,
+    "navigation_depth": 4,
+    "navbar_center": ["navbar-nav"],
+    "secondary_sidebar_items": ["page-toc"],
     "light_css_variables": {
         "color-brand-primary": "tomato",
     },
+}
+html_context = {
+    "github_user": "FREVA-CLINT",
+    "github_repo": "freva",
+    "github_version": "main",
+    "doc_path": "docs",
 }
 html_logo = os.path.join(html_static_path[0], "logo.png")
 html_favicon = html_logo
