@@ -36,7 +36,7 @@ def test_query(capsys, search_dict, dummy_config):
     res = [r for r in res.split("\n") if r.strip()]
     assert num_res == len(res) + 1
     run(["project=TESTs"])
-    assert not capsys.readouterr().out
+    assert "\n" in capsys.readouterr().out
     run(shlex.split("project=TEST --datasets"))
     assert "- version:" in capsys.readouterr().out
     run(["--show-facet=blabla"])
@@ -44,7 +44,7 @@ def test_query(capsys, search_dict, dummy_config):
 
 
 def test_freva_esgf_method(dummy_config):
-    from freva import esgf
+    from freva import esgf_browser, esgf_facets, esgf_download
 
     result_to_be = [
         "output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/"
@@ -53,7 +53,7 @@ def test_freva_esgf_method(dummy_config):
         "tas/tas_day_MPI-ESM-LR_historical_r1i1p1_18600101-18691231.nc",
     ]
     res = " ".join(
-        esgf(
+        esgf_browser(
             project="CMIP5",
             experiment="historical",
             variable="tas",
@@ -63,11 +63,11 @@ def test_freva_esgf_method(dummy_config):
     )
     for f in result_to_be:
         assert f in res
-    res = esgf(show_facet="product")
+    res = esgf_facets(show_facet="product")
     res = res["product"]["MRE2reanalysis"]
     assert res == 6
     fn = Path("/tmp/file_script.sh")
-    res = esgf(
+    res = esgf_download(
         project="CMIP5",
         model="MPI-ESM-LR",
         experiment="decadal2001",
