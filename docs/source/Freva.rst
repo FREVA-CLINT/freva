@@ -73,7 +73,39 @@ The ``UserData`` class
 
 Searching for ESGF data
 =======================
+Freva also allows to query for data in all the ESGF nodes. You have the following 5
+methods:
+
+- :py:meth:`freva.esgf_browser`: The main method for searching data. The browser 
+  method lets you search for data URLs (default) or their opendap/gridftp endpoints.
+
+- :py:meth:`freva.esgf_facets`: This method lists all search categories (facets) and
+  their values.
+
+- :py:meth:`freva.esgf_datasets`: This method lists the name of the datasets (and version)
+  in the ESGF.
+
+- :py:meth:`freva.esgf_download`: You can download the data with the script file
+  that this method creates.
+
+- :py:meth:`freva.esgf_query`: Similarly to :py:meth:`freva.esgf_facets`, this method lists 
+  all query elements but groups them *by dataset*.
+
+.. note::
+
+   The collection of methods
+   are derived from `ESGF's rest API <https://github.com/ESGF/esgf.github.io/wiki/ESGF_Search_REST_API>`_.
+   The query facets follow the syntax of the datasets hosted there (CMIP5, CORDEX, CMIP6, etc.) 
+   that might differ from :py:meth:`freva.databrowser` and **are** case
+   sensitive. They also have some special query keys, e.g.:
+
+   - ``distrib``: (**true**, false) search globally or only locally (e.g. at DKRZ, MPI data and replicas)
+   - ``latest`` : (true, false, **unset**) search for the latest version, older ones or all.
+   - ``replica``: (true, false, **unset**) search only for replicas, non-replicas, or all.
+
+
+Below you can find a more detailed documentation.
 
 .. automodule:: freva
-   :members: esgf
+   :members: esgf_browser, esgf_facets, esgf_datasets, esgf_download, esgf_query
    :show-inheritance:
