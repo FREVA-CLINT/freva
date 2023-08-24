@@ -676,7 +676,7 @@ experiment ``decadal1960`` and project ``CMIP5``, then:
     :hide_code:
 
     import freva
-    files = freva.esgf(project="CMIP5", experiment="decadal1960", variable="tas", distrib=False, latest=True)
+    files = freva.esgf_browser(project="CMIP5", experiment="decadal1960", variable="tas", distrib=False, latest=True)
     print("\n".join(files[:5]))
     print("...")
 
@@ -691,7 +691,7 @@ on the targeted dataset, for instance for ``CMIP6``:
     :hide_code:
 
     import freva
-    files = freva.esgf(
+    files = freva.esgf_browser(
         project="cmip6",
         product="scenariomip",
         experiment="ssp585",
@@ -714,7 +714,7 @@ will not produce any result, while
 
     import freva
 
-    files = freva.esgf(
+    files = freva.esgf_browser(
         mip_era="CMIP6",
         activity_id="ScenarioMIP",
         source_id="CNRM-CM6-1",
@@ -754,6 +754,24 @@ For example, for ``time_frequency`` :
                 check=True, stdout=PIPE, stderr=PIPE)
     print(res.stdout.decode())
 
+Similarly to ``--show-facet``, ``--query QUERY`` displays ``key=value`` metadata pairs (not limited
+to attributes only) of selected elements for a search but grouped per dataset. 
+For example we could query selected metadata information (e.g. ``mip_era,variable,variant_label,url``)
+of a certain CMIP6 search and display it grouped by dataset:
+
+.. code:: console
+    
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas,pr distrib=false latest=true --query=mip_era,variable,variant_label,url 
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "esgf", "mip_era=CMIP6", "activity_id=ScenarioMIP", "source_id=CNRM-CM6-1",
+             "institution_id=CNRM-CERFACS", "experiment_id=ssp585", "frequency=3hr", "variable=uas,pr",
+             "distrib=false", "latest=true", "--query=mip_era,variable,variant_label,url"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
 
 To show the name of the datasets instead of the URLs use the ``--datasets`` flag:
 
@@ -783,7 +801,7 @@ One can retrieve the opendap endpoints instead of the urls as well with ``--open
     :hide_code:
 
     import freva
-    files = freva.esgf(
+    files = freva.esgf_browser(
         mip_era="CMIP6",
         activity_id="ScenarioMIP",
         source_id="CNRM-CM6-1",
@@ -809,7 +827,7 @@ Or the gridftp endpoints instead (``--gridftp``):
     :hide_code:
 
     import freva
-    files = freva.esgf(
+    files = freva.esgf_browser(
         mip_era="CMIP6",
         activity_id="ScenarioMIP",
         source_id="CNRM-CM6-1",
@@ -869,5 +887,4 @@ option, where ``/foo/bar.wget`` is the destination wget file:
 
     Alternatively you can also retrieve the data using certificates, 
     for example through the `ESGF PyClient <https://esgf-pyclient.readthedocs.io/en/latest/index.html>`_.
-    You will still need your openID for that.
-    
+    You will still need your openID for that.   
