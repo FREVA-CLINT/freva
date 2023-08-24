@@ -8,7 +8,7 @@ from ._plugin import (
     read_plugin_cache,
     get_tools_list,
 )
-from ._esgf import esgf
+from ._esgf import esgf_browser, esgf_facets, esgf_datasets, esgf_download, esgf_query
 from ._history import history
 import warnings
 
@@ -23,6 +23,10 @@ __all__ = [
     "run_plugin",
     "list_plugins",
     "plugin_doc",
-    "esgf",
+    "esgf_browser",
+    "esgf_facets",
+    "esgf_datasets",
+    "esgf_download",
+    "esgf_query",
     "history",
 ]
