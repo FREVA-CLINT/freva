@@ -151,7 +151,7 @@ class Cli(BaseParser):
             if len(args.query.split(",")) > 1:
                 print(json.dumps(out, indent=3))
             else:
-                print("\n".join([str(d) for d in list(out)]))            
+                print("\n".join([str(d) for d in list(out)]))
         else:
             vars_to_pop.remove("opendap")
             vars_to_pop.remove("gridftp")
