@@ -253,14 +253,6 @@ class P2P(object):
         return result
 
     @staticmethod
-    def show(dictio, return_str=False):
-        """Pretty print json (or any dict)"""
-        json_str = json.dumps(dictio, sort_keys=True, indent=2)
-        if return_str:
-            return json_str
-        print(json_str)
-
-    @staticmethod
     def extract_catalog(dictio):
         """Extract the catalog from this json returned info. Only 1 catalog is expected."""
         if "url" in dictio:
