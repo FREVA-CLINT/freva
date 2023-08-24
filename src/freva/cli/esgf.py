@@ -7,6 +7,7 @@ from typing import Optional, Any, cast, Union
 import lazy_import
 from evaluation_system import __version__
 from .utils import BaseParser
+import json
 
 freva = lazy_import.lazy_module("freva")
 BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")
@@ -75,7 +76,7 @@ class Cli(BaseParser):
             "--query",
             default=None,
             type=str,
-            help=("Display results from <list> queried fields"),
+            help=("Query fields from ESGF and group them per dataset"),
         )
         self.parser.add_argument(
             "--debug",
@@ -111,17 +112,22 @@ class Cli(BaseParser):
             else:
                 facets[key] = val
         merged_args = cast(Any, {**kwargs, **facets})
-        out = freva.esgf(**merged_args)
-        if not out:
-            return
+        vars_to_pop = [
+            "datasets",
+            "download_script",
+            "show_facet",
+            "opendap",
+            "gridftp",
+            "query",
+        ]
         if args.datasets:
+            _ = [merged_args.pop(variable, "") for variable in vars_to_pop]
+            out = freva.esgf_datasets(**merged_args)
             print("\n".join([f"{d[0]} - version: {d[1]}" for d in out]))
-        elif args.query:
-            if len(args.query.split(",")) > 1:
-                print("\n".join([str(out)]))
-            else:
-                print("\n".join([str(d) for d in list(out)]))
         elif args.show_facet:
+            vars_to_pop.remove("show_facet")
+            _ = [merged_args.pop(variable, "") for variable in vars_to_pop]
+            out = freva.esgf_facets(**merged_args)
             for facet_key in sorted(out):
                 if len(out[facet_key]) == 0:
                     values = "<No Results>"
@@ -134,8 +140,23 @@ class Cli(BaseParser):
                     )
                     print("[%s]\n\t%s" % (facet_key, values))
         elif args.download_script:
+            vars_to_pop.remove("download_script")
+            _ = [merged_args.pop(variable, "") for variable in vars_to_pop]
+            out = freva.esgf_download(**merged_args)
             print(out)
+        elif args.query:
+            vars_to_pop.remove("query")
+            _ = [merged_args.pop(variable, "") for variable in vars_to_pop]
+            out = freva.esgf_query(**merged_args)
+            if len(args.query.split(",")) > 1:
+                print(json.dumps(out, indent=3))
+            else:
+                print("\n".join([str(d) for d in list(out)]))            
         else:
+            vars_to_pop.remove("opendap")
+            vars_to_pop.remove("gridftp")
+            _ = [merged_args.pop(variable, "") for variable in vars_to_pop]
+            out = freva.esgf_browser(**merged_args)
             print("\n".join([str(d) for d in out]))
 
 
