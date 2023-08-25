@@ -4,6 +4,7 @@ Created on 18.05.2016
 @author: Sebastian Illing
 """
 import datetime
+import json
 import os
 import pwd
 import sys
@@ -53,6 +54,7 @@ def test_freva_history_method(dummy_history, dummy_user):
 
 
 def test_history_cmd(capsys, dummy_history, dummy_user):
+    import freva
     from freva import logger
     from freva.cli.history import main as run
 
@@ -107,3 +109,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     ]
     for string in check_string:
         assert string in output_str
+    run_cli(["history", f"--entry-ids={hist_ids[0]}", "--json"])
+    output = json.loads(capsys.readouterr().out)
+    assert isinstance(output, list)
+    assert len(output) == 1

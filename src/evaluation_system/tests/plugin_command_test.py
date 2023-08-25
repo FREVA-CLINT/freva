@@ -3,6 +3,7 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
+import json
 import multiprocessing as mp
 import os
 import time
@@ -181,6 +182,7 @@ def test_empty_status(dummy_history, capsys) -> None:
 
 
 def test_run_plugin(capsys, dummy_history, dummy_env):
+    import freva
     from evaluation_system.misc import config
 
     with pytest.raises(SystemExit):
@@ -200,8 +202,12 @@ def test_run_plugin(capsys, dummy_history, dummy_env):
     assert "the_number" in output_str
     # test get version
     run_cli(["plugin", "dummyplugin", "--repo-version"])
+    output_str = capsys.readouterr().out
     # test batch mode
-    run_cli(["plugin", "dummyplugin", "the_number=32", "--batchmode"])
+    run_cli(["plugin", "dummypluginfolders", "--json"])
+    output = json.loads(capsys.readouterr().out)
+    assert isinstance(output, dict)
+    assert "result" in output
     # test save config
     run_cli(["plugin", "dummyplugin", "the_number=32", "--save", "--debug"])
     fn = (

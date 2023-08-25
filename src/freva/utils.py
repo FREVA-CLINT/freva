@@ -1,4 +1,5 @@
 """Additional utilities."""
+import json
 import logging
 import os
 import shlex
@@ -16,6 +17,7 @@ except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
 import lazy_import
+from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
 
@@ -144,6 +146,7 @@ class PluginStatus:
                 freva.history(entry_ids=self._id, return_results=True),
             )[0]
         except IndexError:
+            logger.setLevel(log_level)
             return {}
         finally:
             logger.setLevel(log_level)
@@ -218,6 +221,9 @@ class PluginStatus:
         """Get the plugin name."""
         return self._hist.get("tool", "")
 
+    def __str__(self) -> str:
+        return json.dumps(self._hist, indent=3)
+
     @property
     def version(self) -> Tuple[int, int, int]:
         """Get the version of the plugin."""
@@ -266,8 +272,8 @@ class PluginStatus:
         max_itt = float(timeout) / dt
         text = "Waiting for plugin to finish... "
         spinner = Spinner("weather", text=text)
-        with Live(spinner, refresh_per_second=3):
-            while self.status in ("running", "scheduled"):
+        with Live(spinner, refresh_per_second=3, console=Console(stderr=True)):
+            while self.status in ("running", "scheduled", "unkown"):
                 time.sleep(dt)
                 n_itt += 1
                 if n_itt > max_itt:

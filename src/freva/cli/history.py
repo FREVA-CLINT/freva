@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from typing import Any, Optional
 
@@ -81,6 +82,18 @@ class Cli(BaseParser):
             action="store_true",
             default=False,
         )
+        self.parser.add_argument(
+            "--json",
+            "-j",
+            help=(
+                "Display a json representation of the output, this can be"
+                "useful if you want to build shell based pipelines and want"
+                "parse the output with help of `jq`."
+            ),
+            action="store_true",
+            default=False,
+        )
+
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
@@ -90,16 +103,21 @@ class Cli(BaseParser):
     ) -> None:
         """Call the databrowser command and print the results."""
         kwargs.pop("other_args", "")
+        return_json = kwargs.pop("json", False)
+        if return_json:
+            kwargs["return_results"] = True
         try:
             if len(kwargs["entry_ids"]) == 1:
                 kwargs["entry_ids"] = kwargs["entry_ids"][0].split(",")
         except TypeError:
             pass
-        commands = freva.history(_return_dict=False, **kwargs)
-        if not commands:
+        commands = freva.history(_return_dict=return_json, **kwargs)
+        if not commands and return_json is False:
             return
-        if args.return_command:
+        if args.return_command and return_json is False:
             result = "\n".join(commands)
+        elif return_json is True:
+            result = json.dumps(commands, indent=3)
         else:
             result = "\n".join(
                 [c.__str__(compact=not args.full_text) for c in commands]

@@ -398,6 +398,31 @@ submit the previous plugin job to the computing queue:
    out = res.stderr.decode()
    print(out)
 
+
+If you want to evaluate the plugins output you can use the ``--json`` flag.
+This flag converts the result of a plugin application to a json string that
+can be processed by a json parser for example ``jq``. Consider the following
+exmample (in bash/zsh) where we use ``--json`` flag to get all netcdf output
+files from a plugin run.
+
+.. code:: console
+
+    files=$(freva plugin dummypluginfolders --json|jq -r '.result| keys[] | select(endswith(".nc"))')
+    echo $files
+
+.. execute_code::
+   :hide_code:
+
+   from pathlib import Path
+   from subprocess import run, PIPE
+   res = run(["freva", "plugin", "dummypluginfolders", "--json"], check=True)
+
+.. note::
+
+    If you use the ``--batchmode`` flag in combination with ``--json`` flag the
+    commandline will wait for the batch job to finish.
+
+
 Inspecting previous analysis jobs: the ``freva-history`` command
 ----------------------------------------------------------------
 
@@ -466,6 +491,36 @@ can use the ``--return-command`` option to get the command that was used:
    from subprocess import run, PIPE
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
+
+Like in for the ``plugin`` sub command you can use the ``--json`` flag to
+to make the output of the history command machine readable and evaluate its
+output. For example can we query the output files of the last 3 plugin
+applications:
+
+.. code:: console
+
+    freva-history  --limit 3 --json|jq -r '.[].result | keys[]'
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   for hist in freva.history(limit=3, return_results=True):
+      for file in hist["result"].keys():
+         print(file)
+
+. code:: console
+
+    freva-history  --entry-ids 136 --return-command
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+
 
 Managing your own datasets: the ``freva-user-data`` command
 -----------------------------------------------------------

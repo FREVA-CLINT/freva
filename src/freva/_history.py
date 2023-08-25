@@ -110,23 +110,25 @@ def history(
                 cmd = pm.get_command_string_from_row(row)
                 commands.append(cmd)
             return commands
-        else:
-            if _return_dict:
-                command_dicts = [row.__dict__ for row in rows]
-                for nn, cmd_dict in enumerate(command_dicts):
-                    for key, value in cmd_dict.items():
-                        try:
-                            command_dicts[nn][key] = json.loads(value)
-                        except (json.JSONDecodeError, TypeError):
-                            pass
-                    if return_results:
-                        command_dicts[nn]["result"] = pm.get_result_output(
-                            command_dicts[nn]["id"]
-                        )
-                    else:
-                        command_dicts[nn]["result"] = {}
-                return command_dicts
-            else:
-                return [row for row in rows]
-    else:
-        return []
+        if _return_dict:
+            command_dicts = []
+            for cmd_dict in [row.__dict__ for row in rows]:
+                out_dict = {}
+                for key, value in cmd_dict.items():
+                    try:
+                        out_dict[key] = json.loads(value)
+                    except (json.JSONDecodeError, TypeError):
+                        if key in ("_state",):
+                            continue
+                        if key == "timestamp":
+                            out_dict[key] = value.isoformat()
+                        else:
+                            out_dict[key] = value
+                if return_results:
+                    out_dict["result"] = pm.get_result_output(cmd_dict["id"])
+                else:
+                    out_dict["result"] = {}
+                command_dicts.append(out_dict)
+            return command_dicts
+        return rows
+    return []

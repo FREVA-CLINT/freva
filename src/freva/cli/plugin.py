@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterator, Optional
 
 from rich import print as pprint
 from rich.console import Console
@@ -29,6 +31,19 @@ ValidationError = lazy_import.lazy_class(
 hide_exception = lazy_import.lazy_function(
     "evaluation_system.misc.exceptions.hide_exception"
 )
+
+
+@contextmanager
+def _pipe(redirect_stdout: bool = False) -> Iterator[None]:
+    """Redirect the stdout to stderr if needed."""
+
+    stdout = sys.stdout
+    try:
+        if redirect_stdout is True:
+            sys.stdout = sys.stderr
+        yield
+    finally:
+        sys.stdout = stdout
 
 
 class Cli(BaseParser):
@@ -121,6 +136,28 @@ class Cli(BaseParser):
             action="store_true",
             help="Display plugin documentation",
         )
+        self.parser.add_argument(
+            "--json",
+            "-j",
+            help=(
+                "Display a json representation of the result, this can be"
+                "useful if you want to build shell based pipelines and want"
+                "parse the output with help of `jq`."
+            ),
+            default=False,
+            action="store_true",
+        )
+        self.parser.add_argument(
+            "--wait",
+            "-w",
+            help=(
+                "Wait for the plugin to finish, this has only an effect for "
+                "batch mode execution."
+            ),
+            default=False,
+            action="store_true",
+        )
+
         self.parser.add_argument("tool-options", nargs="*", help="Tool options")
         self.parser.set_defaults(apply_func=self.run_cmd)
 
@@ -131,6 +168,8 @@ class Cli(BaseParser):
     ) -> None:
         """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
+        jsonify = kwargs.pop("json", False)
+        wait = kwargs.pop("wait", False)
         tool_options = kwargs.pop("tool-options", []) + kwargs.pop("unknown", [])
         repo_version: bool = kwargs.pop("repo_version", False)
         show_config: bool = kwargs.pop("show_config", False)
@@ -156,7 +195,8 @@ class Cli(BaseParser):
             elif show_config:
                 print(freva.plugin_info(tool_name or "", "config", **options))
             else:
-                plugin_run = freva.run_plugin(tool_name or "", **tool_args)
+                with _pipe(redirect_stdout=jsonify):
+                    plugin_run = freva.run_plugin(tool_name or "", **tool_args)
                 value = int(plugin_run.status == "broken")
         except (
             PluginNotFoundError,
@@ -170,6 +210,10 @@ class Cli(BaseParser):
                 raise SystemExit
         if value != 0:
             logger.warning("Tool failed to run")
+        elif jsonify or wait:
+            plugin_run.wait()
+        if jsonify:
+            print(plugin_run)
 
 
 def main(argv: Optional[list[str]] = None) -> None:
