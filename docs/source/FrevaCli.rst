@@ -395,7 +395,7 @@ submit the previous plugin job to the computing queue:
              "vmax=5",
              "suffix=gif",
              ], check=True, stdout=PIPE, stderr=PIPE)
-   out = res.stderr.decode()
+   out = res.stdout.decode()
    print(out)
 
 
@@ -413,9 +413,10 @@ files from a plugin run.
 .. execute_code::
    :hide_code:
 
-   from pathlib import Path
-   from subprocess import run, PIPE
-   res = run(["freva", "plugin", "dummypluginfolders", "--json"], check=True)
+   import freva
+   res = freva.run_plugin("dummypluginfolders")
+   for file res.get_datafiles():
+      print(file)
 
 .. note::
 
@@ -454,7 +455,6 @@ Let’s get the last entry (default is 10 entries) of the ``dummyplugin`` plugin
 
    from subprocess import run, PIPE
    res = run(["freva", "history", "--limit", "1", "--plugin", "dummyplugin"], check=True, stdout=PIPE, stderr=PIPE)
-   print(res.stderr.decode())
    print(res.stdout.decode())
 
 
@@ -464,9 +464,11 @@ format.
 The entries are sorted by their ``id``. For example you can query the
 full configuration by giving the id:
 
+
 .. code:: console
 
     freva-history --entry-ids 136 --full-text
+
 
 .. execute_code::
    :hide_code:
@@ -492,6 +494,7 @@ can use the ``--return-command`` option to get the command that was used:
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
+
 Like in for the ``plugin`` sub command you can use the ``--json`` flag to
 to make the output of the history command machine readable and evaluate its
 output. For example can we query the output files of the last 3 plugin
@@ -508,19 +511,6 @@ applications:
    for hist in freva.history(limit=3, return_results=True):
       for file in hist["result"].keys():
          print(file)
-
-. code:: console
-
-    freva-history  --entry-ids 136 --return-command
-
-.. execute_code::
-   :hide_code:
-
-   from subprocess import run, PIPE
-   res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
-   print(res.stdout.decode())
-
-
 
 Managing your own datasets: the ``freva-user-data`` command
 -----------------------------------------------------------
