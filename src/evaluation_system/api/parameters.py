@@ -595,9 +595,9 @@ class ParameterDictionary(dict):
                             "{} (default: {})</td></tr>"
                         ).format(
                             text_color,
-                            html.escape(key),
-                            html.escape(param_desc),
-                            html.escape(param_str),
+                            key,
+                            param_desc,
+                            param_str.replace("$", "\$").replace("_", "\_"),
                         )
                     )
         if notebook:
