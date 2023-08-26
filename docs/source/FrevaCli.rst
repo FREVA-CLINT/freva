@@ -415,7 +415,7 @@ files from a plugin run.
 
    import freva
    res = freva.run_plugin("dummypluginfolders")
-   for file in res.get_datafiles():
+   for file in res.get_result_paths():
       print(file)
 
 .. note::
