@@ -61,8 +61,7 @@ def gather_completion_scripts(tempdir):
     data_files = []
     for shell, target_path in shells.items():
         comp_files = [
-            str(f.relative_to(this_dir))
-            for f in (COMPLETION_DIR / shell).rglob("*")
+            str(f.relative_to(this_dir)) for f in (COMPLETION_DIR / shell).rglob("*")
         ]
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
@@ -98,21 +97,16 @@ def get_data_files():
     dirs = [d for d in asset_dir.rglob("*") if d.is_dir()]
     files = []
     for d in dirs:
-        target_dir = d.relative_to(this_dir)
-        add_files = [
-            str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()
-        ]
+        target_dir = Path("freva") / d.relative_to(asset_dir)
+        add_files = [str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()]
         if add_files:
             files.append((str(target_dir), add_files))
-    files.append(("", ["deploy.py"]))
     return files
 
 
 entry_points = ["freva = freva.cli:main"]
 for cmd in COMMANDS:
-    entry_points.append(
-        f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main"
-    )
+    entry_points.append(f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main")
 setup(
     name="freva",
     version=find_version("src/evaluation_system", "__init__.py"),
@@ -125,11 +119,12 @@ setup(
     license="BSD-3-Clause",
     packages=find_packages("src"),
     package_dir={"": "src"},
+    data_files=get_data_files(),
     project_urls={
-        "Documentation": "https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/index.html",
-        "Release notes": "https://freva.gitlab-pages.dkrz.de/evaluation_system/sphinx_docs/whats-new.html",
-        "Issues": "https://gitlab.dkrz.de/freva/evaluation_system/-/issues",
-        "Source": "https://gitlab.dkrz.de/freva/evaluation_system",
+        "Documentation": "https://freva-clint.github.io/freva",
+        "Release notes": "https://freva-clint.github.io/freva/whats-new.html",
+        "Issues": "https://github.com/FREVA-CLINT/freva/issues",
+        "Source": "https://github.com/FREVA-CLINT/freva",
     },
     cmdclass={"install": InstallCommand},
     install_requires=[
@@ -159,6 +154,7 @@ setup(
     extras_require={
         "jupyter": [
             "ipywidgets",
+            "papermill",
         ],
         "docs": [
             "bash_kernel",

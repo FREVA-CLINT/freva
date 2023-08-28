@@ -2,15 +2,21 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import shutil
+import sys
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Dict, List, Union, cast
 
+import appdirs
 import lazy_import
+import nbformat
+import nbparameterise as nbp
+import yaml
 
 from evaluation_system.misc import logger
 from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
@@ -22,7 +28,7 @@ DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader"
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
-from .utils import handled_exception
+from .utils import Solr, handled_exception
 
 __all__ = ["UserData"]
 
@@ -31,16 +37,69 @@ __all__ = ["UserData"]
 class UserData:
     """Data class that handles user data requests. With help of this class
     users can add their own data to the databrowser, (re)-index data in the
-    databrowser or delete data in the databrowser."""
+    databrowser, delete data in the databrowser or add datasets to the
+    databrowser that doesn't even exist yet but can be created on demand in
+    the future (future dataset)."""
+
+    def __post_init__(self):
+        self._solr = Solr()
+
+    @classmethod
+    def get_futres(cls, full_paths: bool = True) -> List[str]:
+        """Get all system wide and user future definitions.
+
+        This method searches all system paths including a custom path that
+        can be set via the "FREVA_FUTURE_DIR" variable and gets all available
+        files holding the recipes of how to (re)create datasets in the future.
+
+        Parameters
+        ----------
+        full_paths: bool, default: True
+            Return full paths to the datasets, if False then only the names
+            of the future definitions are returned.
+
+        Returns
+        -------
+        list: All future file definitions.
+        """
+        user_futures = [
+            os.path.join(appdirs.user_config_dir("freva"), "futures"),
+            os.path.join(cls._get_user_dir(), "futures"),
+        ]
+        for user_future in user_futures:
+            Path(user_future).mkdir(exist_ok=True, parents=True, mode=0o775)
+        user_futures.append(os.environ.get("FREVA_FUTURE_DIR", ""))
+        _dirs = [
+            Path(d).expanduser().absolute()
+            for d in (
+                os.path.join(sys.prefix, "freva", "futures"),
+                *user_futures,
+            )
+            if d
+        ]
+        futures = []
+        for _dir in _dirs:
+            for suffix in (".ipynb", ".cwl"):
+                if full_paths:
+                    futures += list(map(str, _dir.rglob(f"*{suffix}")))
+                else:
+                    futures += [
+                        f.with_suffix("").name for f in _dir.rglob(f"*{suffix}")
+                    ]
+        return futures
+
+    @staticmethod
+    def _get_user_dir() -> str:
+        try:
+            return str(get_output_directory() / f"user-{User().getName()}")
+        except ConfigurationException:
+            config.reloadConfiguration()
+            return str(get_output_directory() / f"user-{User().getName()}")
 
     @property
     def user_dir(self) -> Path:
-        """Get the user data directory for the user."""
-        try:
-            return get_output_directory() / f"user-{User().getName()}"
-        except ConfigurationException:
-            config.reloadConfiguration()
-            return get_output_directory() / f"user-{User().getName()}"
+        """Get the user output directory."""
+        return Path(self._get_user_dir())
 
     def _validate_user_dirs(
         self, *crawl_dirs: os.PathLike, **kwargs: bool
@@ -74,6 +133,98 @@ class UserData:
         if how in ["link"]:
             return os.link
         raise ValueError(f"Invalid Method: valid methods are {choices}")
+
+    @handled_exception
+    def future(
+        self,
+        future: Union[str, Path],
+        variable_file: Union[str, Path, None] = None,
+        **facets: Union[str, List[str]],
+    ) -> None:
+        """Register datasets in the databrowser that can be created on demand.
+
+        The future concept allows users to add datasets to the databrowser
+        that can be created on demand in the future. That is rather than
+        creating existing datasets once, users can register the creation of
+        a dataset that gets created when it is actually analysed. This can
+        save significant about of disk space and allows for deeper insights
+        on the usefulness of certain datasets.
+
+        The datasets are created based on a recipe. Please consult the
+        freva documentation for information on how to created those recipes.
+
+        Parameters
+        ----------
+        future:
+            Name or file path of the future recipe.
+        variable_file:
+            Json or Yaml file holding additional variables that are not
+            databrowser search keys (facets). Databrowser search facets
+            are set separately.
+        **facets:
+            Databrowser search facets. These facets are used to add information
+            to the databrowser.
+        """
+        suffix = Path(variable_file or "").suffix
+        if variable_file:
+            with open(variable_file) as f_obj:
+                if suffix.lower() in (".json"):
+                    variables = json.load(f_obj)
+                else:
+                    variables = yaml.safe_load(f_obj)
+        else:
+            variables = {}
+        futures = {}
+        for path in map(Path, self.get_futres()):
+            futures[path.with_suffix("").name] = path
+        future_name = Path(future).with_suffix("").name
+        try:
+            future_file = futures[future_name]
+        except KeyError:
+            valid_futures = ", ".join(futures.keys())
+            raise ValueError(f"Future not valid, valid futures are: {valid_futures}")
+
+        logger.debug("Adding future to databrowser")
+        self._solr.post([self._parametrise_notebook(future_file, facets, variables)])
+
+    @staticmethod
+    def _parametrise_notebook(
+        inp_notebook: Path,
+        solr_variables: Dict[str, Union[List[str], str]],
+        variables: Dict[str, Any],
+    ) -> Dict[str, Union[str, List[str]]]:
+        """Set all variables in the notebook."""
+
+        notebook = nbformat.reads(inp_notebook.read_text(), as_version=4)
+
+        # Update the solr parameters
+        solr_params = nbp.parameter_values(
+            nbp.extract_parameters(notebook, tag="solr-parameters"),
+            **solr_variables,
+        )
+        # Update any other variable definition
+        other_params = nbp.parameter_values(
+            nbp.extract_parameters(notebook, tag="parameters"), **variables
+        )
+
+        notebook = json.dumps(
+            nbp.replace_definitions(
+                nbp.replace_definitions(notebook, solr_params), other_params
+            ),
+            indent=3,
+        )
+        facets = {p.name: p.value for p in solr_params}
+        logger.debug("Prametrizing notebook with: %s", facets)
+        facets["future"] = notebook
+        file_name: List[str] = []
+        for value in facets.values():
+            if isinstance(value, list):
+                value_s = "".join([v[0].upper() + v[:1].lower() for v in value])
+            else:
+                value_s = str(value)
+            file_name.append(value_s)
+        facets["file"] = facets["uri"] = f"future://{'_'.join(file_name)}"
+        return facets
 
     @handled_exception
     def add(

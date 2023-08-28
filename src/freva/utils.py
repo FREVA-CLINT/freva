@@ -7,9 +7,21 @@ import subprocess
 import time
 from fnmatch import fnmatch
 from functools import wraps
+from getpass import getuser
 from pathlib import Path
 from types import TracebackType
-from typing import Any, Callable, List, Literal, Optional, Tuple, Type, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 try:
     from IPython import get_ipython
@@ -17,6 +29,7 @@ except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
 import lazy_import
+import requests
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
@@ -330,6 +343,57 @@ class PluginStatus:
             for (path, metadata) in self._hist.get("result", {}).items()
             if metadata.get("type") == dtype and fnmatch(path, glob_pattern)
         ]
+
+
+class Solr:
+    """Class that interacts with the apache solr server."""
+
+    def __init__(self) -> None:
+        self._solr_server = f'{cfg.get("solr.host")}:{cfg.get("solr.port")}'
+        self._solr_cores = cfg.get("solr.core"), "latest"
+
+    def get_solr_url(self, version: bool = False) -> str:
+        """Get the url of the solr right solr core.
+
+        Parameters
+        ----------
+        version: bool, default: False
+            Use the core for the versioned datasets.
+        """
+
+        if version:
+            return "http://{self._solr_server}/solr/{self._solr_cores[0]}"
+        return "http://{self._solr_server}/solr/{self._solr_cores[1]}"
+
+    def post(self, metadata: List[Dict[str, Union[str, List[str]]]]) -> None:
+        """Post user metadata to the solr core.
+
+        Parameters
+        ----------
+        metadata:
+            List of metadata that is posted to the solr server.
+
+        Raises
+        ------
+        ValueError: If the posting the data failed.
+        """
+
+        no_version: List[Dict[str, Union[str, List]]] = []
+        versioned: List[Dict[str, Union[str, List]]] = []
+        for _data in metadata:
+            _data.setdefault("cmor_table", _data.get("time_frequency", "none"))
+            _data.setdefault("realm", "user-data")
+            _data.setdefault("project", f"user-{getuser()}")
+            no_version.append({k: v for k, v in _data.items() if k != "version"})
+            versioned.append(_data)
+        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
+        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        try:
+            for url in url_nv, url_v:
+                res = requests.post(url, json=no_version, timeout=3)
+                res.raise_for_status()
+        except requests.HTTPError:
+            raise ValueError(f"Solr request to {url} failed: {res.reason}")
 
 
 class config:
