@@ -65,6 +65,16 @@ class Cli(BaseParser):
             default="flexible",
         )
         self.parser.add_argument(
+            "--execute-future",
+            "--create-future",
+            help=(
+                "Create any future datasets that have been marked for future"
+                " creation"
+            ),
+            action="store_true",
+        )
+
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -88,7 +98,9 @@ class Cli(BaseParser):
         **kwargs: Optional[Any],
     ) -> None:
         """Call the databrowser command and print the results."""
-        facets: dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
+        facets: dict[str, Any] = BaseCompleter.arg_to_dict(
+            args.facets, append=True
+        )
         facet_limit = kwargs.pop("facet_limit")
         for key in (
             "facets",
@@ -96,6 +108,7 @@ class Cli(BaseParser):
             "count",
             "relevant_only",
             "batch_size",
+            "execute_future",
         ):
             _ = kwargs.pop(key, "")
         for key, values in facets.items():
@@ -107,7 +120,11 @@ class Cli(BaseParser):
         elif args.facet:
             out = freva.facet_search(facet=args.facet, **merged_args)
         else:
-            out = freva.databrowser(batch_size=args.batch_size, **merged_args)
+            out = freva.databrowser(
+                batch_size=args.batch_size,
+                execute_future=args.execute_future,
+                **merged_args,
+            )
         # flush stderr in case we have something pending
         sys.stderr.flush()
         if isinstance(out, dict):
@@ -150,7 +167,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
+        rich.print(
+            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
+        )
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

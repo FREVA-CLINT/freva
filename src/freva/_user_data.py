@@ -19,7 +19,10 @@ import nbparameterise as nbp
 import yaml
 
 from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
+from evaluation_system.misc.exceptions import (
+    ConfigurationException,
+    ValidationError,
+)
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
@@ -42,10 +45,10 @@ class UserData:
     the future (future dataset)."""
 
     def __post_init__(self):
-        self._solr = Solr()
+        self.solr = Solr()
 
     @classmethod
-    def get_futres(cls, full_paths: bool = True) -> List[str]:
+    def get_futures(cls, full_paths: bool = True) -> List[str]:
         """Get all system wide and user future definitions.
 
         This method searches all system paths including a custom path that
@@ -81,10 +84,16 @@ class UserData:
         for _dir in _dirs:
             for suffix in (".ipynb", ".cwl"):
                 if full_paths:
-                    futures += list(map(str, _dir.rglob(f"*{suffix}")))
+                    futures += [
+                        str(f)
+                        for f in _dir.rglob(f"*{suffix}")
+                        if "-checkpoint" not in str(f)
+                    ]
                 else:
                     futures += [
-                        f.with_suffix("").name for f in _dir.rglob(f"*{suffix}")
+                        f.with_suffix("").name
+                        for f in _dir.rglob(f"*{suffix}")
+                        if "-checkpoint" not in str(f)
                     ]
         return futures
 
@@ -135,7 +144,7 @@ class UserData:
         raise ValueError(f"Invalid Method: valid methods are {choices}")
 
     @handled_exception
-    def future(
+    def register_future(
         self,
         future: Union[str, Path],
         variable_file: Union[str, Path, None] = None,
@@ -175,7 +184,7 @@ class UserData:
         else:
             variables = {}
         futures = {}
-        for path in map(Path, self.get_futres()):
+        for path in map(Path, self.get_futures()):
             futures[path.with_suffix("").name] = path
         future_name = Path(future).with_suffix("").name
         try:
@@ -185,7 +194,15 @@ class UserData:
             raise ValueError(f"Future not valid, valid futures are: {valid_futures}")
 
         logger.debug("Adding future to databrowser")
-        self._solr.post([self._parametrise_notebook(future_file, facets, variables)])
+        self.solr.post(
+            [
+                self._parametrise_notebook(
+                    future_file,
+                    {k: v for (k, v) in facets.items() if v},
+                    variables,
+                )
+            ]
+        )
 
     @staticmethod
     def _parametrise_notebook(
@@ -214,16 +231,31 @@ class UserData:
             indent=3,
         )
         facets = {p.name: p.value for p in solr_params}
-        logger.debug("Prametrizing notebook with: %s", facets)
-        facets["future"] = notebook
+        solr_variables.update(facets)
+        facets = solr_variables
         file_name: List[str] = []
-        for value in facets.values():
+        parts = []
+        drs_ = config.get_drs_config()["crawl_my_data"]
+        for key in drs_["parts_dir"] + drs_["parts_file_name"]:
+            if key not in parts:
+                parts.append(key)
+        for key in parts:
+            value = facets.get(key)
             if isinstance(value, list):
-                value_s = "".join([v[0].upper() + v[:1].lower() for v in value])
-            else:
+                value_s = "".join([v[0].upper() + v[1:].lower() for v in value])
+            elif value:
                 value_s = str(value)
+            else:
+                continue
             file_name.append(value_s)
+        facets["future"] = notebook
+        facets["dataset"] = "future"
         facets["file"] = facets["uri"] = f"future://{'_'.join(file_name)}"
+        logger.debug(
+            "Prametrizing notebook with: %s and file name %s",
+            facets,
+            facets["file"],
+        )
         return facets
 
     @handled_exception

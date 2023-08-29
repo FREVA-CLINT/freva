@@ -154,7 +154,8 @@ setup(
     extras_require={
         "jupyter": [
             "ipywidgets",
-            "papermill",
+            "nbparameterise",
+            "tqdm",
         ],
         "docs": [
             "bash_kernel",

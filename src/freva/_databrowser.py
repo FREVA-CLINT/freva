@@ -4,16 +4,18 @@ from __future__ import annotations
 import json
 import warnings
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union, overload
+from typing import Any, Iterator, Union, overload
 
 import lazy_import
 from typing_extensions import Literal
 
 from evaluation_system.misc import logger
 
-from .utils import handled_exception
+from .utils import Solr, handled_exception
 
-SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
+SolrFindFiles = lazy_import.lazy_class(
+    "evaluation_system.model.solr.SolrFindFiles"
+)
 
 
 __all__ = ["databrowser", "search_facets", "count_values"]
@@ -140,20 +142,30 @@ def count_values(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning("Turning latest off when searching for a specific version.")
+        logger.warning(
+            "Turning latest off when searching for a specific version."
+        )
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     if count_all:
         with warnings.catch_warnings():
-            warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+            warnings.filterwarnings(
+                action="ignore", category=PendingDeprecationWarning
+            )
             return (
-                SolrFindFiles(core=core)._retrieve_metadata(**search_facets).num_objects
+                SolrFindFiles(core=core)
+                ._retrieve_metadata(**search_facets)
+                .num_objects
             )
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
-        results = SolrFindFiles(core=core)._facets(facet or None, **search_facets)
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
+        )
+        results = SolrFindFiles(core=core)._facets(
+            facet or None, **search_facets
+        )
     out: dict[str, dict[str, int]] = {}
     for att in facet or results.keys():
         values = results[att]
@@ -252,13 +264,17 @@ def facet_search(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning("Turning latest off when searching for a specific version.")
+        logger.warning(
+            "Turning latest off when searching for a specific version."
+        )
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
+        )
         results = SolrFindFiles(core=core)._facets(
             facets=facet or None, latest_version=False, **search_facets
         )
@@ -273,8 +289,9 @@ def databrowser(
     uniq_key: Literal["file", "uri"] = "file",
     time: str = "",
     time_select: Literal["flexible", "strict", "file"] = "flexible",
+    execute_future: bool = False,
     **search_facets: Union[str, list[str], int],
-) -> Union[dict[str, dict[str, int]], dict[str, list[str]], Iterator[str], int]:
+) -> Iterator[str]:
     """Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -311,6 +328,8 @@ def databrowser(
         Select all versions and not just the latest version (default).
     batch_size: int, default: 5000
         Size of the search querey.
+    execute_future: bool, default: False
+        Create any future datasets that are encountered.
 
     Returns
     -------
@@ -360,15 +379,25 @@ def databrowser(
             print(file)
     """
     core = {True: "latest", False: "files"}[not multiversion]
-    search_facets = _proc_search_facets(
+    _search_facets = _proc_search_facets(
         time_select=time_select, time=time, **search_facets
     )
+    kwargs = {
+        "batch_size": batch_size,
+        "latest_version": not multiversion,
+        **_search_facets,
+    }
     with warnings.catch_warnings():
-        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
-        search_results = SolrFindFiles(core=core)._search(
-            batch_size=batch_size,
-            latest_version=not multiversion,
-            uniq_key=uniq_key,
-            **search_facets,
+        warnings.filterwarnings(
+            action="ignore", category=PendingDeprecationWarning
         )
-    return search_results
+        futures = []
+        if execute_future:
+            futures = SolrFindFiles(core=core)._search(
+                file="future\\://*",
+                uniq_key=None,
+                fl="future,file",
+                **kwargs,
+            )
+            Solr().execute_solr_futures(futures)
+        return SolrFindFiles(core=core)._search(uniq_key=uniq_key, **kwargs)

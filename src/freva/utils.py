@@ -1,4 +1,6 @@
 """Additional utilities."""
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 import json
 import logging
 import os
@@ -9,11 +11,14 @@ from fnmatch import fnmatch
 from functools import wraps
 from getpass import getuser
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from types import TracebackType
 from typing import (
     Any,
     Callable,
     Dict,
+    Iterable,
+    Iterator,
     List,
     Literal,
     Optional,
@@ -29,10 +34,14 @@ except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
 import lazy_import
+import nbclient
+import nbformat
 import requests
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
+from tqdm import tqdm
+import tqdm.notebook
 
 import freva
 from evaluation_system.misc import logger
@@ -41,6 +50,9 @@ from evaluation_system.misc.utils import metadict as meta_type
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 cancel_command = lazy_import.lazy_callable(
     "evaluation_system.api.workload_manager.cancel_command"
+)
+get_solr_time_range = lazy_import.lazy_callable(
+    "evaluation_system.misc.utils.get_solr_time_range"
 )
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
 
@@ -56,6 +68,25 @@ def is_jupyter() -> bool:
     """
     # check for `kernel` attribute on the IPython instance
     return getattr(get_ipython(), "kernel", None) is not None
+
+
+@contextmanager
+def get_spinner(
+    text: str,
+    spinner_type: str = "weather",
+    clear: bool = False,
+    refresh_rate: int = 3,
+) -> Iterator[Spinner]:
+    """Create a spinner giving a visual feedback on computational tasks."""
+
+    spinner = Spinner(spinner_type, text=f"{text} ...")
+    console = Console(stderr=True)
+    with Live(spinner, refresh_per_second=refresh_rate, console=console):
+        yield spinner
+        spinner.update(text=str(spinner.text) + " ok")
+        if clear:
+            spinner.update(text="")
+            console.clear_live()
 
 
 def handled_exception(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -152,7 +183,7 @@ class PluginStatus:
     @property
     def _hist(self) -> dict[str, Any]:
         log_level = logger.level
-        logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.ERROR)
         try:
             hist = cast(
                 list[dict[str, Any]],
@@ -283,16 +314,13 @@ class PluginStatus:
         """
         dt, n_itt = 0.5, 0
         max_itt = float(timeout) / dt
-        text = "Waiting for plugin to finish... "
-        spinner = Spinner("weather", text=text)
-        with Live(spinner, refresh_per_second=3, console=Console(stderr=True)):
+        with get_spinner("Wait for plugin to finish") as spinner:
             while self.status in ("running", "scheduled", "unkown"):
                 time.sleep(dt)
                 n_itt += 1
                 if n_itt > max_itt:
-                    spinner.update(text=text + "ouch")
+                    spinner.update(text=str(spinner.text) + "ouch")
                     raise ValueError("Plugin did not finish")
-            spinner.update(text=text + "ok")
 
     def get_result_paths(
         self,
@@ -362,8 +390,108 @@ class Solr:
         """
 
         if version:
-            return "http://{self._solr_server}/solr/{self._solr_cores[0]}"
-        return "http://{self._solr_server}/solr/{self._solr_cores[1]}"
+            return f"http://{self._solr_server}/solr/{self._solr_cores[0]}"
+        return f"http://{self._solr_server}/solr/{self._solr_cores[1]}"
+
+    def _execute_single_future(self, future: Dict[str, str]) -> None:
+        """Execute a scheduled future."""
+        code = future["future"]
+        path = future["file"]
+        temp_dir = TemporaryDirectory()
+        temp_file = os.path.join(temp_dir.name, "exec.out")
+        with open(temp_file, "w", encoding="utf-8") as stream:
+            try:
+                nbclient.execute(
+                    nbformat.reads(code, as_version=4),
+                    cwd=temp_dir.name,
+                    stdout=stream,
+                    stderr=stream,
+                )
+                temp_dir.cleanup()
+            except Exception as error:
+                logger.error(
+                    "Execution failed: more information in %s", temp_file
+                )
+                raise error
+        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
+        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        path_e = path.replace(":", "\\:")
+        try:
+            for nn, url in enumerate([url_nv, url_v]):
+                logger.debug("Deleting %s in %s", path, url)
+                request = {"delete": {"query": f"file:{path_e}"}}
+                res = requests.post(url, json=request, timeout=3)
+                res.raise_for_status()
+        except requests.HTTPError:
+            raise ValueError(f"Solr request to {url} failed: {res.text}")
+        except Exception as error:
+            raise ValueError(f"Could not connect to {url}: {error}:")
+
+    @handled_exception
+    def execute_solr_futures(self, futures: Iterable[Dict[str, str]]) -> None:
+        """Create datasets that have been registered for future executions.
+
+        This methods takes a strings representing a jupyter notebook and
+        executes the code.
+
+        Parameters
+        ----------
+        future:
+            A list holding a dictionary with the information on how this
+            future is created (code) and the name of the file path for this
+            future dataset in the databrowser.
+        """
+        with ThreadPoolExecutor() as pool:
+            pydev = os.environ.get("PYDEVD_DISABLE_FILE_VALIDATION")
+            log_level = logger.level
+            try:
+                os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
+                logger.setLevel(logging.ERROR)
+                with get_spinner("Executing futures", clear=True):
+                    list(pool.map(self._execute_single_future, futures))
+            finally:
+                if pydev:
+                    os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = pydev
+                logger.setLevel(log_level)
+
+    def get_file_attributes(
+        self,
+        path: str,
+        field: str,
+        uniq_key: Literal["uri", "file"] = "uri",
+        multiversion: bool = False,
+    ) -> Union[str, List[str]]:
+        """Query the databrowser for a field entry.
+
+        Parameters
+        ----------
+        path:
+            The name of the file/uri value.
+        field:
+            The name of the field information that should be queried.
+        uniq_key:
+            Indication whether the path parameter is a file or a uri field.
+
+        Returns
+        -------
+        Union[str, List[str]]: The associated field.
+        """
+        params: Dict[str, str] = {
+            "q": f'{uniq_key}:"{path}"',
+            "rows": "1",
+            "fl": field,
+            "wt": "json",
+        }
+        url = f"{self.get_solr_url(multiversion)}/select"
+        try:
+            res = requests.get(url, params=params, timeout=5)
+            res.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError):
+            logger.debug("Connection to %s with params %s failed", url, params)
+            return ""
+        return (
+            res.json().get("response", {}).get("docs", [{}])[0].get(field, "")
+        )
 
     def post(self, metadata: List[Dict[str, Union[str, List[str]]]]) -> None:
         """Post user metadata to the solr core.
@@ -381,19 +509,33 @@ class Solr:
         no_version: List[Dict[str, Union[str, List]]] = []
         versioned: List[Dict[str, Union[str, List]]] = []
         for _data in metadata:
+            version = _data.get("version", "")
+            if version:
+                _data["file_no_version"] = cast(str, _data["file"]).replace(
+                    "/%s/" % version, "/"
+                )
+            else:
+                _data["file_no_version"] = _data["file"]
+            _data["time"] = get_solr_time_range(_data.pop("time", "fx"))
             _data.setdefault("cmor_table", _data.get("time_frequency", "none"))
             _data.setdefault("realm", "user-data")
             _data.setdefault("project", f"user-{getuser()}")
-            no_version.append({k: v for k, v in _data.items() if k != "version"})
+            no_version.append(
+                {k: v for k, v in _data.items() if k != "version"}
+            )
             versioned.append(_data)
         url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
         url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        batch_data = [no_version, versioned]
         try:
-            for url in url_nv, url_v:
-                res = requests.post(url, json=no_version, timeout=3)
+            for nn, url in enumerate([url_nv, url_v]):
+                logger.debug("Sending %s to %s", url, batch_data[nn])
+                res = requests.post(url, json=batch_data[nn], timeout=3)
                 res.raise_for_status()
         except requests.HTTPError:
-            raise ValueError(f"Solr request to {url} failed: {res.reason}")
+            raise ValueError(f"Solr request to {url} failed: {res.text}")
+        except Exception as error:
+            raise ValueError(f"Could not connect to {url}: {error}:")
 
 
 class config:

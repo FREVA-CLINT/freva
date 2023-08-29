@@ -89,7 +89,9 @@ class AddData(BaseParser):
     ) -> None:
         """Add databrowser facets to the cli parsers."""
 
-        self.parser.add_argument("--project", type=str, default=None, help=project_help)
+        self.parser.add_argument(
+            "--project", type=str, default=None, help=project_help
+        )
         self.parser.add_argument(
             "--experiment",
             type=str,
@@ -167,7 +169,9 @@ class AddData(BaseParser):
                 "directory."
             ),
         )
-        self._add_facets_to_parser(suffix="if the can't be found in the metadata")
+        self._add_facets_to_parser(
+            suffix="if the can't be found in the metadata"
+        )
         self.parser.add_argument(
             "--override",
             "--overwrite",
@@ -272,7 +276,7 @@ class Future(AddData):
         self.parser.add_argument(
             "future_definition",
             type=str,
-            choices=UserData.get_futres(full_paths=False),
+            choices=UserData.get_futures(full_paths=False),
             help="Name of the future definition.",
         )
         self.parser.add_argument(
@@ -325,7 +329,7 @@ class Future(AddData):
     def run_cmd(args: argparse.Namespace, **kwargs: str) -> None:
         """Run the futures command."""
         user_data = UserData()
-        user_data.future(
+        user_data.register_future(
             args.future_definition,
             args.variable_file,
             project=args.project,
@@ -356,7 +360,9 @@ class Cli(SubCommandParser):
             "delete": DeleteData,
             "future": Future,
         }
-        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
+        super().__init__(
+            parser, sub_parsers=subcommands, command="freva-user-data"
+        )
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
@@ -377,7 +383,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
+        rich.print(
+            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
+        )
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover
