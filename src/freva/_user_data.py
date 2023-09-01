@@ -22,7 +22,9 @@ from evaluation_system.misc.exceptions import (
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
-DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
+DataReader = lazy_import.lazy_class(
+    "evaluation_system.api.user_data.DataReader"
+)
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
@@ -39,22 +41,28 @@ class UserData:
     databrowser that doesn't even exist yet but can be created on demand in
     the future (future dataset)."""
 
+    drs_spec: str = "crawl_my_data"
+
     def __post_init__(self):
         self.solr = Solr()
 
     @staticmethod
-    def get_user_dir() -> str:
+    def get_user_dir(drs_spec: Optional[str] = None) -> str:
         """Get the freva user output directory name."""
         try:
-            return str(get_output_directory() / f"user-{User().getName()}")
+            return str(
+                get_output_directory(drs_spec) / f"user-{User().getName()}"
+            )
         except ConfigurationException:
             config.reloadConfiguration()
-            return str(get_output_directory() / f"user-{User().getName()}")
+            return str(
+                get_output_directory(drs_spec) / f"user-{User().getName()}"
+            )
 
     @property
     def user_dir(self) -> Path:
         """Get the user output directory."""
-        return Path(self.get_user_dir())
+        return Path(self.get_user_dir(self.drs_spec))
 
     def _validate_user_dirs(
         self, *crawl_dirs: os.PathLike, **kwargs: bool
@@ -210,7 +218,9 @@ class UserData:
             p_path = Path(path).expanduser().absolute()
             u_reader = DataReader(p_path, **search_keys)
             for file in u_reader:
-                new_file = u_reader.file_name_from_metdata(file, override=override)
+                new_file = u_reader.file_name_from_metdata(
+                    file, override=override
+                )
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
                 if new_file.exists() and override:
                     new_file.unlink()
@@ -227,7 +237,9 @@ class UserData:
         )
 
     @handled_exception
-    def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
+    def delete(
+        self, *paths: os.PathLike, delete_from_fs: bool = False
+    ) -> None:
         """Delete data from the databrowser.
 
         The methods deletes user data from the databrowser.
@@ -311,7 +323,9 @@ class UserData:
 
         """
         if dtype not in ("fs",):
-            raise NotImplementedError("Only data on POSIX file system is supported")
+            raise NotImplementedError(
+                "Only data on POSIX file system is supported"
+            )
         log_level = logger.level
         try:
             logger.setLevel(logging.ERROR)
