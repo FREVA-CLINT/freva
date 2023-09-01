@@ -40,12 +40,9 @@ import requests
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
-from tqdm import tqdm
-import tqdm.notebook
 
 import freva
 from evaluation_system.misc import logger
-from evaluation_system.misc.utils import metadict as meta_type
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 cancel_command = lazy_import.lazy_callable(
@@ -55,19 +52,6 @@ get_solr_time_range = lazy_import.lazy_callable(
     "evaluation_system.misc.utils.get_solr_time_range"
 )
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
-
-
-def is_jupyter() -> bool:
-    """Determine if we're running within an IPython kernel
-
-    taken from: https://stackoverflow.com/questions/34091701/determine-if-were-in-an-ipython-notebook-session
-
-
-    >>> is_jupyter()
-    False
-    """
-    # check for `kernel` attribute on the IPython instance
-    return getattr(get_ipython(), "kernel", None) is not None
 
 
 @contextmanager
@@ -87,6 +71,32 @@ def get_spinner(
         if clear:
             spinner.update(text="")
             console.clear_live()
+
+
+def is_jupyter() -> bool:
+    """Determine if we're running within an IPython kernel
+
+    taken from: https://stackoverflow.com/questions/34091701/determine-if-were-in-an-ipython-notebook-session
+
+
+    >>> is_jupyter()
+    False
+    """
+    # check for `kernel` attribute on the IPython instance
+    return getattr(get_ipython(), "kernel", None) is not None
+
+
+def copy_doc_from(
+    func: Callable[..., Any]
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """Decorator to copy a doc string from a function to the wrapped func."""
+
+    def decorator(target: Callable[..., Any]) -> Callable[..., Any]:
+        """Assign the doc string from func to target."""
+        target.__doc__ = func.__doc__
+        return target
+
+    return decorator
 
 
 def handled_exception(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -135,21 +145,185 @@ def exception_handler(exception: BaseException, cli: bool = False) -> None:
     raise exception
 
 
-class PluginStatus:
-    """A class to interact with the status of a plugin application.
+class Solr:
+    """Class that interacts with the apache solr server."""
 
-    With help of this class you can:
+    def __init__(self) -> None:
+        self._solr_server = f'{cfg.get("solr.host")}:{cfg.get("solr.port")}'
+        self._solr_cores = cfg.get("solr.core"), "latest"
+
+    def get_solr_url(self, version: bool = False) -> str:
+        """Get the url of the solr right solr core.
+
+        Parameters
+        ----------
+        version: bool, default: False
+            Use the core for the versioned datasets.
+        """
+
+        if version:
+            return f"http://{self._solr_server}/solr/{self._solr_cores[0]}"
+        return f"http://{self._solr_server}/solr/{self._solr_cores[1]}"
+
+    def _execute_single_future(self, future: Dict[str, str]) -> None:
+        """Execute a scheduled future."""
+        code = future["future"]
+        path = future["file"]
+        temp_dir = TemporaryDirectory()
+        temp_file = os.path.join(temp_dir.name, "exec.out")
+        with open(temp_file, "w", encoding="utf-8") as stream:
+            try:
+                nbclient.execute(
+                    nbformat.reads(code, as_version=4),
+                    cwd=temp_dir.name,
+                    stdout=stream,
+                    stderr=stream,
+                )
+                temp_dir.cleanup()
+            except Exception as error:
+                logger.error("Execution failed: more information in %s", temp_file)
+                raise error
+        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
+        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        path_e = path.replace(":", "\\:")
+        try:
+            for nn, url in enumerate([url_nv, url_v]):
+                logger.debug("Deleting %s in %s", path, url)
+                request = {"delete": {"query": f"file:{path_e}"}}
+                res = requests.post(url, json=request, timeout=3)
+                res.raise_for_status()
+        except requests.HTTPError:
+            raise ValueError(f"Solr request to {url} failed: {res.text}")
+        except Exception as error:
+            raise ValueError(f"Could not connect to {url}: {error}:")
+
+    def execute_solr_futures(self, futures: Iterable[Dict[str, str]]) -> None:
+        """Create datasets that have been registered for future executions.
+
+        This methods takes a strings representing a jupyter notebook and
+        executes the code.
+
+        Parameters
+        ----------
+        future:
+            A list holding a dictionary with the information on how this
+            future is created (code) and the name of the file path for this
+            future dataset in the databrowser.
+        """
+        with ThreadPoolExecutor() as pool:
+            pydev = os.environ.get("PYDEVD_DISABLE_FILE_VALIDATION")
+            log_level = logger.level
+            try:
+                os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
+                logger.setLevel(logging.ERROR)
+                with get_spinner("Executing futures", clear=True):
+                    list(pool.map(self._execute_single_future, futures))
+            finally:
+                if pydev:
+                    os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = pydev
+                logger.setLevel(log_level)
+
+    def get_file_attributes(
+        self,
+        path: str,
+        field: str,
+        uniq_key: Literal["uri", "file"] = "uri",
+        multiversion: bool = False,
+    ) -> Union[str, List[str]]:
+        """Query the databrowser for a field entry.
+
+        Parameters
+        ----------
+        path:
+            The name of the file/uri value.
+        field:
+            The name of the field information that should be queried.
+        uniq_key:
+            Indication whether the path parameter is a file or a uri field.
+
+        Returns
+        -------
+        Union[str, List[str]]: The associated field.
+        """
+        params: Dict[str, str] = {
+            "q": f'{uniq_key}:"{path}"',
+            "rows": "1",
+            "fl": field,
+            "wt": "json",
+        }
+        url = f"{self.get_solr_url(multiversion)}/select"
+        try:
+            res = requests.get(url, params=params, timeout=5)
+            res.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError):
+            logger.debug("Connection to %s with params %s failed", url, params)
+            return ""
+        return res.json().get("response", {}).get("docs", [{}])[0].get(field, "")
+
+    def post(self, metadata: List[Dict[str, Union[str, List[str]]]]) -> None:
+        """Post user metadata to the solr core.
+
+        Parameters
+        ----------
+        metadata:
+            List of metadata that is posted to the solr server.
+
+        Raises
+        ------
+        ValueError: If the posting the data failed.
+        """
+
+        no_version: List[Dict[str, Union[str, List]]] = []
+        versioned: List[Dict[str, Union[str, List]]] = []
+        for _data in metadata:
+            version = _data.get("version", "")
+            if version:
+                _data["file_no_version"] = cast(str, _data["file"]).replace(
+                    "/%s/" % version, "/"
+                )
+            else:
+                _data["file_no_version"] = _data["file"]
+            _data["time"] = get_solr_time_range(cast(str, _data.pop("time", "fx")))
+            _data.setdefault("cmor_table", _data.get("time_frequency", "none"))
+            _data.setdefault("realm", "user-data")
+            _data.setdefault("project", f"user-{getuser()}")
+            no_version.append({k: v for k, v in _data.items() if k != "version"})
+            versioned.append(_data)
+        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
+        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        batch_data = [no_version, versioned]
+        try:
+            for nn, url in enumerate([url_nv, url_v]):
+                logger.debug("Sending %s to %s", url, batch_data[nn])
+                res = requests.post(url, json=batch_data[nn], timeout=3)
+                res.raise_for_status()
+        except requests.HTTPError:
+            raise ValueError(f"Solr request to {url} failed: {res.text}")
+        except Exception as error:
+            raise ValueError(f"Could not connect to {url}: {error}:")
+
+
+class PluginStatus:
+    """Interact with a plugin application.
+
+    With help of this functionality you can:
 
         - Check if a plugin is still running.
         - Get all results (data or plot files) of a plugin.
         - Check the configuration of a plugin.
         - Wait until the plugin is finished.
 
+    Parameters
+    ----------
+    history_id:
+        The id of the plugin application history. You can get the id by
+        consulting the :py:meth:``freva.history`` search method.
+
     Example
     -------
 
     The output of the ``freva.run_plugin`` method is an instance of the
-    ``PluginStatus`` class. That means you can directly use the output of
+    :py:class:``freva.PluginStatus`` class. That means you can directly use the output of
     :py:meth:``freva.run_plugin`` to interact with the plugin status:
 
     .. execute_code::
@@ -167,7 +341,7 @@ class PluginStatus:
         import freva
         # Get the last run of the dummypluginfolders plugin
         hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
-        res = freva.PluginStatus(hist["id"])
+        res = freva.get_plugin_status(hist["id"])
         print(rest.status)
     """
 
@@ -371,171 +545,6 @@ class PluginStatus:
             for (path, metadata) in self._hist.get("result", {}).items()
             if metadata.get("type") == dtype and fnmatch(path, glob_pattern)
         ]
-
-
-class Solr:
-    """Class that interacts with the apache solr server."""
-
-    def __init__(self) -> None:
-        self._solr_server = f'{cfg.get("solr.host")}:{cfg.get("solr.port")}'
-        self._solr_cores = cfg.get("solr.core"), "latest"
-
-    def get_solr_url(self, version: bool = False) -> str:
-        """Get the url of the solr right solr core.
-
-        Parameters
-        ----------
-        version: bool, default: False
-            Use the core for the versioned datasets.
-        """
-
-        if version:
-            return f"http://{self._solr_server}/solr/{self._solr_cores[0]}"
-        return f"http://{self._solr_server}/solr/{self._solr_cores[1]}"
-
-    def _execute_single_future(self, future: Dict[str, str]) -> None:
-        """Execute a scheduled future."""
-        code = future["future"]
-        path = future["file"]
-        temp_dir = TemporaryDirectory()
-        temp_file = os.path.join(temp_dir.name, "exec.out")
-        with open(temp_file, "w", encoding="utf-8") as stream:
-            try:
-                nbclient.execute(
-                    nbformat.reads(code, as_version=4),
-                    cwd=temp_dir.name,
-                    stdout=stream,
-                    stderr=stream,
-                )
-                temp_dir.cleanup()
-            except Exception as error:
-                logger.error(
-                    "Execution failed: more information in %s", temp_file
-                )
-                raise error
-        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
-        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
-        path_e = path.replace(":", "\\:")
-        try:
-            for nn, url in enumerate([url_nv, url_v]):
-                logger.debug("Deleting %s in %s", path, url)
-                request = {"delete": {"query": f"file:{path_e}"}}
-                res = requests.post(url, json=request, timeout=3)
-                res.raise_for_status()
-        except requests.HTTPError:
-            raise ValueError(f"Solr request to {url} failed: {res.text}")
-        except Exception as error:
-            raise ValueError(f"Could not connect to {url}: {error}:")
-
-    @handled_exception
-    def execute_solr_futures(self, futures: Iterable[Dict[str, str]]) -> None:
-        """Create datasets that have been registered for future executions.
-
-        This methods takes a strings representing a jupyter notebook and
-        executes the code.
-
-        Parameters
-        ----------
-        future:
-            A list holding a dictionary with the information on how this
-            future is created (code) and the name of the file path for this
-            future dataset in the databrowser.
-        """
-        with ThreadPoolExecutor() as pool:
-            pydev = os.environ.get("PYDEVD_DISABLE_FILE_VALIDATION")
-            log_level = logger.level
-            try:
-                os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = "1"
-                logger.setLevel(logging.ERROR)
-                with get_spinner("Executing futures", clear=True):
-                    list(pool.map(self._execute_single_future, futures))
-            finally:
-                if pydev:
-                    os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = pydev
-                logger.setLevel(log_level)
-
-    def get_file_attributes(
-        self,
-        path: str,
-        field: str,
-        uniq_key: Literal["uri", "file"] = "uri",
-        multiversion: bool = False,
-    ) -> Union[str, List[str]]:
-        """Query the databrowser for a field entry.
-
-        Parameters
-        ----------
-        path:
-            The name of the file/uri value.
-        field:
-            The name of the field information that should be queried.
-        uniq_key:
-            Indication whether the path parameter is a file or a uri field.
-
-        Returns
-        -------
-        Union[str, List[str]]: The associated field.
-        """
-        params: Dict[str, str] = {
-            "q": f'{uniq_key}:"{path}"',
-            "rows": "1",
-            "fl": field,
-            "wt": "json",
-        }
-        url = f"{self.get_solr_url(multiversion)}/select"
-        try:
-            res = requests.get(url, params=params, timeout=5)
-            res.raise_for_status()
-        except (requests.HTTPError, requests.ConnectionError):
-            logger.debug("Connection to %s with params %s failed", url, params)
-            return ""
-        return (
-            res.json().get("response", {}).get("docs", [{}])[0].get(field, "")
-        )
-
-    def post(self, metadata: List[Dict[str, Union[str, List[str]]]]) -> None:
-        """Post user metadata to the solr core.
-
-        Parameters
-        ----------
-        metadata:
-            List of metadata that is posted to the solr server.
-
-        Raises
-        ------
-        ValueError: If the posting the data failed.
-        """
-
-        no_version: List[Dict[str, Union[str, List]]] = []
-        versioned: List[Dict[str, Union[str, List]]] = []
-        for _data in metadata:
-            version = _data.get("version", "")
-            if version:
-                _data["file_no_version"] = cast(str, _data["file"]).replace(
-                    "/%s/" % version, "/"
-                )
-            else:
-                _data["file_no_version"] = _data["file"]
-            _data["time"] = get_solr_time_range(_data.pop("time", "fx"))
-            _data.setdefault("cmor_table", _data.get("time_frequency", "none"))
-            _data.setdefault("realm", "user-data")
-            _data.setdefault("project", f"user-{getuser()}")
-            no_version.append(
-                {k: v for k, v in _data.items() if k != "version"}
-            )
-            versioned.append(_data)
-        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
-        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
-        batch_data = [no_version, versioned]
-        try:
-            for nn, url in enumerate([url_nv, url_v]):
-                logger.debug("Sending %s to %s", url, batch_data[nn])
-                res = requests.post(url, json=batch_data[nn], timeout=3)
-                res.raise_for_status()
-        except requests.HTTPError:
-            raise ValueError(f"Solr request to {url} failed: {res.text}")
-        except Exception as error:
-            raise ValueError(f"Could not connect to {url}: {error}:")
 
 
 class config:

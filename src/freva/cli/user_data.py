@@ -353,12 +353,11 @@ class Cli(SubCommandParser):
         self,
         parser: Optional[argparse.ArgumentParser] = None,
     ):
-        """Construct the esgf sub arg. parser."""
+        """Construct the user-data sub arg. parser."""
         subcommands: dict[str, Type[BaseParser]] = {
             "index": IndexData,
             "add": AddData,
             "delete": DeleteData,
-            "future": Future,
         }
         super().__init__(
             parser, sub_parsers=subcommands, command="freva-user-data"

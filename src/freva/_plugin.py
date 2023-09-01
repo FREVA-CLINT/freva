@@ -23,7 +23,7 @@ import rich.table
 
 from evaluation_system.misc import logger
 
-from .utils import PluginStatus, handled_exception, is_jupyter, meta_type
+from .utils import PluginStatus, handled_exception
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -152,7 +152,9 @@ def plugin_doc(tool_name: Optional[str]) -> HelpStr:
                 self._plugin.__long_description__.strip()
                 or self._plugin.__short_description__.strip()
             )
-            self._version = ".".join([str(i) for i in self._plugin.__version__])
+            self._version = ".".join(
+                [str(i) for i in self._plugin.__version__]
+            )
             self._name = self._plugin.__class__.__name__
 
         def __str__(self) -> str:
@@ -288,7 +290,8 @@ def get_tools_list() -> HelpStr:
                 if len(lines) > 1:
                     # multi-line
                     results[str(plugin.name)] += [
-                        f"{' '*(len(plugin.name)+2)}{line}" for line in lines[1:]
+                        f"{' '*(len(plugin.name)+2)}{line}"
+                        for line in lines[1:]
                     ]
             return results
 
@@ -317,7 +320,9 @@ def get_tools_list() -> HelpStr:
                     (
                         '<tr><td style="text-align: left;"><b>{}</b></td>'
                         '<td style="text-align: left;">{}</td></tr>'
-                    ).format(plugin.name, plugin.description or "No description.")
+                    ).format(
+                        plugin.name, plugin.description or "No description."
+                    )
                 )
             result.append("</table>")
             return "".join(result)
@@ -334,7 +339,9 @@ def _check_if_plugin_exists(tool_name: Optional[str]) -> None:
         error = "Available tools are:\n"
         tool_list = "\n".join(list_plugins())
     else:
-        tool_list = "\n".join(utils.find_similar_words(tool_name, list_plugins()))
+        tool_list = "\n".join(
+            utils.find_similar_words(tool_name, list_plugins())
+        )
         error = f"{tool_name} plugin not found, did you mean:\n"
     raise PluginNotFoundError(f"\n{error}{tool_list}")
 
@@ -508,7 +515,9 @@ def run_plugin(
         )
         return PluginStatus(tool_id)
     extra_options: list[str] = [
-        opt.strip() for opt in extra_scheduler_options.split(",") if opt.strip()
+        opt.strip()
+        for opt in extra_scheduler_options.split(",")
+        if opt.strip()
     ]
     # now run the tool
     result, tool_id = None, -1

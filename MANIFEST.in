@@ -3,3 +3,4 @@ include ./assets/futures/*
 include ./assets/drs_config.toml
 include ./assets/evaluation_system.conf
 include ./deploy.py
+include src/freva/*.json

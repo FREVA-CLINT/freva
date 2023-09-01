@@ -2,21 +2,16 @@
 
 from __future__ import annotations
 
-import json
+from importlib import import_module
 import logging
 import os
 import shutil
-import sys
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union, cast
 
-import appdirs
 import lazy_import
-import nbformat
-import nbparameterise as nbp
-import yaml
 
 from evaluation_system.misc import logger
 from evaluation_system.misc.exceptions import (
@@ -31,7 +26,7 @@ DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader"
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
-from .utils import Solr, handled_exception
+from .utils import Solr, handled_exception, get_spinner
 
 __all__ = ["UserData"]
 
@@ -47,58 +42,9 @@ class UserData:
     def __post_init__(self):
         self.solr = Solr()
 
-    @classmethod
-    def get_futures(cls, full_paths: bool = True) -> List[str]:
-        """Get all system wide and user future definitions.
-
-        This method searches all system paths including a custom path that
-        can be set via the "FREVA_FUTURE_DIR" variable and gets all available
-        files holding the recipes of how to (re)create datasets in the future.
-
-        Parameters
-        ----------
-        full_paths: bool, default: True
-            Return full paths to the datasets, if False then only the names
-            of the future definitions are returned.
-
-        Returns
-        -------
-        list: All future file definitions.
-        """
-        user_futures = [
-            os.path.join(appdirs.user_config_dir("freva"), "futures"),
-            os.path.join(cls._get_user_dir(), "futures"),
-        ]
-        for user_future in user_futures:
-            Path(user_future).mkdir(exist_ok=True, parents=True, mode=0o775)
-        user_futures.append(os.environ.get("FREVA_FUTURE_DIR", ""))
-        _dirs = [
-            Path(d).expanduser().absolute()
-            for d in (
-                os.path.join(sys.prefix, "freva", "futures"),
-                *user_futures,
-            )
-            if d
-        ]
-        futures = []
-        for _dir in _dirs:
-            for suffix in (".ipynb", ".cwl"):
-                if full_paths:
-                    futures += [
-                        str(f)
-                        for f in _dir.rglob(f"*{suffix}")
-                        if "-checkpoint" not in str(f)
-                    ]
-                else:
-                    futures += [
-                        f.with_suffix("").name
-                        for f in _dir.rglob(f"*{suffix}")
-                        if "-checkpoint" not in str(f)
-                    ]
-        return futures
-
     @staticmethod
-    def _get_user_dir() -> str:
+    def get_user_dir() -> str:
+        """Get the freva user output directory name."""
         try:
             return str(get_output_directory() / f"user-{User().getName()}")
         except ConfigurationException:
@@ -108,7 +54,7 @@ class UserData:
     @property
     def user_dir(self) -> Path:
         """Get the user output directory."""
-        return Path(self._get_user_dir())
+        return Path(self.get_user_dir())
 
     def _validate_user_dirs(
         self, *crawl_dirs: os.PathLike, **kwargs: bool
@@ -142,121 +88,6 @@ class UserData:
         if how in ["link"]:
             return os.link
         raise ValueError(f"Invalid Method: valid methods are {choices}")
-
-    @handled_exception
-    def register_future(
-        self,
-        future: Union[str, Path],
-        variable_file: Union[str, Path, None] = None,
-        **facets: Union[str, List[str]],
-    ) -> None:
-        """Register datasets in the databrowser that can be created on demand.
-
-        The future concept allows users to add datasets to the databrowser
-        that can be created on demand in the future. That is rather than
-        creating existing datasets once, users can register the creation of
-        a dataset that gets created when it is actually analysed. This can
-        save significant about of disk space and allows for deeper insights
-        on the usefulness of certain datasets.
-
-        The datasets are created based on a recipe. Please consult the
-        freva documentation for information on how to created those recipes.
-
-        Parameters
-        ----------
-        future:
-            Name or file path of the future recipe.
-        variable_file:
-            Json or Yaml file holding additional variables that are not
-            databrowser search keys (facets). Databrowser search facets
-            are set separately.
-        **facets:
-            Databrowser search facets. These facets are used to add information
-            to the databrowser.
-        """
-        suffix = Path(variable_file or "").suffix
-        if variable_file:
-            with open(variable_file) as f_obj:
-                if suffix.lower() in (".json"):
-                    variables = json.load(f_obj)
-                else:
-                    variables = yaml.safe_load(f_obj)
-        else:
-            variables = {}
-        futures = {}
-        for path in map(Path, self.get_futures()):
-            futures[path.with_suffix("").name] = path
-        future_name = Path(future).with_suffix("").name
-        try:
-            future_file = futures[future_name]
-        except KeyError:
-            valid_futures = ", ".join(futures.keys())
-            raise ValueError(f"Future not valid, valid futures are: {valid_futures}")
-
-        logger.debug("Adding future to databrowser")
-        self.solr.post(
-            [
-                self._parametrise_notebook(
-                    future_file,
-                    {k: v for (k, v) in facets.items() if v},
-                    variables,
-                )
-            ]
-        )
-
-    @staticmethod
-    def _parametrise_notebook(
-        inp_notebook: Path,
-        solr_variables: Dict[str, Union[List[str], str]],
-        variables: Dict[str, Any],
-    ) -> Dict[str, Union[str, List[str]]]:
-        """Set all variables in the notebook."""
-
-        notebook = nbformat.reads(inp_notebook.read_text(), as_version=4)
-
-        # Update the solr parameters
-        solr_params = nbp.parameter_values(
-            nbp.extract_parameters(notebook, tag="solr-parameters"),
-            **solr_variables,
-        )
-        # Update any other variable definition
-        other_params = nbp.parameter_values(
-            nbp.extract_parameters(notebook, tag="parameters"), **variables
-        )
-
-        notebook = json.dumps(
-            nbp.replace_definitions(
-                nbp.replace_definitions(notebook, solr_params), other_params
-            ),
-            indent=3,
-        )
-        facets = {p.name: p.value for p in solr_params}
-        solr_variables.update(facets)
-        facets = solr_variables
-        file_name: List[str] = []
-        parts = []
-        drs_ = config.get_drs_config()["crawl_my_data"]
-        for key in drs_["parts_dir"] + drs_["parts_file_name"]:
-            if key not in parts:
-                parts.append(key)
-        for key in parts:
-            value = facets.get(key)
-            if isinstance(value, list):
-                value_s = "".join([v[0].upper() + v[1:].lower() for v in value])
-            elif value:
-                value_s = str(value)
-            else:
-                continue
-            file_name.append(value_s)
-        facets["future"] = notebook
-        facets["dataset"] = "future"
-        facets["file"] = facets["uri"] = f"future://{'_'.join(file_name)}"
-        logger.debug(
-            "Prametrizing notebook with: %s and file name %s",
-            facets,
-            facets["file"],
-        )
-        return facets
 
     @handled_exception
     def add(
@@ -321,6 +152,12 @@ class UserData:
             By default the method tries to deduce the *ensemble* information from
             the metadata. To overwrite this information the *ensemble* keyword
             should be set.
+        time_aggregation: str, default: mean
+            Set the time_aggregation level, that is how the data was aggregated
+            along the itme axis, mean, sum, instant values etc.
+        cmor_table: str, default: None
+            You can override the cmor_table variable, by default the cmor_table
+            is set to ``time_frequency``
 
         Raises
         ------
@@ -342,14 +179,13 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData, databrowser
-            user_data = UserData()
+            import freva
             # You can also provide wild cards to search for data
-            user_data.add("eur-11b", "/tmp/my_awesome_data/outfile_?.nc",
-                              institute="clex", model="UM-RA2T",
-                              experiment="Bias-correct")
+            freva.add_user_data("eur-11b", "/tmp/my_awesome_data/outfile_?.nc",
+                                institute="clex", model="UM-RA2T",
+                                experiment="Bias-correct")
             # Check the databrowser if the data has been added
-            for file in databrowser(experiment="bias*"):
+            for file in freva.databrowser(experiment="bias*"):
                 print(file)
 
         By default the data is copied. By using the ``how`` keyword you can
@@ -368,7 +204,7 @@ class UserData:
         search_keys = {k: defaults[k] for k in facets if defaults.get(k)}
         search_keys["product"] = product
         search_keys["project"] = _project or f"user-{User().getName()}"
-        search_keys["realm"] = "user_data"
+        search_keys.setdefault("realm", "user_data")
         search_keys.setdefault("ensemble", "r0i0p0")
         for path in paths:
             p_path = Path(path).expanduser().absolute()
@@ -384,7 +220,11 @@ class UserData:
         if not crawl_dirs:
             warnings.warn("No files found", category=UserWarning)
             return
-        self.index(*crawl_dirs, _allow_others=_project is not None)
+        self.index(
+            *crawl_dirs,
+            _allow_others=_project is not None,
+            defaults=search_keys,
+        )
 
     @handled_exception
     def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
@@ -415,13 +255,12 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData
-            user_data = UserData()
-            user_data.delete(user_data.user_dir)
+            import freva
+            freva.delete_user_data()
 
         """
         solr_core = SolrCore(core="files")
-        for path in paths:
+        for path in paths or (self.user_dir,):
             for file in DataReader(Path(path).expanduser().absolute()):
                 self._validate_user_dirs(file)
                 solr_core.delete_entries(str(file))
@@ -434,6 +273,7 @@ class UserData:
         *crawl_dirs: os.PathLike,
         dtype: str = "fs",
         continue_on_errors: bool = False,
+        defaults: Optional[Dict[str, Union[str, List[str]]]] = None,
         **kwargs: bool,
     ) -> None:
         """Index and add user output data to the databrowser.
@@ -448,6 +288,10 @@ class UserData:
             The data type, currently only files on the file system are supported.
         continue_on_errors:
             Continue indexing on error.
+        defautls:
+            Set additional information that can be added to the Solr server, be
+            careful as there is only a certain set of variables you can set.
+            Please refer the databrowser documentation on more information.
 
         Raises
         ------
@@ -462,9 +306,8 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData
-            user_data = UserData()
-            user_data.index()
+            import freva
+            freva.index_user_data()
 
         """
         if dtype not in ("fs",):

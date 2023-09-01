@@ -17,26 +17,73 @@ from ._plugin import (
     run_plugin,
 )
 from ._user_data import UserData
-from .utils import PluginStatus, config, is_jupyter
+from .utils import PluginStatus, copy_doc_from, config, is_jupyter
 
-warnings.filterwarnings("always", category=DeprecationWarning, module="freva.*")
+warnings.filterwarnings(
+    "always", category=DeprecationWarning, module="freva.*"
+)
 
 if is_jupyter():
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
     logger.setLevel(logging.WARNING)
 
+
+@copy_doc_from(UserData.add)
+def add_user_data(
+    product: str,
+    *paths: os.PathLike,
+    how: str = "copy",
+    override: bool = False,
+    **defaults: str,
+) -> None:
+    return UserData().add(
+        product, *paths, how=how, override=override, **defaults
+    )
+
+
+@copy_doc_from(UserData.index)
+def index_user_data(
+    *crawl_dirs: os.PathLike,
+    dtype: str = "fs",
+    continue_on_errors: bool = False,
+    **kwargs: bool,
+) -> None:
+    return UserData().index(
+        *crawl_dirs,
+        dtype=dtype,
+        continue_on_errors=continue_on_errors,
+        **kwargs,
+    )
+
+
+@copy_doc_from(UserData.delete)
+def delete_user_data(
+    *paths: os.PathLike, delete_from_fs: bool = False
+) -> None:
+    return UserData().delete(*paths, delete_from_fs=delete_from_fs)
+
+
+@copy_doc_from(PluginStatus)
+def get_plugin_status(history_id: int) -> "PluginStatus":
+    return PluginStatus(history_id)
+
+
 __all__ = [
     "__version__",
+    "add_user_data",
     "config",
-    "UserData",
-    "databrowser",
     "count_values",
-    "facet_search",
-    "run_plugin",
-    "list_plugins",
-    "plugin_info",
-    "plugin_doc",
+    "databrowser",
+    "delete_user_data",
     "esgf",
+    "facet_search",
+    "get_plugin_status",
     "history",
+    "index_user_data",
+    "list_plugins",
+    "plugin_doc",
+    "plugin_info",
+    "run_plugin",
     "PluginStatus",
+    "UserData",
 ]

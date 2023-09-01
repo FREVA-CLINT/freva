@@ -8,6 +8,19 @@ parts_file_name = ["variable", "time_frequency", "model", "experiment", "ensembl
 parts_time = "start_time-end_time"
 drs_format="custom"
 
+[futures]
+root_dir = "/tmp/freva_futures"
+drs_format="futures"
+parts_dir = [
+    "project", "product", "institute", "model", "experiment", "time_frequency",
+    "realm", "cmor_table", "ensemble", "version", "variable"
+]
+parts_file_name = [
+    "variable", "cmor_table", "model", "experiment", "ensemble", "time",
+]
+parts_time = "start_time-end_time"
+
+
 [crawl_my_data]
 root_dir = "/tmp/user_data"
 parts_dir = [
