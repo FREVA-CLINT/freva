@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 import hashlib
 import json
+import re
 import sys
 from typing import Any, Dict, List, Literal, Optional, Union, cast
 import yaml
@@ -39,9 +40,7 @@ get_solr_time_range = lazy_import.lazy_callable(
 )
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 parameters = lazy_import.lazy_module("evaluation_system.api.parameters")
-DataReader = lazy_import.lazy_class(
-    "evaluation_system.api.user_data.DataReader"
-)
+DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
 
 
 class Futures:
@@ -60,24 +59,36 @@ class Futures:
         if register:
             self._add_future_to_db()
 
-    @property
-    def notebook_code(self) -> str:
+    @staticmethod
+    def _notebook_to_hash(
+        notebook: nbformat.notebooknode.NotebookNode, comment: str = "#"
+    ) -> str:
         """Get only the code cells of the notebook."""
-        return "\n".join(
-            [
-                c["source"]
-                for c in self.notebook["cells"]
-                if c["cell_type"] == "code" and c["source"].strip()
-            ]
-        )
+        pure_code = ""
+        sha256_hash = hashlib.sha256()
+        for cell in notebook.cells:
+            if cell.cell_type == "code" and cell.source.strip():
+                no_comment_code = "\n".join(
+                    [
+                        line
+                        for line in cell.source.splitlines()
+                        if not line.strip().startswith("#")
+                    ]
+                )
+                no_inline_comments_code = re.sub(
+                    r"{}.*$".format(comment),
+                    "",
+                    no_comment_code,
+                    flags=re.MULTILINE,
+                )
+                pure_code += no_inline_comments_code + "\n\n"
+        sha256_hash.update(pure_code.encode("utf-8"))
+        return sha256_hash.hexdigest()
 
     @cached_property
     def hash(self) -> str:
         """Calculate the sha256 hash sum of the code."""
-        sha256_hash = hashlib.sha256()
-        notebook_str = "".join(sorted(self.notebook_code))
-        sha256_hash.update(notebook_str.encode("utf-8"))
-        return sha256_hash.hexdigest()
+        return self._notebook_to_hash(self.notebook)
 
     @cached_property
     def db(self) -> "futures.FuturesDB":
@@ -293,9 +304,7 @@ class Futures:
             future_file = futures[future_name]
         except KeyError:
             valid_futures = ", ".join(futures.keys())
-            raise ValueError(
-                f"Future not valid, valid futures are: {valid_futures}"
-            )
+            raise ValueError(f"Future not valid, valid futures are: {valid_futures}")
 
         logger.debug("Adding future to databrowser")
         code = future_file.read_text()
@@ -327,7 +336,7 @@ class Futures:
     def get_user_data_facets() -> List[str]:
         """Get the solr search facets that are defined by crawl_my_data."""
         parts = []
-        drs_ = cfg.get_drs_config()["crawl_my_data"]
+        drs_ = cfg.get_drs_config()["futures"]
         for key in drs_["parts_dir"] + drs_["parts_file_name"]:
             if key not in parts:
                 parts.append(cast(str, key))
@@ -400,15 +409,10 @@ class Futures:
                         cell.source, replace_by_tag[tags[0]]
                     )
 
-        notebook = json.dumps(
-            nbp.replace_definitions(
-                nbp.replace_definitions(
-                    notebook, solr_params, tag="solr-parameters"
-                ),
-                other_params,
-                tag="parameters",
-            ),
-            indent=3,
+        notebook = nbp.replace_definitions(
+            nbp.replace_definitions(notebook, solr_params, tag="solr-parameters"),
+            other_params,
+            tag="parameters",
         )
         facets = {p.name: p.value for p in solr_params}
         solr_variables.update(facets)
@@ -417,15 +421,14 @@ class Futures:
         for key in cls.get_user_data_facets():
             value = facets.get(key)
             if isinstance(value, list):
-                value_s = "".join(
-                    [v[0].upper() + v[1:].lower() for v in sorted(value)]
-                )
+                value_s = "".join([v[0].upper() + v[1:].lower() for v in sorted(value)])
             elif value:
                 value_s = str(value)
             else:
                 continue
             file_name.append(value_s)
-        facets["future"] = notebook
+
+        facets["future"] = json.dumps(notebook, indent=3)
         facets["dataset"] = "future"
         facets["file"] = facets["uri"] = f"future://{'_'.join(file_name)}"
         logger.debug(
