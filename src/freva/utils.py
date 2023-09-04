@@ -9,17 +9,7 @@ from fnmatch import fnmatch
 from functools import wraps
 from pathlib import Path
 from types import TracebackType
-from typing import (
-    Any,
-    Callable,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import Any, Callable, List, Literal, Optional, Tuple, Type, Union, cast
 
 try:
     from IPython import get_ipython
@@ -300,28 +290,28 @@ class PluginStatus:
     ) -> List[Path]:
         """Get all created paths of a certain data type.
 
-        This method allows you to query all output files of the plugin run. 
+        This method allows you to query all output files of the plugin run.
         You can either search for data files or plotted output.
-        
+
         Parameters
         ----------
         dtype: str
             The data type of the returned paths. This should be either
             data or plot
         glob_pattern: str, default: *.nc
-            Refine the output by filtering the returned files by the given 
-            glob pattern. By default only netCDF files ("*.nc") are added 
+            Refine the output by filtering the returned files by the given
+            glob pattern. By default only netCDF files ("*.nc") are added
             to the list.
-            
+
         Returns
         -------
         List[Path]: A list of paths matching the search constrains.
-        
+
         Example
         -------
-        We are going to use a plugin called ``dummypluginfolders`` 
-        which creates plots and netCDF files. In this example we want to 
-        open all netCDF files (``dtype = 'data'``) that match the filename 
+        We are going to use a plugin called ``dummypluginfolders``
+        which creates plots and netCDF files. In this example we want to
+        open all netCDF files (``dtype = 'data'``) that match the filename
         constraint ``*data.nc``.
 
 
@@ -347,11 +337,11 @@ class PluginStatus:
 class config:
     """Override the default or set the freva system configuration file.
 
-    With the help of this class you can not only (temporarily) override 
-    the default configuration file and use a configuration from another 
-    project, but you can also set a path to a configuration file if no 
+    With the help of this class you can not only (temporarily) override
+    the default configuration file and use a configuration from another
+    project, but you can also set a path to a configuration file if no
     configuration file has been set.
-    
+
     Parameters
     ----------
     config_file: str | pathlib.Path
