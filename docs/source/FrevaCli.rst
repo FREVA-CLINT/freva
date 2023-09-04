@@ -495,10 +495,10 @@ can use the ``--return-command`` option to get the command that was used:
    print(res.stdout.decode())
 
 
-Like in for the ``plugin`` sub command you can use the ``--json`` flag to
-to make the output of the history command machine readable and evaluate its
-output. For example can we query the output files of the last 3 plugin
-applications:
+As with the ``plugin`` subcommand, you can use the ``--json`` flag
+to make the output of the history command machine-readable, 
+and to parse its output. For example, we can query the output files
+of the last 3 plugin applications:
 
 .. code:: console
 
