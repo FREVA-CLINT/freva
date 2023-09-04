@@ -237,7 +237,7 @@ the data). For example to see all facets that are available in the
    res = run(["freva", "databrowser", "--facet", "all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-Instead of querying all facet to you get information on certain facets only:
+Instead of querying all facets to get information on specific ones:
 
 .. code:: console
 
