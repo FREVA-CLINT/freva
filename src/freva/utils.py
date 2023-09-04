@@ -136,7 +136,7 @@ class PluginStatus:
         # Get the last run of the dummypluginfolders plugin
         hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
         res = freva.PluginStatus(hist["id"])
-        print(rest.status)
+        print(res.status)
     """
 
     def __init__(self, history_id: int) -> None:
