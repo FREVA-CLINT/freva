@@ -347,10 +347,11 @@ class PluginStatus:
 class config:
     """Override the default or set the freva system configuration file.
 
-    With help of this class you can not only (temporarily) override default
-    config file and use a configuration from another project, you can also
-    set a path to a configuration file in case no config file hasn't been set.
-
+    With the help of this class you can not only (temporarily) override 
+    the default configuration file and use a configuration from another 
+    project, but you can also set a path to a configuration file if no 
+    configuration file has been set.
+    
     Parameters
     ----------
     config_file: str | pathlib.Path
@@ -358,9 +359,9 @@ class config:
 
     Examples
     --------
-    Temporarily Override the existing configuration file and use a new one.
-    You can use a context manager to only temporally use another configuration
-    and switch back afterwards.
+    Temporarily override the existing configuration file and use a new one.
+    You can use a context manager to temporally use a different configuration
+    and switch back later.
 
     ::
 
@@ -368,8 +369,9 @@ class config:
         with freva.config("/work/freva/evaluation_system.conf"):
             freva.run_plugin("plugin_from_another_project")
 
-    If you do not want to only temporarily change to another configuration
-    but constantly use it you can use the :py:class:`freva.config` without
+    If you do not want to switch to another configuration only
+    temporarily, but want to use it permanently, you can use
+    :py:class:`freva.config` without a context manager:
     a context manager:
 
     ::
