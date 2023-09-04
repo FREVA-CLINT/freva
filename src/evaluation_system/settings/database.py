@@ -18,6 +18,8 @@ SETTINGS["INSTALLED_APPS"] = (
 SETTINGS["DATABASES"] = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
+        "CONN_HEALTH_CHECKS": True,
+        "CONN_MAX_AGE": 0,
         "NAME": config.get(config.DB_DB),
         "USER": config.get(config.DB_USER),
         "PASSWORD": config.get(config.DB_PASSWD),

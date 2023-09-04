@@ -17,11 +17,9 @@ from ._plugin import (
     run_plugin,
 )
 from ._user_data import UserData
-from .utils import PluginStatus, copy_doc_from, config, is_jupyter
+from .utils import PluginStatus, config, copy_doc_from, is_jupyter
 
-warnings.filterwarnings(
-    "always", category=DeprecationWarning, module="freva.*"
-)
+warnings.filterwarnings("always", category=DeprecationWarning, module="freva.*")
 
 if is_jupyter():
     os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -36,9 +34,7 @@ def add_user_data(
     override: bool = False,
     **defaults: str,
 ) -> None:
-    return UserData().add(
-        product, *paths, how=how, override=override, **defaults
-    )
+    return UserData().add(product, *paths, how=how, override=override, **defaults)
 
 
 @copy_doc_from(UserData.index)
@@ -57,9 +53,7 @@ def index_user_data(
 
 
 @copy_doc_from(UserData.delete)
-def delete_user_data(
-    *paths: os.PathLike, delete_from_fs: bool = False
-) -> None:
+def delete_user_data(*paths: os.PathLike, delete_from_fs: bool = False) -> None:
     return UserData().delete(*paths, delete_from_fs=delete_from_fs)
 
 

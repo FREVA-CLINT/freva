@@ -11,8 +11,8 @@ import rich
 from evaluation_system import __version__
 from evaluation_system.misc import logger
 
-from .utils import BaseParser, SubCommandParser
 from .user_data import AddData
+from .utils import BaseParser, SubCommandParser
 
 futures = lazy_import.lazy_module("freva._futures")
 freva = lazy_import.lazy_module("freva")
@@ -125,9 +125,7 @@ class Cli(SubCommandParser):
         subcommands: dict[str, Type[BaseParser]] = {
             "register": RegisterFuture,
         }
-        super().__init__(
-            parser, sub_parsers=subcommands, command="freva-user-data"
-        )
+        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
@@ -148,9 +146,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print(
-            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
-        )
+        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

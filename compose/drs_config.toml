@@ -12,7 +12,7 @@ drs_format="custom"
 root_dir = "/tmp/freva_futures"
 drs_format="futures"
 parts_dir = [
-    "project", "product", "institute", "model", "experiment", "time_frequency",
+    "future_id", "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable"
 ]
 parts_file_name = [
@@ -29,7 +29,7 @@ parts_dir = [
 ]
 drs_format="custom"
 parts_file_name = [
-    "variable", "cmor_table", "model", "experiment", "ensemble", "time",
+    "hash", "variable", "cmor_table", "model", "experiment", "ensemble", "time",
 ]
 parts_time = "start_time-end_time"
 

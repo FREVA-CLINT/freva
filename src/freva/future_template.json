@@ -25,8 +25,7 @@
    },
    "outputs": [],
    "source": [
-    "# Define additional parameters to run the plugin\n",
-    "future = \"\""
+    "# Define additional parameters to run the plugin\n"
    ]
   },
   {
@@ -37,7 +36,8 @@
    "outputs": [],
    "source": [
     "from tempfile import TemporaryDirectory\n",
-    "import freva"
+    "import freva \n",
+    "from freva._futures import Futures"
    ]
   },
   {
@@ -73,11 +73,11 @@
    "source": [
     "res.wait()\n",
     "output = res.get_result_paths()\n",
-    "freva.add_user_data.add(\n",
+    "Futures.from_existing_code_hash(future_id).add_data(\n",
+    "    project,\n",
     "    product,\n",
     "    *output,\n",
-    "    how=\"move\",\n",
-    "    _project=project,\n",
+    "    history_id = res.id,\n",
     "    institute=institute,\n",
     "    model=model,\n",
     "    experiment=experiment,\n",
@@ -85,7 +85,6 @@
     "    realm=realm,\n",
     "    time_frequency=time_frequency,\n",
     "    cmor_table=cmor_table,\n",
-    "    future=future_code,\n",
     ")\n",
     "outdir.cleanup()"
    ]

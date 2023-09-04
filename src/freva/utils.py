@@ -1,12 +1,12 @@
 """Additional utilities."""
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
 import json
 import logging
 import os
 import shlex
 import subprocess
 import time
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from fnmatch import fnmatch
 from functools import wraps
 from getpass import getuser
@@ -33,6 +33,7 @@ try:
 except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
+import django.db
 import lazy_import
 import nbclient
 import nbformat
@@ -52,6 +53,7 @@ get_solr_time_range = lazy_import.lazy_callable(
     "evaluation_system.misc.utils.get_solr_time_range"
 )
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
+futures = lazy_import.lazy_module("evaluation_system.model.futures")
 
 
 @contextmanager
@@ -169,6 +171,12 @@ class Solr:
         """Execute a scheduled future."""
         code = future["future"]
         path = future["file"]
+        reindex = path.startswith("future:")
+        code_hash = future["future_id"]
+        if not code:
+            code = json.dumps(
+                futures.FutureCodeDB.objects.get(code_hash_id=code_hash).code
+            )
         temp_dir = TemporaryDirectory()
         temp_file = os.path.join(temp_dir.name, "exec.out")
         with open(temp_file, "w", encoding="utf-8") as stream:
@@ -183,6 +191,8 @@ class Solr:
             except Exception as error:
                 logger.error("Execution failed: more information in %s", temp_file)
                 raise error
+        if not reindex:
+            return
         url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
         url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
         path_e = path.replace(":", "\\:")
@@ -210,6 +220,8 @@ class Solr:
             future is created (code) and the name of the file path for this
             future dataset in the databrowser.
         """
+        if not futures:
+            return
         with ThreadPoolExecutor() as pool:
             pydev = os.environ.get("PYDEVD_DISABLE_FILE_VALIDATION")
             log_level = logger.level
@@ -222,6 +234,9 @@ class Solr:
                 if pydev:
                     os.environ["PYDEVD_DISABLE_FILE_VALIDATION"] = pydev
                 logger.setLevel(log_level)
+        import time
+
+        time.sleep(1)
 
     def get_file_attributes(
         self,
@@ -353,6 +368,11 @@ class PluginStatus:
             f"PluginStatus('{self.plugin}', "
             f"config={str(self.configuration)}, status={self.status})"
         )
+
+    @property
+    def id(self) -> int:
+        """Get the history id of the plugin run."""
+        return self._id
 
     @property
     def _hist(self) -> dict[str, Any]:
@@ -589,10 +609,40 @@ class config:
     )
 
     def __init__(self, config_file: Union[str, Path]) -> None:
+        self._db_settings = lazy_import.lazy_module(
+            "evaluation_system.settings.database"
+        ).SETTINGS
+        self._original_db_settings = self._db_settings.copy()
         self._config_file = Path(config_file).expanduser().absolute()
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(self._config_file)
         cfg.reloadConfiguration(self._config_file)
+        self._reload_db_connection()
         pm.reload_plugins()
+
+    def _reload_db_connection(self):
+        self._db_settings["DATABASES"] = {
+            "default": {
+                "ENGINE": "django.db.backends.mysql",
+                "CONN_HEALTH_CHECKS": True,
+                "CONN_MAX_AGE": 0,
+                "NAME": cfg.get(cfg.DB_DB),
+                "USER": cfg.get(cfg.DB_USER),
+                "PASSWORD": cfg.get(cfg.DB_PASSWD),
+                "HOST": cfg.get(
+                    cfg.DB_HOST
+                ),  # Or an IP Address that your DB is hosted on
+                "PORT": cfg.get(str(cfg.DB_PORT), "3306"),
+            }
+        }
+        lazy_import.lazy_module(
+            "evaluation_system.settings.database"
+        ).SETTINGS = self._db_settings
+        django.db.connections.databases["default"] = self._db_settings
+        django.db.connections["default"].close()
+        print(django.db.connections.databases["default"])
+        # import django
+
+        django.setup()
 
     def __enter__(self) -> "config":
         return self
@@ -605,4 +655,5 @@ class config:
     ) -> None:
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
         cfg.reloadConfiguration(self._original_config_env)
+        self._reload_db_connection()
         pm.reload_plugins()

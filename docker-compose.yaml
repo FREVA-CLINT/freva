@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  db:
+  db1:
     image: mariadb:latest
     environment:
       MYSQL_USER: freva
@@ -9,6 +9,17 @@ services:
       MYSQL_ROOT_PASSWORD: test_password_please_ignore
     ports:
       - "3306:3306"
+    volumes:
+      - ./compose/config/mysql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+  db2:
+    image: mariadb:latest
+    environment:
+      MYSQL_USER: freva
+      MYSQL_PASSWORD: T3st
+      MYSQL_DATABASE: freva
+      MYSQL_ROOT_PASSWORD: test_password_please_ignore
+    ports:
+      - "3308:3306"
     volumes:
       - ./compose/config/mysql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
   solr:

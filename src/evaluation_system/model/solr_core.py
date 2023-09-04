@@ -19,7 +19,7 @@ import urllib
 import urllib.request
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Iterator, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
@@ -308,7 +308,7 @@ class SolrCore:
         abort_on_errors: bool = False,
         host: Optional[str] = None,
         port: Optional[int] = None,
-    ) -> None:
+    ) -> List[str]:
         """Load information of files on posix file system into Solr.
 
         This method loads the information from a file and decides if it should be added
@@ -346,10 +346,12 @@ class SolrCore:
         chunk_count = 0
         chunk_latest_new: Dict[str, Dict[str, str]] = {}
         latest_versions: Dict[str, str] = {}
+        output_files: List[str] = []
         for drs_file, metadata in SolrCore._get_metadata_from_path(
             input_dir, abort_on_errors, suffix, drs_type=drs_type
         ):
             chunk.append(metadata)
+            output_files.append(str(drs_file))
             if drs_file.versioned:
                 # TODO: We need a proper data set versioning.
                 version = latest_versions.get(
@@ -387,6 +389,7 @@ class SolrCore:
             core_all_files.post(chunk)
             if chunk_latest:
                 core_latest.post(chunk_latest)
+        return output_files
 
     @staticmethod
     def to_solr_dict(drs_file):

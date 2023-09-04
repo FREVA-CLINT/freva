@@ -58,8 +58,7 @@ class IndexData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         try:
@@ -89,9 +88,7 @@ class AddData(BaseParser):
     ) -> None:
         """Add databrowser facets to the cli parsers."""
 
-        self.parser.add_argument(
-            "--project", type=str, default=None, help=project_help
-        )
+        self.parser.add_argument("--project", type=str, default=None, help=project_help)
         self.parser.add_argument(
             "--experiment",
             type=str,
@@ -169,9 +166,7 @@ class AddData(BaseParser):
                 "directory."
             ),
         )
-        self._add_facets_to_parser(
-            suffix="if the can't be found in the metadata"
-        )
+        self._add_facets_to_parser(suffix="if the can't be found in the metadata")
         self.parser.add_argument(
             "--override",
             "--overwrite",
@@ -190,8 +185,7 @@ class AddData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         facets = (
             "experiment",
@@ -256,8 +250,7 @@ class DeleteData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         user_data.delete(*args.paths, delete_from_fs=args.delete_from_fs)
@@ -325,8 +318,7 @@ class Future(AddData):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: str) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: str) -> None:
         """Run the futures command."""
         user_data = UserData()
         user_data.register_future(
@@ -359,13 +351,10 @@ class Cli(SubCommandParser):
             "add": AddData,
             "delete": DeleteData,
         }
-        super().__init__(
-            parser, sub_parsers=subcommands, command="freva-user-data"
-        )
+        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
         self.parser.set_defaults(apply_func=self._usage)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: str) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: str) -> None:
         args.apply_func(args, **kwargs)
 
 
@@ -382,9 +371,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print(
-            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
-        )
+        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

@@ -26,6 +26,19 @@ drs_format = "cmip5"
 project = "reanalysis"
 product = "reanalysis"
 
+[futures]
+root_dir = "/usr/freva_output/data"
+parts_dir = [
+    "hash", "project", "product", "institute", "model", "experiment", "time_frequency",
+    "realm", "cmor_table", "ensemble", "version", "variable", "file_name",
+]
+parts_file_name = [
+    "hash", "variable", "cmor_table", "model", "experiment", "ensemble", "time",
+]
+parts_time = "start_time-end_time"
+drs_format = "futures"
+
+
 [crawl_my_data]
 root_dir = "/usr/freva_output/data"
 parts_dir = [

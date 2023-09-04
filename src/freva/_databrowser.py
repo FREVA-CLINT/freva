@@ -13,11 +13,7 @@ from evaluation_system.misc import logger
 
 from .utils import Solr, handled_exception
 
-SolrFindFiles = lazy_import.lazy_class(
-    "evaluation_system.model.solr.SolrFindFiles"
-)
-
-
+SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
 __all__ = ["databrowser", "search_facets", "count_values"]
 
 
@@ -142,30 +138,20 @@ def count_values(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning(
-            "Turning latest off when searching for a specific version."
-        )
+        logger.warning("Turning latest off when searching for a specific version.")
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     if count_all:
         with warnings.catch_warnings():
-            warnings.filterwarnings(
-                action="ignore", category=PendingDeprecationWarning
-            )
+            warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
             return (
-                SolrFindFiles(core=core)
-                ._retrieve_metadata(**search_facets)
-                .num_objects
+                SolrFindFiles(core=core)._retrieve_metadata(**search_facets).num_objects
             )
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            action="ignore", category=PendingDeprecationWarning
-        )
-        results = SolrFindFiles(core=core)._facets(
-            facet or None, **search_facets
-        )
+        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
+        results = SolrFindFiles(core=core)._facets(facet or None, **search_facets)
     out: dict[str, dict[str, int]] = {}
     for att in facet or results.keys():
         values = results[att]
@@ -264,17 +250,13 @@ def facet_search(
     if "version" in search_facets and latest:
         # it makes no sense to look for a specific version just among the latest
         # the speedup is marginal and it might not be what the user expects
-        logger.warning(
-            "Turning latest off when searching for a specific version."
-        )
+        logger.warning("Turning latest off when searching for a specific version.")
         latest = False
     core = {True: "latest", False: "files"}[latest]
     logger.debug("Searching dictionary: %s\n", search_facets)
     search_facets["facet.limit"] = search_facets.pop("facet_limit", -1)
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            action="ignore", category=PendingDeprecationWarning
-        )
+        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
         results = SolrFindFiles(core=core)._facets(
             facets=facet or None, latest_version=False, **search_facets
         )
@@ -388,16 +370,23 @@ def databrowser(
         **_search_facets,
     }
     with warnings.catch_warnings():
-        warnings.filterwarnings(
-            action="ignore", category=PendingDeprecationWarning
-        )
-        futures = []
+        warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
         if execute_future:
-            futures = SolrFindFiles(core=core)._search(
-                file="future\\://*",
-                uniq_key=None,
-                fl="future,file",
-                **kwargs,
+            # If there are files that are future datasets (future://*) we
+            # can execute them now.
+            futures = list(
+                SolrFindFiles(core=core)._search(
+                    file="future\\://*",
+                    uniq_key=None,
+                    fl="future_id,future,file",
+                    **kwargs,
+                )
             )
             Solr().execute_solr_futures(futures)
-        return SolrFindFiles(core=core)._search(uniq_key=uniq_key, **kwargs)
+        for res in SolrFindFiles(core=core)._search(
+            uniq_key=None, fl="future_id,future,file,uri", **kwargs
+        ):
+            if execute_future and res["future_id"]:
+                if not Path(res["file"]).exists():
+                    Solr().execute_solr_futures([res])
+            yield res[uniq_key]
