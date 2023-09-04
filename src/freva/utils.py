@@ -205,7 +205,7 @@ class PluginStatus:
 
     @property
     def job_script(self) -> str:
-        """Get the content of the job_script, if it was a batchmod job."""
+        """Get the content of the job_script, if it was a batchmode job."""
         return self._hist.get("batch_settings", {}).get("job_script", "")
 
     def kill(self) -> None:
