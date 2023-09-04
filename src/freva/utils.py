@@ -300,29 +300,29 @@ class PluginStatus:
     ) -> List[Path]:
         """Get all created paths of a certain data type.
 
-        This method let's you query all output files of the plugin run. You
-        can either search for data files or plotted output.
-
+        This method allows you to query all output files of the plugin run. 
+        You can either search for data files or plotted output.
+        
         Parameters
         ----------
         dtype: str
-            The data type for the returned paths. This should be either
+            The data type of the returned paths. This should be either
             data or plot
         glob_pattern: str, default: *.nc
-            Fine grain the output by filtering the returned files by the given
-            glob pattern. By default only netCDF files ("*.nc") will be added
+            Refine the output by filtering the returned files by the given 
+            glob pattern. By default only netCDF files ("*.nc") are added 
             to the list.
-
+            
         Returns
         -------
-        List[Path]: A list of paths that match the search constraints.
-
+        List[Path]: A list of paths matching the search constrains.
+        
         Example
         -------
-
-        We are going to apply a plugin called ``dummypluginfolders`` that creats
-        plots and netCDF files. In this example we want to open all netCDF files
-        (``dtype = 'data'``) that match the file name constraint ``*data.nc``.
+        We are going to use a plugin called ``dummypluginfolders`` 
+        which creates plots and netCDF files. In this example we want to 
+        open all netCDF files (``dtype = 'data'``) that match the filename 
+        constraint ``*data.nc``.
 
 
         .. execute_code::
