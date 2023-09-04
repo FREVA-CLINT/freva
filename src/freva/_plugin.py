@@ -11,6 +11,7 @@ import json
 import logging
 import textwrap
 import time
+import warnings
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple, Union
@@ -21,6 +22,7 @@ import rich.layout
 import rich.panel
 import rich.table
 
+import freva
 from evaluation_system.misc import logger
 
 from .utils import PluginStatus, handled_exception, is_jupyter, meta_type
@@ -528,6 +530,10 @@ def run_plugin(
         ).exists():
             batchmode = True
         if batchmode:
+            if freva.config.db_reloaded[0]:
+                raise ValueError(
+                    "batchmode and overriding the config is not implemented"
+                )
             [scheduled_id, job_file] = pm.schedule_tool(
                 tool_name,
                 config_dict=tool_dict,
@@ -541,6 +547,12 @@ def run_plugin(
             print("Your job's progress will be shown with the command")
             print(f"tail -f {job_file}")
             return PluginStatus(scheduled_id or 0)
+        if freva.config.db_reloaded[0]:
+            warnings.warn(
+                "History will not be available in currently active system but"
+                " in previously active system.",
+                UserWarning,
+            )
         tool_id, result = pm.run_tool(
             tool_name,
             config_dict=tool_dict,

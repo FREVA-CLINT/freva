@@ -9,7 +9,17 @@ from fnmatch import fnmatch
 from functools import wraps
 from pathlib import Path
 from types import TracebackType
-from typing import Any, Callable, List, Literal, Optional, Tuple, Type, Union, cast
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 try:
     from IPython import get_ipython
@@ -17,6 +27,8 @@ except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
 import lazy_import
+from django.conf import settings as django_settings
+from django.core.exceptions import ImproperlyConfigured
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
@@ -372,12 +384,18 @@ class config:
         "EVALUATION_SYSTEM_CONFIG_FILE",
         cfg.CONFIG_FILE,
     )
+    db_reloaded: List[bool] = [False]
 
     def __init__(self, config_file: Union[str, Path]) -> None:
         self._config_file = Path(config_file).expanduser().absolute()
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(self._config_file)
         cfg.reloadConfiguration(self._config_file)
         pm.reload_plugins()
+        try:
+            if django_settings.DATABASES:
+                self.db_reloaded[0] = True
+        except (ImproperlyConfigured, AttributeError):
+            pass
 
     def __enter__(self) -> "config":
         return self
@@ -391,3 +409,4 @@ class config:
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
         cfg.reloadConfiguration(self._original_config_env)
         pm.reload_plugins()
+        self.db_reloaded[0] = False

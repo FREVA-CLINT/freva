@@ -6,7 +6,14 @@ from django.conf import settings
 
 from evaluation_system.misc import config
 
-SETTINGS = dict(TIME_ZONE="UTC", USE_TZ=False)
+SETTINGS = dict(
+    TIME_ZONE="UTC",
+    USE_TZ=False,
+    ATOMIC_REQUESTS=True,
+    CONN_HEALTH_CHECKS=True,
+)
+# DB_LOADED: bool = False
+# DB_OVERRIDDEN: bool = False
 config.reloadConfiguration()
 # Application definition
 SETTINGS["INSTALLED_APPS"] = (
