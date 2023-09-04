@@ -200,7 +200,7 @@ class PluginStatus:
 
     @property
     def batch_id(self) -> Optional[int]:
-        """Get the id of the batch job, if the plugin was a batchmode jobs."""
+        """Get the id of the batch job, if the plugin was a batchmode job."""
         return self._hist.get("batch_settings", {}).get("job_id")
 
     @property
