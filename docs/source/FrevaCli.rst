@@ -421,7 +421,7 @@ output files from a plugin run.
 .. note::
 
     If you use the ``--batchmode`` flag in combination with ``--json`` flag the
-    commandline will wait for the batch job to finish.
+    command line will wait for the batch job to finish.
 
 
 Inspecting previous analysis jobs: the ``freva-history`` command
