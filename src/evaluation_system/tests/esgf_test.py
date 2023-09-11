@@ -87,7 +87,7 @@ def test_freva_esgf_method(dummy_config):
     )
     fn = Path(res.split()[-1])
     assert fn.is_file()
-    assert res == f"Download script successfully saved to {fn}"    
+    assert res == f"Download script successfully saved to {fn}"
     assert oct(fn.stat().st_mode)[-3:] == "755"
 
 
