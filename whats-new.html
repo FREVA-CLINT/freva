@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new &#8212; freva user guide 2308.0.0 documentation</title>
+    <title>What’s new &#8212; freva user guide 2309.0.0 documentation</title>
   
   
   
@@ -35,7 +35,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
-    <script src="_static/documentation_options.js?v=a78c71a5"></script>
+    <script src="_static/documentation_options.js?v=b54a4dbf"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -417,25 +417,30 @@ document.write(`
 <h1>What’s new<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<section id="v2307-0-2">
-<h2>v2307.0.2<a class="headerlink" href="#v2307-0-2" title="Link to this heading">#</a></h2>
+<section id="v2309-0-0">
+<h2>v2309.0.0<a class="headerlink" href="#v2309-0-0" title="Link to this heading">#</a></h2>
 <section id="new-features">
 <h3>New Features<a class="headerlink" href="#new-features" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Plugin and history output can be parsed using the <code class="docutils literal notranslate"><span class="pre">--json</span></code> flag from the</dt><dd><p>command line</p>
+</dd>
+</dl>
+</li>
+<li><p>The plugin method and cli plugin command can be instructed to wait for any
+batch job. <code class="docutils literal notranslate"><span class="pre">wait=True</span></code> in the python module or <code class="docutils literal notranslate"><span class="pre">--wait</span></code> in the cli</p></li>
+<li><p>Users can interact with plugin ouput, using the return value of the
+<code class="docutils literal notranslate"><span class="pre">freva.run_plugin</span></code> method.</p></li>
+</ul>
 </section>
 <section id="breaking-changes">
 <h3>Breaking changes<a class="headerlink" href="#breaking-changes" title="Link to this heading">#</a></h3>
 </section>
 <section id="deprecations">
 <h3>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>cli <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span> <span class="pre">--all-facets</span></code> is made depricated use <code class="docutils literal notranslate"><span class="pre">--facet</span> <span class="pre">'*'</span></code> or <code class="docutils literal notranslate"><span class="pre">--facet</span> <span class="pre">all</span></code> instead</p></li>
-</ul>
 </section>
 <section id="bug-fixes">
 <h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>cli <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span> <span class="pre">--unique-output</span> <span class="pre">False</span></code> feature reinstated, working as within python module.</p></li>
-</ul>
 </section>
 <section id="documentations">
 <h3>Documentations<a class="headerlink" href="#documentations" title="Link to this heading">#</a></h3>
@@ -444,27 +449,24 @@ document.write(`
 <h3>Internal Changes<a class="headerlink" href="#internal-changes" title="Link to this heading">#</a></h3>
 </section>
 </section>
-<section id="v2303-0-0">
-<h2>v2303.0.0<a class="headerlink" href="#v2303-0-0" title="Link to this heading">#</a></h2>
+<section id="v2307-0-2">
+<h2>v2307.0.2<a class="headerlink" href="#v2307-0-2" title="Link to this heading">#</a></h2>
 <section id="id1">
 <h3>New Features<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p>User data can be ingested also if not all data files match directory reference
-standard.</p></li>
-<li><p>A new databrowser key (uri) was added that representing the object storge
-where the data is stored.</p></li>
-</ul>
 </section>
 <section id="id2">
 <h3>Breaking changes<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 </section>
 <section id="id3">
 <h3>Deprecations<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>cli <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">databrowser</span> <span class="pre">--all-facets</span></code> is made depricated use <code class="docutils literal notranslate"><span class="pre">--facet</span> <span class="pre">'*'</span></code> or <code class="docutils literal notranslate"><span class="pre">--facet</span> <span class="pre">all</span></code> instead</p></li>
+</ul>
 </section>
 <section id="id4">
 <h3>Bug fixes<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Only save the hostname when submitting jobs, not the host + domain name</p></li>
+<li><p>cli <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">plugin</span> <span class="pre">--unique-output</span> <span class="pre">False</span></code> feature reinstated, working as within python module.</p></li>
 </ul>
 </section>
 <section id="id5">
@@ -474,10 +476,16 @@ where the data is stored.</p></li>
 <h3>Internal Changes<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 </section>
 </section>
-<section id="v2208-1-1">
-<h2>v2208.1.1<a class="headerlink" href="#v2208-1-1" title="Link to this heading">#</a></h2>
+<section id="v2303-0-0">
+<h2>v2303.0.0<a class="headerlink" href="#v2303-0-0" title="Link to this heading">#</a></h2>
 <section id="id7">
 <h3>New Features<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>User data can be ingested also if not all data files match directory reference
+standard.</p></li>
+<li><p>A new databrowser key (uri) was added that representing the object storge
+where the data is stored.</p></li>
+</ul>
 </section>
 <section id="id8">
 <h3>Breaking changes<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
@@ -488,17 +496,41 @@ where the data is stored.</p></li>
 <section id="id10">
 <h3>Bug fixes<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Fix typo in deployment routine</p></li>
+<li><p>Only save the hostname when submitting jobs, not the host + domain name</p></li>
 </ul>
 </section>
 <section id="id11">
 <h3>Documentations<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+</section>
+<section id="id12">
+<h3>Internal Changes<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+</section>
+</section>
+<section id="v2208-1-1">
+<h2>v2208.1.1<a class="headerlink" href="#v2208-1-1" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h3>New Features<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+</section>
+<section id="id14">
+<h3>Breaking changes<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+</section>
+<section id="id15">
+<h3>Deprecations<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+</section>
+<section id="id16">
+<h3>Bug fixes<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Fix typo in deployment routine</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>Documentations<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Fix binder instance</p></li>
 </ul>
 </section>
-<section id="id12">
-<h3>Internal Changes<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h3>Internal Changes<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Make all scheduler options non-mandatory</p></li>
 <li><p>Add metadata-inspector as dependency</p></li>
@@ -507,8 +539,8 @@ where the data is stored.</p></li>
 </section>
 <section id="v2208-0-1">
 <h2>v2208.0.1<a class="headerlink" href="#v2208-0-1" title="Link to this heading">#</a></h2>
-<section id="id13">
-<h3>New Features<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h3>New Features<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">count</span></code> keyword/flag for the databrowser counts also the number of files
 found by the databrowser, not only the facet counts.</p></li>
@@ -518,30 +550,30 @@ found by the databrowser, not only the facet counts.</p></li>
 <li><p>add new class to handle user data requests</p></li>
 </ul>
 </section>
-<section id="id14">
-<h3>Breaking changes<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<section id="id20">
+<h3>Breaking changes<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">count_facet_values</span></code> keyword (<code class="docutils literal notranslate"><span class="pre">count-facet-values</span></code> flag in cli) has been renamed to <code class="docutils literal notranslate"><span class="pre">count</span></code></p></li>
 </ul>
 </section>
-<section id="id15">
-<h3>Deprecations<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<section id="id21">
+<h3>Deprecations<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>move <code class="docutils literal notranslate"><span class="pre">freva.crawl_my_data</span></code> functionality to <cite>freva.UsersData.index</cite></p></li>
 <li><p>renamed <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">crawl_my_data</span></code> to <code class="docutils literal notranslate"><span class="pre">freva</span> <span class="pre">user-data`</span></code></p></li>
 </ul>
 </section>
-<section id="id16">
-<h3>Bug fixes<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id22">
+<h3>Bug fixes<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
 </section>
-<section id="id17">
-<h3>Documentations<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h3>Documentations<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Documentation of the python modules has been improved</p></li>
 </ul>
 </section>
-<section id="id18">
-<h3>Internal Changes<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
+<section id="id24">
+<h3>Internal Changes<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Files found by the databrowser are <em>alphabetically</em> sorted.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">follow/unfolllow_history_tag</span></code> recieves a user object as argument instead of string</p></li>
@@ -551,28 +583,28 @@ found by the databrowser, not only the facet counts.</p></li>
 </section>
 <section id="v2206-0-10">
 <h2>v2206.0.10<a class="headerlink" href="#v2206-0-10" title="Link to this heading">#</a></h2>
-<section id="id19">
-<h3>New Features<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
+<section id="id25">
+<h3>New Features<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
 </section>
-<section id="id20">
-<h3>Breaking changes<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<section id="id26">
+<h3>Breaking changes<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 </section>
-<section id="id21">
-<h3>Deprecations<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<section id="id27">
+<h3>Deprecations<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
 </section>
-<section id="id22">
-<h3>Bug fixes<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
+<section id="id28">
+<h3>Bug fixes<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Set plugin status to broken in OS related termination signals that can be
 handled by python (SIGTERM, SIGINT …) and any other internal python errors.</p></li>
 <li><p>Update databrowser query algorithm.</p></li>
 </ul>
 </section>
-<section id="id23">
-<h3>Documentations<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
+<section id="id29">
+<h3>Documentations<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
 </section>
-<section id="id24">
-<h3>Internal Changes<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<section id="id30">
+<h3>Internal Changes<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Introduce lazy loading to make freva cli a little more responsive</p></li>
 <li><p>Explicitly set EVALUATION_SYSTEM_CONFIG_FILE env variable in workload
@@ -583,8 +615,8 @@ manager job script.</p></li>
 </section>
 <section id="v2206-0-1">
 <h2>v2206.0.1<a class="headerlink" href="#v2206-0-1" title="Link to this heading">#</a></h2>
-<section id="id25">
-<h3>New Features<a class="headerlink" href="#id25" title="Link to this heading">#</a></h3>
+<section id="id31">
+<h3>New Features<a class="headerlink" href="#id31" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add python module for importing <a class="reference internal" href="Freva.html#module-4" title="freva"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva()</span></code></a> directly in python
 environments</p></li>
@@ -611,8 +643,8 @@ environments</p></li>
 <li><p>Output of interactive jobs can be displayed in the web user interface</p></li>
 </ul>
 </section>
-<section id="id26">
-<h3>Breaking changes<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
+<section id="id32">
+<h3>Breaking changes<a class="headerlink" href="#id32" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Command line arguments taking boolean values do not require True or False:</dt><dd><ul>
@@ -626,8 +658,8 @@ from file and directory structure anymore (i.e., does not need to
 follow a particular folder path and naming convention)</p></li>
 </ul>
 </section>
-<section id="id27">
-<h3>Deprecations<a class="headerlink" href="#id27" title="Link to this heading">#</a></h3>
+<section id="id33">
+<h3>Deprecations<a class="headerlink" href="#id33" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>The <cite>tool-pull-request</cite> sub command has been made deprecated.</p></li>
 <li><dl class="simple">
@@ -652,17 +684,17 @@ follow a particular folder path and naming convention)</p></li>
 </li>
 </ul>
 </section>
-<section id="id28">
-<h3>Bug fixes<a class="headerlink" href="#id28" title="Link to this heading">#</a></h3>
+<section id="id34">
+<h3>Bug fixes<a class="headerlink" href="#id34" title="Link to this heading">#</a></h3>
 </section>
-<section id="id29">
-<h3>Documentations<a class="headerlink" href="#id29" title="Link to this heading">#</a></h3>
+<section id="id35">
+<h3>Documentations<a class="headerlink" href="#id35" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add user sphinx documentation</p></li>
 </ul>
 </section>
-<section id="id30">
-<h3>Internal Changes<a class="headerlink" href="#id30" title="Link to this heading">#</a></h3>
+<section id="id36">
+<h3>Internal Changes<a class="headerlink" href="#id36" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Add support for different workload managers</p></li>
 <li><p>Install <code class="docutils literal notranslate"><span class="pre">freva</span></code> in dedicated anaconda environment</p></li>
@@ -710,7 +742,7 @@ follow a particular folder path and naming convention)</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2307-0-2">v2307.0.2</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2309-0-0">v2309.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#breaking-changes">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deprecations">Deprecations</a></li>
@@ -719,7 +751,7 @@ follow a particular folder path and naming convention)</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-changes">Internal Changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2303-0-0">v2303.0.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2307-0-2">v2307.0.2</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Deprecations</a></li>
@@ -728,7 +760,7 @@ follow a particular folder path and naming convention)</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Internal Changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2208-1-1">v2208.1.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2303-0-0">v2303.0.0</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Deprecations</a></li>
@@ -737,7 +769,7 @@ follow a particular folder path and naming convention)</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Internal Changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2208-0-1">v2208.0.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2208-1-1">v2208.1.1</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Deprecations</a></li>
@@ -746,7 +778,7 @@ follow a particular folder path and naming convention)</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Internal Changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2206-0-10">v2206.0.10</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2208-0-1">v2208.0.1</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Deprecations</a></li>
@@ -755,13 +787,22 @@ follow a particular folder path and naming convention)</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Internal Changes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2206-0-1">v2206.0.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2206-0-10">v2206.0.10</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">New Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Breaking changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Deprecations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Bug fixes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Documentations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Internal Changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#v2206-0-1">v2206.0.1</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">New Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Breaking changes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Deprecations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Bug fixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Documentations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Internal Changes</a></li>
 </ul>
 </li>
 </ul>
