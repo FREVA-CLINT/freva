@@ -137,8 +137,24 @@ class AddData(BaseParser):
             "--realm",
             type=str,
             default=None,
+            help="Set the <realm> information" + suffix,
+        )
+
+    def __init__(self, subparser: argparse.ArgumentParser):
+        super().__init__(subparser)
+        self.parser.add_argument(
+            "product",
+            type=str,
+            help="Product search key the newly added data can be found.",
+        )
+        self.parser.add_argument(
+            "paths",
+            nargs="+",
+            type=Path,
+            metavar="paths",
             help=(
-                "Set the <realm> information if they can't be found in the " "meta data"
+                "Filename(s) or Directories that are going to be added to the"
+                "databrowser"
             ),
         )
         self.parser.add_argument(
@@ -238,86 +254,6 @@ class DeleteData(BaseParser):
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         user_data.delete(*args.paths, delete_from_fs=args.delete_from_fs)
-
-
-class Future(AddData):
-    """Add datasets to the databrowser that will be creased in the future."""
-
-    desc = (
-        "Add datasets to the databrowser that will be created in the "
-        "future (future)."
-    )
-
-    def __init__(self, subparser: argparse.ArgumentParser):
-        self.parser = subparser
-        self.parser.add_argument(
-            "future_definition",
-            type=str,
-            choices=UserData.get_futures(full_paths=False),
-            help="Name of the future definition.",
-        )
-        self.parser.add_argument(
-            "--variable-file",
-            "-f",
-            type=Path,
-            default=None,
-            help=(
-                "Path to json file that holds additional variable definitions."
-                "Variables that are databrowser search keys have to be added"
-                "separately."
-            ),
-        )
-        self.parser.add_argument(
-            "--product",
-            type=str,
-            default=None,
-            help="Set the <product> information.",
-        )
-
-        self._add_facets_to_parser(
-            "Set <project> information",
-            suffix="if the can't be found in the metadata",
-        )
-        self.parser.add_argument(
-            "--time",
-            type=str,
-            default=None,
-            help="Set the <time stamp> information.",
-        )
-
-        self.parser.add_argument(
-            "--time-aggregation",
-            type=str,
-            default=None,
-            help="Set the <time_aggregation> information.",
-        )
-        self.parser.add_argument(
-            "--debug",
-            "-v",
-            "-d",
-            "--verbose",
-            help="Use verbose output.",
-            action="store_true",
-            default=False,
-        )
-        self.parser.set_defaults(apply_func=self.run_cmd)
-
-    def run_cmd(self, args: argparse.Namespace, **kwargs: str) -> None:
-        """Run the futures command."""
-        user_data = UserData()
-        user_data.register_future(
-            args.future_definition,
-            args.variable_file,
-            project=args.project,
-            product=args.product,
-            experiment=args.experiment,
-            institute=args.institute,
-            variable=args.variable,
-            time_frequency=args.time_frequency,
-            ensemble=args.ensemble,
-            realm=args.realm,
-            time_aggregation=args.time_aggregation,
-        )
 
 
 class Cli(SubCommandParser):
