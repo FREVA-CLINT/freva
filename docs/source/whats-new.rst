@@ -5,6 +5,35 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2309.0.0
+~~~~~~~~~~
+
+New Features
+++++++++++++
+- Plugin and history output can be parsed using the ``--json`` flag from the
+   command line
+- The plugin method and cli plugin command can be instructed to wait for any
+  batch job. ``wait=True`` in the python module or ``--wait`` in the cli
+- Users can interact with plugin ouput, using the return value of the
+  ``freva.run_plugin`` method.
+
+Breaking changes
+++++++++++++++++
+
+Deprecations
+++++++++++++
+
+Bug fixes
++++++++++
+
+Documentations
+++++++++++++++
+
+Internal Changes
+++++++++++++++++
+
+
+
 v2307.0.2
 ~~~~~~~~~
 
