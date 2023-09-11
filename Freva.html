@@ -1,214 +1,420 @@
-<!doctype html>
-<html class="no-js" lang="en" data-content_root="./">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="The Freva command line interface" href="FrevaCli.html" /><link rel="prev" title="Welcome to Freva’s documentation!" href="index.html" />
 
-    <link rel="shortcut icon" href="_static/logo.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
-        <title>Freva python module - freva user guide 2307.0.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
-    
-    
+<!DOCTYPE html>
 
 
-<style>
-  body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
-  --color-brand-primary: tomato;
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Freva python module &#8212; freva user guide 2308.0.0 documentation</title>
   
-  }
-  @media not print {
-    body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
   
-    }
-    @media (prefers-color-scheme: dark) {
-      body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
   
-      }
-    }
-  }
-</style></head>
-  <body>
-    
-    <script>
-      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
-    </script>
-    
-
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-  <symbol id="svg-toc" viewBox="0 0 24 24">
-    <title>Contents</title>
-    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
-      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
-    </svg>
-  </symbol>
-  <symbol id="svg-menu" viewBox="0 0 24 24">
-    <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  </symbol>
-  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
-    <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-  </symbol>
-  <symbol id="svg-sun" viewBox="0 0 24 24">
-    <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
-      <circle cx="12" cy="12" r="5"></circle>
-      <line x1="12" y1="1" x2="12" y2="3"></line>
-      <line x1="12" y1="21" x2="12" y2="23"></line>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-      <line x1="1" y1="12" x2="3" y2="12"></line>
-      <line x1="21" y1="12" x2="23" y2="12"></line>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-    </svg>
-  </symbol>
-  <symbol id="svg-moon" viewBox="0 0 24 24">
-    <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
-    </svg>
-  </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
-</svg>
-
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
-
-
-
-<div class="page">
-  <header class="mobile-header">
-    <div class="header-left">
-      <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
-      </label>
-    </div>
-    <div class="header-center">
-      <a href="index.html"><div class="brand">freva user guide 2307.0.3 documentation</div></a>
-    </div>
-    <div class="header-right">
-      <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
-          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
-          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
-        </button>
-      </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
-      </label>
-    </div>
-  </header>
-  <aside class="sidebar-drawer">
-    <div class="sidebar-container">
-      
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
   
-  <div class="sidebar-logo-container">
-    <img class="sidebar-logo" src="_static/logo.png" alt="Logo"/>
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script src="_static/documentation_options.js?v=a78c71a5"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'Freva';</script>
+    <link rel="icon" href="_static/logo.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Freva command line interface" href="FrevaCli.html" />
+    <link rel="prev" title="Welcome to Freva’s documentation!" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
   </div>
   
-  <span class="sidebar-brand-text">freva user guide 2307.0.3 documentation</span>
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
   
-</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
-  <input type="hidden" name="check_keywords" value="yes">
-  <input type="hidden" name="area" value="default">
-</form>
-<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">Content:</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Freva python module</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Freva python module</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FrevaCli.html">The Freva command line interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="developers_guide.html">Plugin Developer Guide</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Plugin Developer Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="plugin_api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Ask Questions and best practices</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="whats-new.html">What’s new</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of What’s new</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
-</ul>
-</li>
-</ul>
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Freva python module
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="FrevaCli.html">
+                        The Freva command line interface
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plugin_api.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="whats-new.html">
+                        What’s new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
-</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Freva python module
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="FrevaCli.html">
+                        The Freva command line interface
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="plugin_api.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="whats-new.html">
+                        What’s new
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
 
       </div>
       
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Freva python module</li>
+  </ul>
+</nav>
+</div>
+      
     </div>
-  </aside>
-  <div class="main">
-    <div class="content">
-      <div class="article-container">
-        <a href="#" class="back-to-top muted-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
-          </svg>
-          <span>Back to top</span>
-        </a>
-        <div class="content-icon-container">
-          
-<div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
-              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
-              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
-            </button>
-          </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
-          </label>
-        </div>
-        <article role="main">
-          <section id="freva-python-module">
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="freva-python-module">
 <h1>Freva python module<a class="headerlink" href="#freva-python-module" title="Link to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 </div>
@@ -287,14 +493,14 @@ is given.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;future&#39;: {}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;future_id&#39;: {}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}}
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.databrowser">
-<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">databrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiversion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relevant_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniq_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uri'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_select</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'flexible'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'flexible'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></span><a class="headerlink" href="#freva.databrowser" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">databrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiversion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniq_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'uri'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'file'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_select</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'flexible'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'flexible'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></span><a class="headerlink" href="#freva.databrowser" title="Link to this definition">#</a></dt>
 <dd><p>Find data in the system.</p>
 <p>You can either search for files or data facets (variable, model, …)
 that are available. The query is of the form key=value. &lt;value&gt; might
@@ -322,25 +528,16 @@ period is contained within <em>one single</em> file.</p></li>
 uris, uris will have the file path along with protocol of the storage
 system. Uris can be useful if the the search query result should be
 used libraries like fsspec.</p></li>
-<li><p><strong>all_facets</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Retrieve all facets (attributes &amp; values) instead of the files.</p></li>
-<li><p><strong>facet</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>list</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>default: None</em>) – Retrieve these facets (attributes &amp; values) instead of the files.</p></li>
-<li><p><strong>attributes</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Retrieve all possible attributes for the current search
-instead of the files.</p></li>
 <li><p><strong>multiversion</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Select all versions and not just the latest version (default).</p></li>
-<li><p><strong>relevant_only</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Show only facets that filter more than one result.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default: 10</em>) – Size of the search querey.</p></li>
-<li><p><strong>count</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Display only this amount for search results.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default: 5000</em>) – Size of the search querey.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Iterator</em> – If <code class="docutils literal notranslate"><span class="pre">all_facets</span></code> is False and <code class="docutils literal notranslate"><span class="pre">facet</span></code> is None an
-iterator with results.</p></li>
-<li><p><em>int</em> – If <code class="docutils literal notranslate"><span class="pre">all_facets</span></code> is False and <code class="docutils literal notranslate"><span class="pre">facet</span></code> is None and <code class="docutils literal notranslate"><span class="pre">count</span></code> is True</p></li>
-<li><p><em>dict[Any, dict[str, Any]</em> – dictionary for facet results, if <code class="docutils literal notranslate"><span class="pre">all_facets</span></code> is True or <code class="docutils literal notranslate"><span class="pre">facet</span></code>
-was given a value (str or list[str])</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">all_facets</span></code> is False and <code class="docutils literal notranslate"><span class="pre">facet</span></code> is None an
+iterator with results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Iterator</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -358,7 +555,7 @@ was given a value (str or list[str])</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f50e712f220&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7fba844d2ce0&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
 </pre></div>
@@ -444,7 +641,7 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [&#39;cpc&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: [&#39;atmos&#39;], &#39;future&#39;: [], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;future_id&#39;: [], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -456,7 +653,7 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;model&#39;, &#39;institute&#39;, &#39;grid_label&#39;, &#39;fs_type&#39;, &#39;time_frequency&#39;, &#39;experiment&#39;, &#39;cmor_table&#39;, &#39;product&#39;, &#39;realm&#39;, &#39;ensemble&#39;, &#39;variable&#39;, &#39;project&#39;, &#39;time_aggregation&#39;]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;realm&#39;, &#39;future&#39;, &#39;ensemble&#39;, &#39;project&#39;, &#39;time_aggregation&#39;, &#39;time_frequency&#39;, &#39;experiment&#39;, &#39;grid_label&#39;, &#39;institute&#39;, &#39;product&#39;, &#39;future_id&#39;, &#39;fs_type&#39;, &#39;model&#39;, &#39;variable&#39;, &#39;cmor_table&#39;]
 </pre></div>
 </div>
 <p>Reverse search: retrieving meta data from a known file</p>
@@ -469,19 +666,51 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [], &#39;institute&#39;: [], &#39;grid_label&#39;: [], &#39;fs_type&#39;: [], &#39;time_frequency&#39;: [], &#39;experiment&#39;: [], &#39;cmor_table&#39;: [], &#39;product&#39;: [], &#39;realm&#39;: [], &#39;ensemble&#39;: [], &#39;variable&#39;: [], &#39;project&#39;: [], &#39;time_aggregation&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: [], &#39;future&#39;: [], &#39;ensemble&#39;: [], &#39;project&#39;: [], &#39;time_aggregation&#39;: [], &#39;time_frequency&#39;: [], &#39;experiment&#39;: [], &#39;grid_label&#39;: [], &#39;institute&#39;: [], &#39;product&#39;: [], &#39;future_id&#39;: [], &#39;fs_type&#39;: [], &#39;model&#39;: [], &#39;variable&#39;: [], &#39;cmor_table&#39;: []}
 </pre></div>
 </div>
 </dd></dl>
 
 </section>
-<section id="runing-analysis-plugins">
-<span id="databrowser"></span><h2>Runing analysis plugins<a class="headerlink" href="#runing-analysis-plugins" title="Link to this heading">#</a></h2>
-<p>Already defined data analysis tools can be started with the <a class="reference internal" href="#freva.run_plugin" title="freva.run_plugin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.run_plugin()</span></code></a>
-method. Besides the <a class="reference internal" href="#freva.run_plugin" title="freva.run_plugin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.run_plugin()</span></code></a> method two more utility methods
-(<a class="reference internal" href="#freva.list_plugins" title="freva.list_plugins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.list_plugins()</span></code></a> and <a class="reference internal" href="#freva.plugin_doc" title="freva.plugin_doc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.plugin_doc()</span></code></a>) are available
-to get an overview over existing plugins and the documentation of each plugins.</p>
+<section id="running-analysis-plugins">
+<span id="databrowser"></span><h2>Running analysis plugins<a class="headerlink" href="#running-analysis-plugins" title="Link to this heading">#</a></h2>
+<p id="plugin">Already defined data analysis tools can be started with the <a class="reference internal" href="#freva.run_plugin" title="freva.run_plugin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.run_plugin()</span></code></a>
+method. Besides the <a class="reference internal" href="#freva.run_plugin" title="freva.run_plugin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.run_plugin()</span></code></a> method three more utility methods
+(<a class="reference internal" href="#freva.list_plugins" title="freva.list_plugins"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.list_plugins()</span></code></a>, <a class="reference internal" href="#freva.get_tools_list" title="freva.get_tools_list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.get_tools_list()</span></code></a>,
+<a class="reference internal" href="#freva.plugin_doc" title="freva.plugin_doc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.plugin_doc()</span></code></a>) are available to get an overview over
+existing plugins and the documentation of each plugins.</p>
 <dl class="py function" id="module-0">
+<dt class="sig sig-object py" id="freva.get_tools_list">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">get_tools_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">HelpStr</span></span></span><a class="headerlink" href="#freva.get_tools_list" title="Link to this definition">#</a></dt>
+<dd><p>Get a list of plugins with their short description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>String representation of all available plugins.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="kn">import</span> <span class="nn">rich</span>
+<span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">get_tools_list</span><span class="p">())</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Tool               ┃ Description                          ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Animator           │ Animate data on lon/lat grids        │
+│ DummyPlugin        │ A dummy plugin                       │
+│ DummyPluginFolders │ A dummy plugin with outputdir folder │
+└────────────────────┴──────────────────────────────────────┘
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="freva.list_plugins">
 <span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">list_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.list_plugins" title="Link to this definition">#</a></dt>
 <dd><p>Get the plugins that are available on the system.</p>
@@ -496,22 +725,23 @@ to get an overview over existing plugins and the documentation of each plugins.<
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">())</span>
+<span class="kn">import</span> <span class="nn">rich</span>
+<span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">())</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;dummyplugin&#39;, &#39;animator&#39;]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;dummyplugin&#39;, &#39;dummypluginfolders&#39;, &#39;animator&#39;]
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.plugin_doc">
-<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">plugin_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#freva.plugin_doc" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">plugin_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">HelpStr</span></span></span><a class="headerlink" href="#freva.plugin_doc" title="Link to this definition">#</a></dt>
 <dd><p>Display the documentation of a given plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>tool_name</strong> – The name of the tool that should be documented</p>
+<dd class="field-odd"><p><strong>tool_name</strong> – The name of the tool that should be documented.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>plugin help string.</p>
@@ -526,109 +756,100 @@ to get an overview over existing plugins and the documentation of each plugins.<
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">plugin_doc</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">rich</span>
+<span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">plugin_doc</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Animator (v2022.7.15): Create animations (in gif or mp4 format) This tool creates plots of solr facets and an animation.
-Options:
-input_file              (default: &lt;undefined&gt;)
-                        NetCDF input file(s), you can choose multiple files
-                        separated by a , or use a global pattern for multiple
-                        files chose this option only if you don&#39;t want Freva to
-                        find files by seach facets
-variable                (default: &lt;undefined&gt;) [mandatory]
-                        Variable name (only applicable if you didn&#39;t choose an
-                        input file)
-project                 (default: &lt;undefined&gt;)
-                        Project name (only applicable if you didn&#39;t choose an
-                        input file)
-product                 (default: &lt;undefined&gt;)
-                        Product name (only applicable if you didn&#39;t choose an
-                        input file)
-experiment              (default: &lt;undefined&gt;)
-                        Experiment name (only applicable if you didn&#39;t choose an
-                        input file)
-institute               (default: &lt;undefined&gt;)
-                        Institute name (only applicable if you didn&#39;t choose an
-                        input file)
-model                   (default: &lt;undefined&gt;)
-                        Model name (only applicable if you didn&#39;t choose an
-                        input file)
-time_frequency          (default: &lt;undefined&gt;)
-                        Time frequency name (only applicable if you didn&#39;t
-                        choose an input file)
-ensemble                (default: &lt;undefined&gt;)
-                        Ensemble name (only applicable if you didn&#39;t choose an
-                        input file)
-start                   (default: &lt;undefined&gt;)
-                        Define the first time step to be plotted, leave blank if
-                        taken from data
-end                     (default: &lt;undefined&gt;)
-                        Define the last time step to be plotted, leave blank if
-                        taken from data
-time_mean               (default: &lt;undefined&gt;)
-                        Select a time interval if time averaging/min/max/sum
-                        should be applied along the time axis. This can be D for
-                        daily, M for monthly 6H for 6 hours etc. Leave blank if
-                        the time axis should not be resampled (default) or set
-                        to &lt;em&gt;all&lt;/em&gt; if you want to collapse the time axis.
-time_method             (default: mean)
-                        If resampling of the time axis is chosen (default: no)
-                        set the method: mean, max or min. &lt;b&gt;Note:&lt;/b&gt; This has
-                        only an effect if the above parameter for
-                        &lt;em&gt;time_mean&lt;/em&gt; is set.
-lonlatbox               (default: &lt;undefined&gt;)
-                        Set the extend of a rectangular lonlatbox (left_lon,
-                        right_lat, lower_lat, upper_lat)
-output_unit             (default: &lt;undefined&gt;)
-                        Set the output unit of the variable - leave blank for no
-                        conversion. This can be useful if the unit of the input
-                        files should be converted, for example for
-                        precipitation. Note: Although many conversions are
-                        supported, by using the `pint` conversion library.
-vmin                    (default: &lt;undefined&gt;)
-                        Set the minimum plotting range (leave blank to calculate
-                        from data 1st decile)
-vmax                    (default: &lt;undefined&gt;)
-                        Set the maximum plotting range (leave blank to calculate
-                        the 9th decile)
-cmap                    (default: RdYlBu_r)
-                        Set the colormap, more information on colormaps is
-                        available on the &lt;a href=&quot;https://matplotlib.org/stable/
-                        tutorials/colors/colormaps.html&quot;
-                        target=_blank&gt;matplotlib website&lt;/a&gt;.
-linecolor               (default: k)
-                        Color of the coast lines in the map
-projection              (default: PlateCarree)
-                        Set the global map projection. Note: this should the
-                        name of the cartopy projection method (e.g PlatteCarree
-                        for Cylindrical Projection). Pleas refer to &lt;a href=&quot;htt
-                        ps://scitools.org.uk/cartopy/docs/latest/crs/projections
-                        .html&quot;target=_blank&gt;cartopy website&lt;/a&gt; for details.
-proj_centre             (default: 50)
-                        Set center longitude of the global map projection.
-pic_size                (default: 1360,900)
-                        Set the size of the picture (in pixel)
-plot_title              (default: )
-                        Set plot title
-cbar_label              (default: )
-                        Overwrite default colorbar label by this value
-suffix                  (default: mp4)
-                        Filetype of the animation
-fps                     (default: 5)
-                        Set the frames per seceonds of the output animation.
-extra_scheduler_options (default: --qos=test, --array=20)
-                        Set additional options for the job submission to the
-                        workload manager (, seperated). Note: batchmode and web
-                        only.
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Animator (v2022.7.15): Create animations (in gif or mp4 format) This tool       
+creates plots of solr facets and an animation.                                  
+┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Option                  ┃ Description                                        ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ input_file              │ NetCDF input file(s), you can choose multiple      │
+│                         │ files separated by a , or use a global pattern for │
+│                         │ multiple files chose this option only if you don&#39;t │
+│                         │ want Freva to find files by seach facets (default: │
+│                         │ &lt;null&gt;)                                            │
+│ variable                │ Variable name (only applicable if you didn&#39;t       │
+│                         │ choose an input file) (default: &lt;null&gt;)            │
+│ project                 │ Project name (only applicable if you didn&#39;t choose │
+│                         │ an input file) (default: &lt;null&gt;)                   │
+│ product                 │ Product name (only applicable if you didn&#39;t choose │
+│                         │ an input file) (default: &lt;null&gt;)                   │
+│ experiment              │ Experiment name (only applicable if you didn&#39;t     │
+│                         │ choose an input file) (default: &lt;null&gt;)            │
+│ institute               │ Institute name (only applicable if you didn&#39;t      │
+│                         │ choose an input file) (default: &lt;null&gt;)            │
+│ model                   │ Model name (only applicable if you didn&#39;t choose   │
+│                         │ an input file) (default: &lt;null&gt;)                   │
+│ time_frequency          │ Time frequency name (only applicable if you didn&#39;t │
+│                         │ choose an input file) (default: &lt;null&gt;)            │
+│ ensemble                │ Ensemble name (only applicable if you didn&#39;t       │
+│                         │ choose an input file) (default: &lt;null&gt;)            │
+│ start                   │ Define the first time step to be plotted, leave    │
+│                         │ blank if taken from data (default: &lt;null&gt;)         │
+│ end                     │ Define the last time step to be plotted, leave     │
+│                         │ blank if taken from data (default: &lt;null&gt;)         │
+│ time_mean               │ Select a time interval if time                     │
+│                         │ averaging/min/max/sum should be applied along the  │
+│                         │ time axis. This can be D for daily, M for monthly  │
+│                         │ 6H for 6 hours etc. Leave blank if the time axis   │
+│                         │ should not be resampled (default) or set to        │
+│                         │ &lt;em&gt;all&lt;/em&gt; if you want to collapse the time      │
+│                         │ axis. (default: &lt;null&gt;)                            │
+│ time_method             │ If resampling of the time axis is chosen (default: │
+│                         │ no) set the method: mean, max or min. &lt;b&gt;Note:&lt;/b&gt; │
+│                         │ This has only an effect if the above parameter for │
+│                         │ &lt;em&gt;time_mean&lt;/em&gt; is set. (default: mean)         │
+│ lonlatbox               │ Set the extend of a rectangular lonlatbox          │
+│                         │ (left_lon, right_lat, lower_lat, upper_lat)        │
+│                         │ (default: &lt;null&gt;)                                  │
+│ output_unit             │ Set the output unit of the variable - leave blank  │
+│                         │ for no conversion. This can be useful if the unit  │
+│                         │ of the input files should be converted, for        │
+│                         │ example for precipitation. Note: Although many     │
+│                         │ conversions are supported, by using the `pint`     │
+│                         │ conversion library. (default: &lt;null&gt;)              │
+│ vmin                    │ Set the minimum plotting range (leave blank to     │
+│                         │ calculate from data 1st decile) (default: &lt;null&gt;)  │
+│ vmax                    │ Set the maximum plotting range (leave blank to     │
+│                         │ calculate the 9th decile) (default: &lt;null&gt;)        │
+│ cmap                    │ Set the colormap, more information on colormaps is │
+│                         │ available on the &lt;a                                │
+│                         │ href=&quot;https://matplotlib.org/stable/tutorials/colo │
+│                         │ rs/colormaps.html&quot; target=_blank&gt;matplotlib        │
+│                         │ website&lt;/a&gt;. (default: RdYlBu_r)                   │
+│ linecolor               │ Color of the coast lines in the map (default: k)   │
+│ projection              │ Set the global map projection. Note: this should   │
+│                         │ the name of the cartopy projection method (e.g     │
+│                         │ PlatteCarree for Cylindrical Projection). Pleas    │
+│                         │ refer to &lt;a                                        │
+│                         │ href=&quot;https://scitools.org.uk/cartopy/docs/latest/ │
+│                         │ crs/projections.html&quot;target=_blank&gt;cartopy         │
+│                         │ website&lt;/a&gt; for details. (default: PlateCarree)    │
+│ proj_centre             │ Set center longitude of the global map projection. │
+│                         │ (default: 50)                                      │
+│ pic_size                │ Set the size of the picture (in pixel) (default:   │
+│                         │ 1360,900)                                          │
+│ plot_title              │ Set plot title (default: )                         │
+│ cbar_label              │ Overwrite default colorbar label by this value     │
+│                         │ (default: )                                        │
+│ suffix                  │ Filetype of the animation (default: mp4)           │
+│ fps                     │ Set the frames per seceonds of the output          │
+│                         │ animation. (default: 5)                            │
+│ extra_scheduler_options │ Set additional options for the job submission to   │
+│                         │ the workload manager (, seperated). Note:          │
+│                         │ batchmode and web only. (default: --qos=test,      │
+│                         │ --array=20)                                        │
+└─────────────────────────┴────────────────────────────────────────────────────┘
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.run_plugin">
-<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">run_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduled_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batchmode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caption</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.run_plugin" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">run_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduled_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batchmode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caption</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#freva.PluginStatus" title="freva.utils.PluginStatus"><span class="pre">PluginStatus</span></a></span></span><a class="headerlink" href="#freva.run_plugin" title="Link to this definition">#</a></dt>
 <dd><p>Apply an available data analysis plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -637,13 +858,9 @@ extra_scheduler_options (default: --qos=test, --array=20)
 <li><p><strong>caption</strong> – Set a caption for the results.</p></li>
 <li><p><strong>save</strong> – Save the plugin configuration to default destination.</p></li>
 <li><p><strong>save_config</strong> – Save the plugin configuration.</p></li>
-<li><p><strong>show_config</strong> – Show the resulting configuration (implies dry-run).</p></li>
 <li><p><strong>scheduled_id</strong> – Run a scheduled job from database</p></li>
-<li><p><strong>dry_run</strong> – Perform no computation. Useful for development.</p></li>
 <li><p><strong>batchmode</strong> – Create a Batch job and submit it to the scheduling system.</p></li>
 <li><p><strong>unique_output</strong> – Append a Freva run id to the output/cache folder(s).</p></li>
-<li><p><strong>return_result</strong> – Return the plugin result, this can be useful for pipelining.</p></li>
-<li><p><strong>repo_version</strong> – show the version number from the repository.</p></li>
 <li><p><strong>tag</strong> – Use git commit hash to specify a specific versrion of this tool.</p></li>
 </ul>
 </dd>
@@ -658,7 +875,8 @@ extra_scheduler_options (default: --qos=test, --array=20)
 <p>Run a plugin in the foreground.</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get_result_paths</span><span class="p">(</span><span class="s2">&quot;plot&quot;</span><span class="p">,</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)</span> <span class="c1"># Check the plot output</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
@@ -667,35 +885,232 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 43 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 37 seconds
 </pre></div>
 </div>
-<p>Run a plugin in the background</p>
+<p>Run a plugin in the background. You can interact with the plugin using
+the <code class="docutils literal notranslate"><span class="pre">.wait</span></code> method of the :py:class:<code class="docutils literal notranslate"><span class="pre">freva.PluginStatus</span></code> class.</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span>
-                 <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span>
-                 <span class="n">project</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">,</span>
-                 <span class="n">batchmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span>
+                       <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span>
+                       <span class="n">project</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">,</span>
+                       <span class="n">batchmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c1"># Wait until the plugin has finished</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2118
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-13515.out
+tail -f /tmp/share/slurm/animator/Animator-5837.out
+☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
 </dd></dl>
 
 <p>This specific plugin has created the following output:</p>
 <a class="reference internal image-reference" href="_images/animator_output.gif"><img alt="_images/animator_output.gif" src="_images/animator_output.gif" style="width: 400px;" /></a>
+<p>After the application of a data analysis plugin you can check the status of the
+plugin and make use of any of the plugin output either by directly using the
+return value of the <a class="reference internal" href="#freva.run_plugin" title="freva.run_plugin"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.run_plugin()</span></code></a> method or create an instance
+of the <a class="reference internal" href="#freva.PluginStatus" title="freva.PluginStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">freva.PluginStatus</span></code></a> status class with help of a history id.</p>
+<dl class="py class" id="module-1">
+<dt class="sig sig-object py" id="freva.PluginStatus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">PluginStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#freva.PluginStatus" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to interact with the status of a plugin application.</p>
+<p>With help of this class you can:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Check if a plugin is still running.</p></li>
+<li><p>Get all results (data or plot files) of a plugin.</p></li>
+<li><p>Check the configuration of a plugin.</p></li>
+<li><p>Wait until the plugin is finished.</p></li>
+</ul>
+</div></blockquote>
+<p class="rubric">Example</p>
+<p>The output of the <code class="docutils literal notranslate"><span class="pre">freva.run_plugin</span></code> method is an instance of the
+<code class="docutils literal notranslate"><span class="pre">PluginStatus</span></code> class. That means you can directly use the output of
+:py:meth:<code class="docutils literal notranslate"><span class="pre">freva.run_plugin</span></code> to interact with the plugin status:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_085124/2119
+finished
+</pre></div>
+</div>
+<p>You can also create an instance of the class yourself, if you know the
+<code class="docutils literal notranslate"><span class="pre">history_id</span></code> of a specific plugin run. Note that you can query these ids
+by making use of the :py:meth:<code class="docutils literal notranslate"><span class="pre">freva.history</span></code> method:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="c1"># Get the last run of the dummypluginfolders plugin</span>
+<span class="n">hist</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">PluginStatus</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[08:51:24] INFO     freva - INFO - history of {plugin}, limit=1,  _history.py:93
+                    since=None, until=None, entry_ids=None                      
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.batch_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#freva.PluginStatus.batch_id" title="Link to this definition">#</a></dt>
+<dd><p>Get the id of the batch job, if the plugin was a batchmode job.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.configuration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">configuration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#freva.PluginStatus.configuration" title="Link to this definition">#</a></dt>
+<dd><p>Get the plugin configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="freva.PluginStatus.get_result_paths">
+<span class="sig-name descname"><span class="pre">get_result_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'data'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'plot'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">glob_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*.nc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.PluginStatus.get_result_paths" title="Link to this definition">#</a></dt>
+<dd><p>Get all created paths of a certain data type.</p>
+<p>This method allows you to query all output files of the plugin run.
+You can either search for data files or plotted output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<em>str</em>) – The data type of the returned paths. This should be either
+data or plot</p></li>
+<li><p><strong>glob_pattern</strong> (str, default: <a href="#id5"><span class="problematic" id="id6">*</span></a>.nc) – Refine the output by filtering the returned files by the given
+glob pattern. By default only netCDF files (”<a href="#id3"><span class="problematic" id="id4">*</span></a>.nc”) are added
+to the list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>List[Path]</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of paths matching the search constrains.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>We are going to use a plugin called <code class="docutils literal notranslate"><span class="pre">dummypluginfolders</span></code>
+which creates plots and netCDF files. In this example we want to
+open all netCDF files (<code class="docutils literal notranslate"><span class="pre">dtype</span> <span class="pre">=</span> <span class="pre">'data'</span></code>) that match the filename
+constraint <code class="docutils literal notranslate"><span class="pre">*data.nc</span></code>.</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
+<span class="n">dset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">get_result_paths</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">glob_pattern</span><span class="o">=</span><span class="s2">&quot;*data.nc&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_085124/2120
+pr
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.job_script">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">job_script</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#freva.PluginStatus.job_script" title="Link to this definition">#</a></dt>
+<dd><p>Get the content of the job_script, if it was a batchmode job.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="freva.PluginStatus.kill">
+<span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.PluginStatus.kill" title="Link to this definition">#</a></dt>
+<dd><p>Kill a running batch job.</p>
+<p>This method has only affect on jobs there have been submitted using the
+<code class="docutils literal notranslate"><span class="pre">batchmode=True</span></code> flag.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.plugin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#freva.PluginStatus.plugin" title="Link to this definition">#</a></dt>
+<dd><p>Get the plugin name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.status">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#freva.PluginStatus.status" title="Link to this definition">#</a></dt>
+<dd><p>Get the state of the current plugin run.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.stdout">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stdout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#freva.PluginStatus.stdout" title="Link to this definition">#</a></dt>
+<dd><p>Get the stdout of the plugin.</p>
+<p class="rubric">Example</p>
+<p>Read the output of the plugin</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_085125/2121
+Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_085125/2121
+
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#freva.PluginStatus.version" title="Link to this definition">#</a></dt>
+<dd><p>Get the version of the plugin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="freva.PluginStatus.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">28800</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.PluginStatus.wait" title="Link to this definition">#</a></dt>
+<dd><p>Wait for a plugin to finish.</p>
+<p>This method will block until the plugin is running.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<em>int</em><em>, </em><em>default: 28800</em>) – Wait <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds for the plugin to finish. If the plugin
+hasn’t been finish raise a ValueError.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the plugin took longer than <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds to finish:</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>This can be useful if a plugin was started using the <code class="docutils literal notranslate"><span class="pre">batchmode=True</span></code>
+option and the execution of the code should wait until the plugin is
+finished.</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">batchmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span> <span class="c1"># Give the plugin 60 seconds to finish.</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2122
+You can view the job&#39;s status with the command squeue
+Your job&#39;s progress will be shown with the command
+tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-6008.out
+☀️  Waiting for plugin to finish... ok
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-1">
-<span id="accessing-the-previous-plugin-runs"></span><span id="plugin"></span><h2>Accessing the previous plugin runs<a class="headerlink" href="#module-1" title="Link to this heading">#</a></h2>
+<section id="module-2">
+<span id="accessing-the-previous-plugin-runs"></span><h2>Accessing the previous plugin runs<a class="headerlink" href="#module-2" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.history">
-<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_return_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.history" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_return_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.history" title="Link to this definition">#</a></dt>
 <dd><p>Get access to the configurations of previously applied freva plugins.</p>
 <p>The <cite>.history</cite> method displays the entries with a one-line compact description.
 The first number you see is the entry id, which you might use to select
@@ -712,6 +1127,7 @@ of the entries themself.</p></li>
 <li><p><strong>until</strong> (<em>str</em><em>, </em><em>datetime.datetime</em><em>, </em><em>default: None</em>) – Retrieve entries younger than date, see hint on date format below.</p></li>
 <li><p><strong>entry_ids</strong> (<em>list</em><em>, </em><em>default: None</em>) – Select entries whose ids are in “ids”,</p></li>
 <li><p><strong>full_text</strong> – Show the complete configuration.</p></li>
+<li><p><strong>return_results</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Also return the plugin results.</p></li>
 <li><p><strong>return_command</strong> – Return the commands instead of history objects</p></li>
 <li><p><strong>_return_dict</strong> (<em>bool</em><em>, </em><em>default: True</em>) – Return a dictionary representation, this is only for internal use</p></li>
 </ul>
@@ -736,8 +1152,10 @@ of the entries themself.</p></li>
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;list&#39;&gt; 3
-dict_keys([&#39;status_dict&#39;, &#39;_state&#39;, &#39;id&#39;, &#39;timestamp&#39;, &#39;tool&#39;, &#39;version&#39;, &#39;version_details_id&#39;, &#39;configuration&#39;, &#39;slurm_output&#39;, &#39;host&#39;, &#39;uid_id&#39;, &#39;status&#39;, &#39;flag&#39;, &#39;caption&#39;])
-{&#39;input_file&#39;: None, &#39;variable&#39;: &#39;pr&#39;, &#39;project&#39;: &#39;observations&#39;, &#39;product&#39;: None, &#39;experiment&#39;: None, &#39;institute&#39;: None, &#39;model&#39;: None, &#39;time_frequency&#39;: None, &#39;ensemble&#39;: None, &#39;start&#39;: None, &#39;end&#39;: None, &#39;time_mean&#39;: None, &#39;time_method&#39;: &#39;mean&#39;, &#39;lonlatbox&#39;: None, &#39;output_unit&#39;: &#39;mm/h&#39;, &#39;vmin&#39;: 0.0, &#39;vmax&#39;: 5.0, &#39;cmap&#39;: &#39;Blues&#39;, &#39;linecolor&#39;: &#39;k&#39;, &#39;projection&#39;: &#39;PlateCarree&#39;, &#39;proj_centre&#39;: 50, &#39;pic_size&#39;: &#39;1360,900&#39;, &#39;plot_title&#39;: &#39;&#39;, &#39;cbar_label&#39;: &#39;&#39;, &#39;suffix&#39;: &#39;gif&#39;, &#39;fps&#39;: 5}
+dict_keys([&#39;status_dict&#39;, &#39;id&#39;, &#39;timestamp&#39;, &#39;tool&#39;, &#39;version&#39;, &#39;version_details_id&#39;, &#39;configuration&#39;, &#39;slurm_output&#39;, &#39;host&#39;, &#39;uid_id&#39;, &#39;status&#39;, &#39;flag&#39;, &#39;caption&#39;, &#39;result&#39;])
+{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_085124&#39;}
+[08:51:27] INFO     freva - INFO - history, limit=3, since=None,  _history.py:93
+                    until=None, entry_ids=None                                  
 </pre></div>
 </div>
 <div class="admonition hint">
@@ -752,8 +1170,8 @@ For example: “2012” = “2012-01-01T00:00:00.0”</p>
 </dd></dl>
 
 </section>
-<section id="module-2">
-<span id="the-userdata-class"></span><h2>The <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class<a class="headerlink" href="#module-2" title="Link to this heading">#</a></h2>
+<section id="module-3">
+<span id="the-userdata-class"></span><h2>The <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class<a class="headerlink" href="#module-3" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="freva.UserData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">UserData</span></span><a class="headerlink" href="#freva.UserData" title="Link to this definition">#</a></dt>
@@ -837,16 +1255,16 @@ and <code class="docutils literal notranslate"><span class="pre">experiment</spa
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230908/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div>
 </div>
 <p>By default the data is copied. By using the <code class="docutils literal notranslate"><span class="pre">how</span></code> keyword you can
@@ -888,7 +1306,7 @@ be deleted from the databrowser and also from the central data location:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="freva.UserData.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">crawl_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.UserData.index" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">crawl_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.UserData.index" title="Link to this definition">#</a></dt>
 <dd><p>Index and add user output data to the databrowser.</p>
 <p>This method can be used to update the databrowser for existing user data</p>
 <dl class="field-list simple">
@@ -927,105 +1345,201 @@ the <code class="docutils literal notranslate"><span class="pre">index</span></c
 </dd></dl>
 
 </section>
+<section id="overriding-or-using-a-freva-configuration">
+<h2>Overriding or using a freva configuration<a class="headerlink" href="#overriding-or-using-a-freva-configuration" title="Link to this heading">#</a></h2>
+<p>If you want to install and maintain an instance of the freva client in your
+own python environment you will most likely have to load the freva configuration
+to be able to use the freva infrastructure. To do so you can use the
+<a class="reference internal" href="#freva.config" title="freva.config"><code class="xref py py-class docutils literal notranslate"><span class="pre">freva.config</span></code></a> class. This class allows you to either override or
+set the path to the freva configuration file.</p>
+<dl class="py class" id="module-4">
+<dt class="sig sig-object py" id="freva.config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#freva.config" title="Link to this definition">#</a></dt>
+<dd><p>Override the default or set the freva system configuration file.</p>
+<p>With the help of this class you can not only (temporarily) override
+the default configuration file and use a configuration from another
+project, but you can also set a path to a configuration file if no
+configuration file has been set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_file</strong> (<em>str</em><em> | </em><em>pathlib.Path</em>) – Path to the (new) configuration file.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Temporarily override the existing configuration file and use a new one.
+You can use a context manager to temporally use a different configuration
+and switch back later.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="k">with</span> <span class="n">freva</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">&quot;/work/freva/evaluation_system.conf&quot;</span><span class="p">):</span>
+    <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;plugin_from_another_project&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you do not want to switch to another configuration only
+temporarily, but want to use it permanently, you can use
+<a class="reference internal" href="#freva.config" title="freva.config"><code class="xref py py-class docutils literal notranslate"><span class="pre">freva.config</span></code></a> without a context manager:
+a context manager:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">freva</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">&quot;/work/freva/evaluation_system.conf&quot;</span><span class="p">)</span>
+<span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;user-1234&quot;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;extremes&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="freva.config.db_reloaded">
+<span class="sig-name descname"><span class="pre">db_reloaded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[False]</span></em><a class="headerlink" href="#freva.config.db_reloaded" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
-        </article>
-      </div>
-      <footer>
-        
-        <div class="related-pages">
-          <a class="next-page" href="FrevaCli.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">The Freva command line interface</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="index.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Home</div>
-                
-              </div>
-            </a>
-        </div>
-        <div class="bottom-of-page">
-          <div class="left-details">
-            <div class="copyright">
-                Copyright &#169; 2022, CLINT
-            </div>
-            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-            
-            <a href="https://github.com/pradyunsg/furo">Furo</a>
-            
-          </div>
-          <div class="right-details">
-            
-          </div>
-        </div>
-        
-      </footer>
-    </div>
-    <aside class="toc-drawer">
-      
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Freva python module</a><ul>
-<li><a class="reference internal" href="#searching-for-data">Searching for data</a><ul>
-<li><a class="reference internal" href="#freva.count_values"><code class="docutils literal notranslate"><span class="pre">count_values()</span></code></a></li>
-<li><a class="reference internal" href="#freva.databrowser"><code class="docutils literal notranslate"><span class="pre">databrowser()</span></code></a></li>
-<li><a class="reference internal" href="#freva.facet_search"><code class="docutils literal notranslate"><span class="pre">facet_search()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#runing-analysis-plugins">Runing analysis plugins</a><ul>
-<li><a class="reference internal" href="#freva.list_plugins"><code class="docutils literal notranslate"><span class="pre">list_plugins()</span></code></a></li>
-<li><a class="reference internal" href="#freva.plugin_doc"><code class="docutils literal notranslate"><span class="pre">plugin_doc()</span></code></a></li>
-<li><a class="reference internal" href="#freva.run_plugin"><code class="docutils literal notranslate"><span class="pre">run_plugin()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-1">Accessing the previous plugin runs</a><ul>
-<li><a class="reference internal" href="#freva.history"><code class="docutils literal notranslate"><span class="pre">history()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-2">The <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class</a><ul>
-<li><a class="reference internal" href="#freva.UserData"><code class="docutils literal notranslate"><span class="pre">UserData</span></code></a><ul>
-<li><a class="reference internal" href="#freva.UserData.add"><code class="docutils literal notranslate"><span class="pre">UserData.add()</span></code></a></li>
-<li><a class="reference internal" href="#freva.UserData.delete"><code class="docutils literal notranslate"><span class="pre">UserData.delete()</span></code></a></li>
-<li><a class="reference internal" href="#freva.UserData.index"><code class="docutils literal notranslate"><span class="pre">UserData.index()</span></code></a></li>
-<li><a class="reference internal" href="#freva.UserData.user_dir"><code class="docutils literal notranslate"><span class="pre">UserData.user_dir</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
 
-          </div>
-        </div>
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to Freva’s documentation!</p>
       </div>
-      
-      
-    </aside>
+    </a>
+    <a class="right-next"
+       href="FrevaCli.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The Freva command line interface</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
   </div>
-</div><script src="_static/documentation_options.js?v=6d5ebfd8"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    </body>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searching-for-data">Searching for data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.count_values"><code class="docutils literal notranslate"><span class="pre">count_values()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.databrowser"><code class="docutils literal notranslate"><span class="pre">databrowser()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.facet_search"><code class="docutils literal notranslate"><span class="pre">facet_search()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-analysis-plugins">Running analysis plugins</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.get_tools_list"><code class="docutils literal notranslate"><span class="pre">get_tools_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.list_plugins"><code class="docutils literal notranslate"><span class="pre">list_plugins()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.plugin_doc"><code class="docutils literal notranslate"><span class="pre">plugin_doc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.run_plugin"><code class="docutils literal notranslate"><span class="pre">run_plugin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus"><code class="docutils literal notranslate"><span class="pre">PluginStatus</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.batch_id"><code class="docutils literal notranslate"><span class="pre">PluginStatus.batch_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.configuration"><code class="docutils literal notranslate"><span class="pre">PluginStatus.configuration</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.get_result_paths"><code class="docutils literal notranslate"><span class="pre">PluginStatus.get_result_paths()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.job_script"><code class="docutils literal notranslate"><span class="pre">PluginStatus.job_script</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.kill"><code class="docutils literal notranslate"><span class="pre">PluginStatus.kill()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.plugin"><code class="docutils literal notranslate"><span class="pre">PluginStatus.plugin</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.status"><code class="docutils literal notranslate"><span class="pre">PluginStatus.status</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.stdout"><code class="docutils literal notranslate"><span class="pre">PluginStatus.stdout</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.version"><code class="docutils literal notranslate"><span class="pre">PluginStatus.version</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.wait"><code class="docutils literal notranslate"><span class="pre">PluginStatus.wait()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-2">Accessing the previous plugin runs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.history"><code class="docutils literal notranslate"><span class="pre">history()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-3">The <code class="docutils literal notranslate"><span class="pre">UserData</span></code> class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.UserData"><code class="docutils literal notranslate"><span class="pre">UserData</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.UserData.add"><code class="docutils literal notranslate"><span class="pre">UserData.add()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.UserData.delete"><code class="docutils literal notranslate"><span class="pre">UserData.delete()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.UserData.index"><code class="docutils literal notranslate"><span class="pre">UserData.index()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.UserData.user_dir"><code class="docutils literal notranslate"><span class="pre">UserData.user_dir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overriding-or-using-a-freva-configuration">Overriding or using a freva configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.config"><code class="docutils literal notranslate"><span class="pre">config</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.config.db_reloaded"><code class="docutils literal notranslate"><span class="pre">config.db_reloaded</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, DKRZ.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.5.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>
