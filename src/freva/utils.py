@@ -33,7 +33,8 @@ try:
 except ImportError:  # pragma: no cover
     get_python = lambda: None  # pragma: no cover
 
-import django.db
+from django.conf import settings as django_settings
+from django.core.exceptions import ImproperlyConfigured
 import lazy_import
 import nbclient
 import nbformat
@@ -619,38 +620,12 @@ class config:
         self._config_file = Path(config_file).expanduser().absolute()
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(self._config_file)
         cfg.reloadConfiguration(self._config_file)
-        self._reload_db_connection()
         pm.reload_plugins()
         try:
             if django_settings.DATABASES:
                 self.db_reloaded[0] = True
         except (ImproperlyConfigured, AttributeError):
             pass
-
-    def _reload_db_connection(self):
-        self._db_settings["DATABASES"] = {
-            "default": {
-                "ENGINE": "django.db.backends.mysql",
-                "CONN_HEALTH_CHECKS": True,
-                "CONN_MAX_AGE": 0,
-                "NAME": cfg.get(cfg.DB_DB),
-                "USER": cfg.get(cfg.DB_USER),
-                "PASSWORD": cfg.get(cfg.DB_PASSWD),
-                "HOST": cfg.get(
-                    cfg.DB_HOST
-                ),  # Or an IP Address that your DB is hosted on
-                "PORT": cfg.get(str(cfg.DB_PORT), "3306"),
-            }
-        }
-        lazy_import.lazy_module(
-            "evaluation_system.settings.database"
-        ).SETTINGS = self._db_settings
-        django.db.connections.databases["default"] = self._db_settings
-        django.db.connections["default"].close()
-        print(django.db.connections.databases["default"])
-        # import django
-
-        django.setup()
 
     def __enter__(self) -> "config":
         return self
@@ -663,6 +638,5 @@ class config:
     ) -> None:
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
         cfg.reloadConfiguration(self._original_config_env)
-        self._reload_db_connection()
         pm.reload_plugins()
         self.db_reloaded[0] = False
