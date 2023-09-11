@@ -615,7 +615,6 @@ class Futures:
             **variables,
         )
         notebook = nbp.replace_definitions(notebook, other_params, tag="parameters")
-        Path("foo.ipynb").write_text(json.dumps(notebook, indent=3))
         # The hash values from before adding the hash and after adding the
         # hash have to be the same, lets perform a smoke test:
         if facets["future_id"] != cls._notebook_to_hash(notebook):

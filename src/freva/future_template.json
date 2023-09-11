@@ -61,7 +61,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "res.wait()\n",
+    "# res.wait()\n",
     "output = res.get_result_paths()\n",
     "Futures.from_existing_code_hash(future_id).add_data(\n",
     "    project,\n",
