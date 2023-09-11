@@ -2,12 +2,14 @@
 the freva data stack."""
 
 from __future__ import annotations
-from datetime import date
+
 import os
+from datetime import date
 from pathlib import Path
-from typing import cast, Any, Collection, Generator, Iterator, Union
+from typing import Any, Collection, Generator, Iterator, Union, cast
 
 import lazy_import
+
 from evaluation_system.misc import config
 from evaluation_system.misc.exceptions import ConfigurationException
 

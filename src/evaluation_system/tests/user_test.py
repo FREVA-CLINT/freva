@@ -3,11 +3,11 @@ Created on 17.5.2016
 
 @author: Sebastian Illing
 """
-import subprocess
 import os
-from pathlib import Path
-import tempfile
 import shutil
+import subprocess
+import tempfile
+from pathlib import Path
 
 import pytest
 
@@ -51,8 +51,8 @@ def test_dummy_user(temp_user, dummy_settings, dummy_env):
 
 def test_getters(dummy_settings, dummy_env):
     """Test the object creation and some basic return functions"""
-    from evaluation_system.model.user import User
     from evaluation_system.misc import config
+    from evaluation_system.model.user import User
     from evaluation_system.tests.mocks.dummy import DummyUser
 
     try:
@@ -128,8 +128,8 @@ def test_directory_creation2(temp_user, dummy_env):
 
 
 def test_central_directory_Creation(temp_dir, dummy_settings, dummy_env):
-    from evaluation_system.tests.mocks.dummy import DummyUser
     from evaluation_system.misc import config
+    from evaluation_system.tests.mocks.dummy import DummyUser
 
     try:
         config._config[config.BASE_DIR_LOCATION] = str(temp_dir)

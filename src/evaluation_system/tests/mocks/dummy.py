@@ -1,22 +1,22 @@
-import tempfile
-import shutil
-from pathlib import Path
-from subprocess import run, PIPE
 import os
+import shutil
+import tempfile
 import time
+from pathlib import Path
+from subprocess import PIPE, run
 
-from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.api.parameters import (
-    ParameterDictionary,
-    Integer,
-    Float,
-    String,
-    InputDirectory,
     Directory,
+    Float,
+    InputDirectory,
+    Integer,
+    ParameterDictionary,
+    String,
 )
-
-from evaluation_system.model.user import User
+from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.model.db import UserDB
+from evaluation_system.model.user import User
+from freva import logger
 
 
 class DummyPlugin(PluginAbstract):
@@ -47,12 +47,12 @@ class DummyPlugin(PluginAbstract):
     def run_tool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)
         num = config_dict.get("other", 1.4)
+        print(f"Dummy tool was run with: {config_dict}")
         if num < 0:
             time.sleep(-num)
         tool_path = Path(__file__).parent / "plugin_env" / "bin" / "python"
         res = run(["which", "python"], stdout=PIPE, stderr=PIPE)
         assert "plugin_env" in os.environ["PATH"]
-        print(f"Dummy tool was run with: {config_dict}")
         return {
             "/tmp/dummyfile1": dict(type="plot"),
             "/tmp/dummyfile2": dict(type="data"),

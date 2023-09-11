@@ -1,19 +1,19 @@
-from collections import namedtuple
-from configparser import ConfigParser, ExtendedInterpolation
 import datetime
-from getpass import getuser
 import os
-from pathlib import Path
 import shutil
 import socket
-from tempfile import TemporaryDirectory, NamedTemporaryFile
 import time
+from collections import namedtuple
+from configparser import ConfigParser, ExtendedInterpolation
+from getpass import getuser
+from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 import django
-from django.conf import settings
+import mock
 import pytest
 import toml
-import mock
+from django.conf import settings
 
 
 class mock_datetime:
@@ -27,7 +27,7 @@ class mock_datetime:
 
 
 def get_config():
-    from .mocks import TEST_EVAL, TEST_DRS
+    from .mocks import TEST_DRS, TEST_EVAL
 
     test_cfg = ConfigParser(interpolation=ExtendedInterpolation())
     test_cfg.read_string(TEST_EVAL)
@@ -111,6 +111,11 @@ def dummy_key(time_mock):
 @pytest.fixture(scope="session")
 def dummy_env(time_mock, dummy_key):
     yield from mock_config(dummy_key)
+
+
+@pytest.fixture(scope="function")
+def mock_env(time_mock, dummy_key):
+    yield from mock_config(dummy_key, patch_env=False)
 
 
 @pytest.fixture(scope="session")
@@ -201,10 +206,10 @@ def dummy_solr(dummy_env, dummy_settings):
     )
     server.solr_port = dummy_settings.get("solr.port")
     server.solr_host = dummy_settings.get("solr.host")
-    from evaluation_system.model.solr_core import SolrCore
-    from evaluation_system.model.solr import SolrFindFiles
-    from evaluation_system.model.file import DRSFile
     from evaluation_system.misc.utils import supermakedirs
+    from evaluation_system.model.file import DRSFile
+    from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.model.solr_core import SolrCore
 
     server.all_files = SolrCore(
         core="files", host=server.solr_host, port=server.solr_port
@@ -262,8 +267,8 @@ def dummy_solr(dummy_env, dummy_settings):
 @pytest.fixture(scope="module")
 def django_user(dummy_settings, dummy_env):
     from django.contrib.auth.models import User
+
     from evaluation_system.model.history.models import History
-    from django.contrib.auth.models import User
 
     user_django, created = User.objects.get_or_create(username=getuser())
     yield user_django
@@ -297,8 +302,9 @@ def dummy_history(dummy_env, dummy_settings):
 
 @pytest.fixture(scope="module")
 def test_user(dummy_env, dummy_settings, config_dict):
-    from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
+
+    from evaluation_system.model.history.models import History
 
     user = User.objects.create_user(username="test_user2", password="123")
     hist = History.objects.create(
@@ -317,8 +323,8 @@ def test_user(dummy_env, dummy_settings, config_dict):
 
 @pytest.fixture(scope="function")
 def temp_user(dummy_settings):
-    from evaluation_system.tests.mocks.dummy import DummyUser
     import evaluation_system.api.plugin_manager as pm
+    from evaluation_system.tests.mocks.dummy import DummyUser
 
     with DummyUser(random_home=True, pw_name=getuser()) as user:
         yield user
@@ -326,7 +332,12 @@ def temp_user(dummy_settings):
 
 @pytest.fixture(scope="function")
 def dummy_user(
-    dummy_env, dummy_settings, config_dict, dummy_plugin, dummy_history, temp_user
+    dummy_env,
+    dummy_settings,
+    config_dict,
+    dummy_plugin,
+    dummy_history,
+    temp_user,
 ):
     from django.contrib.auth.models import User
 
@@ -410,9 +421,10 @@ def root_path_with_empty_config(dummy_env):
 
 @pytest.fixture(scope="module")
 def hist_obj(django_user):
-    from evaluation_system.model.history.models import History
     from django.contrib.auth.models import User
+
     from evaluation_system.misc import config
+    from evaluation_system.model.history.models import History
 
     yield History.objects.create(
         status=History.processStatus.running,

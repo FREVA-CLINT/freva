@@ -1,11 +1,13 @@
 """Module to encapsulates the access to repositories."""
 from __future__ import annotations
+
+import os
 from contextlib import contextmanager
 from pathlib import Path
-import os
 from typing import Iterator
 
 import git
+
 from evaluation_system.misc import logger
 
 __version_cache: dict[str, tuple[str, str]] = {}

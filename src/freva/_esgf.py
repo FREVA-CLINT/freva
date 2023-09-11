@@ -1,11 +1,13 @@
 """Module to access the esgf data catalogue."""
 from __future__ import annotations
+
 from pathlib import Path
-from typing import Union, Optional, overload
-from typing_extensions import Literal
+from typing import Optional, Union, overload
 
 import lazy_import
+from typing_extensions import Literal
 
+from .utils import handled_exception
 
 P2P = lazy_import.lazy_class("evaluation_system.model.esgf.P2P")
 
@@ -23,6 +25,7 @@ def esgf(datasets: Literal[False], show_facet: str) -> dict[str, list[str]]:
     ...
 
 
+@handled_exception
 def esgf(
     datasets: bool = False,
     show_facet: Optional[Union[str, list[str]]] = None,
@@ -94,7 +97,8 @@ def esgf(
         if len(query.split(",")) > 1:
             # we get multiple fields queried, return in a tructured fashion
             return p2p.show(
-                p2p.get_datasets(fields=query, **search_constraints), return_str=True
+                p2p.get_datasets(fields=query, **search_constraints),
+                return_str=True,
             )
         else:
             # if only one then return directly

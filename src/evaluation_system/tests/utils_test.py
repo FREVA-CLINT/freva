@@ -4,15 +4,16 @@ Created on 17.05.2016
 @author: Sebatian Illing
 """
 
-from datetime import datetime
-import pytest
 import os
+from datetime import datetime
+
+import pytest
 
 
 def test_time_ranges():
     from evaluation_system.misc.utils import (
-        get_solr_time_range,
         convert_str_to_timestamp,
+        get_solr_time_range,
     )
 
     assert get_solr_time_range("fx") == "[0 TO 9999]"

@@ -1,15 +1,16 @@
 """Provide different utilities that does not depend on any other internal package."""
 from __future__ import annotations
+
 import copy
-from copy import deepcopy
-from difflib import get_close_matches
 import errno
 import os
-from re import split
 import shlex
-from subprocess import run, PIPE
+from copy import deepcopy
+from difflib import get_close_matches
+from re import split
 from string import Template
-from typing import Any, Dict, Iterable, List, TextIO, IO, Union
+from subprocess import PIPE, run
+from typing import IO, Any, Dict, Iterable, List, TextIO, Union
 
 
 def run_cmd(cmd: str, **kwargs: Any) -> str:

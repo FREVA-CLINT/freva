@@ -6,23 +6,18 @@ plugin wrapper class.
 
 """
 from __future__ import annotations
-from collections import defaultdict
+
+import html
 import json
 import re
 import textwrap
-from typing import Any, Optional, Union, Type
 import warnings
+from collections import defaultdict
+from typing import Any, Optional, Type, Union
 
-from evaluation_system.misc.utils import (
-    find_similar_words,
-    PrintableList,
-    initOrder,
-)
 from evaluation_system.misc import config
-from evaluation_system.misc.exceptions import (
-    ValidationError,
-    deprecated_method,
-)
+from evaluation_system.misc.exceptions import ValidationError, deprecated_method
+from evaluation_system.misc.utils import PrintableList, find_similar_words, initOrder
 from evaluation_system.model.plugins.models import Parameter
 
 ParameterBaseType = Union[str, int, float, bool, PrintableList]
@@ -277,7 +272,7 @@ class ParameterType(initOrder):
         """
         if value is None:
             if self.default is None:
-                return "<undefined>"
+                return "<null>"
             value = self.default
         return self.print_format % value
 
@@ -538,13 +533,15 @@ class ParameterDictionary(dict):
             self.validate_errors(param_config, raise_exception=True)
         return param_config
 
-    def get_help(self, width: int = 80) -> str:
+    def get_help(self, width: int = 80, notebook: bool = False) -> str:
         """Render plugin help string to be displayed in a cli context.
 
         Parameters
         ----------
-        width: int, default 80
+        width: int, default: 80
             Column width used to wrap the help text.
+        notebook: bool, default: False
+            Optimise output for jupyter notebooks
 
         Returns
         -------
@@ -562,19 +559,50 @@ class ParameterDictionary(dict):
                 subsequent_indent=" " * (max_size + 1),
                 replace_whitespace=False,
             )
-            help_str.append("Options:")
+            if notebook:
+                help_str.append(
+                    (
+                        '<table><tr><th style="text-align: left;">Option</th>'
+                        '<th style="text-align: left;">Description</th></tr>'
+                    )
+                )
+                split_str = ""
+            else:
+                help_str.append("Options:")
+                split_str = "\n"
 
             for key, param in self._params.items():
                 param_format = "%%-%ss (default: %%s)" % (max_size)
-                help_str.append(param_format % (key, param.format()))
+                param_str = param.format()
+                text_color = ""
                 if param.mandatory:
-                    help_str[-1] = help_str[-1] + " [mandatory]"
-
-                # wrap it properly
-                help_str.append(
-                    "\n".join(wrapper.fill(line) for line in param.help.splitlines())
+                    if not notebook:
+                        param_str += " [mandatory]"
+                    else:
+                        text_color = "color: red;"
+                param_desc = split_str.join(
+                    wrapper.fill(l) for l in param.help.splitlines()
                 )
-        return "\n".join(help_str)
+                if not notebook:
+                    help_str.append(param_format % (key, param_str))
+                    help_str.append(param_desc)
+                else:
+                    help_str.append(
+                        (
+                            '<tr><td style="text-align: left;{}">'
+                            "{}</td>"
+                            '<td style="text-align: left;">'
+                            "{} (default: {})</td></tr>"
+                        ).format(
+                            text_color,
+                            key,
+                            param_desc,
+                            param_str.replace("$", "\$").replace("_", "\_"),
+                        )
+                    )
+        if notebook:
+            help_str.append("</table>")
+        return split_str.join(help_str)
 
     def synchronize(self, tool: str) -> None:
         """Synchronize all entries for a plugin configuration of a given tool

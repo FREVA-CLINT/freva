@@ -1,6 +1,7 @@
 import os
-import pytest
+
 import mock
+import pytest
 
 SUBCOMMANDS = ("databrowser", "esgf", "user-data", "history", "plugin")
 
@@ -35,8 +36,8 @@ def test_main_complete(dummy_env, capsys):
 
 
 def test_subcommand_help(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     for subcmd in SUBCOMMANDS:
         with pytest.raises(SystemExit):
@@ -69,10 +70,10 @@ def test_subcommand_help(dummy_env, capsys):
 
 
 def test_databrowser(dummy_env, capsys, dummy_solr):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
-    main_cli(["databrowser", "--all-facets"])
+    main_cli(["databrowser", "--facet", "all"])
     facets = capsys.readouterr().out
     for shell in ("bash", "zsh", "fish"):
         print_choices(["--shell", shell, "--strip", "freva", "databrowser"])
@@ -93,9 +94,9 @@ def test_databrowser(dummy_env, capsys, dummy_solr):
 
 
 def test_plugin(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva._plugin import _write_plugin_cache
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     _write_plugin_cache()
 
@@ -122,8 +123,8 @@ def test_plugin(dummy_env, capsys):
 
 
 def test_wrong_choice(dummy_env, capsys):
-    from freva.cli.utils import print_choices
     from freva.cli import main as main_cli
+    from freva.cli.utils import print_choices
 
     for shell in ("bash", "zsh", "fish"):
         for cmd in (["solr"], ["plugin", "nplg"]):

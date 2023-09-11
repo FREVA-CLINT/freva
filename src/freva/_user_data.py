@@ -1,18 +1,19 @@
 """Update user data in the apache solr data search server."""
 
 from __future__ import annotations
-from dataclasses import dataclass
+
 import logging
-from pathlib import Path
 import os
 import shutil
-from typing import Callable, Optional, Union
 import warnings
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Optional, Union
 
 import lazy_import
+
 from evaluation_system.misc import logger
 from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
-
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
@@ -21,6 +22,7 @@ DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader"
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
+from .utils import handled_exception
 
 __all__ = ["UserData"]
 
@@ -40,22 +42,28 @@ class UserData:
             config.reloadConfiguration()
             return get_output_directory() / f"user-{User().getName()}"
 
-    def _validate_user_dirs(self, *crawl_dirs: os.PathLike) -> tuple[Path, ...]:
+    def _validate_user_dirs(
+        self, *crawl_dirs: os.PathLike, **kwargs: bool
+    ) -> tuple[Path, ...]:
         root_path = self.user_dir
         user_paths: tuple[Path, ...] = ()
+        _allow_others = kwargs.get("_allow_others", False)
         for crawl_dir in crawl_dirs or (root_path,):
             crawl_dir = Path(crawl_dir or root_path).expanduser().absolute()
             try:
                 _ = crawl_dir.relative_to(root_path)
-            except ValueError as error:
-                raise ValidationError(
-                    f"You are only allowed to crawl data in {root_path}"
-                ) from error
+            except ValueError:
+                if _allow_others is False:
+                    raise ValidationError(
+                        f"You are only allowed to crawl data in {root_path}"
+                    )
             user_paths += (crawl_dir,)
         return user_paths
 
     @staticmethod
-    def _set_add_method(how: str) -> Callable[[os.PathLike, os.PathLike], None]:
+    def _set_add_method(
+        how: str,
+    ) -> Callable[[os.PathLike, os.PathLike], None]:
         choices = "copy, link, move, symlink, cp, ln, mv"
         if how in ["copy", "cp"]:
             return shutil.copy
@@ -67,6 +75,7 @@ class UserData:
             return os.link
         raise ValueError(f"Invalid Method: valid methods are {choices}")
 
+    @handled_exception
     def add(
         self,
         product: str,
@@ -172,9 +181,10 @@ class UserData:
             "time_frequency",
             "ensemble",
         )
+        _project = defaults.pop("_project", None)
         search_keys = {k: defaults[k] for k in facets if defaults.get(k)}
         search_keys["product"] = product
-        search_keys["project"] = f"user-{User().getName()}"
+        search_keys["project"] = _project or f"user-{User().getName()}"
         search_keys["realm"] = "user_data"
         search_keys.setdefault("ensemble", "r0i0p0")
         for path in paths:
@@ -191,8 +201,9 @@ class UserData:
         if not crawl_dirs:
             warnings.warn("No files found", category=UserWarning)
             return
-        self.index(*crawl_dirs)
+        self.index(*crawl_dirs, _allow_others=_project is not None)
 
+    @handled_exception
     def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
         """Delete data from the databrowser.
 
@@ -234,11 +245,13 @@ class UserData:
                 if delete_from_fs:
                     file.unlink()
 
+    @handled_exception
     def index(
         self,
         *crawl_dirs: os.PathLike,
         dtype: str = "fs",
         continue_on_errors: bool = False,
+        **kwargs: bool,
     ) -> None:
         """Index and add user output data to the databrowser.
 
@@ -278,7 +291,7 @@ class UserData:
             logger.setLevel(logging.ERROR)
             print("Status: crawling ...", end="", flush=True)
             solr_core = SolrCore(core="latest")
-            for crawl_dir in self._validate_user_dirs(*crawl_dirs):
+            for crawl_dir in self._validate_user_dirs(*crawl_dirs, **kwargs):
                 data_reader = DataReader(crawl_dir)
                 solr_core.load_fs(
                     crawl_dir,

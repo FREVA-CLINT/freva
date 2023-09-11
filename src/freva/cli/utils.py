@@ -1,17 +1,19 @@
 """Collection of utilities of the freva command line argument parser."""
 
 from __future__ import annotations
+
 import abc
 import argparse
-from copy import copy
 import logging
 import os
-from pathlib import Path
 import sysconfig
+from copy import copy
+from pathlib import Path
 from typing import Optional, Type
 
 import lazy_import
-from evaluation_system.misc import logger
+
+from evaluation_system.misc import FrevaLogger, logger
 
 freva = lazy_import.lazy_module("freva")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
@@ -119,6 +121,7 @@ class BaseParser(metaclass=abc.ABCMeta):
         parser: Optional[argparse.ArgumentParser] = None,
         command: str = "freva",
     ):
+        self.logger.is_cli = True
         self.parser = parser or argparse.ArgumentParser(
             prog=command,
             description=self.desc,
@@ -126,7 +129,7 @@ class BaseParser(metaclass=abc.ABCMeta):
         )
 
     @property
-    def logger(self) -> logging.Logger:
+    def logger(self) -> FrevaLogger:
         """Use evaluation_system logger in all classes using ths class."""
         return logger
 
@@ -137,9 +140,13 @@ class BaseParser(metaclass=abc.ABCMeta):
 
     def parse_args(self, argv: Optional[list[str]] = None) -> argparse.Namespace:
         """Parse the command line arguments."""
-        args, other_args = self.parser.parse_known_args(argv)
+        args, unknown = self.parser.parse_known_args(argv)
+        for arg in unknown:
+            if arg.startswith("-"):
+                self.parser.error(f"Unknown option: {arg}")
         self.kwargs = {k: v for (k, v) in args._get_kwargs() if k != "apply_func"}
-        self.kwargs["other_args"] = other_args
+        if unknown:
+            self.kwargs["unknown"] = unknown
         self.set_debug(self.kwargs.pop("debug", False))
         return args
 
@@ -265,7 +272,7 @@ class BaseCompleter:
             if len(arg.split("=")) == 2:
                 facet_args.append(arg)
         facets = BaseCompleter.arg_to_dict(facet_args)
-        search = freva.databrowser(attributes=False, all_facets=True, **facets)
+        search = freva.facet_search(**facets)
         choices = {}
         for att, values in search.items():
             if att not in facets:
@@ -402,6 +409,7 @@ class BaseCompleter:
                 "facets",
                 "tool-name",
                 "options",
+                "tool-options",
                 "==suppress==",
                 "-h",
             ):

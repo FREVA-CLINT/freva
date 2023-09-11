@@ -1,17 +1,19 @@
 from __future__ import annotations
+
+import abc
+import os
+import re
+import shlex
+import string
+import subprocess
+import sys
+import tempfile
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import datetime
-import os
 from pathlib import Path
-import re
-import shlex
-import subprocess
-import sys
-import string
-import tempfile
-import abc
-from typing import Any, Iterator, ClassVar, Optional, Union
+from typing import Any, ClassVar, Iterator, Optional, Union
+
 from evaluation_system.misc import logger
 
 
@@ -193,6 +195,10 @@ class JobStatus:
     error_msg: str, default: ""
         Error message fo the job submisstion if
         `submit_status` is != 0.
+    job_script: str, default: ""
+        The content of the batch job script.
+    workload_manager: str, default: local
+        The name of the scheduling system.
     """
 
     job_id: str
@@ -200,6 +206,8 @@ class JobStatus:
     _std_out: Union[str, os.PathLike]
     submit_status: int = 0
     error_msg: str = ""
+    job_script: str = ""
+    workload_manager: str = "local"
 
     def __post_init__(self) -> None:
         self.std_out = Path(self._std_out).expanduser().absolute()
@@ -233,9 +241,7 @@ class Job(abc.ABC):
     MoabCluster
     """
 
-    _script_template = (
-        "%(shebang)s\n\n%(job_header)s\n%(env_header)s\n\n%(worker_command)s"
-    )
+    _script_template = "%(shebang)s\n\n%(job_header)s\n%(env_header)s\n\n%(worker_command)s%(epilogue)s"
 
     # Following class attributes should be overridden by extending classes.
     submit_command: ClassVar[str] = ""
@@ -251,6 +257,7 @@ class Job(abc.ABC):
         local_directory: Optional[Union[str, Path]] = None,
         env_extra: Optional[list[str]] = None,
         header_skip: Optional[list[str]] = None,
+        epilogue: Optional[list[str]] = None,
         log_directory: Optional[Union[str, Path]] = None,
         memory: Optional[Union[int, str]] = None,
         job_cpu: int = 1,
@@ -281,6 +288,7 @@ class Job(abc.ABC):
         self.name = self.job_name = name or "worker"
         self.shebang = shebang
         self._env_header = "\n".join(filter(None, env_extra))
+        self._epilogue = "\n".join(filter(None, epilogue or []))
         self.header_skip = set(header_skip or [])
         self.log_directory = log_directory
         if self.log_directory is not None:
@@ -302,6 +310,7 @@ class Job(abc.ABC):
             "job_header": header,
             "env_header": self._env_header,
             "worker_command": self._command_template,
+            "epilogue": self._epilogue,
         }
         return self._script_template % pieces
 

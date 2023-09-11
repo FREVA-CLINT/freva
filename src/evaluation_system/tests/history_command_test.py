@@ -3,12 +3,13 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
-import os
 import datetime
+import json
+import os
 import pwd
 import sys
-import pytest
 
+import pytest
 
 from evaluation_system.tests import run_cli
 from evaluation_system.tests.mocks.dummy import DummyPlugin
@@ -31,7 +32,10 @@ def test_freva_history_method(dummy_history, dummy_user):
     for i in range(10):
         hist_ids += [
             dummy_user.user.getUserDB().storeHistory(
-                tool=DummyPlugin(), config_dict=config_dict, status=0, uid=udata.pw_name
+                tool=DummyPlugin(),
+                config_dict=config_dict,
+                status=0,
+                uid=udata.pw_name,
             )
         ]
     hist = history()
@@ -50,8 +54,11 @@ def test_freva_history_method(dummy_history, dummy_user):
 
 
 def test_history_cmd(capsys, dummy_history, dummy_user):
+    import freva
+    from freva import logger
     from freva.cli.history import main as run
 
+    logger.setLevel(20)
     hist_ids = []
     uid = os.getuid()
     udata = pwd.getpwuid(uid)
@@ -77,6 +84,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     assert output_str.count("dummyplugin") == 10
     assert output_str.count("\n") == 10
     # test limit output
+    logger.setLevel(20)
     run_cli(["history", "--limit=3"])
     output_str = capsys.readouterr().out
     assert output_str.count("dummyplugin") == 3
@@ -101,3 +109,7 @@ def test_history_cmd(capsys, dummy_history, dummy_user):
     ]
     for string in check_string:
         assert string in output_str
+    run_cli(["history", f"--entry-ids={hist_ids[0]}", "--json"])
+    output = json.loads(capsys.readouterr().out)
+    assert isinstance(output, list)
+    assert len(output) == 1

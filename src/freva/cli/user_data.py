@@ -1,15 +1,21 @@
 from __future__ import annotations
+
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any, Optional, Type
 
 import lazy_import
+import rich
+
 from evaluation_system import __version__
 from evaluation_system.misc import logger
+
 from .utils import BaseParser, SubCommandParser
 
 UserData = lazy_import.lazy_class("freva.UserData")
+freva = lazy_import.lazy_module("freva")
+
 from evaluation_system.misc.exceptions import ValidationError
 
 
@@ -66,14 +72,11 @@ class IndexData(BaseParser):
             if args.debug:
                 raise e
             try:
-                print(
-                    f"{e.__module__}: " f"{e.__str__()}",
-                    flush=True,
-                    file=sys.stderr,
-                )
+                msg = f"{e.__module__}: " f"{e.__str__()}"
             except AttributeError:
-                print(f"{e.__repr__()}", flush=True, file=sys.stderr)
-            sys.exit(1)
+                msg = f"{e.__repr__()}"
+            logger.error(msg)
+            raise SystemExit from e
 
 
 class AddData(BaseParser):
@@ -115,6 +118,9 @@ class AddData(BaseParser):
             default=False,
         )
         self.parser.add_argument(
+            "--project", type=str, default=None, help=argparse.SUPPRESS
+        )
+        self.parser.add_argument(
             "--experiment",
             type=str,
             default=None,
@@ -150,6 +156,7 @@ class AddData(BaseParser):
             ),
         )
         self.parser.add_argument(
+            "--time-frequency",
             "--time_frequency",
             type=str,
             default=None,
@@ -166,6 +173,22 @@ class AddData(BaseParser):
                 "Set the <ensemble> information if they can't be found in the "
                 "meta data"
             ),
+        )
+        self.parser.add_argument(
+            "--cmor-table",
+            "--cmor_table",
+            type=str,
+            default=None,
+            help=(
+                "Set the <cmor-table> information if they can't be found in the "
+                "meta data"
+            ),
+        )
+        self.parser.add_argument(
+            "--realm",
+            type=str,
+            default=None,
+            help=("Set the <realm> information if they can't be found in the metadata"),
         )
         self.parser.add_argument(
             "--debug",
@@ -188,8 +211,10 @@ class AddData(BaseParser):
             "variable",
             "time_frequency",
             "ensemble",
+            "realm",
         )
         defaults = {k: getattr(args, k) for k in facets if getattr(args, k)}
+        defaults["_project"] = kwargs.pop("project", None)
         user_data = UserData()
         try:
             user_data.add(
@@ -285,5 +310,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
+    except Exception as error:  # pragma: no cover
+        freva.utils.exception_handler(error, True)  # pragma: no cover

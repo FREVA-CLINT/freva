@@ -1,12 +1,16 @@
 from __future__ import annotations
+
 import argparse
 import sys
 from typing import Any, Optional
 
 import lazy_import
+import rich
+
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser, BaseCompleter
+
+from .utils import BaseCompleter, BaseParser
 
 freva = lazy_import.lazy_module("freva")
 
@@ -29,12 +33,6 @@ class Cli(BaseParser):
             help="Select not only the latest version.",
         )
         self.parser.add_argument(
-            "--relevant-only",
-            default=False,
-            action="store_true",
-            help="Show only search with results >1 possible values",
-        )
-        self.parser.add_argument(
             "--batch-size",
             default=5000,
             type=int,
@@ -45,25 +43,6 @@ class Cli(BaseParser):
             default=False,
             action="store_true",
             help="Show the number of files for each search result",
-        )
-        self.parser.add_argument(
-            "--attributes",
-            default=False,
-            action="store_true",
-            help=(
-                "Retrieve all possible attributes for the current "
-                "search instead of the files. Deprecated, to be removed in "
-                "v2304.0.0"
-            ),
-        )
-        self.parser.add_argument(
-            "--all-facets",
-            default=False,
-            action="store_true",
-            help=(
-                "retrieve all facets (attributes & values) instead of "
-                "the files (deprecated, to be removed in v2304.0.0.0)"
-            ),
         )
         self.parser.add_argument(
             "--facet",
@@ -106,25 +85,15 @@ class Cli(BaseParser):
     @staticmethod
     def run_cmd(
         args: argparse.Namespace,
-        other_args: Optional[list[str]] = None,
         **kwargs: Optional[Any],
     ) -> None:
         """Call the databrowser command and print the results."""
         facets: dict[str, Any] = BaseCompleter.arg_to_dict(args.facets, append=True)
-        if args.relevant_only:
-            logger.warning(
-                "The relevant-only flag will be made deprecated",
-            )
-        if args.attributes:
-            logger.warning(
-                "The attributes flag will be made deprecated",
-            )
         facet_limit = kwargs.pop("facet_limit")
         for key in (
             "facets",
-            "all_facets",
+            "facet",
             "count",
-            "attributes",
             "relevant_only",
             "batch_size",
         ):
@@ -133,20 +102,10 @@ class Cli(BaseParser):
             if len(values) == 1:
                 facets[key] = values[0]
         merged_args: dict[str, Any] = {**kwargs, **facets}
-        if args.all_facets:
-            logger.warning(
-                "The all-facets flag will be made deprecated use"
-                "user --facet '*' or --facet all instead"
-            )
-            args.facet = "*"
         if args.count:
-            _ = merged_args.pop("facet", "")
             out = freva.count_values(facet=args.facet, **merged_args)
         elif args.facet:
-            _ = merged_args.pop("facet", "")
             out = freva.facet_search(facet=args.facet, **merged_args)
-        elif args.attributes:
-            out = freva.databrowser(attributes=True, **merged_args)
         else:
             out = freva.databrowser(batch_size=args.batch_size, **merged_args)
         # flush stderr in case we have something pending
@@ -171,9 +130,6 @@ class Cli(BaseParser):
                     keys += ",..."
                 print(f"{att}: {keys}", flush=True)
             return
-        if args.attributes:
-            print(", ".join(out), flush=True)
-            return
         if args.count:
             print(out, flush=True)
         else:
@@ -194,5 +150,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
+    except Exception as error:  # pragma: no cover
+        freva.utils.exception_handler(error, True)  # pragma: no cover

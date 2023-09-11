@@ -2,10 +2,16 @@
 
 import argparse
 import sys
-from typing import Optional, List
+from typing import List, Optional
+
+import lazy_import
+from rich import print
 
 from evaluation_system import __version__
+
 from .utils import SubCommandParser
+
+freva = lazy_import.lazy_module("freva")
 
 COMMAND = "freva"
 
@@ -41,8 +47,14 @@ class ArgParser(SubCommandParser):
         try:
             args.apply_func(args, **self.kwargs)
         except KeyboardInterrupt:
-            print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+            print(
+                "[b]KeyboardInterrupt, exiting[/b]",
+                file=sys.stderr,
+                flush=True,
+            )
             sys.exit(130)
+        except Exception as error:  # pragma: no cover
+            freva.utils.exception_handler(error, True)  # pragma: no cover
 
 
 def main(argv: Optional[List[str]] = None) -> None:

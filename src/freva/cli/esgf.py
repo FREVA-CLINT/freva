@@ -1,11 +1,15 @@
 from __future__ import annotations
+
 import argparse
-from pathlib import Path
 import sys
-from typing import Optional, Any, cast, Union
+from pathlib import Path
+from typing import Any, Optional, Union, cast
 
 import lazy_import
+import rich
+
 from evaluation_system import __version__
+
 from .utils import BaseParser
 
 freva = lazy_import.lazy_module("freva")
@@ -152,5 +156,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        rich.print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
         sys.exit(130)
+    except Exception as error:  # pragma: no cover
+        freva.utils.exception_handler(error, True)  # pragma: no cover

@@ -1,9 +1,10 @@
 """Submit job to the sge workload manager."""
 from __future__ import annotations
+
 import logging
+from typing import ClassVar, Optional, Union
 
 from .core import Job
-from typing import ClassVar, Optional, Union
 
 logger = logging.getLogger(__name__)
 

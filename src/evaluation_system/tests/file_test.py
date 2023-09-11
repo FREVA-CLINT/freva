@@ -4,9 +4,10 @@ Created on 31.05.2016
 @author: Sebastian Illing
 """
 import os
-from pathlib import Path
-import pytest
 import shutil
+from pathlib import Path
+
+import pytest
 
 
 def test_solr_search(dummy_solr):
