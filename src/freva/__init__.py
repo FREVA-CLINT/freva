@@ -1,27 +1,40 @@
+import logging
+import os
+import warnings
+
 from evaluation_system import __version__
-from ._user_data import UserData
-from ._databrowser import databrowser, count_values, facet_search
-from ._plugin import (
-    run_plugin,
-    list_plugins,
-    plugin_doc,
-    read_plugin_cache,
-    get_tools_list,
-)
+from evaluation_system.misc import logger
+
+from ._databrowser import count_values, databrowser, facet_search
 from ._esgf import esgf_browser, esgf_facets, esgf_datasets, esgf_download, esgf_query
 from ._history import history
-import warnings
+from ._plugin import (
+    get_tools_list,
+    list_plugins,
+    plugin_doc,
+    plugin_info,
+    read_plugin_cache,
+    run_plugin,
+)
+from ._user_data import UserData
+from .utils import PluginStatus, config, is_jupyter
 
 warnings.filterwarnings("always", category=DeprecationWarning, module="freva.*")
 
+if is_jupyter():
+    os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+    logger.setLevel(logging.WARNING)
 
 __all__ = [
+    "__version__",
+    "config",
     "UserData",
     "databrowser",
     "count_values",
     "facet_search",
     "run_plugin",
     "list_plugins",
+    "plugin_info",
     "plugin_doc",
     "esgf_browser",
     "esgf_facets",
@@ -29,4 +42,5 @@ __all__ = [
     "esgf_download",
     "esgf_query",
     "history",
+    "PluginStatus",
 ]

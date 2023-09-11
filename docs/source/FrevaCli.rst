@@ -228,16 +228,16 @@ the data). For example to see all facets that are available in the
 
 .. code:: console
 
-    freva-databrowser project=observations --all-facets
+    freva-databrowser project=observations --facet all
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "databrowser", "--all-facets"], check=True, stdout=PIPE, stderr=PIPE)
+   res = run(["freva", "databrowser", "--facet", "all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-Instead of querying all facet to you get information on certain facets only:
+Instead of querying all facets to get information on specific ones:
 
 .. code:: console
 
@@ -270,7 +270,7 @@ can be achieved by using the ``file=`` search facet:
 
 .. code:: console
 
-    freva-databrowser file=../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc --all-facets
+    freva-databrowser file=../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/ --facet all
 
 .. execute_code::
    :hide_code:
@@ -395,8 +395,34 @@ submit the previous plugin job to the computing queue:
              "vmax=5",
              "suffix=gif",
              ], check=True, stdout=PIPE, stderr=PIPE)
-   out = res.stderr.decode()
+   out = res.stdout.decode()
    print(out)
+
+
+If you want to evaluate the output of the plugin, you can use the ``--json`` flag.
+This flag converts the result of a plugin application into a json string that 
+can be processed by a json parser such as ``jq``. Consider the following 
+example (in bash/zsh) where we use the ``--json`` flag to get all the netcdf 
+output files from a plugin run.
+
+.. code:: console
+
+    files=$(freva plugin dummypluginfolders --json|jq -r '.result| keys[] | select(endswith(".nc"))')
+    echo $files
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   res = freva.run_plugin("dummypluginfolders")
+   for file in res.get_result_paths():
+      print(file)
+
+.. note::
+
+    If you use the ``--batchmode`` flag in combination with ``--json`` flag the
+    command line will wait for the batch job to finish.
+
 
 Inspecting previous analysis jobs: the ``freva-history`` command
 ----------------------------------------------------------------
@@ -429,7 +455,6 @@ Let’s get the last entry (default is 10 entries) of the ``dummyplugin`` plugin
 
    from subprocess import run, PIPE
    res = run(["freva", "history", "--limit", "1", "--plugin", "dummyplugin"], check=True, stdout=PIPE, stderr=PIPE)
-   print(res.stderr.decode())
    print(res.stdout.decode())
 
 
@@ -439,9 +464,11 @@ format.
 The entries are sorted by their ``id``. For example you can query the
 full configuration by giving the id:
 
+
 .. code:: console
 
     freva-history --entry-ids 136 --full-text
+
 
 .. execute_code::
    :hide_code:
@@ -466,6 +493,24 @@ can use the ``--return-command`` option to get the command that was used:
    from subprocess import run, PIPE
    res = run(["freva", "history", "--limit", "1", "--return-command"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
+
+
+As with the ``plugin`` subcommand, you can use the ``--json`` flag
+to make the output of the history command machine-readable, 
+and to parse its output. For example, we can query the output files
+of the last 3 plugin applications:
+
+.. code:: console
+
+    freva-history  --limit 3 --json|jq -r '.[].result | keys[]'
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   for hist in freva.history(limit=3, return_results=True):
+      for file in hist["result"].keys():
+         print(file)
 
 Managing your own datasets: the ``freva-user-data`` command
 -----------------------------------------------------------

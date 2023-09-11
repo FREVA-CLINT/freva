@@ -7,13 +7,14 @@ This package encapsulate access to a solr instance
 """
 
 from __future__ import annotations
-import urllib
-from typing import cast, Union, List, NamedTuple
-from typing_extensions import Literal
-import warnings
 
-from evaluation_system.model.solr_core import SolrCore
+import urllib
+from typing import List, NamedTuple, Union, cast
+
+from typing_extensions import Literal
+
 from evaluation_system.misc import logger, utils
+from evaluation_system.model.solr_core import SolrCore
 
 SolrResponse = NamedTuple(
     "SolrResponse",
@@ -23,12 +24,6 @@ SolrResponse = NamedTuple(
         ("exact", bool),
         ("docs", List[str]),
     ],
-)
-
-
-warnings.warn(
-    "The evaluation_system.model.solr module will be removed from v2304.0.0",
-    category=PendingDeprecationWarning,
 )
 
 
@@ -259,9 +254,6 @@ class SolrFindFiles(object):
                 "&facet=true&facet.sort=index&facet.mincount=1&facet.field="
                 + "&facet.field=".join(facets)
             )
-
-        if latest_version:  # pragma: no cover (see above)
-            query += "&group=true&group.field=file_no_version&group.facet=true"
 
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
         # TODO: why is there a language facet in the solr search?

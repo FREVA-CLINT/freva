@@ -11,25 +11,20 @@ We define two cores::
 
 """
 from __future__ import annotations
+
+import json
 import os
 import shutil
 import urllib
 import urllib.request
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Iterator, Optional, Tuple
-import warnings
 
-from evaluation_system.model.file import DRSFile
-from evaluation_system.misc import config, logger as log
+from evaluation_system.misc import config
+from evaluation_system.misc import logger as log
 from evaluation_system.misc.utils import get_solr_time_range
-from evaluation_system.misc.exceptions import CommandError
-
-warnings.warn(
-    ("The evaluation_system.model.solr_core module will be removed from " "v2304.0.0"),
-    category=PendingDeprecationWarning,
-)
+from evaluation_system.model.file import DRSFile
 
 
 class SolrCore:
@@ -121,11 +116,11 @@ class SolrCore:
             req = urllib.request.Request(query)
             response = json.loads(urllib.request.urlopen(req).read())
         except urllib.error.HTTPError as error:
-            raise ValueError("Bad databrowser request") from error
+            raise ValueError("Bad databrowser request: %s", error)
         if response["responseHeader"]["status"] != 0:
             raise ValueError(
                 "Error while accessing Core %s. Response: %s" % (self.core, response)
-            ) from error
+            )
 
         return response
 

@@ -1,6 +1,7 @@
-import pytest
-import mock
 import os
+
+import mock
+import pytest
 
 SUBCOMMANDS = ("databrowser", "esgf", "user-data", "history", "plugin")
 
@@ -22,8 +23,8 @@ def test_subcommand_help(capsys):
     from freva.cli import main as main_cli
     from freva.cli.databrowser import main as databrowser
     from freva.cli.esgf import main as esgf
-    from freva.cli.plugin import main as plugin
     from freva.cli.history import main as history
+    from freva.cli.plugin import main as plugin
     from freva.cli.user_data import main as user_data
 
     functions = (databrowser, esgf, user_data, history, plugin)

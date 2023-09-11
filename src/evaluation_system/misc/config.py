@@ -4,26 +4,28 @@
 This module manages the central configuration of the system.
 """
 from __future__ import annotations
-from typing import Optional, Sequence
 
+import hashlib
 import os
 import os.path as osp
-from pathlib import Path
-import hashlib
-import requests
-from configparser import ConfigParser, NoSectionError, ExtendedInterpolation
 import sys
 import warnings
-import toml
+from configparser import ConfigParser, ExtendedInterpolation, NoSectionError
+from pathlib import Path
+from typing import Optional, Sequence, Union
 
 import appdirs
-from evaluation_system.misc.utils import Struct, TemplateDict
-from evaluation_system.misc import (
-    logger as log,
-    CONFIG_FILE,
-    _DEFAULT_CONFIG_FILE_LOCATION,
-)
+import requests
+import toml
+
+from evaluation_system.misc import _ConfigWrapper
+from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
+from evaluation_system.misc.utils import Struct, TemplateDict
+
+CONFIG_FILE = _ConfigWrapper(
+    os.path.join(sys.prefix, "freva", "evaluation_system.conf")
+)
 
 DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch")
 """Type of directory structure that will be used to maintain state::
@@ -39,14 +41,9 @@ USER_CONFIG_FILE_LOC = osp.join(
     appdirs.user_config_dir(), "freva", "evaluation_system.conf"
 )
 if Path(USER_CONFIG_FILE_LOC).exists():
-    _DEFAULT_CONFIG_FILE_LOCATION = USER_CONFIG_FILE_LOC
+    CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
 EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
-
-_DEFAULT_DRS_CONFIG_FILE = os.environ.get(
-    "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
-    osp.abspath(osp.join(CONFIG_FILE, osp.pardir, "drs_config.toml")),
-)
 _PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
 #: config options
 BASE_DIR = "base_dir"
@@ -155,8 +152,11 @@ exclude: list[str] = ["extra_scheduler_options"]
 the history database entries."""
 
 
-def _get_public_key(project_name: str) -> str:
-    key_file = os.environ.get("PUBKEY", None) or _PUBLIC_KEY_DIR / f"{project_name}.crt"
+def _get_public_key(
+    project_name: str, config_file: Union[str, Path, None] = None
+) -> str:
+    config_ = Path(config_file or _PUBLIC_KEY_DIR / "evaluation_system.conf")
+    key_file = os.environ.get("PUBKEY", None) or config_.parent / f"{project_name}.crt"
     sha = ""
     try:
         with Path(key_file).open() as f:
@@ -187,7 +187,10 @@ def _read_secrets(
         url = f"{protocol}://{db_host}:{port}/vault/data/{sha}"
         try:
             req = requests.get(url).json()
-        except (requests.exceptions.ConnectionError, requests.exceptions.InvalidURL):
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.InvalidURL,
+        ):
             req = {}
         try:
             return req[key]
@@ -196,7 +199,7 @@ def _read_secrets(
     return None
 
 
-def reloadConfiguration() -> None:
+def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
     """Reloads the configuration.
     This can be used for reloading a new configuration from disk.
     At the present time it has no use other than setting different configurations
@@ -210,8 +213,8 @@ def reloadConfiguration() -> None:
         PLUGINS: {},
     }
 
-    config_file = os.environ.get(
-        "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
+    config_file = config_file or os.environ.get(
+        "EVALUATION_SYSTEM_CONFIG_FILE", CONFIG_FILE
     )
     log.debug("Loading configuration file from: %s" % config_file)
     if config_file and os.path.isfile(config_file):
@@ -255,14 +258,16 @@ def reloadConfiguration() -> None:
                 if len(secret_store_keys) > 0:
                     secret_store_keys += ["db.port"]
                     sha: str = _get_public_key(
-                        config_parser[CONFIG_SECTION_NAME]["project_name"]
+                        config_parser[CONFIG_SECTION_NAME]["project_name"],
+                        config_file,
                     )
                     for secret in secret_store_keys:
                         _config[secret] = _read_secrets(sha, secret, *db_hosts)
             log.debug("Configuration loaded from %s", config_file)
     else:
-        log.debug(
-            "No configuration file found in %s. Using default values.", config_file
+        log.warning(
+            "No configuration file found in %s. Using default values.",
+            config_file,
         )
 
     _config = SPECIAL_VARIABLES.substitute(_config, recursive=False)
@@ -337,7 +342,7 @@ def get_section(section_name, config_file=None):
     conf = ConfigParser(interpolation=ExtendedInterpolation())
 
     config_file = config_file or os.environ.get(
-        "EVALUATION_SYSTEM_CONFIG_FILE", _DEFAULT_CONFIG_FILE_LOCATION
+        "EVALUATION_SYSTEM_CONFIG_FILE", CONFIG_FILE
     )
     conf.read(config_file)
     try:
@@ -348,11 +353,13 @@ def get_section(section_name, config_file=None):
 
 
 def get_drs_config():
-    global _drs_config
-    if _drs_config is None:
-        drs_config = os.environ.get(
-            "EVALUATION_SYSTEM_DRS_CONFIG_FILE", str(_DEFAULT_DRS_CONFIG_FILE)
-        )
-        with open(drs_config, "r") as drs_file:
-            _drs_config = toml.load(drs_file)
+    default_drs_dir = Path(
+        os.environ.get("EVALUATION_SYSTEM_CONFIG_FILE", CONFIG_FILE)
+    ).parent
+    drs_config = os.environ.get(
+        "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
+        str(default_drs_dir / "drs_config.toml"),
+    )
+    with open(drs_config, "r") as drs_file:
+        _drs_config = toml.load(drs_file)
     return _drs_config

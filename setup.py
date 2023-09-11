@@ -61,7 +61,8 @@ def gather_completion_scripts(tempdir):
     data_files = []
     for shell, target_path in shells.items():
         comp_files = [
-            str(f.relative_to(this_dir)) for f in (COMPLETION_DIR / shell).rglob("*")
+            str(f.relative_to(this_dir))
+            for f in (COMPLETION_DIR / shell).rglob("*")
         ]
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
@@ -98,7 +99,9 @@ def get_data_files():
     files = []
     for d in dirs:
         target_dir = d.relative_to(this_dir)
-        add_files = [str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()]
+        add_files = [
+            str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()
+        ]
         if add_files:
             files.append((str(target_dir), add_files))
     files.append(("", ["deploy.py"]))
@@ -107,7 +110,9 @@ def get_data_files():
 
 entry_points = ["freva = freva.cli:main"]
 for cmd in COMMANDS:
-    entry_points.append(f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main")
+    entry_points.append(
+        f"freva-{cmd} = freva.cli.{cmd.replace('-', '_')}:main"
+    )
 setup(
     name="freva",
     version=find_version("src/evaluation_system", "__init__.py"),
@@ -144,6 +149,7 @@ setup(
         "Pillow",
         "PyPDF2!=2.10.1",
         "requests",
+        "rich",
         "toml",
         "toolz",
         "typing_extensions",
@@ -151,6 +157,9 @@ setup(
     ],
     setup_requires=["appdirs"],
     extras_require={
+        "jupyter": [
+            "ipywidgets",
+        ],
         "docs": [
             "bash_kernel",
             "cartopy",
@@ -161,6 +170,7 @@ setup(
             "ipykernel",
             "nbsphinx",
             "pint",
+            "pydata-sphinx-theme",
             "pint-xarray",
             "recommonmark",
             "sphinx",
@@ -172,7 +182,7 @@ setup(
         ],
         "test": [
             "allure-pytest",
-            "black",
+            "black[jupyter]",
             "django-stubs",
             "django-stubs-ext",
             "h5netcdf",

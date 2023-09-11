@@ -3,9 +3,10 @@ Created on 21.04.2015
 
 @author: sebastian.illing@met.fu-berlin.de
 """
-from django.db import models
-from django.contrib.auth.models import User
 import warnings
+
+from django.contrib.auth.models import User
+from django.db import models
 
 warnings.warn(
     (

@@ -21,56 +21,48 @@ With help of this API a Freva plugin can be created in ``/mnt/freva/plugin/new_p
 
 """
 from __future__ import annotations
+
 import abc
+import logging
+import os
+import re
+import shlex
+import shutil
+import socket
+import stat
+import subprocess as sub
+import sys
+import tempfile
+import textwrap
 from configparser import ConfigParser, ExtendedInterpolation
 from contextlib import contextmanager
 from datetime import datetime
 from functools import partial
-import logging
-import os
 from pathlib import Path
-import re
-import subprocess as sub
-import sys
-import stat
-import shlex
-import shutil
-import socket
-import tempfile
-import traceback
-import textwrap
 from time import time
-from typing import (
-    cast,
-    Any,
-    Dict,
-    IO,
-    Optional,
-    Union,
-    Iterator,
-    Iterable,
-    TextIO,
-)
+from typing import IO, Any, Dict, Iterable, Iterator, Optional, TextIO, Union, cast
 from uuid import uuid4
 
-
 from PyPDF2 import PdfReader
+from rich.console import Console
+from rich.file_proxy import FileProxy
+from rich.traceback import Traceback
 
-from evaluation_system.model.user import User
 import evaluation_system.model.history.models as hist_model
 import evaluation_system.model.repository as repository
-from evaluation_system.misc.utils import TemplateDict
-from evaluation_system.misc import config, logger as log
+from evaluation_system.misc import config
+from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import (
     ConfigurationException,
     deprecated_method,
     hide_exception,
 )
-
-from evaluation_system.misc.utils import PIPE_OUT
+from evaluation_system.misc.utils import PIPE_OUT, TemplateDict
 from evaluation_system.model.solr_core import SolrCore
-from .workload_manager import schedule_job, JobStatus
+from evaluation_system.model.user import User
+
 from .user_data import DataReader
+from .workload_manager import JobStatus, schedule_job
 
 __version__ = (1, 0, 0)
 
@@ -373,7 +365,6 @@ class PluginAbstract(abc.ABC):
         env_path = os.environ["PATH"]
         stdout = [sys.stdout]
         stderr = [sys.stderr]
-        log_stream_handle: Optional[logging.StreamHandler] = None
         try:
             self.plugin_output_file.touch(mode=0o2755)
         except FileNotFoundError:
@@ -383,26 +374,23 @@ class PluginAbstract(abc.ABC):
             os.environ["PATH"] = f"{self.conda_path}:{env_path}"
             if is_interactive_job is True:
                 f = self.plugin_output_file.open("w")
+                console = Console(file=f, force_terminal=True)
                 self._set_interactive_job_as_running(rowid)
                 stdout.append(f)
                 stderr.append(f)
             with PIPE_OUT(*stdout) as p_sto, PIPE_OUT(*stderr) as p_ste:
                 sys.stdout = p_sto
                 sys.stderr = p_ste
-                log_stream_handle = logging.StreamHandler(p_ste)
-                log.addHandler(log_stream_handle)
                 yield
         except Exception as error:
             if is_interactive_job is True:
-                traceback.print_exc(file=f)
+                console.print_exception(show_locals=False)
             raise error
         finally:
             os.environ["PATH"] = env_path
             sys.stdout = stdout[0]
             sys.stderr = stderr[0]
             if is_interactive_job is True:
-                if log_stream_handle is not None:
-                    log.removeHandler(log_stream_handle)
                 f.flush()
                 f.close()
 
@@ -447,7 +435,7 @@ class PluginAbstract(abc.ABC):
     def _append_unique_id(
         self, config_dict: Optional[ConfigDictType], unique_output: bool
     ) -> ConfigDictType:
-        from evaluation_system.api.parameters import Directory, CacheDirectory
+        from evaluation_system.api.parameters import CacheDirectory, Directory
 
         config_dict = config_dict or {}
         for key, param in self.__parameters__.items():
@@ -620,8 +608,7 @@ class PluginAbstract(abc.ABC):
                 metadata = output_files[file_path]
             if os.path.isfile(file_path):
                 self._extend_output_metadata(file_path, metadata)
-                if metadata.get("type", "data") != "data":
-                    result[os.path.abspath(file_path)] = metadata
+                result[os.path.abspath(file_path)] = metadata
             elif os.path.isdir(file_path):
                 # ok, we got a directory, so parse the contents recursively
                 for file_path in [
@@ -635,11 +622,9 @@ class PluginAbstract(abc.ABC):
                     # update meta data with user entries
                     usermetadata = result.get(os.path.abspath(file_path), {})
                     filemetadata.update(usermetadata)
-                    if filemetadata.get("type", "data") != "data":
-                        result[os.path.abspath(file_path)] = filemetadata
+                    result[os.path.abspath(file_path)] = filemetadata
             else:
-                if filemetadata.get("type", "data") != "data":
-                    result[os.path.abspath(file_path)] = metadata
+                result[os.path.abspath(file_path)] = metadata
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
@@ -716,7 +701,7 @@ class PluginAbstract(abc.ABC):
         """
         help_txt = self.__long_description__.strip()
         if not help_txt:
-            help_txt = self.__short_description__
+            help_txt = self.__short_description__.strip()
         return "{} (v{}): {}\n{}".format(
             self.__class__.__name__,
             ".".join([str(i) for i in self.__version__]),

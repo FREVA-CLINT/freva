@@ -4,8 +4,8 @@ Created on 30.05.2016
 @author: Sebastian Illing
 """
 import json
-from pathlib import Path
 import shlex
+from pathlib import Path
 
 from evaluation_system.tests import run_cli
 

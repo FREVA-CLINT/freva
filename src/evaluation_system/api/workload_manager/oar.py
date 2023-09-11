@@ -1,8 +1,9 @@
 """Submit jobs using the oar workload manager."""
 from __future__ import annotations
+
 import logging
 import shlex
-from typing import Optional, Union, ClassVar
+from typing import ClassVar, Optional, Union
 
 from .core import Job
 

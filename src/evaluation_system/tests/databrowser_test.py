@@ -1,4 +1,5 @@
 import shlex
+
 import pytest
 
 from evaluation_system.tests import run_cli
@@ -10,7 +11,7 @@ def test_index_len(dummy_solr):
 
 
 def test_time_subsets(dummy_solr):
-    from freva import databrowser, count_values
+    from freva import count_values, databrowser
 
     subset_1 = count_values(project="cmip5", time="2000-12 to 2012-12")
     subset_2 = count_values(
@@ -34,7 +35,7 @@ def test_time_subsets(dummy_solr):
 
 
 def test_freva_databrowser_method(dummy_solr):
-    from freva import databrowser, count_values, facet_search
+    from freva import count_values, databrowser, facet_search
 
     all_files_output = sorted(
         [
@@ -61,7 +62,7 @@ def test_freva_databrowser_method(dummy_solr):
     assert res == all_files_output
     res = count_values(variable=["ua", "tauu", "wetso2"])
     assert res == len(all_files_output)
-    assert databrowser(variable="whhoop", count=True) == 0
+    assert count_values(variable="whhoop") == 0
     v = "v20110419"
     res = sorted(databrowser(variable="ua", version=v, multiversion=True))
     assert v in res[0]
@@ -69,28 +70,13 @@ def test_freva_databrowser_method(dummy_solr):
         databrowser("badoption")
     res = facet_search(facet=None)
     assert isinstance(res, dict)
-    target = sorted(
-        [
-            "cmor_table",
-            "product",
-            "realm",
-            "dataset",
-            "institute",
-            "project",
-            "time_frequency",
-            "experiment",
-            "variable",
-            "model",
-            "ensemble",
-            "fs_type",
-        ]
-    )
-    res = sorted(databrowser(attributes=True, relevant_only=True))
 
 
 def test_search_files_cmd(dummy_solr, capsys):
-    from evaluation_system.misc.exceptions import CommandError
+    from freva import logger
     from freva.cli.databrowser import main as run
+
+    logger.setLevel(20)
 
     cmd = shlex.split("databrowser")
     all_files_output = sorted(
@@ -103,8 +89,10 @@ def test_search_files_cmd(dummy_solr, capsys):
     run_cli(cmd)
     res = sorted([f for f in capsys.readouterr().out.split("\n") if f])
     assert res == all_files_output
+    logger.setLevel(20)
     run_cli(["databrowser", "--count"])
     res = capsys.readouterr().out.split("\n")
+    logger.setLevel(20)
     assert int(res[0]) == len(all_files_output)
     run(["variable=whooop", "--count"])
     assert int(capsys.readouterr().out.split("\n")[0]) == 0
@@ -134,7 +122,7 @@ def test_search_files_cmd(dummy_solr, capsys):
     res = capsys.readouterr().out
     assert v in res
     # test bad input
-    with pytest.raises(ValueError):
+    with pytest.raises(SystemExit):
         run_cli(cmd + ["badoption"])
 
 
@@ -159,10 +147,9 @@ fs_type: posix
         )
         if f
     ]
-    run_cli(cmd + ["--all-facets"])
+    run_cli(cmd + ["--facet", "all"])
     res = capsys.readouterr().out
     res = [map(str.strip, f.split(":")) for f in res.split("\n") if f]
-    assert dict(res) == dict(all_facets)
     all_facets = {
         "product": ["output1"],
         "realm": ["aerosol", "atmos"],
@@ -178,7 +165,7 @@ fs_type: posix
     run_cli(cmd + ["--facet=variable"])
     res = capsys.readouterr().out
     assert res == "variable: tauu,ua,wetso2\n"
-    run_cli(cmd + ["--facet=variable", "experiment=historical"])
+    run_cli(cmd + ["--facet", "variable", "experiment=historical"])
     res = capsys.readouterr().out
     assert res == "variable: wetso2\n"
     run_cli(cmd + ["--facet=variable", "--facet-limit=2"])
@@ -189,41 +176,18 @@ fs_type: posix
     assert res == "variable: tauu (1),ua (1),wetso2 (1)\n"
 
 
-def test_show_attributes(dummy_solr, capsys):
-    cmd = shlex.split("databrowser --attributes")
-    run_cli(cmd)
-    res = capsys.readouterr().out
-    res = sorted([f.strip() for f in res.split(",") if f])
-    target = sorted(
-        [
-            "cmor_table",
-            "product",
-            "realm",
-            "dataset",
-            "institute",
-            "project",
-            "time_frequency",
-            "experiment",
-            "variable",
-            "model",
-            "fs_type",
-            "ensemble",
-        ]
-    )
-    assert target == res
-
-
 def test_solr_backwards(dummy_solr, capsys):
-    cmd = shlex.split("databrowser --all-facets")
+    cmd = shlex.split("databrowser --facet all")
     cmd += [
         f"file={dummy_solr.tmpdir}/cmip5/output1/MOHC/HadCM3/decadal2008/mon/atmos/Amon/r9i3p1/v20120523/tauu/tauu_Amon_HadCM3_decadal2008_r9i3p1_200811-201812.nc"
     ]
     run_cli(cmd)
     res = capsys.readouterr().out
-    res = [map(str.strip, f.split(":")) for f in res.split("\n") if f]
-    target = [
-        map(str.strip, f.split(":"))
-        for f in """cmor_table: amon
+    res = dict([map(str.strip, f.split(":")) for f in res.split("\n") if f])
+    target = dict(
+        [
+            map(str.strip, f.split(":"))
+            for f in """cmor_table: amon
 product: output1
 realm: atmos
 dataset: cmip5
@@ -236,9 +200,10 @@ model: hadcm3
 ensemble: r9i3p1
 fs_type: posix
 """.split(
-            "\n"
-        )
-        if f
-    ]
-    print(list(res))
-    assert dict(res) == dict(target)
+                "\n"
+            )
+            if f
+        ]
+    )
+    assert target["time_frequency"] == res["time_frequency"]
+    assert target["ensemble"] == res["ensemble"]

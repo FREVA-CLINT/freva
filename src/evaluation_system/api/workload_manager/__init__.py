@@ -1,7 +1,9 @@
 """Collection of methods and classes for submitting plugins to a workload manager."""
 from __future__ import annotations
+
 from pathlib import Path
-from typing import cast, Union, Type, List, Optional
+from typing import List, Optional, Type, Union, cast
+
 from .core import Job, JobStatus
 from .local import LocalJob
 from .lsf import LSFJob
@@ -120,4 +122,6 @@ def schedule_job(
         Path(log_directory) / f"{job_name}-{job.job_id}.out",
         submit_status=submit_status,
         error_msg=std_err,
+        job_script=job.job_script(),
+        workload_manager=job.config_name or "local",
     )

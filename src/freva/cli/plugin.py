@@ -1,14 +1,22 @@
 from __future__ import annotations
-import argparse
-from pathlib import Path
-import sys
-from typing import Any, Optional
-import lazy_import
 
+import argparse
+import json
+import sys
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, Iterator, Optional
+
+from rich import print as pprint
+from rich.console import Console
+
+console = Console()
+import lazy_import
 
 from evaluation_system import __version__
 from evaluation_system.misc import logger
-from .utils import BaseParser, BaseCompleter
+
+from .utils import BaseCompleter, BaseParser
 
 freva = lazy_import.lazy_module("freva")
 PluginNotFoundError = lazy_import.lazy_class(
@@ -23,6 +31,19 @@ ValidationError = lazy_import.lazy_class(
 hide_exception = lazy_import.lazy_function(
     "evaluation_system.misc.exceptions.hide_exception"
 )
+
+
+@contextmanager
+def _pipe(redirect_stdout: bool = False) -> Iterator[None]:
+    """Redirect the stdout to stderr if needed."""
+
+    stdout = sys.stdout
+    try:
+        if redirect_stdout is True:
+            sys.stdout = sys.stderr
+        yield
+    finally:
+        sys.stdout = stdout
 
 
 class Cli(BaseParser):
@@ -68,7 +89,7 @@ class Cli(BaseParser):
         )
         self.parser.add_argument(
             "--show-config",
-            help="Show the resulting configuration (implies dry-run).",
+            help="Show the resulting configuration.",
             action="store_true",
             default=False,
         )
@@ -77,12 +98,6 @@ class Cli(BaseParser):
             default=None,
             type=int,
             help=argparse.SUPPRESS,
-        )
-        self.parser.add_argument(
-            "--dry-run",
-            default=False,
-            action="store_true",
-            help="Perform no computation. Useful for development.",
         )
         self.parser.add_argument(
             "--batchmode",
@@ -121,20 +136,47 @@ class Cli(BaseParser):
             action="store_true",
             help="Display plugin documentation",
         )
+        self.parser.add_argument(
+            "--json",
+            "-j",
+            help=(
+                "Display a json representation of the result, this can be"
+                "useful if you want to build shell based pipelines and want"
+                "parse the output with help of `jq`."
+            ),
+            default=False,
+            action="store_true",
+        )
+        self.parser.add_argument(
+            "--wait",
+            "-w",
+            help=(
+                "Wait for the plugin to finish, this has only an effect for "
+                "batch mode execution."
+            ),
+            default=False,
+            action="store_true",
+        )
+
+        self.parser.add_argument("tool-options", nargs="*", help="Tool options")
         self.parser.set_defaults(apply_func=self.run_cmd)
 
     @staticmethod
     def run_cmd(
         args: argparse.Namespace,
-        other_args: Optional[list[str]] = None,
         **kwargs: Any,
     ) -> None:
         """Call the plugin command and print the results."""
         tool_name = kwargs.pop("tool-name")
+        jsonify = kwargs.pop("json", False)
+        wait = kwargs.pop("wait", False)
+        tool_options = kwargs.pop("tool-options", []) + kwargs.pop("unknown", [])
+        repo_version: bool = kwargs.pop("repo_version", False)
+        show_config: bool = kwargs.pop("show_config", False)
         if kwargs.pop("list_tools") or not tool_name:
-            print(freva.get_tools_list())
+            console.print(freva.get_tools_list())
             return
-        options: dict[str, Any] = BaseCompleter.arg_to_dict(other_args or [])
+        options: dict[str, Any] = BaseCompleter.arg_to_dict(tool_options)
         for key, val in options.items():
             if len(val) == 1:
                 options[key] = val[0]
@@ -143,11 +185,19 @@ class Cli(BaseParser):
         else:
             kwargs["unique_output"] = False
         tool_args = {**kwargs, **options}
+        value = 0
         try:
             if tool_args.pop("doc"):
-                print(freva.plugin_doc(tool_name))
+                console.print(freva.plugin_doc(tool_name))
                 return
-            value, out = freva.run_plugin(tool_name or "", **tool_args)
+            if repo_version:
+                print(freva.plugin_info(tool_name or "", "repository", **options))
+            elif show_config:
+                print(freva.plugin_info(tool_name or "", "config", **options))
+            else:
+                with _pipe(redirect_stdout=jsonify):
+                    plugin_run = freva.run_plugin(tool_name or "", **tool_args)
+                value = int(plugin_run.status == "broken")
         except (
             PluginNotFoundError,
             ValidationError,
@@ -156,11 +206,14 @@ class Cli(BaseParser):
             if args.debug:
                 raise e
             with hide_exception():
-                raise e
+                logger.error(e)
+                raise SystemExit
         if value != 0:
             logger.warning("Tool failed to run")
-        if out:
-            print(out)
+        elif jsonify or wait:
+            plugin_run.wait()
+        if jsonify:
+            print(plugin_run)
 
 
 def main(argv: Optional[list[str]] = None) -> None:
@@ -176,5 +229,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        pprint("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
         sys.exit(130)
+    except Exception as error:  # pragma: no cover
+        freva.utils.exception_handler(error, True)  # pragma: no cover

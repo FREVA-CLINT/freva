@@ -20,8 +20,8 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 /tmp/test,some.other.plugin
 """
 from __future__ import annotations
+
 import atexit
-from contextlib import contextmanager
 import importlib.machinery
 import importlib.util
 import inspect
@@ -29,29 +29,22 @@ import json
 import os
 import random
 import re
-import signal
 import shutil
+import signal
 import string
 import sys
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 from types import ModuleType
-from typing import (
-    Any,
-    cast,
-    Dict,
-    Iterator,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-)
-from typing_extensions import TypedDict
+from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 from django.db.models.query import QuerySet
 from PIL import Image
+from rich import print as pprint
+from typing_extensions import TypedDict
 
 from evaluation_system import __version__ as version_api
 from evaluation_system.misc import config
@@ -59,16 +52,19 @@ from evaluation_system.misc import logger as log
 from evaluation_system.misc import utils
 from evaluation_system.misc.exceptions import (
     ConfigurationException,
-    PluginManagerException,
     ParameterNotFoundError,
+    PluginManagerException,
 )
 from evaluation_system.model.history.models import (
+    BatchSettings,
     Configuration,
     History,
     HistoryTag,
+    Output,
 )
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
+
 from .plugin import PluginAbstract
 
 PLUGIN_ENV = "EVALUATION_SYSTEM_PLUGINS"
@@ -132,8 +128,13 @@ class _PluginStateHandle:
         # Make sure that the last plugin state gets set during when OS
         # termination signals are sent to this process.
         #
-        signal.signal(signal.SIGTERM, self._update_plugin_state_in_db_and_quit)
-        signal.signal(signal.SIGHUP, self._update_plugin_state_in_db_and_quit)
+        for sig in (
+            signal.SIGTERM,
+            signal.SIGABRT,
+            signal.SIGINT,
+            signal.SIGQUIT,
+        ):
+            signal.signal(sig, self._update_plugin_state_in_db_and_quit)
 
     def __enter__(self):
         # Initialize the plugin state the database
@@ -152,8 +153,7 @@ class _PluginStateHandle:
     def _update_plugin_state_in_db_and_quit(self, *args):
         """Update the plugin state of a plugin and quit."""
         self._update_plugin_state_in_db()
-        print("Received termination signal: exiting", file=sys.stderr, flush=True)
-        sys.exit(1)
+        raise KeyboardInterrupt
 
 
 T = TypeVar("T")
@@ -702,29 +702,32 @@ def run_tool(
     scheduled_id: Optional[int] = None,
     caption: Optional[str] = None,
     unique_output: bool = True,
-) -> Optional[utils.metadict]:
+) -> Tuple[int, Optional[utils.metadict]]:
     """Runs a tool and stores the run information.
 
     Run information is stored in :class:`evaluation_system.model.db.UserDB`.
 
     Parameters
     ----------
-    plugin_name
+    plugin_name:
         Name of the plugin to run.
-    config_dict
+    config_dict:
         The configuration used for running the tool. If is None, the
         default configuration will be stored, this might be incomplete.
-    user
+    user:
         The user starting the tool
-    scheduled_id
+    scheduled_id:
         If the process is already scheduled then put the row id here
-    caption
+    caption:
         The caption to set.
 
     Returns
     -------
-    Optional[utils.metadict]
-        Output from the plugin
+    int: The history db id to search for this plugin
+    Optional[utils.metadict]:
+        Output of the plugin
+
+
     """
     plugin_name = plugin_name.lower()
     user = user or User()
@@ -795,20 +798,29 @@ def run_tool(
         # save results when existing
         if result is None:
             plugin_state.status = History.processStatus.finished_no_output
-        else:
-            # create the preview
-            preview_path = config.get(config.PREVIEW_PATH, None)
-            if preview_path:
-                log.debug("Converting....")
-                _preview_create(plugin_name, result)
-                log.debug("finished")
-            # write the created files to the database
-            log.debug("Storing results into data base....")
-            user.getUserDB().storeResults(rowid, result)
+        result = cast(utils.metadict, result or {})
+
+        # create the preview
+        preview_path = config.get(config.PREVIEW_PATH, None)
+        result_tag = cast(
+            utils.metadict,
+            {
+                k: v
+                for (k, v) in result.items()
+                if v.get("type", "data") not in ("data",)
+            },
+        )
+        if preview_path:
+            log.debug("Converting....")
+            _preview_create(plugin_name, result_tag)
             log.debug("finished")
-            # temporary set all processes to finished
-            plugin_state.status = History.processStatus.finished
-        return result
+        # write the created files to the database
+        log.debug("Storing results into data base....")
+        user.getUserDB().store_output(rowid, result)
+        log.debug("finished")
+        # temporary set all processes to finished
+        plugin_state.status = History.processStatus.finished
+        return rowid, result
 
 
 def schedule_tool(
@@ -923,7 +935,64 @@ def schedule_tool(
             rowid, user.getName(), History.processStatus.broken
         )
         raise RuntimeError(job_status.error_msg)
+    schedule_entry.store_batch_settings(
+        rowid,
+        job_status.job_script,
+        job_status.workload_manager,
+        job_status.job_id,
+        job_status.std_out,
+    )
     return rowid, str(job_status.std_out)
+
+
+def get_result_output(history_id: int) -> utils.metadict:
+    """Get the results of a plugin run.
+
+    This is just a wrapper for the defined db interface accessed via the
+    user object.
+
+    Parameters
+    ----------
+    history_id: int
+        Result entry ID to filter for.
+
+    Returns
+    -------
+    metadict:
+        Results from the database
+    """
+    try:
+        return Output.objects.get(history_id_id=history_id).result
+    except Output.DoesNotExist:
+        return cast(utils.metadict, {})
+
+
+def get_batch_settings(history_id: int) -> dict[str, Union[str, int]]:
+    """Get the settings of a batch job.
+
+    To interact with batch jobs the plugin manager gets the batch settings from
+    the database and stores them into a dictionary. If the plugin run hasn't
+    been submitted in batchmode and empty dict is returned.
+
+    Parameters
+    ----------
+    history_id: int
+        Result entry ID to filter for.
+
+    Returns
+    -------
+    dict: Settings of the batch job, if the job hasn't been submitted in
+          batchmode, then an empty dict is returned.
+    """
+
+    batch_settings: dict[str, Union[str, int]] = {}
+    try:
+        settings = BatchSettings.objects.get(history_id_id=history_id)
+    except BatchSettings.DoesNotExist:
+        return batch_settings
+    for attr in ("job_script", "workload_manager", "job_id", "output_file"):
+        batch_settings[attr] = getattr(settings, attr)
+    return batch_settings
 
 
 def get_history(

@@ -4,11 +4,11 @@ Created on 23.05.2016
 @author: Sebastian Illing
 """
 
-from datetime import datetime, timedelta
 import os
-import tempfile
-import socket
 import shutil
+import socket
+import tempfile
+from datetime import datetime, timedelta
 from getpass import getuser
 
 import pytest
@@ -171,8 +171,9 @@ def test_create_user(dummy_user):
 
 
 def test_create_user_crawl(dummy_user):
-    from evaluation_system.model.solr_models.models import UserCrawl
     from django.contrib.auth.models import User
+
+    from evaluation_system.model.solr_models.models import UserCrawl
 
     dummy_user.user.getUserDB().createUser("new_user", "test@test.de", "t", "u")
     dummy_user.user.getUserDB().create_user_crawl("/some/test/folder", "new_user")
@@ -184,20 +185,14 @@ def test_create_user_crawl(dummy_user):
 
 
 def test_timestamp_to_string():
-    from evaluation_system.model.db import (
-        timestamp_to_string,
-        timestamp_from_string,
-    )
+    from evaluation_system.model.db import timestamp_from_string, timestamp_to_string
 
     time = datetime.now()
     assert timestamp_to_string(time) == time.strftime("%Y-%m-%d %H:%M:%S.%f")
 
 
 def test_timestamp_from_string():
-    from evaluation_system.model.db import (
-        timestamp_to_string,
-        timestamp_from_string,
-    )
+    from evaluation_system.model.db import timestamp_from_string, timestamp_to_string
 
     time = datetime.now()
     time_str = timestamp_to_string(time)

@@ -1,7 +1,9 @@
 """Submit jobs using the moab workload manager."""
 from __future__ import annotations
-from .pbs import PBSJob
+
 from typing import ClassVar
+
+from .pbs import PBSJob
 
 
 class MoabJob(PBSJob):

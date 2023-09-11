@@ -1,14 +1,15 @@
 """Tests for ingesting user data."""
 from __future__ import annotations
-from pathlib import Path
+
 import datetime
-import mock
-from tempfile import TemporaryDirectory, NamedTemporaryFile
+from pathlib import Path
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Generator, Tuple
 
 import cftime
-import pytest
+import mock
 import numpy as np
+import pytest
 import xarray as xr
 
 
@@ -239,7 +240,7 @@ def test_add_my_data(valid_data_files, time_mock):
     input_files = list(valid_data_files.rglob("*.nc"))
     with pytest.raises(SystemExit):
         run(["add", "foo-product", str(valid_data_files)])
-    with pytest.raises(ValueError):
+    with pytest.raises(SystemExit):
         run(["add", "foo-product", str(valid_data_files), "-d"])
 
     user_data = UserData()
@@ -251,9 +252,10 @@ def test_add_my_data(valid_data_files, time_mock):
 
 
 def test_add_methods():
-    from freva import UserData
-    import shutil
     import os
+    import shutil
+
+    from freva import UserData
 
     assert UserData._set_add_method("cp") == shutil.copy
     assert UserData._set_add_method("mv") == shutil.move
@@ -265,29 +267,29 @@ def test_add_methods():
 
 def test_delete_my_data(valid_data_files, time_mock):
     import freva
+    from evaluation_system.api.user_data import get_output_directory
+    from evaluation_system.model.user import User
     from freva import UserData
     from freva.cli.user_data import main as run
-    from evaluation_system.model.user import User
-    from evaluation_system.api.user_data import get_output_directory
 
     user_data = UserData()
     root_path = get_output_directory() / f"user-{User().getName()}" / "foo-product"
-    assert freva.databrowser(product="foo-product", count=True) > 0
+    assert freva.count_values(product="foo-product") > 0
     nfiles = len(list(root_path.rglob("*.nc")))
     assert nfiles > 0
     run(["delete", str(root_path)])
-    assert freva.databrowser(product="foo-product", count=True) == 0
+    assert freva.count_values(product="foo-product") == 0
     assert len(list(root_path.rglob("*.nc"))) > 0
     user_data.delete(root_path, delete_from_fs=True)
     assert len(list(root_path.rglob("*.nc"))) == 0
 
 
 def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mock):
-    from freva import UserData
-    from evaluation_system.tests import run_cli
-    from freva.cli.user_data import main as run
     from evaluation_system.misc.exceptions import ValidationError
     from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.tests import run_cli
+    from freva import UserData
+    from freva.cli.user_data import main as run
 
     run(["index", "--data-type=fs", "-d"])
     captured = capsys.readouterr()
@@ -304,7 +306,8 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
         with pytest.raises(ValidationError):
             run_cli(["user-data", "index", "/tmp/forbidden/folder"])
 
-    import os, shutil
+    import os
+    import shutil
 
     tmp_files = [
         "observations.station/DWD/DWD/essen/1hr/cmorized/1hr/r1i1p1/v2281/pr/pr_1hr_DWD_essen_r1i1p1_189509010000-192412312300.nc",
@@ -336,18 +339,17 @@ def test_index_my_data(dummy_crawl, capsys, dummy_env, valid_data_files, time_mo
 
 
 def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
-    from evaluation_system.tests import run_cli
     from evaluation_system.model.solr import SolrFindFiles
+    from evaluation_system.tests import run_cli
 
     dummy_crawl.append(dummy_crawl[0].parent / "more_info" / dummy_crawl[0].name)
     dummy_crawl[-1].parent.mkdir(exist_ok=True, parents=True)
     dummy_crawl[-1].touch()
-    with pytest.raises(ValueError):
+    with pytest.raises(SystemExit):
         run_cli(["user-data", "index", "-d"])
     with pytest.raises(SystemExit):
         run_cli(["user-data", "index"])
     captured = capsys.readouterr()
-    assert "ValueError" in captured.err
     assert len(list(SolrFindFiles.search())) == 0
     assert len(list(SolrFindFiles.search(latest_version=False))) == 0
 

@@ -6,31 +6,20 @@ The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
 from __future__ import annotations
-from typing import (
-    Optional,
-    Generator,
-    List,
-    Union,
-    Any,
-    ClassVar,
-    cast,
-)
-from typing_extensions import Literal, TypedDict
-from dataclasses import dataclass, field
-import warnings
+
 import json
-from pathlib import Path
-import os
 import logging
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, ClassVar, Generator, List, Optional, Union, cast
+
+from typing_extensions import Literal, TypedDict
+
 from evaluation_system.misc import config
 
 log = logging.getLogger(__name__)
 
-
-warnings.warn(
-    "The evaluation_system.model.file module will be removed from v2304.0.0",
-    category=PendingDeprecationWarning,
-)
 
 Activity = str
 """Represents a type of data collection activity for DRS (see Activity from the DRS spec).

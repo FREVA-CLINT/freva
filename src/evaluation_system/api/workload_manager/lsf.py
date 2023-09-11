@@ -1,15 +1,16 @@
 """Submit jobs to the lsf workload manager."""
 from __future__ import annotations
-from distutils.version import LooseVersion
 
 import logging
 import math
 import os
-from pathlib import Path
 import re
 import subprocess
+from distutils.version import LooseVersion
+from pathlib import Path
+from typing import Any, ClassVar, Coroutine, Optional, Union, cast
+
 import toolz
-from typing import Any, cast, ClassVar, Optional, Coroutine, Union
 
 from .core import Job
 
