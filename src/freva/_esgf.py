@@ -21,6 +21,7 @@ __all__ = [
 ]
 
 
+@handled_exception
 def esgf_browser(
     opendap: bool = False,
     gridftp: bool = False,
@@ -144,6 +145,7 @@ def esgf_browser(
     return result_url
 
 
+@handled_exception
 def esgf_facets(
     show_facet: Optional[Union[str, list[str]]] = None,
     **search_constraints: dict[str, str],
@@ -200,6 +202,7 @@ def esgf_facets(
     return p2p.get_facets(show_facet, **search_constraints)
 
 
+@handled_exception
 def esgf_datasets(
     **search_constraints: dict[str, str],
 ) -> list[tuple[str, str]]:
@@ -250,6 +253,7 @@ def esgf_datasets(
     return sorted(p2p.get_datasets_names(**search_constraints))
 
 
+@handled_exception
 def esgf_download(
     download_script: Optional[Union[str, Path]] = None,
     **search_constraints: dict[str, str],
@@ -315,6 +319,7 @@ def esgf_download(
     return str(f"Download script successfully saved to {download_script}")
 
 
+@handled_exception
 def esgf_query(
     query: Optional[Union[str, list[str]]] = None,
     **search_constraints: dict[str, str],
