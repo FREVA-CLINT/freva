@@ -348,7 +348,7 @@ class Futures:
                 "cache",
             ):
                 all_parameters[key] = "cachedir"
-            else:
+            elif value is not None:
                 all_parameters[key] = value
 
         reader = DataReader(
@@ -567,7 +567,6 @@ class Futures:
             the databrowser.
         """
         notebook = nbformat.reads(code, as_version=4)
-
         # Update the solr parameters
         solr_params = nbp.parameter_values(
             nbp.extract_parameters(notebook, tag="solr-parameters"),
@@ -609,8 +608,14 @@ class Futures:
         # all its parameters and generate the hash. Then re-add the hash
         # to the notebook.
         facets["future_id"] = cls._notebook_to_hash(notebook)
-        other_params.append(nbp.Parameter("future_id", str, value=facets["future_id"]))
+        other_params = nbp.parameter_values(
+            nbp.extract_parameters(notebook, tag="parameters"),
+            new=new_variables,
+            future_id=facets["future_id"],
+            **variables,
+        )
         notebook = nbp.replace_definitions(notebook, other_params, tag="parameters")
+        Path("foo.ipynb").write_text(json.dumps(notebook, indent=3))
         # The hash values from before adding the hash and after adding the
         # hash have to be the same, lets perform a smoke test:
         if facets["future_id"] != cls._notebook_to_hash(notebook):

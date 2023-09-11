@@ -3,22 +3,12 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "71d43879",
+   "id": "0e005d16",
    "metadata": {},
    "outputs": [],
    "source": [
-    "from tempfile import TemporaryDirectory\n",
-    "import freva"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "cfbe5fdc",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "outdir_tmp = TemporaryDirectory()"
+    "import freva\n",
+    "from freva._futures import Futures"
    ]
   },
   {
@@ -73,11 +63,11 @@
    "source": [
     "res.wait()\n",
     "output = res.get_result_paths()\n",
-    "freva.add_user_data(\n",
+    "Futures.from_existing_code_hash(future_id).add_data(\n",
+    "    project,\n",
     "    product,\n",
     "    *output,\n",
-    "    how=\"move\",\n",
-    "    _project=project,\n",
+    "    history_id=res.id,\n",
     "    institute=institute,\n",
     "    model=model,\n",
     "    experiment=experiment,\n",
@@ -85,10 +75,7 @@
     "    realm=realm,\n",
     "    time_frequency=time_frequency,\n",
     "    cmor_table=cmor_table,\n",
-    "    future=future_code,\n",
-    "    override=True,\n",
-    ")\n",
-    "outdir_tmp.cleanup()"
+    ")"
    ]
   }
  ],
