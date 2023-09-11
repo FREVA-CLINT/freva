@@ -78,6 +78,17 @@ def test_freva_esgf_method(dummy_config):
     assert fn.is_file()
     assert res == f"Download script successfully saved to {fn}"
     assert oct(fn.stat().st_mode)[-3:] == "755"
+    res = esgf_download(
+        project="CMIP5",
+        model="MPI-ESM-LR",
+        experiment="decadal2001",
+        variable="tas",
+        distrib=False,
+    )
+    fn = Path(res.split()[-1])
+    assert fn.is_file()
+    assert res == f"Download script successfully saved to {fn}"    
+    assert oct(fn.stat().st_mode)[-3:] == "755"
 
 
 def test_find_files(capsys, search_dict, dummy_config):
