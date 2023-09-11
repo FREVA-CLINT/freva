@@ -785,7 +785,7 @@ For example, for ``time_frequency`` :
 
 .. code:: console
     
-    freva esgf --mip_era=CMIP5 --activity_id=decadal1960 --variable=tas --distrib=false --latest=true --show-facet=time_frequency
+    freva esgf project=CMIP5 experiment=decadal1960 variable=tas distrib=false latest=true --show-facet=time_frequency
 
 
 .. execute_code::
@@ -794,7 +794,7 @@ For example, for ``time_frequency`` :
     from subprocess import run, PIPE
     res = run(["freva", "esgf", "project=CMIP5", 
                         "experiment=decadal1960", 
-                        "variable=tas", "--distrib=false", "--latest=true",
+                        "variable=tas", "distrib=false", "latest=true",
                         "--show-facet=time_frequency"], 
                 check=True, stdout=PIPE, stderr=PIPE)
     print(res.stdout.decode())
