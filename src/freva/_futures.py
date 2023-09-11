@@ -370,7 +370,7 @@ class Futures:
                 solr_variables[key] = values
         solr_variables.setdefault("realm", "atmos")
         code_cell = (
-            f'res = freva.run_plugin("{plugin_run.plugin}",\n   batchmode=True,'
+            f'res = freva.run_plugin("{plugin_run.plugin}",\n   batchmode=False,'
             "\n   " + "   ".join([f"{k}={k}, \n" for k in all_parameters]) + ")"
         )
         solr_facets = cls.parameterise_notebook(

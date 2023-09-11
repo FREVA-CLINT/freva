@@ -3,6 +3,27 @@
   {
    "cell_type": "code",
    "execution_count": null,
+   "id": "71d43879",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from tempfile import TemporaryDirectory\n",
+    "import freva"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cfbe5fdc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "outdir_tmp = TemporaryDirectory()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
    "id": "da58d5ea",
    "metadata": {
     "tags": [
@@ -25,29 +46,8 @@
    },
    "outputs": [],
    "source": [
-    "# Define additional parameters to run the plugin\n"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "0e174599",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "from tempfile import TemporaryDirectory\n",
-    "import freva \n",
-    "from freva._futures import Futures"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "dbbd8c5a",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "outdir = TemporaryDirectory()"
+    "# Define additional parameters to run the plugin\n",
+    "future_id = \"\""
    ]
   },
   {
@@ -73,11 +73,11 @@
    "source": [
     "res.wait()\n",
     "output = res.get_result_paths()\n",
-    "Futures.from_existing_code_hash(future_id).add_data(\n",
-    "    project,\n",
+    "freva.add_user_data(\n",
     "    product,\n",
     "    *output,\n",
-    "    history_id = res.id,\n",
+    "    how=\"move\",\n",
+    "    _project=project,\n",
     "    institute=institute,\n",
     "    model=model,\n",
     "    experiment=experiment,\n",
@@ -85,8 +85,10 @@
     "    realm=realm,\n",
     "    time_frequency=time_frequency,\n",
     "    cmor_table=cmor_table,\n",
+    "    future=future_code,\n",
+    "    override=True,\n",
     ")\n",
-    "outdir.cleanup()"
+    "outdir_tmp.cleanup()"
    ]
   }
  ],
