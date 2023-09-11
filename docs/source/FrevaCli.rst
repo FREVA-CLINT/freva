@@ -237,7 +237,7 @@ the data). For example to see all facets that are available in the
    res = run(["freva", "databrowser", "--facet", "all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
-Instead of querying all facet to you get information on certain facets only:
+Instead of querying all facets to get information on specific ones:
 
 .. code:: console
 
@@ -399,11 +399,11 @@ submit the previous plugin job to the computing queue:
    print(out)
 
 
-If you want to evaluate the plugins output you can use the ``--json`` flag.
-This flag converts the result of a plugin application to a json string that
-can be processed by a json parser for example ``jq``. Consider the following
-exmample (in bash/zsh) where we use ``--json`` flag to get all netcdf output
-files from a plugin run.
+If you want to evaluate the output of the plugin, you can use the ``--json`` flag.
+This flag converts the result of a plugin application into a json string that 
+can be processed by a json parser such as ``jq``. Consider the following 
+example (in bash/zsh) where we use the ``--json`` flag to get all the netcdf 
+output files from a plugin run.
 
 .. code:: console
 
@@ -421,7 +421,7 @@ files from a plugin run.
 .. note::
 
     If you use the ``--batchmode`` flag in combination with ``--json`` flag the
-    commandline will wait for the batch job to finish.
+    command line will wait for the batch job to finish.
 
 
 Inspecting previous analysis jobs: the ``freva-history`` command
@@ -495,10 +495,10 @@ can use the ``--return-command`` option to get the command that was used:
    print(res.stdout.decode())
 
 
-Like in for the ``plugin`` sub command you can use the ``--json`` flag to
-to make the output of the history command machine readable and evaluate its
-output. For example can we query the output files of the last 3 plugin
-applications:
+As with the ``plugin`` subcommand, you can use the ``--json`` flag
+to make the output of the history command machine-readable, 
+and to parse its output. For example, we can query the output files
+of the last 3 plugin applications:
 
 .. code:: console
 

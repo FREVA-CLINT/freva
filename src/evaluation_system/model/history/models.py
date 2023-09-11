@@ -426,9 +426,7 @@ class HistoryTag(models.Model):
 class BatchSettings(models.Model):
     """All information on any batchmode settings of a plugin run."""
 
-    history_id: models.ForeignKey[History, int] = models.ForeignKey(
-        History, on_delete=models.CASCADE
-    )
+    history_id: models.ForeignKey = models.ForeignKey(History, on_delete=models.CASCADE)
     job_script: models.TextField = models.TextField(null=True, blank=True)
     workload_manager: models.TextField = models.TextField(null=True, blank=True)
     job_id: models.IntegerField = models.IntegerField()
@@ -443,9 +441,7 @@ class BatchSettings(models.Model):
 class Output(models.Model):
     """All information Plugin Output file."""
 
-    history_id: models.ForeignKey[History, int] = models.ForeignKey(
-        History, on_delete=models.CASCADE
-    )
+    history_id: models.ForeignKey = models.ForeignKey(History, on_delete=models.CASCADE)
     result: models.JSONField = models.JSONField(null=True, blank=True)
 
     class Meta:

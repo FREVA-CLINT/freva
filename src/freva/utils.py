@@ -426,12 +426,12 @@ class PluginStatus:
 
     @property
     def batch_id(self) -> Optional[int]:
-        """Get the id of the batch job, if the plugin was a batchmode jobs."""
+        """Get the id of the batch job, if the plugin was a batchmode job."""
         return self._hist.get("batch_settings", {}).get("job_id")
 
     @property
     def job_script(self) -> str:
-        """Get the content of the job_script, if it was a batchmod job."""
+        """Get the content of the job_script, if it was a batchmode job."""
         return self._hist.get("batch_settings", {}).get("job_script", "")
 
     def kill(self) -> None:
@@ -523,29 +523,29 @@ class PluginStatus:
     ) -> List[Path]:
         """Get all created paths of a certain data type.
 
-        This method let's you query all output files of the plugin run. You
-        can either search for data files or plotted output.
+        This method allows you to query all output files of the plugin run.
+        You can either search for data files or plotted output.
 
         Parameters
         ----------
         dtype: str
-            The data type for the returned paths. This should be either
+            The data type of the returned paths. This should be either
             data or plot
         glob_pattern: str, default: *.nc
-            Fine grain the output by filtering the returned files by the given
-            glob pattern. By default only netCDF files ("*.nc") will be added
+            Refine the output by filtering the returned files by the given
+            glob pattern. By default only netCDF files ("*.nc") are added
             to the list.
 
         Returns
         -------
-        List[Path]: A list of paths that match the search constraints.
+        List[Path]: A list of paths matching the search constrains.
 
         Example
         -------
-
-        We are going to apply a plugin called ``dummypluginfolders`` that creats
-        plots and netCDF files. In this example we want to open all netCDF files
-        (``dtype = 'data'``) that match the file name constraint ``*data.nc``.
+        We are going to use a plugin called ``dummypluginfolders``
+        which creates plots and netCDF files. In this example we want to
+        open all netCDF files (``dtype = 'data'``) that match the filename
+        constraint ``*data.nc``.
 
 
         .. execute_code::
@@ -570,9 +570,10 @@ class PluginStatus:
 class config:
     """Override the default or set the freva system configuration file.
 
-    With help of this class you can not only (temporarily) override default
-    config file and use a configuration from another project, you can also
-    set a path to a configuration file in case no config file hasn't been set.
+    With the help of this class you can not only (temporarily) override
+    the default configuration file and use a configuration from another
+    project, but you can also set a path to a configuration file if no
+    configuration file has been set.
 
     Parameters
     ----------
@@ -581,9 +582,9 @@ class config:
 
     Examples
     --------
-    Temporarily Override the existing configuration file and use a new one.
-    You can use a context manager to only temporally use another configuration
-    and switch back afterwards.
+    Temporarily override the existing configuration file and use a new one.
+    You can use a context manager to temporally use a different configuration
+    and switch back later.
 
     ::
 
@@ -591,8 +592,9 @@ class config:
         with freva.config("/work/freva/evaluation_system.conf"):
             freva.run_plugin("plugin_from_another_project")
 
-    If you do not want to only temporarily change to another configuration
-    but constantly use it you can use the :py:class:`freva.config` without
+    If you do not want to switch to another configuration only
+    temporarily, but want to use it permanently, you can use
+    :py:class:`freva.config` without a context manager:
     a context manager:
 
     ::
@@ -607,6 +609,7 @@ class config:
         "EVALUATION_SYSTEM_CONFIG_FILE",
         cfg.CONFIG_FILE,
     )
+    db_reloaded: List[bool] = [False]
 
     def __init__(self, config_file: Union[str, Path]) -> None:
         self._db_settings = lazy_import.lazy_module(
@@ -618,6 +621,11 @@ class config:
         cfg.reloadConfiguration(self._config_file)
         self._reload_db_connection()
         pm.reload_plugins()
+        try:
+            if django_settings.DATABASES:
+                self.db_reloaded[0] = True
+        except (ImproperlyConfigured, AttributeError):
+            pass
 
     def _reload_db_connection(self):
         self._db_settings["DATABASES"] = {
@@ -657,3 +665,4 @@ class config:
         cfg.reloadConfiguration(self._original_config_env)
         self._reload_db_connection()
         pm.reload_plugins()
+        self.db_reloaded[0] = False

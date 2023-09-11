@@ -137,24 +137,8 @@ class AddData(BaseParser):
             "--realm",
             type=str,
             default=None,
-            help="Set the <realm> information" + suffix,
-        )
-
-    def __init__(self, subparser: argparse.ArgumentParser):
-        super().__init__(subparser)
-        self.parser.add_argument(
-            "product",
-            type=str,
-            help="Product search key the newly added data can be found.",
-        )
-        self.parser.add_argument(
-            "paths",
-            nargs="+",
-            type=Path,
-            metavar="paths",
             help=(
-                "Filename(s) or Directories that are going to be added to the"
-                "databrowser"
+                "Set the <realm> information if they can't be found in the " "meta data"
             ),
         )
         self.parser.add_argument(
