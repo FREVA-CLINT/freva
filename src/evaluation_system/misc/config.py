@@ -167,7 +167,7 @@ def _get_public_key(
             (
                 f"{key_file} not found. Secrets are stored in central vault and a"
                 "public key is needed to open the vault. Without the public key"
-                " you won't be probaply be able to establish as database "
+                " you won't be probably be able to establish as database "
                 "connection."
             ),
             category=Warning,

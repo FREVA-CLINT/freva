@@ -23,15 +23,6 @@ test_coverage:
 		$(PWD)/src/evaluation_system/tests
 	python3 -m coverage report
 
-docs:
-	make -C docs clean
-	make -C docs html
-
-dummy-data:
-	compose/dummy_plugin_runs.sh
-	python3 compose/dummy_user_data.py
-	python3 compose/solr/ingest_dummy_data.py
-
 prepdocs:
 	rm -rf /tmp/animator
 	python3 -m pip install -e .[docs]
@@ -45,6 +36,14 @@ prepdocs:
 	make dummy-data
 	compose/animator_plugin_run.sh
 
+docs:
+	make -C docs clean
+	make -C docs html
+
+dummy-data:
+	compose/dummy_plugin_runs.sh
+	python3 compose/dummy_user_data.py
+	python3 compose/solr/ingest_dummy_data.py
 
 lint:
 	mypy --install-types --non-interactive

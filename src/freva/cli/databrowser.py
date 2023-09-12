@@ -24,7 +24,7 @@ class Cli(BaseParser):
         self,
         parser: Optional[argparse.ArgumentParser] = None,
     ):
-        """Construct the databrwoser sub arg. parser."""
+        """Construct the databrowser sub arg. parser."""
         super().__init__(parser, "freva-databrowser")
         self.parser.add_argument(
             "--multiversion",

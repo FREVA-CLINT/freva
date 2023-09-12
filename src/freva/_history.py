@@ -37,7 +37,7 @@ def history(
       Get the full configuration.
     return_command: bool, default: False
       Show Freva commands belonging to the history entries instead
-      of the entries themself.
+      of the entries themselves.
     limit: int, default: 10
       Limit the number of entires to be displayed.
     plugin: str, default: None
@@ -78,7 +78,7 @@ def history(
 
 
     .. hint:: Date Format
-        Dates are given in the ISO-8601 fromat and can be "YYYY-MM-DDTHH:mm:ss.n"
+        Dates are given in the ISO-8601 format and can be "YYYY-MM-DDTHH:mm:ss.n"
         or any less accurate subset. These are all valid: "2012-02-01T10:08:32.1233431",
         "2012-02-01T10:08:32", "2012-02-01T10:08", "2012-02-01T10", "2012-02-01",
         "2012-02", "2012". Missing values are assumed to be the minimal allowed value.

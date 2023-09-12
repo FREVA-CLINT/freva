@@ -83,7 +83,7 @@ class BaseParser(metaclass=abc.ABCMeta):
         import sys
         from typing import Optional
 
-        from ferva.cli import BaseParser
+        from freva.cli import BaseParser
 
         class Cli(BaseParser):
 
@@ -110,11 +110,11 @@ class BaseParser(metaclass=abc.ABCMeta):
 
     Following this outline all that would be needed to do is creating an entry
     point named ``freva-mytool`` pointing to ``mytool.cli:main``. This would
-    be sufficent to creagte a freva mytool sub command.
+    be sufficient to create a freva mytool sub command.
     """
 
     desc: str = ""
-    """The short describtion of a freva command."""
+    """The short description of a freva command."""
 
     def __init__(
         self,
@@ -366,7 +366,7 @@ class BaseCompleter:
             the second value
         Returns:
         --------
-        dict: Dictionariy representation of key=value pairs
+        dict: Dictionary representation of key=value pairs
         """
         out_dict: dict[str, list[str]] = {}
         for arg in args or []:

@@ -7,7 +7,7 @@ This package encapsulate access to a solr instance (not for search but for admin
 We define two cores::
 
 * files: all files  - id is file (full file path)
-* latest: only those files from the latest dataset version - id is file_no_version (full file path *wothout* version information)
+* latest: only those files from the latest dataset version - id is file_no_version (full file path *without* version information)
 
 """
 from __future__ import annotations
@@ -146,7 +146,7 @@ class SolrCore:
         :param data_dir: Data directory for this core (if left unset, a local "data" directory in instance_dir will be used)
         :param config: The configuration file (expected in instance_dir/conf)
         :param schema: The schema file (expected in instance_dir/conf)
-        :param check_if_exist: check for the existence of the instance directorie
+        :param check_if_exist: check for the existence of the instance directory
         """
         # check basic configuration (it must exists!)
         if instance_dir is None and self.instance_dir is None:
@@ -281,14 +281,14 @@ class SolrCore:
         Parameters:
         ----------
         file_pattern:
-            The input directory which contains the files to be delted from the
+            The input directory which contains the files to be deleted from the
             solr server
         host:
             The server hostname of the apache solr server.
         port:
-            The host port number the apache solr server is listinig to.
+            The host port number the apache solr server is listing to.
         prefix:
-            The prefix representing the data sotre, currently only posix file
+            The prefix representing the data store, currently only posix file
             types are supported (file)
         """
         core_latest = SolrCore(core="latest", host=host, port=port)
@@ -337,7 +337,7 @@ class SolrCore:
         host:
             The server hostname of the apache solr server.
         port:
-            The host port number the apache solr server is listinig to."""
+            The host port number the apache solr server is listing to."""
         core_latest = core_latest or SolrCore(core="latest", host=host, port=port)
         core_all_files = core_all_files or SolrCore(core=core, host=host, port=port)
         core_latest._del_file_pattern(input_dir)

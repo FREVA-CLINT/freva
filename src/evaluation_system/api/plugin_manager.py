@@ -101,7 +101,7 @@ class PluginMetadata:
 class _PluginStateHandle:
     """Provide a handle to set/update the plugin states in the db.
 
-    The handle will be instanciated with a state, a db rowid and a user
+    The handle will be instantiated with a state, a db rowid and a user
     object to identify the user running the plugin. Furthermore os
     termination signal will be captured to be able to set the last state
     of the plugin in the db.
@@ -439,7 +439,7 @@ def parse_arguments(
     config_file: Optional[str] = None,
     check_errors: bool = True,
 ) -> dict[str, Any]:
-    """Parges arguments to send to a plugin.
+    """Parses arguments to send to a plugin.
 
     Arguments are sent to an instance of the plugin that will handle the
     parsing. This is why the user is required to be known at this stage.
@@ -1156,7 +1156,7 @@ def get_command_string_from_row(
     Parameters
     ----------
     history_row
-        Histroy entry to get string for.
+        History entry to get string for.
     command_name
         Name of the CLI command
     command_options
@@ -1429,7 +1429,7 @@ def dict2conf(
 def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
     """Splits the elements of a plugin env string.
 
-    Returns an interator over all elements in a plugin environment
+    Returns an iterator over all elements in a plugin environment
     variable string
 
     Parameters
