@@ -6,7 +6,7 @@ from evaluation_system import __version__
 from evaluation_system.misc import logger
 
 from ._databrowser import count_values, databrowser, facet_search
-from ._esgf import esgf
+from ._esgf import esgf_browser, esgf_facets, esgf_datasets, esgf_download, esgf_query
 from ._history import history
 from ._plugin import (
     get_tools_list,
@@ -69,7 +69,11 @@ __all__ = [
     "count_values",
     "databrowser",
     "delete_user_data",
-    "esgf",
+    "esgf_browser",
+    "esgf_facets",
+    "esgf_datasets",
+    "esgf_download",
+    "esgf_query",
     "facet_search",
     "get_plugin_status",
     "history",
@@ -77,7 +81,7 @@ __all__ = [
     "list_plugins",
     "plugin_doc",
     "plugin_info",
-    "run_plugin",
+    "plugin_doc",
     "PluginStatus",
     "UserData",
 ]

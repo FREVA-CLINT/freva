@@ -31,7 +31,7 @@ from typing import (
 try:
     from IPython import get_ipython
 except ImportError:  # pragma: no cover
-    get_python = lambda: None  # pragma: no cover
+    get_ipython = lambda: None  # pragma: no cover
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured

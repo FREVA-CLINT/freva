@@ -78,7 +78,7 @@ class DataReader:
 
     @property
     def time_table(self) -> dict[int, str]:
-        """Tranlatetion from seconds to cmor frequency."""
+        """Translation from seconds to cmor frequency."""
         return {
             315360000: "dec",
             31104000: "yr",
@@ -98,12 +98,12 @@ class DataReader:
         return "fx"
 
     def get_time_frequency(self, time_delta: int, freq_attr: str = "") -> str:
-        """Create a comor time frequency facet.
+        """Create a cmor time frequency facet.
 
         Parameters
         ----------
         time_delta: int
-            time delta, in seconds, between consecutive time stpes.
+            time delta, in seconds, between consecutive time steps.
         freq_attr: str, default: ""
             cmor time_frequency attribute that might already be in the data.
 
@@ -169,7 +169,7 @@ class DataReader:
                 or "lat" in var.lower()
                 or var.lower() in ("x", "y")
             ):
-                # Usually those varaialbes should be flagged as coordinates
+                # Usually those variables should be flagged as coordinates
                 # but we can't guaranty that they are.
                 continue
             if var.lower() in ["rotated_pole", "rot_pole"]:
@@ -219,7 +219,7 @@ class DataReader:
         Returns
         -------
         os.PathLike:
-            A file name matching the DRS sepcifications so that it can be
+            A file name matching the DRS specifications so that it can be
             ingested into the solr server.
 
         Raises

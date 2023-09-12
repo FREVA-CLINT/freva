@@ -126,7 +126,7 @@ class UserData:
             to create symbolic links or ``move`` to move the data into the central
             user directory entirely.
         override: bool, default: False
-            Replace existing files in the user data structre
+            Replace existing files in the user data structure
         experiment: str, default: None
             By default the method tries to deduce the *experiment* information from
             the metadata. To overwrite this information the *experiment* keyword

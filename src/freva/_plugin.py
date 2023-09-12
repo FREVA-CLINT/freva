@@ -452,7 +452,7 @@ def run_plugin(
     unique_output:
         Append a Freva run id to the output/cache folder(s).
     tag:
-       Use git commit hash to specify a specific versrion of this tool.
+       Use git commit hash to specify a specific version of this tool.
 
     Returns
     -------

@@ -31,7 +31,7 @@ def _proc_search_facets(
         search_facets["time_select"] = select_methods[time_select]
     except KeyError as error:
         methods = ", ".join(select_methods.keys())
-        raise ValueError(f"Time select method has one of {methods}") from error
+        raise ValueError(f"Time select method has to be one of {methods}") from error
     search_facets["time"] = search_facets.get("time", "")
     for key in ("file", "uri"):
         try:
@@ -168,7 +168,7 @@ def facet_search(
     facet: str | list[str] | None = None,
     **search_facets: str | list[str] | int,
 ) -> dict[str, list[str]]:
-    """Search for data attributes (factes) in the databrowser.
+    """Search for data attributes (facets) in the databrowser.
 
     The method queries the databrowser for available search facets (keys)
     like model, experiment etc.
@@ -231,10 +231,9 @@ def facet_search(
 
     .. execute_code::
 
-        import freva
-        from pathlib import Path
-        file = ".docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
-        res = freva.facet_search(file=str(Path(file).absolute()))
+        import os, freva
+        file = "../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc"
+        res = freva.facet_search(file=str(os.path.abspath(file)))
         print(res)
 
     """
@@ -310,8 +309,6 @@ def databrowser(
         Select all versions and not just the latest version (default).
     batch_size: int, default: 5000
         Size of the search querey.
-    execute_future: bool, default: False
-        Create any future datasets that are encountered.
 
     Returns
     -------
@@ -323,7 +320,7 @@ def databrowser(
     Example
     -------
 
-    Seach for files in the system:
+    Search for files in the system:
 
     .. execute_code::
 

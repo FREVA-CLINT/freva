@@ -1,4 +1,4 @@
-"""Definitions of custom exections and warnings."""
+"""Definitions of custom exceptions and warnings."""
 
 import logging
 import sys
@@ -10,7 +10,7 @@ from evaluation_system.misc import logger
 
 
 def deprecated_method(klass: str, new_method: str):
-    """Show a deprication warning for a depricated method."""
+    """Show a deprecation warning for a deprecated method."""
 
     def call_deprecated_method(function: Callable[[Any], Any]) -> Callable[[Any], Any]:
         def inner(*args: Any, **kwargs: Any) -> Any:
@@ -38,7 +38,7 @@ class ConfigurationException(Exception):
 
 
 class PluginNotFoundError(Exception):
-    """Exeption Definition for missing Plugins."""
+    """Exception definition for missing Plugins."""
 
 
 class ValidationError(Exception):

@@ -201,7 +201,7 @@ def test_save_config(dummy_plugin):
     from evaluation_system.api.parameters import Integer, ParameterDictionary, String
 
     batchmode_options = """#: Set additional options for the job submission to the workload manager (,
-#:  seperated). Note: batchmode and web only.
+#:  separated). Note: batchmode and web only.
 #extra_scheduler_options="""
 
     res_str = StringIO()
@@ -389,7 +389,7 @@ example (default: test)
     let's hope people write some useful help...#
 extra_scheduler_options (default: )
                         Set additional options for the job submission to the
-                        workload manager (, seperated). Note: batchmode and web
+                        workload manager (, separated). Note: batchmode and web
                         only."""
             % desc[1]
         )
