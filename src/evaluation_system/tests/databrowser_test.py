@@ -31,7 +31,7 @@ def test_time_subsets(dummy_solr):
     assert subset_3 == 0
     assert subset_4 == 0
     with pytest.raises(ValueError):
-        databrowser(time_select="bar")
+        list(databrowser(time_select="bar"))
 
 
 def test_freva_databrowser_method(dummy_solr):

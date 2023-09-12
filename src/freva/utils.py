@@ -45,6 +45,7 @@ from rich.spinner import Spinner
 
 import freva
 from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import ConfigurationException
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 cancel_command = lazy_import.lazy_callable(
@@ -613,10 +614,6 @@ class config:
     db_reloaded: List[bool] = [False]
 
     def __init__(self, config_file: Union[str, Path]) -> None:
-        self._db_settings = lazy_import.lazy_module(
-            "evaluation_system.settings.database"
-        ).SETTINGS
-        self._original_db_settings = self._db_settings.copy()
         self._config_file = Path(config_file).expanduser().absolute()
         os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(self._config_file)
         cfg.reloadConfiguration(self._config_file)
