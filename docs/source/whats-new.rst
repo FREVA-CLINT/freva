@@ -5,6 +5,35 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2309.0.1
+~~~~~~~~~~
+
+New Features
+++++++++++++
+
+Breaking changes
+++++++++++++++++
+
+Deprecations
+++++++++++++
+- move ``freva.esgf`` to the following methods:
+  - :py:meth:`freva.esgf_browser`
+  - :py:meth:`freva.esgf_facets`
+  - :py:meth:`freva.esgf_datasets`
+  - :py:meth:`freva.esgf_download`
+  - :py:meth:`freva.esgf_query`
+
+Bug fixes
++++++++++
+
+Documentations
+++++++++++++++
+- added documentation to ``esgf`` method both for cli and python module.
+
+Internal Changes
+++++++++++++++++
+
+
 v2309.0.0
 ~~~~~~~~~~
 
@@ -14,7 +43,7 @@ New Features
    command line
 - The plugin method and cli plugin command can be instructed to wait for any
   batch job. ``wait=True`` in the python module or ``--wait`` in the cli
-- Users can interact with plugin ouput, using the return value of the
+- Users can interact with the plugin output, using the return value of the
   ``freva.run_plugin`` method.
 
 Breaking changes
@@ -45,7 +74,7 @@ Breaking changes
 
 Deprecations
 ++++++++++++
-- cli ``freva databrowser --all-facets`` is made depricated use ``--facet '*'`` or ``--facet all`` instead
+- cli ``freva databrowser --all-facets`` is made deprecated, use ``--facet '*'`` or ``--facet all`` instead
 
 Bug fixes
 +++++++++
@@ -64,7 +93,7 @@ New Features
 ++++++++++++
 - User data can be ingested also if not all data files match directory reference
   standard.
-- A new databrowser key (uri) was added that representing the object storge
+- A new databrowser key (uri) was added that representing the object storage
   where the data is stored.
 
 Breaking changes
@@ -142,7 +171,7 @@ Documentations
 Internal Changes
 ++++++++++++++++
 - Files found by the databrowser are *alphabetically* sorted.
-- ``follow/unfolllow_history_tag`` recieves a user object as argument instead of string
+- ``follow/unfollow_history_tag`` receives a user object as argument instead of string
 - lazy loading has been improved
 
 v2206.0.10
@@ -199,7 +228,7 @@ New Features
 Breaking changes
 ++++++++++++++++
 - Command line arguments taking boolean values do not require True or False:
-    - Instead of ``freva plugin animtor --batchmode=True`` → ``freva plugin animtor --batchmode``
+    - Instead of ``freva plugin animtaor --batchmode=True`` → ``freva plugin animator --batchmode``
 - :py:meth:`add_output_to_databrowser` formerly :py:meth:`linkmydata` does not infer meta data
   from file and directory structure anymore (i.e., does not need to
   follow a particular folder path and naming convention)
