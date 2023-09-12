@@ -548,7 +548,7 @@ fps                     (default: 5)
                         Set the frames per seceonds of the output animation.
 extra_scheduler_options (default: --qos=test, --array=20)
                         Set additional options for the job submission to the
-                        workload manager (, seperated). Note: batchmode and web
+                        workload manager (, separated). Note: batchmode and web
                         only.
 </pre></div></div>
 </div>
@@ -572,7 +572,31 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2126/pr_20160902T0000-20160902T2330.mp4 in 50 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2126/pr_20160902T0000-20160902T2330.mp4 in 40 seconds
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Process ForkPoolWorker-1:
+Traceback (most recent call last):
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/process.py&#34;, line 314, in _bootstrap
+    self.run()
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/process.py&#34;, line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/pool.py&#34;, line 114, in worker
+    task = get()
+           ^^^^^
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/queues.py&#34;, line 364, in get
+    with self._rlock:
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/synchronize.py&#34;, line 98, in __exit__
+    return self._semlock.__exit__(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/home/runner/work/freva/freva/src/evaluation_system/api/plugin_manager.py&#34;, line 156, in _update_plugin_state_in_db_and_quit
+    raise KeyboardInterrupt
+KeyboardInterrupt
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -616,7 +640,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
       Get the full configuration.
     return_command: bool, default: False
       Show Freva commands belonging to the history entries instead
-      of the entries themself.
+      of the entries themselves.
     limit: int, default: 10
       Limit the number of entires to be displayed.
     plugin: str, default: None
@@ -657,7 +681,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
 
 
     .. hint:: Date Format
-        Dates are given in the ISO-8601 fromat and can be &#34;YYYY-MM-DDTHH:mm:ss.n&#34;
+        Dates are given in the ISO-8601 format and can be &#34;YYYY-MM-DDTHH:mm:ss.n&#34;
         or any less accurate subset. These are all valid: &#34;2012-02-01T10:08:32.1233431&#34;,
         &#34;2012-02-01T10:08:32&#34;, &#34;2012-02-01T10:08&#34;, &#34;2012-02-01T10&#34;, &#34;2012-02-01&#34;,
         &#34;2012-02&#34;, &#34;2012&#34;. Missing values are assumed to be the minimal allowed value.
@@ -688,7 +712,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
  &#39;id&#39;: 2117,
- &#39;timestamp&#39;: &#39;2023-09-11T10:13:52&#39;,
+ &#39;timestamp&#39;: &#39;2023-09-12T07:46:09&#39;,
  &#39;tool&#39;: &#39;animator&#39;,
  &#39;version&#39;: &#39;(2022, 7, 15)&#39;,
  &#39;version_details_id&#39;: 124,
@@ -718,8 +742,8 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   &#39;cbar_label&#39;: &#39;&#39;,
   &#39;suffix&#39;: &#39;mp4&#39;,
   &#39;fps&#39;: 5},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-5744.local&#39;,
- &#39;host&#39;: &#39;fv-az572-564&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-5719.local&#39;,
+ &#39;host&#39;: &#39;fv-az410-372&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,

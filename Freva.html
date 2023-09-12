@@ -493,7 +493,7 @@ is given.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;future&#39;: {}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;future_id&#39;: {}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;future_id&#39;: {}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;future&#39;: {}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}}
 </pre></div>
 </div>
 </dd></dl>
@@ -529,7 +529,7 @@ uris, uris will have the file path along with protocol of the storage
 system. Uris can be useful if the the search query result should be
 used libraries like fsspec.</p></li>
 <li><p><strong>multiversion</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Select all versions and not just the latest version (default).</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default: 5000</em>) – Size of the search querey.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default: 5000</em>) – Size of the search query.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -541,7 +541,7 @@ iterator with results.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p>Seach for files in the system:</p>
+<p>Search for files in the system:</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
 <span class="n">files</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;obs*&#39;</span><span class="p">,</span> <span class="n">institute</span><span class="o">=</span><span class="s1">&#39;cpc&#39;</span><span class="p">,</span>
@@ -555,7 +555,7 @@ iterator with results.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f391162ece0&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f3466a5ee30&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
 </pre></div>
@@ -595,7 +595,7 @@ start of the time period:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.facet_search">
 <span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">facet_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_select</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'flexible'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'file'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'flexible'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiversion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_facets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.facet_search" title="Link to this definition">#</a></dt>
-<dd><p>Search for data attributes (factes) in the databrowser.</p>
+<dd><p>Search for data attributes (facets) in the databrowser.</p>
 <p>The method queries the databrowser for available search facets (keys)
 like model, experiment etc.</p>
 <dl class="field-list simple">
@@ -641,7 +641,7 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [&#39;cmorph&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;future&#39;: [], &#39;model&#39;: [&#39;cpc&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;product&#39;: [&#39;grid&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;cmor_table&#39;: [&#39;30min&#39;], &#39;future_id&#39;: [], &#39;variable&#39;: [&#39;pr&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;future&#39;: [], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -653,20 +653,19 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;experiment&#39;, &#39;project&#39;, &#39;future&#39;, &#39;model&#39;, &#39;institute&#39;, &#39;grid_label&#39;, &#39;fs_type&#39;, &#39;variable&#39;, &#39;realm&#39;, &#39;ensemble&#39;, &#39;time_frequency&#39;, &#39;future_id&#39;, &#39;time_aggregation&#39;, &#39;cmor_table&#39;, &#39;product&#39;]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;cmor_table&#39;, &#39;future_id&#39;, &#39;variable&#39;, &#39;grid_label&#39;, &#39;institute&#39;, &#39;time_aggregation&#39;, &#39;realm&#39;, &#39;project&#39;, &#39;future&#39;, &#39;fs_type&#39;, &#39;product&#39;, &#39;model&#39;, &#39;time_frequency&#39;, &#39;ensemble&#39;, &#39;experiment&#39;]
 </pre></div>
 </div>
 <p>Reverse search: retrieving meta data from a known file</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc&quot;</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">freva</span>
+<span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc&quot;</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file</span><span class="p">)))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;experiment&#39;: [], &#39;project&#39;: [], &#39;future&#39;: [], &#39;model&#39;: [], &#39;institute&#39;: [], &#39;grid_label&#39;: [], &#39;fs_type&#39;: [], &#39;variable&#39;: [], &#39;realm&#39;: [], &#39;ensemble&#39;: [], &#39;time_frequency&#39;: [], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [], &#39;cmor_table&#39;: [], &#39;product&#39;: []}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;cmor_table&#39;: [&#39;30min&#39;], &#39;future_id&#39;: [], &#39;variable&#39;: [&#39;pr&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;future&#39;: [], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;]}
 </pre></div>
 </div>
 </dd></dl>
@@ -839,7 +838,7 @@ creates plots of solr facets and an animation.
 │ fps                     │ Set the frames per seceonds of the output          │
 │                         │ animation. (default: 5)                            │
 │ extra_scheduler_options │ Set additional options for the job submission to   │
-│                         │ the workload manager (, seperated). Note:          │
+│                         │ the workload manager (, separated). Note:          │
 │                         │ batchmode and web only. (default: --qos=test,      │
 │                         │ --array=20)                                        │
 └─────────────────────────┴────────────────────────────────────────────────────┘
@@ -861,7 +860,7 @@ creates plots of solr facets and an animation.
 <li><p><strong>scheduled_id</strong> – Run a scheduled job from database</p></li>
 <li><p><strong>batchmode</strong> – Create a Batch job and submit it to the scheduling system.</p></li>
 <li><p><strong>unique_output</strong> – Append a Freva run id to the output/cache folder(s).</p></li>
-<li><p><strong>tag</strong> – Use git commit hash to specify a specific versrion of this tool.</p></li>
+<li><p><strong>tag</strong> – Use git commit hash to specify a specific version of this tool.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -885,7 +884,7 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 46 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 38 seconds
 </pre></div>
 </div>
 <p>Run a plugin in the background. You can interact with the plugin using
@@ -903,7 +902,7 @@ the <code class="docutils literal notranslate"><span class="pre">.wait</span></c
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2118
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-5943.out
+tail -f /tmp/share/slurm/animator/Animator-5924.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -940,7 +939,7 @@ of the <a class="reference internal" href="#freva.PluginStatus" title="freva.Plu
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_101533/2119
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_074733/2119
 finished
 </pre></div>
 </div>
@@ -956,7 +955,7 @@ by making use of the :py:meth:<code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[10:15:33] INFO     freva - INFO - history of {plugin}, limit=1,  _history.py:93
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[07:47:33] INFO     freva - INFO - history of {plugin}, limit=1,  _history.py:93
                     since=None, until=None, entry_ids=None                      
 </pre></div>
 </div>
@@ -1011,7 +1010,7 @@ constraint <code class="docutils literal notranslate"><span class="pre">*data.nc
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_101533/2120
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_074733/2120
 pr
 </pre></div>
 </div>
@@ -1056,8 +1055,8 @@ pr
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_101534/2121
-Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_101534/2121
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_074733/2121
+Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_074733/2121
 
 </pre></div>
 </div>
@@ -1097,7 +1096,7 @@ finished.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2122
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-6114.out
+tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-6094.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -1120,7 +1119,7 @@ single entries.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>full_text</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Get the full configuration.</p></li>
 <li><p><strong>return_command</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Show Freva commands belonging to the history entries instead
-of the entries themself.</p></li>
+of the entries themselves.</p></li>
 <li><p><strong>limit</strong> (<em>int</em><em>, </em><em>default: 10</em>) – Limit the number of entires to be displayed.</p></li>
 <li><p><strong>plugin</strong> (<em>str</em><em>, </em><em>default: None</em>) – Display only entries from a given plugin name.</p></li>
 <li><p><strong>since</strong> (<em>str</em><em>, </em><em>datetime.datetime</em><em>, </em><em>default: None</em>) – Retrieve entries older than date, see hint on date format below.</p></li>
@@ -1153,15 +1152,15 @@ of the entries themself.</p></li>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;list&#39;&gt; 3
 dict_keys([&#39;status_dict&#39;, &#39;id&#39;, &#39;timestamp&#39;, &#39;tool&#39;, &#39;version&#39;, &#39;version_details_id&#39;, &#39;configuration&#39;, &#39;slurm_output&#39;, &#39;host&#39;, &#39;uid_id&#39;, &#39;status&#39;, &#39;flag&#39;, &#39;caption&#39;, &#39;result&#39;])
-{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230911_101533&#39;}
-[10:15:36] INFO     freva - INFO - history, limit=3, since=None,  _history.py:93
+{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_074733&#39;}
+[07:47:35] INFO     freva - INFO - history, limit=3, since=None,  _history.py:93
                     until=None, entry_ids=None                                  
 </pre></div>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Date Format
-Dates are given in the ISO-8601 fromat and can be “YYYY-MM-DDTHH:mm:ss.n”
+Dates are given in the ISO-8601 format and can be “YYYY-MM-DDTHH:mm:ss.n”
 or any less accurate subset. These are all valid: “2012-02-01T10:08:32.1233431”,
 “2012-02-01T10:08:32”, “2012-02-01T10:08”, “2012-02-01T10”, “2012-02-01”,
 “2012-02”, “2012”. Missing values are assumed to be the minimal allowed value.
@@ -1206,7 +1205,7 @@ To avoid a this redundancy you can set the <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">symlink</span></code> for symbolic links or <code class="docutils literal notranslate"><span class="pre">link</span></code> for creating hard links
 to create symbolic links or <code class="docutils literal notranslate"><span class="pre">move</span></code> to move the data into the central
 user directory entirely.</p></li>
-<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Replace existing files in the user data structre</p></li>
+<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Replace existing files in the user data structure</p></li>
 <li><p><strong>experiment</strong> (<em>str</em><em>, </em><em>default: None</em>) – By default the method tries to deduce the <em>experiment</em> information from
 the metadata. To overwrite this information the <em>experiment</em> keyword
 should be set.</p></li>
@@ -1255,16 +1254,16 @@ and <code class="docutils literal notranslate"><span class="pre">experiment</spa
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230911/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div>
 </div>
 <p>By default the data is copied. By using the <code class="docutils literal notranslate"><span class="pre">how</span></code> keyword you can
@@ -1391,6 +1390,404 @@ a context manager:</p>
 </dd></dl>
 
 </section>
+<section id="searching-for-esgf-data">
+<h2>Searching for ESGF data<a class="headerlink" href="#searching-for-esgf-data" title="Link to this heading">#</a></h2>
+<p>Freva also allows to query for data in all the ESGF nodes. You have the following 5
+methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#freva.esgf_browser" title="freva.esgf_browser"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_browser()</span></code></a>: The main method for searching data. The browser
+method lets you search for data URLs (default) or their opendap/gridftp endpoints.</p></li>
+<li><p><a class="reference internal" href="#freva.esgf_facets" title="freva.esgf_facets"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_facets()</span></code></a>: This method lists all search categories (facets) and
+their values.</p></li>
+<li><p><a class="reference internal" href="#freva.esgf_datasets" title="freva.esgf_datasets"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_datasets()</span></code></a>: This method lists the name of the datasets (and version)
+in the ESGF.</p></li>
+<li><p><a class="reference internal" href="#freva.esgf_download" title="freva.esgf_download"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_download()</span></code></a>: You can download the data with the script file
+that this method creates.</p></li>
+<li><p><a class="reference internal" href="#freva.esgf_query" title="freva.esgf_query"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_query()</span></code></a>: Similarly to <a class="reference internal" href="#freva.esgf_facets" title="freva.esgf_facets"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.esgf_facets()</span></code></a>, this method lists
+all query elements but groups them <em>by dataset</em>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The collection of methods
+are derived from <a class="reference external" href="https://github.com/ESGF/esgf.github.io/wiki/ESGF_Search_REST_API">ESGF’s rest API</a>.
+The query facets follow the syntax of the datasets hosted there (CMIP5, CORDEX, CMIP6, etc.)
+that might differ from <a class="reference internal" href="#freva.databrowser" title="freva.databrowser"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.databrowser()</span></code></a> and <strong>are</strong> case
+sensitive. They also have some special query keys, e.g.:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">distrib</span></code>: (<strong>true</strong>, false) search globally or only locally (e.g. at DKRZ, MPI data and replicas)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latest</span></code> : (true, false, <strong>unset</strong>) search for the latest version, older ones or all.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replica</span></code>: (true, false, <strong>unset</strong>) search only for replicas, non-replicas, or all.</p></li>
+</ul>
+</div>
+<p>Below you can find a more detailed documentation.</p>
+<dl class="py function" id="module-5">
+<dt class="sig sig-object py" id="freva.esgf_browser">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_browser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opendap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridftp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.esgf_browser" title="Link to this definition">#</a></dt>
+<dd><p>Find data in the ESGF.</p>
+<p>The method queries the ESGF nodes for file URLs (default) or
+opendap/gridftp endpoints as well.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">key=value</span></code> syntax follows that of <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>
+but the key names follow the ESGF standards for each dataset.
+Search of multiple values for the same key can be achieved
+either as a <code class="docutils literal notranslate"><span class="pre">str</span></code> concatenation (e.g.``frequency=”3hr,mon” ``
+with <strong>no</strong> space between variables) or as a <code class="docutils literal notranslate"><span class="pre">list</span></code>
+(e.g. <code class="docutils literal notranslate"><span class="pre">frequency=[&quot;3hr&quot;,</span> <span class="pre">&quot;mon&quot;]</span></code>).</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>opendap: bool, default: False</dt><dd><p>List opendap endpoints instead of http ones.</p>
+</dd>
+<dt>gridftp: bool, default: False</dt><dd><p>Show gridftp endpoints instead of the http default
+ones (or skip them if none found)</p>
+</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>list :</dt><dd><p>Collection of files</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Similarly to <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>, <code class="docutils literal notranslate"><span class="pre">freva.esgf_browser</span></code>
+expects a list of <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pairs in no particular
+order, but unlike the former it <em>is</em> case sensitive.</p>
+<p>Given that your Freva instance is configured at DKRZ,
+if we want to search the URLs of all the files stored
+at the (DKRZ) local node (<code class="docutils literal notranslate"><span class="pre">distrib=false</span></code>) holding
+the latest version (<code class="docutils literal notranslate"><span class="pre">latest=true</span></code>) of the variable
+uas (<code class="docutils literal notranslate"><span class="pre">variable=uas</span></code>) for either 3hr or monthly
+time frequencies ( <code class="docutils literal notranslate"><span class="pre">frequency=[&quot;3hr&quot;,</span> <span class="pre">&quot;mon&quot;]</span></code>)
+and for a particular realization within the
+project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_browser</span><span class="p">(</span>
+    <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
+    <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
+    <span class="n">source_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CM6-1&quot;</span><span class="p">,</span>
+    <span class="n">institution_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CERFACS&quot;</span><span class="p">,</span>
+    <span class="n">experiment_id</span><span class="o">=</span><span class="s2">&quot;ssp585&quot;</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;3hr,mon&quot;</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;uas&quot;</span><span class="p">,</span>
+    <span class="n">variant_label</span><span class="o">=</span><span class="s2">&quot;r1i1p1f2&quot;</span><span class="p">,</span>
+    <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="w"> </span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>len(files) =10
+http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/Amon/uas/gr/v20190219/uas_Amon_CNRM-CM6-1_ssp585_r1i1p1f2_gr_201501-210012.nc
+http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_201501010130-202412312230.nc
+http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_202501010130-203412312230.nc
+http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_203501010130-204412312230.nc
+http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_204501010130-205412312230.nc
+</pre></div>
+</div>
+<p>In order to list the opendap endpoints (<code class="docutils literal notranslate"><span class="pre">opendap=True</span></code>):</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">opendap</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_browser</span><span class="p">(</span>
+    <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
+    <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
+    <span class="n">source_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CM6-1&quot;</span><span class="p">,</span>
+    <span class="n">institution_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CERFACS&quot;</span><span class="p">,</span>
+    <span class="n">experiment_id</span><span class="o">=</span><span class="s2">&quot;ssp585&quot;</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;3hr&quot;</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;uas&quot;</span><span class="p">,</span>
+    <span class="n">variant_label</span><span class="o">=</span><span class="s2">&quot;r1i1p1f2&quot;</span><span class="p">,</span>
+    <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">opendap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">opendap</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_201501010130-202412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_202501010130-203412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_203501010130-204412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_204501010130-205412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_205501010130-206412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_206501010130-207412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_207501010130-208412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_208501010130-209412312230.nc.html&#39;, &#39;http://esgf3.dkrz.de/thredds/dodsC/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_209501010130-210012312230.nc.html&#39;]
+</pre></div>
+</div>
+<p>Or the gridftp endpoints instead (<code class="docutils literal notranslate"><span class="pre">gridftp=True</span></code>):</p>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_201501010130-202412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_202501010130-203412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_203501010130-204412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_204501010130-205412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_205501010130-206412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_206501010130-207412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_207501010130-208412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_208501010130-209412312230.nc&#39;, &#39;gsiftp://esgf3.dkrz.de:2811//cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-1/ssp585/r1i1p1f2/E3hr/uas/gr/v20190219/uas_E3hr_CNRM-CM6-1_ssp585_r1i1p1f2_gr_209501010130-210012312230.nc&#39;]
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="freva.esgf_datasets">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.esgf_datasets" title="Link to this definition">#</a></dt>
+<dd><p>List the name of the datasets (and version) in the ESGF.</p>
+<p>The method queries the ESGF nodes for dataset information.
+The key=value syntax follows that of <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>
+but the key names follow the ESGF standards for each dataset.</p>
+<section id="id9">
+<h3>Parameters:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt><a href="#id10"><span class="problematic" id="id11">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>Returns:<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>list[tuple[str, str]]:</dt><dd><p>list of (dataset_name, version_number) tuples</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>List the datasets corresponding to a query of files
+stored at the (DKRZ) local node (<code class="docutils literal notranslate"><span class="pre">distrib=false</span></code>)
+holding the latest version (<code class="docutils literal notranslate"><span class="pre">latest=true</span></code>) for a particular
+realization within the project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_datasets</span><span class="p">(</span>
+    <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
+    <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
+    <span class="n">source_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CM6-1&quot;</span><span class="p">,</span>
+    <span class="n">institution_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CERFACS&quot;</span><span class="p">,</span>
+    <span class="n">experiment_id</span><span class="o">=</span><span class="s2">&quot;ssp585&quot;</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;3hr&quot;</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;uas&quot;</span><span class="p">,</span>
+    <span class="n">variant_label</span><span class="o">=</span><span class="s2">&quot;r1i1p1f2&quot;</span><span class="p">,</span>
+    <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span><span class="w"> </span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>len(datasets) =1
+(&#39;CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.uas.gr&#39;, 20190219)
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="freva.esgf_download">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_script</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></span><a class="headerlink" href="#freva.esgf_download" title="Link to this definition">#</a></dt>
+<dd><p>Create a script file to download the queried files at ESGF.</p>
+<p>The method creates a bash script wrapper of a wget query
+from ESGF dataset(s) (only http).</p>
+<section id="id13">
+<h3>Parameters:<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>download_script: Union[str, Path], default: None</dt><dd><p>Download wget_script for getting the files
+instead of displaying anything (only http)</p>
+</dd>
+<dt><a href="#id14"><span class="problematic" id="id15">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+</dd>
+</dl>
+</section>
+<section id="id16">
+<h3>Returns:<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>Union[str, Path]:</dt><dd><p>wget_script to download the files (only http).</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>Create a wget script to download the queried URLs:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">freva</span><span class="o">.</span><span class="n">esgf_download</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;CMIP5&quot;</span><span class="p">,</span>
+            <span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;decadal1960&quot;</span><span class="p">,</span>
+            <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;tas&quot;</span><span class="p">,</span> <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">download_script</span><span class="o">=</span><span class="s2">&quot;/tmp/script.get&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/script.get&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content</span><span class="p">[:</span><span class="mi">10</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+ ##############################################################################
+ # ESG Federation download script
+ #
+ # Template version: 1.2
+ # Generated by esgf-data.dkrz.de - 2023/09/12 09:47:40
+ # Search URL: http://esgf-data.dkrz.de/esg-search/wget?project=CMIP5&amp;experiment=decadal1960&amp;variable=tas&amp;distrib=False&amp;latest=True&amp;type=File
+ #
+ ###############################################################################
+ # first be sure it&#39;s bash... anything out of bash or sh will break
+
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will need an OpenID account to download the data,
+for example <a class="reference external" href="https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/">here</a>.</p>
+<p>There is a <a class="reference external" href="https://esgf-pyclient.readthedocs.io/en/latest/index.html">ESGF PyClient</a> as well.</p>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="freva.esgf_facets">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_facets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_facet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.esgf_facets" title="Link to this definition">#</a></dt>
+<dd><p>Search for data attributes (facets) through ESGF.</p>
+<p>The method queries the ESGF nodes for available search facets (keys)
+like model, experiment etc. The <code class="docutils literal notranslate"><span class="pre">key=value</span></code> syntax follows that of
+<code class="docutils literal notranslate"><span class="pre">freva.facet_search</span></code> but the key names follow the ESGF standards
+for each dataset.</p>
+<section id="id17">
+<h3>Parameters:<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>show_facet: Union[str, list[str]], default: None</dt><dd><p>List all values for the given facet (might be
+defined multiple times). The results show the possible
+values of the selected facet according to the given
+constraints and the number of <em>datasets</em> (not files)
+that selecting such value as a constraint will result
+(faceted search)</p>
+</dd>
+<dt><a href="#id18"><span class="problematic" id="id19">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+</dd>
+</dl>
+</section>
+<section id="id20">
+<h3>Returns:<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>dict[str, list[str]]:</dt><dd><p>Collection of facets</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>List the values of the attributes <code class="docutils literal notranslate"><span class="pre">variable</span></code>
+and <code class="docutils literal notranslate"><span class="pre">time_frequency</span></code> stored at the (DKRZ) local node
+(<code class="docutils literal notranslate"><span class="pre">distrib=false</span></code>) holding the latest version (<code class="docutils literal notranslate"><span class="pre">latest=true</span></code>)
+for a particular realization within the project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<span class="n">facets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_facets</span><span class="p">(</span>
+    <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
+    <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
+    <span class="n">source_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CM6-1&quot;</span><span class="p">,</span>
+    <span class="n">institution_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CERFACS&quot;</span><span class="p">,</span>
+    <span class="n">experiment_id</span><span class="o">=</span><span class="s2">&quot;ssp585&quot;</span><span class="p">,</span>
+    <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_facet</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">facets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;variable&#39;: {&#39;abs550aer&#39;: 6, &#39;agesno&#39;: 6, &#39;areacello&#39;: 6, &#39;baresoilFrac&#39;: 5, &#39;bigthetao&#39;: 6, &#39;bigthetaoga&#39;: 6, &#39;c3PftFrac&#39;: 1, &#39;c4PftFrac&#39;: 1, &#39;ccb&#39;: 6, &#39;cct&#39;: 6, &#39;ch4global&#39;: 6, &#39;ci&#39;: 6, &#39;cl&#39;: 6, &#39;cli&#39;: 6, &#39;clivi&#39;: 6, &#39;clt&#39;: 12, &#39;clw&#39;: 6, &#39;clwvi&#39;: 6, &#39;co2mass&#39;: 6, &#39;cropFrac&#39;: 6, &#39;cropFracC3&#39;: 6, &#39;cropFracC4&#39;: 6, &#39;evspsbl&#39;: 6, &#39;evspsblpot&#39;: 6, &#39;evspsblsoi&#39;: 6, &#39;evspsblveg&#39;: 6, &#39;ficeberg&#39;: 6, &#39;friver&#39;: 6, &#39;gpp&#39;: 6, &#39;grassFrac&#39;: 6, &#39;grassFracC3&#39;: 5, &#39;grassFracC4&#39;: 6, &#39;hcont300&#39;: 6, &#39;hfbasin&#39;: 6, &#39;hfbasinpmadv&#39;: 6, &#39;hfds&#39;: 6, &#39;hfdsn&#39;: 6, &#39;hfls&#39;: 7, &#39;hfss&#39;: 7, &#39;hfx&#39;: 6, &#39;hfy&#39;: 6, &#39;htovgyre&#39;: 5, &#39;htovovrt&#39;: 6, &#39;hur&#39;: 6, &#39;hurs&#39;: 11, &#39;hursmax&#39;: 6, &#39;hursmin&#39;: 6, &#39;hus&#39;: 13, &#39;hus850&#39;: 1, &#39;huss&#39;: 13, &#39;intuadse&#39;: 6, &#39;intuaw&#39;: 6, &#39;intvadse&#39;: 6, &#39;intvaw&#39;: 6, &#39;lai&#39;: 12, &#39;landCoverFrac&#39;: 1, &#39;lwp&#39;: 1, &#39;lwsnl&#39;: 6, &#39;masscello&#39;: 6, &#39;masso&#39;: 6, &#39;mc&#39;: 6, &#39;mfo&#39;: 6, &#39;mlotst&#39;: 6, &#39;mlotstmax&#39;: 6, &#39;mlotstmin&#39;: 6, &#39;mrfso&#39;: 6, &#39;mrlso&#39;: 6, &#39;mrro&#39;: 6, &#39;mrros&#39;: 6, &#39;mrsfl&#39;: 12, &#39;mrsll&#39;: 10, &#39;mrso&#39;: 12, &#39;mrsol&#39;: 12, &#39;mrsos&#39;: 6, &#39;mrtws&#39;: 6, &#39;msftyz&#39;: 6, &#39;n2oglobal&#39;: 6, &#39;npp&#39;: 6, &#39;nwdFracLut&#39;: 6, &#39;o3&#39;: 6, &#39;od550aer&#39;: 6, &#39;od550dust&#39;: 1, &#39;od550so4&#39;: 1, &#39;pbo&#39;: 6, &#39;pr&#39;: 8, &#39;prc&#39;: 12, &#39;prrc&#39;: 1, &#39;prsn&#39;: 11, &#39;prveg&#39;: 6, &#39;prw&#39;: 7, &#39;ps&#39;: 7, &#39;psl&#39;: 12, &#39;ptp&#39;: 6, &#39;ra&#39;: 6, &#39;residualFrac&#39;: 6, &#39;rivo&#39;: 6, &#39;rlds&#39;: 13, &#39;rldscs&#39;: 6, &#39;rls&#39;: 1, &#39;rlus&#39;: 12, &#39;rlut&#39;: 11, &#39;rlutaf&#39;: 6, &#39;rlutcs&#39;: 6, &#39;rlutcsaf&#39;: 6, &#39;rsds&#39;: 13, &#39;rsdscs&#39;: 6, &#39;rsdt&#39;: 6, &#39;rsntds&#39;: 6, &#39;rss&#39;: 1, &#39;rsus&#39;: 6, &#39;rsuscs&#39;: 5, &#39;rsut&#39;: 6, &#39;rsutaf&#39;: 6, &#39;rsutcs&#39;: 6, &#39;rsutcsaf&#39;: 6, &#39;sbl&#39;: 11, &#39;sfcWind&#39;: 7, &#39;sfcWindmax&#39;: 12, &#39;sfdsi&#39;: 6, &#39;siage&#39;: 1, &#39;siareaacrossline&#39;: 1, &#39;siarean&#39;: 1, &#39;siareas&#39;: 1, &#39;sicompstren&#39;: 1, &#39;siconc&#39;: 7, &#39;siconca&#39;: 2, &#39;sidconcdyn&#39;: 1, &#39;sidconcth&#39;: 1, &#39;sidmassdyn&#39;: 1, &#39;sidmassevapsubl&#39;: 1, &#39;sidmassgrowthbot&#39;: 1, &#39;sidmassgrowthwat&#39;: 1, &#39;sidmasslat&#39;: 1, &#39;sidmassmeltbot&#39;: 1, &#39;sidmassmelttop&#39;: 1, &#39;sidmasssi&#39;: 1, &#39;sidmassth&#39;: 1, &#39;sidmasstranx&#39;: 1, &#39;sidmasstrany&#39;: 1, &#39;sidragbot&#39;: 1, &#39;siextentn&#39;: 1, &#39;siextents&#39;: 1, &#39;sifb&#39;: 1, &#39;siflcondbot&#39;: 1, &#39;siflcondtop&#39;: 1, &#39;siflfwbot&#39;: 1, &#39;siflfwdrain&#39;: 1, &#39;sifllatstop&#39;: 1, &#39;sifllwutop&#39;: 1, &#39;siflsensupbot&#39;: 1, &#39;siflswdbot&#39;: 1, &#39;siflswdtop&#39;: 1, &#39;siflswutop&#39;: 1, &#39;sihc&#39;: 1, &#39;simass&#39;: 1, &#39;simassacrossline&#39;: 1, &#39;sipr&#39;: 1, &#39;sisali&#39;: 1, &#39;sisaltmass&#39;: 1, &#39;sisnconc&#39;: 1, &#39;sisnhc&#39;: 1, &#39;sisnmass&#39;: 1, &#39;sisnthick&#39;: 7, &#39;sispeed&#39;: 2, &#39;sistrxdtop&#39;: 1, &#39;sistrxubot&#39;: 1, &#39;sistrydtop&#39;: 1, &#39;sistryubot&#39;: 1, &#39;sitempbot&#39;: 1, &#39;sitempsnic&#39;: 1, &#39;sitemptop&#39;: 2, &#39;sithick&#39;: 7, &#39;sitimefrac&#39;: 2, &#39;siu&#39;: 6, &#39;siv&#39;: 7, &#39;sivol&#39;: 6, &#39;sivoln&#39;: 1, &#39;sivols&#39;: 1, &#39;sltbasin&#39;: 1, &#39;sltnortha&#39;: 1, &#39;sltovgyre&#39;: 5, &#39;sltovovrt&#39;: 6, &#39;snc&#39;: 12, &#39;snd&#39;: 6, &#39;sndmassdyn&#39;: 1, &#39;sndmassmelt&#39;: 1, &#39;sndmasssi&#39;: 1, &#39;sndmasssnf&#39;: 1, &#39;sndmasssubl&#39;: 1, &#39;snm&#39;: 6, &#39;snmassacrossline&#39;: 1, &#39;snw&#39;: 6, &#39;so&#39;: 6, &#39;sob&#39;: 6, &#39;soga&#39;: 6, &#39;sos&#39;: 6, &#39;sosga&#39;: 6, &#39;t20d&#39;: 6, &#39;ta&#39;: 10, &#39;ta500&#39;: 1, &#39;ta850&#39;: 1, &#39;tas&#39;: 13, &#39;tasmax&#39;: 6, &#39;tasmin&#39;: 7, &#39;tauu&#39;: 6, &#39;tauuo&#39;: 6, &#39;tauv&#39;: 6, &#39;tauvo&#39;: 6, &#39;thetao&#39;: 6, &#39;thetaoga&#39;: 6, &#39;thetaot&#39;: 1, &#39;thkcello&#39;: 6, &#39;tntrl&#39;: 1, &#39;tob&#39;: 6, &#39;tos&#39;: 12, &#39;tosga&#39;: 6, &#39;tossq&#39;: 6, &#39;toz&#39;: 6, &#39;tpf&#39;: 6, &#39;tran&#39;: 6, &#39;treeFrac&#39;: 6, &#39;ts&#39;: 6, &#39;tsl&#39;: 6, &#39;tslsi&#39;: 1, &#39;tsn&#39;: 6, &#39;ua&#39;: 12, &#39;uas&#39;: 14, &#39;umo&#39;: 6, &#39;uo&#39;: 6, &#39;va&#39;: 12, &#39;vas&#39;: 14, &#39;vegFrac&#39;: 6, &#39;vmo&#39;: 6, &#39;vo&#39;: 5, &#39;volo&#39;: 6, &#39;wap&#39;: 6, &#39;wfo&#39;: 6, &#39;wmo&#39;: 6, &#39;wo&#39;: 6, &#39;wtd&#39;: 6, &#39;zg&#39;: 13, &#39;zg500&#39;: 1, &#39;zos&#39;: 6, &#39;zossq&#39;: 6, &#39;zostoga&#39;: 6, &#39;ztp&#39;: 6}, &#39;frequency&#39;: {&#39;3hr&#39;: 8, &#39;3hrPt&#39;: 4, &#39;6hrPt&#39;: 4, &#39;day&#39;: 190, &#39;fx&#39;: 6, &#39;mon&#39;: 1053}}
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="freva.esgf_query">
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.esgf_query" title="Link to this definition">#</a></dt>
+<dd><p>Query fields from ESGF and group them per dataset</p>
+<p>The method queries fields (e.g. facets) and groups them by dataset
+in a list of dictionaries.</p>
+<section id="id21">
+<h3>Parameters:<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>query:</dt><dd><p>Display results from &lt;list&gt; queried fields</p>
+</dd>
+<dt><a href="#id22"><span class="problematic" id="id23">**</span></a>search_constraints:</dt><dd><p>Search facets to be applied in the data search.</p>
+</dd>
+</dl>
+</section>
+<section id="id24">
+<h3>Returns:<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt>list[dict[str, list[str]]]:</dt><dd><p>List of dictionaries with the queried elements for each dataset</p>
+</dd>
+</dl>
+</section>
+<section id="example">
+<h3>Example:<a class="headerlink" href="#example" title="Link to this heading">#</a></h3>
+<p>Show the <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pair of selected elements for a search (e.g.
+<code class="docutils literal notranslate"><span class="pre">query=[&quot;url&quot;,&quot;master_id&quot;,&quot;distribution&quot;,&quot;mip_era&quot;,&quot;activity_id&quot;,&quot;source_id&quot;,&quot;variable&quot;,&quot;product&quot;,&quot;version&quot;]</span></code>):</p>
+<p><span class="caption-text">Code </span></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">freva</span>
+<span class="n">queries</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_query</span><span class="p">(</span>
+    <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
+    <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
+    <span class="n">source_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CM6-1&quot;</span><span class="p">,</span>
+    <span class="n">institution_id</span><span class="o">=</span><span class="s2">&quot;CNRM-CERFACS&quot;</span><span class="p">,</span>
+    <span class="n">experiment_id</span><span class="o">=</span><span class="s2">&quot;ssp585&quot;</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;3hr&quot;</span><span class="p">,</span>
+    <span class="n">variant_label</span><span class="o">=</span><span class="s2">&quot;r1i1p1f2&quot;</span><span class="p">,</span>
+    <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">query</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">,</span><span class="s2">&quot;master_id&quot;</span><span class="p">,</span><span class="s2">&quot;distribution&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mip_era&quot;</span><span class="p">,</span><span class="s2">&quot;activity_id&quot;</span><span class="p">,</span><span class="s2">&quot;source_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;variable&quot;</span><span class="p">,</span><span class="s2">&quot;product&quot;</span><span class="p">,</span><span class="s2">&quot;version&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">queries</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><span class="caption-text">Results</span></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[
+   {
+      &quot;version&quot;: &quot;20190219&quot;,
+      &quot;activity_id&quot;: [
+         &quot;ScenarioMIP&quot;
+      ],
+      &quot;master_id&quot;: &quot;CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr&quot;,
+      &quot;mip_era&quot;: [
+         &quot;CMIP6&quot;
+      ],
+      &quot;product&quot;: [
+         &quot;model-output&quot;
+      ],
+      &quot;source_id&quot;: [
+         &quot;CNRM-CM6-1&quot;
+      ],
+      &quot;url&quot;: [
+         &quot;http://esgf3.dkrz.de/thredds/catalog/esgcet/1586/CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219.xml#CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/xml+thredds|THREDDS&quot;,
+         &quot;http://esgf3.dkrz.de/las/getUI.do?catid=649F6BBCDD98B0633CF0042D119CC69D_ns_CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/las|LAS&quot;
+      ],
+      &quot;variable&quot;: [
+         &quot;vas&quot;
+      ],
+      &quot;score&quot;: 1.0
+   },
+   {
+      &quot;version&quot;: &quot;20190219&quot;,
+      &quot;activity_id&quot;: [
+         &quot;ScenarioMIP&quot;
+      ],
+      &quot;master_id&quot;: &quot;CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.prrc.gr&quot;,
+      &quot;mip_era&quot;: [
+         &quot;CMIP6&quot;
+      ],
+      &quot;product&quot;: [
+         &quot;model-output&quot;
+      ],
+      &quot;source_id&quot;: [
+         &quot;CNRM-CM6-1&quot;
+      ],
+      &quot;url&quot;: [
+         &quot;http://esgf3.dkrz.de/thredds/catalog/esgcet/1586/CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.prrc.gr.v20190219.xml#CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.prrc.gr.v20190219|application/xml+thredds|THREDDS&quot;,
+         &quot;http://esgf3.dkrz.de/las/getUI.do?catid=649F6BBCDD98B0633CF0042D119CC69D_ns_CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.prrc.gr.v20190219|application/las|LAS&quot;
+      ],
+      &quot;variable&quot;: [
+         &quot;prrc&quot;
+      ],
+      &quot;score&quot;: 1.0
+   }
+]
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -1485,6 +1882,14 @@ a context manager:</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.config.db_reloaded"><code class="docutils literal notranslate"><span class="pre">config.db_reloaded</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searching-for-esgf-data">Searching for ESGF data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.esgf_browser"><code class="docutils literal notranslate"><span class="pre">esgf_browser()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.esgf_datasets"><code class="docutils literal notranslate"><span class="pre">esgf_datasets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.esgf_download"><code class="docutils literal notranslate"><span class="pre">esgf_download()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.esgf_facets"><code class="docutils literal notranslate"><span class="pre">esgf_facets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.esgf_query"><code class="docutils literal notranslate"><span class="pre">esgf_query()</span></code></a></li>
 </ul>
 </li>
 </ul>
