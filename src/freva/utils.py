@@ -9,12 +9,22 @@ from fnmatch import fnmatch
 from functools import wraps
 from pathlib import Path
 from types import TracebackType
-from typing import Any, Callable, List, Literal, Optional, Tuple, Type, Union, cast
+from typing import (
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 try:
     from IPython import get_ipython
 except ImportError:  # pragma: no cover
-    get_python = lambda: None  # pragma: no cover
+    get_ipython = lambda: None  # pragma: no cover
 
 import lazy_import
 from django.conf import settings as django_settings
