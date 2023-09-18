@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=927b94d3fcb96560df09" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,8 +32,9 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=927b94d3fcb96560df09"></script>
 
     <script src="_static/documentation_options.js?v=1c0a39d9"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
@@ -57,6 +58,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -97,7 +107,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -119,7 +130,6 @@
 </a></div>
     
   </div>
-  
   
   <div class=" navbar-header-items">
     
@@ -168,20 +178,20 @@
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-header-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-header-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats-new.html">
+                      <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
                         What’s new
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -193,23 +203,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -225,8 +237,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -236,18 +248,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__kbd-shortcut">Search</span>
+    <span><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -310,20 +324,20 @@ document.write(`
                       </a>
                     </li>
                 
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-header-nav-more-links">
                     More
                 </button>
-                <div class="dropdown-menu">
+                <ul id="pst-header-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="whats-new.html">
+                      <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
                         What’s new
                       </a>
                     </li>
                 
-                </div>
-            </div>
+                </ul>
+            </li>
             
   </ul>
 </nav></div>
@@ -337,10 +351,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -356,8 +370,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -389,8 +403,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="index.html" class="nav-link" aria-label="Home">
@@ -428,18 +442,18 @@ available via the <code class="docutils literal notranslate"><span class="pre">-
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: freva [-h] [-V] {plugin,user-data,databrowser,esgf,history} ...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: freva [-h] [-V] {history,esgf,plugin,user-data,databrowser} ...
 
 Free EVAluation system framework (freva)
 
 positional arguments:
-  {plugin,user-data,databrowser,esgf,history}
+  {history,esgf,plugin,user-data,databrowser}
                         Available sub-commands:
+    history             Read the plugin application history.
+    esgf                Search/Download ESGF the data catalogue.
     plugin              Apply data analysis plugin.
     user-data           Update users project data
     databrowser         Find data in the system.
-    esgf                Search/Download ESGF the data catalogue.
-    history             Read the plugin application history.
 
 options:
   -h, --help            show this help message and exit
@@ -547,16 +561,16 @@ variables available that satisfies a certain constraint (e.g. sampled
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230912/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230918/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 /home/runner/work/freva/freva/.docker/data/reanalysis/reanalysis/NOAA/NODC/OC5/mon/ocean/Omon/r1i1p1/v20200101/hc700/hc700_mon_NODC_OC5_r1i1p1_201201-201212.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
@@ -738,21 +752,21 @@ the data). For example to see all facets that are available in the
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
-grid_label: gn
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
 cmor_table: 1hr,30min,3hr,aday,amon,omon
-time_aggregation: mean
 future: 
-product: cmip,eur-11,eur-11b,grid,reanalysis
-project: cmip6,cordex,observations,reanalysis,user-runner
 realm: atmos,ocean,user_data
-model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
-future_id: 
-variable: hc700,pr,tas,ua
+project: cmip6,cordex,observations,reanalysis,user-runner
+ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
 time_frequency: 1day,1hr,30min,3hr,mon
+product: cmip,eur-11,eur-11b,grid,reanalysis
 experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
-fs_type: posix
+variable: hc700,pr,tas,ua
+future_id: 
+time_aggregation: mean
 institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
+fs_type: posix
+grid_label: gn
 
 </pre></div>
 </div>
@@ -783,21 +797,21 @@ can be achieved by using the <code class="docutils literal notranslate"><span cl
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ensemble: r1i1p1
-model: cpc
-time_frequency: 30min
-realm: atmos
-product: grid
-fs_type: posix
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>variable: pr
 future: 
-institute: cpc
-time_aggregation: mean
-cmor_table: 30min
-grid_label: gn
-variable: pr
-future_id: 
-project: observations
+model: cpc
 experiment: cmorph
+cmor_table: 30min
+time_aggregation: mean
+time_frequency: 30min
+fs_type: posix
+project: observations
+product: grid
+realm: atmos
+ensemble: r1i1p1
+future_id: 
+institute: cpc
+grid_label: gn
 </pre></div>
 </div>
 </section>
@@ -995,7 +1009,7 @@ submit the previous plugin job to the computing queue:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2124
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-6241.out
+tail -f /tmp/share/slurm/animator/Animator-6239.out
 
 </pre></div>
 </div>
@@ -1009,8 +1023,8 @@ output files from a plugin run.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529/2125
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529/2125/data.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237/2125
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237/2125/data.nc
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1063,7 +1077,7 @@ options:
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2023-09-12 10:22:04] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2023-09-18 04:49:14] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -1075,9 +1089,9 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(&#39;foo&#39;, &#39;bar&#39;) 7b07bebc130e92dc7f169ed42d25d07cb2862add [2023-09-12 10:25:29] finished 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(&#39;foo&#39;, &#39;bar&#39;) 7b0cd82203e655374b17cac9abfb285eb5a25304 [2023-09-18 04:52:37] finished 
 Configuration:
-      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529
+      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237
        variable=tas
 
 </pre></div>
@@ -1088,7 +1102,7 @@ can use the <code class="docutils literal notranslate"><span class="pre">--retur
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237
 
 </pre></div>
 </div>
@@ -1100,10 +1114,10 @@ of the last 3 plugin applications:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529/2125/plot.png
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230912_102529/2125/data.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237/2125/data.nc
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20230918_045237/2125/plot.png
 /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4
-[10:25:33] INFO     freva - INFO - history, limit=3, since=None,  _history.py:93
+[04:52:41] INFO     freva - INFO - history, limit=3, since=None,  _history.py:93
                     until=None, entry_ids=None                                  
 </pre></div>
 </div>
@@ -1559,11 +1573,10 @@ You will still need your openID for that.</p>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="Freva.html"
@@ -1583,10 +1596,7 @@ You will still need your openID for that.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1627,8 +1637,8 @@ You will still need your openID for that.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=927b94d3fcb96560df09"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=927b94d3fcb96560df09"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1646,7 +1656,7 @@ You will still need your openID for that.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.5.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
@@ -1654,10 +1664,11 @@ You will still need your openID for that.</p>
     </div>
   
   
+  
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.0.
 </p></div>
       
     </div>
