@@ -11,6 +11,7 @@ from pathlib import Path
 from types import TracebackType
 from typing import (
     Any,
+    Dict,
     Callable,
     List,
     Literal,
@@ -149,12 +150,12 @@ class PluginStatus:
         )
 
     @property
-    def _hist(self) -> dict[str, Any]:
+    def _hist(self) -> Dict[str, Any]:
         log_level = logger.level
         logger.setLevel(logging.WARNING)
         try:
             hist = cast(
-                list[dict[str, Any]],
+                List[Dict[str, Any]],
                 freva.history(entry_ids=self._id, return_results=True),
             )[0]
         except IndexError:
@@ -174,7 +175,7 @@ class PluginStatus:
         return cast(str, status_dict.get(status, "unkown"))
 
     @property
-    def configuration(self) -> dict[str, Any]:
+    def configuration(self) -> Dict[str, Any]:
         """Get the plugin configuration."""
         return self._hist.get("configuration", {})
 
