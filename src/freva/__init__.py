@@ -1,12 +1,21 @@
 import logging
 import os
 import warnings
+from pathlib import Path
+from typing import List, Union
 
 from evaluation_system import __version__
 from evaluation_system.misc import logger
 
 from ._databrowser import count_values, databrowser, facet_search
-from ._esgf import esgf_browser, esgf_facets, esgf_datasets, esgf_download, esgf_query
+from ._esgf import (
+    esgf_browser,
+    esgf_datasets,
+    esgf_download,
+    esgf_facets,
+    esgf_query,
+)
+from ._futures import Futures, check_futures
 from ._history import history
 from ._plugin import (
     get_tools_list,
@@ -62,9 +71,24 @@ def get_plugin_status(history_id: int) -> "PluginStatus":
     return PluginStatus(history_id)
 
 
+@copy_doc_from(Futures.register_future_from_history_id)
+def register_future_from_history_id(history_id: int) -> Futures:
+    return Futures.register_future_from_history_id(history_id)
+
+
+@copy_doc_from(Futures.register_future_from_template)
+def register_future_from_template(
+    future: Union[str, Path],
+    variable_file: Union[str, Path, None] = None,
+    **facets: Union[str, List[str]],
+) -> Futures:
+    return Futures.register_future_from_template(future, variable_file, **facets)
+
+
 __all__ = [
     "__version__",
     "add_user_data",
+    "check_futures",
     "config",
     "count_values",
     "databrowser",
@@ -82,6 +106,8 @@ __all__ = [
     "plugin_doc",
     "plugin_info",
     "plugin_doc",
+    "register_future_from_history_id",
+    "register_future_from_template",
     "PluginStatus",
     "UserData",
 ]

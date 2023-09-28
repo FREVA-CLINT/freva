@@ -33,12 +33,12 @@ try:
 except ImportError:  # pragma: no cover
     get_ipython = lambda: None  # pragma: no cover
 
-from django.conf import settings as django_settings
-from django.core.exceptions import ImproperlyConfigured
 import lazy_import
 import nbclient
 import nbformat
 import requests
+from django.conf import settings as django_settings
+from django.core.exceptions import ImproperlyConfigured
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
@@ -191,7 +191,9 @@ class Solr:
                 )
                 temp_dir.cleanup()
             except Exception as error:
-                logger.error("Execution failed: more information in %s", temp_file)
+                logger.error(
+                    "Execution failed: more information in %s", temp_file
+                )
                 raise error
         if not reindex:
             return
@@ -275,7 +277,42 @@ class Solr:
         except (requests.HTTPError, requests.ConnectionError):
             logger.debug("Connection to %s with params %s failed", url, params)
             return ""
-        return res.json().get("response", {}).get("docs", [{}])[0].get(field, "")
+        return (
+            res.json().get("response", {}).get("docs", [{}])[0].get(field, "")
+        )
+
+    def delete(self, **search_keys: str) -> None:
+        """Delete data from the solr.
+
+        Parameters
+        ----------
+
+        search_keys:
+            key-value based query for data that should be deleted.
+        """
+        query = []
+        for key, value in search_keys.items():
+            if key.lower() == "file":
+                if value[0] in (os.sep, "/"):
+                    value = f"\\{value}"
+                value = value.replace(":", "\\:")
+            else:
+                value = value.lower()
+            query.append(f"{key.lower()}:{value}")
+        query_str = " AND ".join(query)
+        url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
+        url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"
+        try:
+            for url in (url_nv, url_v):
+                logger.debug("Deleting %s from %s", query_str, url)
+                res = requests.post(
+                    url, json={"delete": {"query": query_str}}, timeout=3
+                )
+                res.raise_for_status()
+        except requests.HTTPError:
+            raise ValueError(f"Solr request to {url} failed: {res.text}")
+        except Exception as error:
+            raise ValueError(f"Could not connect to {url}: {error}:")
 
     def post(self, metadata: List[Dict[str, Union[str, List[str]]]]) -> None:
         """Post user metadata to the solr core.
@@ -300,11 +337,15 @@ class Solr:
                 )
             else:
                 _data["file_no_version"] = _data["file"]
-            _data["time"] = get_solr_time_range(cast(str, _data.pop("time", "fx")))
+            _data["time"] = get_solr_time_range(
+                cast(str, _data.pop("time", "fx"))
+            )
             _data.setdefault("cmor_table", _data.get("time_frequency", "none"))
             _data.setdefault("realm", "user-data")
             _data.setdefault("project", f"user-{getuser()}")
-            no_version.append({k: v for k, v in _data.items() if k != "version"})
+            no_version.append(
+                {k: v for k, v in _data.items() if k != "version"}
+            )
             versioned.append(_data)
         url_nv = f"{self.get_solr_url(version=False)}/update/json?commit=true"
         url_v = f"{self.get_solr_url(version=True)}/update/json?commit=true"

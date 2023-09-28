@@ -40,7 +40,17 @@ from datetime import datetime
 from functools import partial
 from pathlib import Path
 from time import time
-from typing import IO, Any, Dict, Iterable, Iterator, Optional, TextIO, Union, cast
+from typing import (
+    IO,
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    TextIO,
+    Union,
+    cast,
+)
 from uuid import uuid4
 
 from PyPDF2 import PdfReader

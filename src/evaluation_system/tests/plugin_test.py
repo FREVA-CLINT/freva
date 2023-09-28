@@ -198,7 +198,11 @@ def test_read_config_parser(dummy_plugin):
 def test_save_config(dummy_plugin):
     from io import StringIO
 
-    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
+    from evaluation_system.api.parameters import (
+        Integer,
+        ParameterDictionary,
+        String,
+    )
 
     batchmode_options = """#: Set additional options for the job submission to the workload manager (,
 #:  separated). Note: batchmode and web only.
@@ -358,7 +362,11 @@ def testSubstitution(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_help(dummy_plugin):
-    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
+    from evaluation_system.api.parameters import (
+        Integer,
+        ParameterDictionary,
+        String,
+    )
 
     dummy = dummy_plugin
     dummy.__version__ = (1, 2, 3)
@@ -452,7 +460,11 @@ extra_scheduler_options: - (default: )""",
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_usage(dummy_plugin):
-    from evaluation_system.api.parameters import Integer, ParameterDictionary, String
+    from evaluation_system.api.parameters import (
+        Integer,
+        ParameterDictionary,
+        String,
+    )
 
     dummy = dummy_plugin
     dummy.__parameters__ = ParameterDictionary(

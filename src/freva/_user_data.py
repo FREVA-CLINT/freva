@@ -22,9 +22,7 @@ from evaluation_system.misc.exceptions import (
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
 SolrCore = lazy_import.lazy_class("evaluation_system.model.solr_core.SolrCore")
-DataReader = lazy_import.lazy_class(
-    "evaluation_system.api.user_data.DataReader"
-)
+DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
@@ -50,14 +48,10 @@ class UserData:
     def get_user_dir(drs_spec: str = "crawl_my_data") -> str:
         """Get the freva user output directory name."""
         try:
-            return str(
-                get_output_directory(drs_spec) / f"user-{User().getName()}"
-            )
+            return str(get_output_directory(drs_spec) / f"user-{User().getName()}")
         except ConfigurationException:
             config.reloadConfiguration()
-            return str(
-                get_output_directory(drs_spec) / f"user-{User().getName()}"
-            )
+            return str(get_output_directory(drs_spec) / f"user-{User().getName()}")
 
     @property
     def user_dir(self) -> Path:
@@ -225,9 +219,7 @@ class UserData:
                 p_path, drs_specification=self.drs_spec, **search_keys
             )
             for file in u_reader:
-                new_file = u_reader.file_name_from_metdata(
-                    file, override=override
-                )
+                new_file = u_reader.file_name_from_metdata(file, override=override)
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
                 if new_file.exists() and override:
                     new_file.unlink()
@@ -244,9 +236,7 @@ class UserData:
         )
 
     @handled_exception
-    def delete(
-        self, *paths: os.PathLike, delete_from_fs: bool = False
-    ) -> None:
+    def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
         """Delete data from the databrowser.
 
         The methods deletes user data from the databrowser.
@@ -337,9 +327,7 @@ class UserData:
 
         """
         if dtype not in ("fs",):
-            raise NotImplementedError(
-                "Only data on POSIX file system is supported"
-            )
+            raise NotImplementedError("Only data on POSIX file system is supported")
         log_level = logger.level
         out_files = []
         try:
@@ -347,9 +335,7 @@ class UserData:
             print("Status: crawling ...", end="", flush=True)
             solr_core = SolrCore(core="latest")
             for crawl_dir in self._validate_user_dirs(*crawl_dirs, **kwargs):
-                data_reader = DataReader(
-                    crawl_dir, drs_specification=self.drs_spec
-                )
+                data_reader = DataReader(crawl_dir, drs_specification=self.drs_spec)
                 out_files = solr_core.load_fs(
                     crawl_dir,
                     chunk_size=1000,

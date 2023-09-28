@@ -12,7 +12,7 @@ from evaluation_system import __version__
 from evaluation_system.misc import logger
 
 from .user_data import AddData
-from .utils import BaseParser, SubCommandParser
+from .utils import BaseCompleter, BaseParser, SubCommandParser
 
 futures = lazy_import.lazy_module("freva._futures")
 freva = lazy_import.lazy_module("freva")
@@ -25,7 +25,7 @@ class RegisterFuture(AddData):
 
     desc = (
         "Add datasets to the databrowser that will be created in the "
-        "future (future)."
+        "future."
     )
 
     def __init__(self, subparser: argparse.ArgumentParser):
@@ -112,10 +112,37 @@ class RegisterFuture(AddData):
             )
 
 
+class CheckFutures(AddData):
+    """Check the availability of future datasets."""
+
+    desc = "Check the availability of future dataset."
+
+    def __init__(self, subparser: argparse.ArgumentParser):
+        self.parser = subparser
+        self.parser.add_argument(
+            "facets",
+            nargs="*",
+            help=(
+                "Use databrowser type search keys to refine your dataset"
+                " search."
+            ),
+            type=str,
+            metavar="facets",
+        )
+        self.parser.set_defaults(apply_func=self.run_cmd)
+
+    def run_cmd(self, args: argparse.Namespace, **kwargs: str) -> None:
+        """Check the existence for future datasets."""
+        facets: dict[str, Any] = BaseCompleter.arg_to_dict(
+            args.facets, append=True
+        )
+        freva.check_futures(**facets)
+
+
 class Cli(SubCommandParser):
     """Class that constructs the Future Argument Parser."""
 
-    desc = "Register/list/update future datasets."
+    desc = "Register/check future datasets."
 
     def __init__(
         self,
@@ -124,8 +151,11 @@ class Cli(SubCommandParser):
         """Construct the futures sub arg. parser."""
         subcommands: dict[str, Type[BaseParser]] = {
             "register": RegisterFuture,
+            "check": CheckFutures,
         }
-        super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
+        super().__init__(
+            parser, sub_parsers=subcommands, command="freva-futures"
+        )
         self.parser.set_defaults(apply_func=self._usage)
 
     @staticmethod
@@ -146,7 +176,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     try:
         cli.run_cmd(args, **cli.kwargs)
     except KeyboardInterrupt:  # pragma: no cover
-        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
+        rich.print(
+            "[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True
+        )
         sys.exit(130)
     except Exception as error:  # pragma: no cover
         freva.utils.exception_handler(error, True)  # pragma: no cover

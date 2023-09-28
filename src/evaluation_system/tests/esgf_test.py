@@ -44,7 +44,7 @@ def test_query(capsys, search_dict, dummy_config):
 
 
 def test_freva_esgf_method(dummy_config):
-    from freva import esgf_browser, esgf_facets, esgf_download, esgf_query
+    from freva import esgf_browser, esgf_download, esgf_facets, esgf_query
 
     result_to_be = [
         "output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/"

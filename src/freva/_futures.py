@@ -35,13 +35,81 @@ from ._user_data import UserData
 from .utils import PluginStatus, Solr, copy_doc_from, handled_exception
 
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
-freva_history = lazy_import.lazy_module("evaluation_system.model.history.models")
+freva_history = lazy_import.lazy_module(
+    "evaluation_system.model.history.models"
+)
+freva_databrowser = lazy_import.lazy_callable("freva.databrowser")
 get_solr_time_range = lazy_import.lazy_callable(
     "evaluation_system.misc.utils.get_solr_time_range"
 )
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 parameters = lazy_import.lazy_module("evaluation_system.api.parameters")
-DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader")
+DataReader = lazy_import.lazy_class(
+    "evaluation_system.api.user_data.DataReader"
+)
+
+
+def check_futures(
+    multiversion: bool = False, **facets: Union[str, List[str]]
+) -> None:
+    """Check if future dataset still exists.
+
+    This methods checks the existence for various future datasets. The datasets
+    that should be checked can be refined by using databrowser type key=value
+    pair search facets. If a dataset is flagged as being on the hard drive
+    in the databrowser but doesn't exist in reality then this dataset is
+    replaced by the generic ``future://*`` dataset name.
+
+    Parameters
+    ----------
+    multiversion: bool, default: False
+        Select all versions and not just the latest version (default).
+    **facets:
+        Use any kind of key=value pair search facets if only a sub set and not
+        all future datasets should be checked.
+
+    """
+    facets["dataset"] = "futures"
+    facets["uniq_key"] = "file"
+    user_data = UserData("futures")
+    hashes: List[str] = []
+    for file in freva_databrowser(
+        execute_future=False, multiversion=multiversion, **facets
+    ):
+        if not file.startswith("future://") and not Path(file).exists():
+            p_file = Path(file)
+            reader = DataReader(file, drs_specification="futures")
+            hashes.append(
+                dict(
+                    zip(
+                        reader.parts_dir,
+                        p_file.relative_to(reader.root_dir).parent.parts,
+                    )
+                )["future_id"]
+            )
+    metadata: List[Dict[str, Union[str, List[str]]]] = []
+    for future_hash in set(hashes):
+        future_db = futures.FutureFilesDB.objects.get(code_hash=future_hash)
+        code_db = futures.FutureCodeDB.objects.get(code_hash=future_hash)
+        solr_params = {
+            p.name: p.value
+            for p in nbp.extract_parameters(
+                nbformat.reads(json.dumps(code_db.code), as_version=4),
+                tag="solr-parameters",
+            )
+            if p.value
+        }
+        solr_params["file"] = solr_params["uri"] = code_db.file_name
+        solr_params["future"] = json.dumps(code_db.code, indent=3)
+        solr_params["future_id"] = future_hash
+        solr_params["dataset"] = "futures"
+        metadata.append(solr_params)
+        for file in future_db.file_names:
+            user_data.solr.delete(file=file)
+        future_db.file_names = [code_db.file_name]
+        future_db.save()
+    user_data.solr.post(metadata)
+    logger.info("Reset %i paths", len(metadata))
 
 
 class Futures:
@@ -105,7 +173,9 @@ class Futures:
         """
         solr_parameters["_project"] = project
         solr_parameters["future_id"] = self.hash
-        new_files = self._user_data.add(product, *paths, how="move", **solr_parameters)
+        new_files = self._user_data.add(
+            product, *paths, how="move", **solr_parameters
+        )
         files_db = self.files_db
         files_db.file_names = new_files
         files_db.save()
@@ -263,7 +333,9 @@ class Futures:
         """
         try:
             if code_hash:
-                entry = futures.FutureCodeDB.objects.get(code_hash_id=code_hash)
+                entry = futures.FutureCodeDB.objects.get(
+                    code_hash_id=code_hash
+                )
             elif history_id:
                 entry = futures.FutureCodeDB.objects.get(history_id=history_id)
             else:
@@ -371,7 +443,9 @@ class Futures:
         solr_variables.setdefault("realm", "atmos")
         code_cell = (
             f'res = freva.run_plugin("{plugin_run.plugin}",\n   batchmode=False,'
-            "\n   " + "   ".join([f"{k}={k}, \n" for k in all_parameters]) + ")"
+            "\n   "
+            + "   ".join([f"{k}={k}, \n" for k in all_parameters])
+            + ")"
         )
         solr_facets = cls.parameterise_notebook(
             (Path(__file__).parent / "future_template.json").read_text(),
@@ -437,7 +511,9 @@ class Futures:
             future_file = futures_dict[future_name]
         except KeyError:
             valid_futures = ", ".join(futures_dict.keys())
-            raise ValueError(f"Future not valid, valid futures are: {valid_futures}")
+            raise ValueError(
+                f"Future not valid, valid futures are: {valid_futures}"
+            )
 
         logger.debug("Adding future to databrowser")
         code = future_file.read_text()
@@ -593,7 +669,9 @@ class Futures:
                     )
 
         notebook = nbp.replace_definitions(
-            nbp.replace_definitions(notebook, solr_params, tag="solr-parameters"),
+            nbp.replace_definitions(
+                notebook, solr_params, tag="solr-parameters"
+            ),
             other_params,
             tag="parameters",
         )
@@ -614,7 +692,9 @@ class Futures:
             future_id=facets["future_id"],
             **variables,
         )
-        notebook = nbp.replace_definitions(notebook, other_params, tag="parameters")
+        notebook = nbp.replace_definitions(
+            notebook, other_params, tag="parameters"
+        )
         # The hash values from before adding the hash and after adding the
         # hash have to be the same, lets perform a smoke test:
         if facets["future_id"] != cls._notebook_to_hash(notebook):
@@ -625,7 +705,7 @@ class Futures:
                 )
             )
         facets["future"] = json.dumps(notebook, indent=3)
-        facets["dataset"] = "future"
+        facets["dataset"] = "futures"
         file_name = cls.create_future_file_name(facets)
         if uri:
             facets["file"] = facets["uri"] = f"future://{file_name}"
