@@ -7,13 +7,17 @@ import os
 import shutil
 import warnings
 from dataclasses import dataclass
+from importlib import import_module
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Union, cast
 
 import lazy_import
 
 from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import ConfigurationException, ValidationError
+from evaluation_system.misc.exceptions import (
+    ConfigurationException,
+    ValidationError,
+)
 
 User = lazy_import.lazy_class("evaluation_system.model.user.User")
 config = lazy_import.lazy_module("evaluation_system.misc.config")
@@ -22,7 +26,7 @@ DataReader = lazy_import.lazy_class("evaluation_system.api.user_data.DataReader"
 get_output_directory = lazy_import.lazy_function(
     "evaluation_system.api.user_data.get_output_directory"
 )
-from .utils import handled_exception
+from .utils import Solr, get_spinner, handled_exception
 
 __all__ = ["UserData"]
 
@@ -31,16 +35,28 @@ __all__ = ["UserData"]
 class UserData:
     """Data class that handles user data requests. With help of this class
     users can add their own data to the databrowser, (re)-index data in the
-    databrowser or delete data in the databrowser."""
+    databrowser, delete data in the databrowser or add datasets to the
+    databrowser that doesn't even exist yet but can be created on demand in
+    the future (future dataset)."""
+
+    drs_spec: str = "crawl_my_data"
+
+    def __post_init__(self):
+        self.solr = Solr()
+
+    @staticmethod
+    def get_user_dir(drs_spec: str = "crawl_my_data") -> str:
+        """Get the freva user output directory name."""
+        try:
+            return str(get_output_directory(drs_spec) / f"user-{User().getName()}")
+        except ConfigurationException:
+            config.reloadConfiguration()
+            return str(get_output_directory(drs_spec) / f"user-{User().getName()}")
 
     @property
     def user_dir(self) -> Path:
-        """Get the user data directory for the user."""
-        try:
-            return get_output_directory() / f"user-{User().getName()}"
-        except ConfigurationException:
-            config.reloadConfiguration()
-            return get_output_directory() / f"user-{User().getName()}"
+        """Get the user output directory."""
+        return Path(self.get_user_dir(self.drs_spec))
 
     def _validate_user_dirs(
         self, *crawl_dirs: os.PathLike, **kwargs: bool
@@ -80,10 +96,10 @@ class UserData:
         self,
         product: str,
         *paths: os.PathLike,
-        how: str = "copy",
+        how: Literal["copy", "move", "link", "symlink"] = "copy",
         override: bool = False,
         **defaults: str,
-    ) -> None:
+    ) -> List[str]:
         """Add custom user files to the databrowser.
 
         To be able to add data to the databrowser the file names must
@@ -138,6 +154,12 @@ class UserData:
             By default the method tries to deduce the *ensemble* information from
             the metadata. To overwrite this information the *ensemble* keyword
             should be set.
+        time_aggregation: str, default: mean
+            Set the time_aggregation level, that is how the data was aggregated
+            along the itme axis, mean, sum, instant values etc.
+        cmor_table: str, default: None
+            You can override the cmor_table variable, by default the cmor_table
+            is set to ``time_frequency``
 
         Raises
         ------
@@ -159,14 +181,13 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData, databrowser
-            user_data = UserData()
+            import freva
             # You can also provide wild cards to search for data
-            user_data.add("eur-11b", "/tmp/my_awesome_data/outfile_?.nc",
-                              institute="clex", model="UM-RA2T",
-                              experiment="Bias-correct")
+            freva.add_user_data("eur-11b", "/tmp/my_awesome_data/outfile_?.nc",
+                                institute="clex", model="UM-RA2T",
+                                experiment="Bias-correct")
             # Check the databrowser if the data has been added
-            for file in databrowser(experiment="bias*"):
+            for file in freva.databrowser(experiment="bias*"):
                 print(file)
 
         By default the data is copied. By using the ``how`` keyword you can
@@ -180,16 +201,23 @@ class UserData:
             "variable",
             "time_frequency",
             "ensemble",
+            "realm",
+            "time_aggregation",
+            "grid_label",
+            "grid_id",
+            "future_id",
         )
         _project = defaults.pop("_project", None)
         search_keys = {k: defaults[k] for k in facets if defaults.get(k)}
         search_keys["product"] = product
         search_keys["project"] = _project or f"user-{User().getName()}"
-        search_keys["realm"] = "user_data"
+        search_keys.setdefault("realm", "user_data")
         search_keys.setdefault("ensemble", "r0i0p0")
         for path in paths:
             p_path = Path(path).expanduser().absolute()
-            u_reader = DataReader(p_path, **search_keys)
+            u_reader = DataReader(
+                p_path, drs_specification=self.drs_spec, **search_keys
+            )
             for file in u_reader:
                 new_file = u_reader.file_name_from_metdata(file, override=override)
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
@@ -200,8 +228,12 @@ class UserData:
                     crawl_dirs.append(new_file.parent)
         if not crawl_dirs:
             warnings.warn("No files found", category=UserWarning)
-            return
-        self.index(*crawl_dirs, _allow_others=_project is not None)
+            return []
+        return self.index(
+            *crawl_dirs,
+            _allow_others=_project is not None,
+            defaults=search_keys,
+        )
 
     @handled_exception
     def delete(self, *paths: os.PathLike, delete_from_fs: bool = False) -> None:
@@ -232,14 +264,16 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData
-            user_data = UserData()
-            user_data.delete(user_data.user_dir)
+            import freva
+            freva.delete_user_data()
 
         """
         solr_core = SolrCore(core="files")
-        for path in paths:
-            for file in DataReader(Path(path).expanduser().absolute()):
+        for path in paths or (self.user_dir,):
+            for file in DataReader(
+                Path(path).expanduser().absolute(),
+                drs_specification=self.drs_spec,
+            ):
                 self._validate_user_dirs(file)
                 solr_core.delete_entries(str(file))
                 if delete_from_fs:
@@ -251,8 +285,9 @@ class UserData:
         *crawl_dirs: os.PathLike,
         dtype: str = "fs",
         continue_on_errors: bool = False,
+        defaults: Optional[Dict[str, Union[str, List[str]]]] = None,
         **kwargs: bool,
-    ) -> None:
+    ) -> List[str]:
         """Index and add user output data to the databrowser.
 
         This method can be used to update the databrowser for existing user data
@@ -265,6 +300,14 @@ class UserData:
             The data type, currently only files on the file system are supported.
         continue_on_errors:
             Continue indexing on error.
+        defautls:
+            Set additional information that can be added to the Solr server, be
+            careful as there is only a certain set of variables you can set.
+            Please refer the databrowser documentation on more information.
+
+        Returns
+        -------
+        list: List of newly added file names.
 
         Raises
         ------
@@ -279,21 +322,21 @@ class UserData:
 
         .. execute_code::
 
-            from freva import UserData
-            user_data = UserData()
-            user_data.index()
+            import freva
+            freva.index_user_data()
 
         """
         if dtype not in ("fs",):
             raise NotImplementedError("Only data on POSIX file system is supported")
         log_level = logger.level
+        out_files = []
         try:
             logger.setLevel(logging.ERROR)
             print("Status: crawling ...", end="", flush=True)
             solr_core = SolrCore(core="latest")
             for crawl_dir in self._validate_user_dirs(*crawl_dirs, **kwargs):
-                data_reader = DataReader(crawl_dir)
-                solr_core.load_fs(
+                data_reader = DataReader(crawl_dir, drs_specification=self.drs_spec)
+                out_files = solr_core.load_fs(
                     crawl_dir,
                     chunk_size=1000,
                     abort_on_errors=not continue_on_errors,
@@ -302,3 +345,4 @@ class UserData:
             print("ok", flush=True)
         finally:
             logger.setLevel(log_level)
+        return out_files

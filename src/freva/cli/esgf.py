@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any, Optional, Union, cast
@@ -11,7 +12,6 @@ import rich
 from evaluation_system import __version__
 
 from .utils import BaseParser
-import json
 
 freva = lazy_import.lazy_module("freva")
 BaseCompleter = lazy_import.lazy_class("freva.cli.utils.BaseCompleter")

@@ -23,6 +23,9 @@ class DataReader:
     ----------
     paths: os.PathLike
         Input file or input directory of files containing the metadata.
+    drs_specification:
+        The drs holding metadata for user data information.
+
     **defaults: str
         Any default facets that should be assigned.
     """
@@ -33,17 +36,16 @@ class DataReader:
     file_sep: str = "_"
     """Character that separates facet values in the file name."""
 
-    drs_specification: str = "crawl_my_data"
-    """The drs holding metadata for user data information."""
-
     def __init__(
         self,
         paths: Union[os.PathLike, Collection[os.PathLike]],
+        drs_specification: str = "crawl_my_data",
         **defaults: str,
     ) -> None:
         self.paths = paths
         self.defaults = defaults
-        drs_config: dict[str, Any] = config.get_drs_config()[self.drs_specification]
+        self.drs_specification = drs_specification
+        drs_config: dict[str, Any] = config.get_drs_config()[drs_specification]
         self.root_dir = Path(drs_config["root_dir"]).expanduser().absolute()
         self.parts_dir: list[str] = [
             d for d in drs_config["parts_dir"] if d != "file_name"
@@ -51,9 +53,9 @@ class DataReader:
         self.parts_file: list[str] = drs_config["parts_file_name"]
 
     @staticmethod
-    def get_output_directory() -> Path:
+    def get_output_directory(drs_specification: str = "crawl_my_data") -> Path:
         """Get the user data output directory."""
-        return get_output_directory()
+        return get_output_directory(drs_specification)
 
     def __iter__(self) -> Generator[Path, None, None]:
         """Iterate over all found data files."""
@@ -243,11 +245,10 @@ class DataReader:
         return out_dir
 
 
-def get_output_directory() -> Path:
+def get_output_directory(drs_specification: str = "crawl_my_data") -> Path:
     """Get the user data output directory."""
+    drs_spec = drs_specification
     root_dir = (
-        Path(config.get_drs_config()[DataReader.drs_specification]["root_dir"])
-        .expanduser()
-        .absolute()
+        Path(config.get_drs_config()[drs_spec]["root_dir"]).expanduser().absolute()
     )
     return root_dir

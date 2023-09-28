@@ -25,7 +25,7 @@ import rich.table
 import freva
 from evaluation_system.misc import logger
 
-from .utils import PluginStatus, handled_exception, is_jupyter, meta_type
+from .utils import PluginStatus, handled_exception
 
 django = lazy_import.lazy_module("django")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")

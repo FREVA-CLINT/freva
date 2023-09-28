@@ -33,13 +33,22 @@ import shutil
 import signal
 import string
 import sys
-from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from django.db.models.query import QuerySet
 from PIL import Image

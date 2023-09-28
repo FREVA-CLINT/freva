@@ -58,8 +58,7 @@ class IndexData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         try:
@@ -83,6 +82,63 @@ class AddData(BaseParser):
     """CLI class that deals with indexing the data."""
 
     desc = "Add new user project data to the databrowser"
+
+    def _add_facets_to_parser(
+        self, project_help: str = argparse.SUPPRESS, suffix: str = "."
+    ) -> None:
+        """Add databrowser facets to the cli parsers."""
+
+        self.parser.add_argument("--project", type=str, default=None, help=project_help)
+        self.parser.add_argument(
+            "--experiment",
+            type=str,
+            default=None,
+            help="Set the <experiment> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--institute",
+            type=str,
+            default=None,
+            help="Set the <institute> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--model",
+            type=str,
+            default=None,
+            help="Set the <model> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--variable",
+            type=str,
+            default=None,
+            help="Set the <variable> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--time-frequency",
+            "--time_frequency",
+            type=str,
+            default=None,
+            help="Set the <time_frequency> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--ensemble",
+            type=str,
+            default=None,
+            help="Set the <ensemble> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--cmor-table",
+            "--cmor_table",
+            type=str,
+            default=None,
+            help="Set the <cmor-table> information" + suffix,
+        )
+        self.parser.add_argument(
+            "--realm",
+            type=str,
+            default=None,
+            help="Set the <realm> information" + suffix,
+        )
 
     def __init__(self, subparser: argparse.ArgumentParser):
         super().__init__(subparser)
@@ -110,85 +166,13 @@ class AddData(BaseParser):
                 "directory."
             ),
         )
+        self._add_facets_to_parser(suffix="if the can't be found in the metadata")
         self.parser.add_argument(
             "--override",
             "--overwrite",
             action="store_true",
-            help="Replace existing files in the user data structre",
+            help="Replace existing files in the user data structure",
             default=False,
-        )
-        self.parser.add_argument(
-            "--project", type=str, default=None, help=argparse.SUPPRESS
-        )
-        self.parser.add_argument(
-            "--experiment",
-            type=str,
-            default=None,
-            help=(
-                "Set the <experiment> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--institute",
-            type=str,
-            default=None,
-            help=(
-                "Set the <institute> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--model",
-            type=str,
-            default=None,
-            help=(
-                "Set the <model> information if they can't be found in the " "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--variable",
-            type=str,
-            default=None,
-            help=(
-                "Set the <variable> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--time-frequency",
-            "--time_frequency",
-            type=str,
-            default=None,
-            help=(
-                "Set the <time_frequency> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--ensemble",
-            type=str,
-            default=None,
-            help=(
-                "Set the <ensemble> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--cmor-table",
-            "--cmor_table",
-            type=str,
-            default=None,
-            help=(
-                "Set the <cmor-table> information if they can't be found in the "
-                "meta data"
-            ),
-        )
-        self.parser.add_argument(
-            "--realm",
-            type=str,
-            default=None,
-            help=("Set the <realm> information if they can't be found in the metadata"),
         )
         self.parser.add_argument(
             "--debug",
@@ -201,8 +185,7 @@ class AddData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         facets = (
             "experiment",
@@ -267,8 +250,7 @@ class DeleteData(BaseParser):
         )
         self.parser.set_defaults(apply_func=self.run_cmd)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: Any) -> None:
+    def run_cmd(self, args: argparse.Namespace, **kwargs: Any) -> None:
         """Call the crawl my data command and print the results."""
         user_data = UserData()
         user_data.delete(*args.paths, delete_from_fs=args.delete_from_fs)
@@ -283,7 +265,7 @@ class Cli(SubCommandParser):
         self,
         parser: Optional[argparse.ArgumentParser] = None,
     ):
-        """Construct the esgf sub arg. parser."""
+        """Construct the user-data sub arg. parser."""
         subcommands: dict[str, Type[BaseParser]] = {
             "index": IndexData,
             "add": AddData,
@@ -292,8 +274,7 @@ class Cli(SubCommandParser):
         super().__init__(parser, sub_parsers=subcommands, command="freva-user-data")
         self.parser.set_defaults(apply_func=self._usage)
 
-    @staticmethod
-    def run_cmd(args: argparse.Namespace, **kwargs: str):
+    def run_cmd(self, args: argparse.Namespace, **kwargs: str) -> None:
         args.apply_func(args, **kwargs)
 
 

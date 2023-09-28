@@ -65,6 +65,16 @@ class Cli(BaseParser):
             default="flexible",
         )
         self.parser.add_argument(
+            "--execute-future",
+            "--create-future",
+            help=(
+                "Create any future datasets that have been marked for future"
+                " creation"
+            ),
+            action="store_true",
+        )
+
+        self.parser.add_argument(
             "--debug",
             "-v",
             "-d",
@@ -96,6 +106,7 @@ class Cli(BaseParser):
             "count",
             "relevant_only",
             "batch_size",
+            "execute_future",
         ):
             _ = kwargs.pop(key, "")
         for key, values in facets.items():
@@ -107,7 +118,11 @@ class Cli(BaseParser):
         elif args.facet:
             out = freva.facet_search(facet=args.facet, **merged_args)
         else:
-            out = freva.databrowser(batch_size=args.batch_size, **merged_args)
+            out = freva.databrowser(
+                batch_size=args.batch_size,
+                execute_future=args.execute_future,
+                **merged_args,
+            )
         # flush stderr in case we have something pending
         sys.stderr.flush()
         if isinstance(out, dict):

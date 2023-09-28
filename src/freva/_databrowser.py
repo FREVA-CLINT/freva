@@ -4,18 +4,16 @@ from __future__ import annotations
 import json
 import warnings
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union, overload
+from typing import Any, Iterator, Union, overload
 
 import lazy_import
 from typing_extensions import Literal
 
 from evaluation_system.misc import logger
 
-from .utils import handled_exception
+from .utils import Solr, handled_exception
 
 SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
-
-
 __all__ = ["databrowser", "search_facets", "count_values"]
 
 
@@ -272,8 +270,9 @@ def databrowser(
     uniq_key: Literal["file", "uri"] = "file",
     time: str = "",
     time_select: Literal["flexible", "strict", "file"] = "flexible",
+    execute_future: bool = False,
     **search_facets: Union[str, list[str], int],
-) -> Union[dict[str, dict[str, int]], dict[str, list[str]], Iterator[str], int]:
+) -> Iterator[str]:
     """Find data in the system.
 
     You can either search for files or data facets (variable, model, ...)
@@ -309,7 +308,7 @@ def databrowser(
     multiversion: bool, default: False
         Select all versions and not just the latest version (default).
     batch_size: int, default: 5000
-        Size of the search query.
+        Size of the search querey.
 
     Returns
     -------
@@ -359,15 +358,32 @@ def databrowser(
             print(file)
     """
     core = {True: "latest", False: "files"}[not multiversion]
-    search_facets = _proc_search_facets(
+    _search_facets = _proc_search_facets(
         time_select=time_select, time=time, **search_facets
     )
+    kwargs = {
+        "batch_size": batch_size,
+        "latest_version": not multiversion,
+        **_search_facets,
+    }
     with warnings.catch_warnings():
         warnings.filterwarnings(action="ignore", category=PendingDeprecationWarning)
-        search_results = SolrFindFiles(core=core)._search(
-            batch_size=batch_size,
-            latest_version=not multiversion,
-            uniq_key=uniq_key,
-            **search_facets,
-        )
-    return search_results
+        if execute_future:
+            # If there are files that are future datasets (future://*) we
+            # can execute them now.
+            futures = list(
+                SolrFindFiles(core=core)._search(
+                    file="future\\://*",
+                    uniq_key=None,
+                    fl="future_id,future,file",
+                    **kwargs,
+                )
+            )
+            Solr().execute_solr_futures(futures)
+        for res in SolrFindFiles(core=core)._search(
+            uniq_key=None, fl="future_id,future,file,uri", **kwargs
+        ):
+            if execute_future and res["future_id"]:
+                if not Path(res["file"]).exists():
+                    Solr().execute_solr_futures([res])
+            yield res[uniq_key]

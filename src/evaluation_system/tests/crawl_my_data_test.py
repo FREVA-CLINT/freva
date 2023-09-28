@@ -357,9 +357,9 @@ def test_wrong_datatype(dummy_crawl, capsys, dummy_env, time_mock):
 def test_validate_path(root_path_with_empty_config, time_mock):
     from freva import UserData
 
+    assert str(root_path_with_empty_config).startswith(UserData.get_user_dir())
     user_data = UserData()
     root_path_str = str(root_path_with_empty_config)
-    print(root_path_str)
     assert user_data._validate_user_dirs(root_path_str) == (
         root_path_with_empty_config,
     )

@@ -185,14 +185,20 @@ def test_create_user_crawl(dummy_user):
 
 
 def test_timestamp_to_string():
-    from evaluation_system.model.db import timestamp_from_string, timestamp_to_string
+    from evaluation_system.model.db import (
+        timestamp_from_string,
+        timestamp_to_string,
+    )
 
     time = datetime.now()
     assert timestamp_to_string(time) == time.strftime("%Y-%m-%d %H:%M:%S.%f")
 
 
 def test_timestamp_from_string():
-    from evaluation_system.model.db import timestamp_from_string, timestamp_to_string
+    from evaluation_system.model.db import (
+        timestamp_from_string,
+        timestamp_to_string,
+    )
 
     time = datetime.now()
     time_str = timestamp_to_string(time)

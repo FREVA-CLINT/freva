@@ -138,8 +138,10 @@ class SolrFindFiles(object):
         implement a result set object. But that would break the find_files compatibility.
         """
         offset = int(partial_dict.pop("start", "0"))
-        query = self._get_file_query_parameters(uniq_key=uniq_key, **partial_dict)
-        metadata = self._retrieve_metadata(uniq_key=uniq_key, **partial_dict)
+        query = self._get_file_query_parameters(
+            uniq_key=uniq_key or "file", **partial_dict
+        )
+        metadata = self._retrieve_metadata(uniq_key=uniq_key or "file", **partial_dict)
         if rows:
             results_to_visit = min(metadata.num_objects, rows)
         else:
@@ -152,7 +154,10 @@ class SolrFindFiles(object):
             offset = answer["response"]["start"]
             iter_answer = answer["response"]["docs"]
             for item in iter_answer:
-                yield item[uniq_key]
+                if uniq_key:
+                    yield item[uniq_key]
+                else:
+                    yield item
                 results_to_visit -= 1
             offset += batch_size
 
@@ -246,6 +251,8 @@ class SolrFindFiles(object):
                     "uri",
                     "file",
                     "file_name",
+                    "future",
+                    "future_id",
                 ]
             )
 
@@ -254,7 +261,6 @@ class SolrFindFiles(object):
                 "&facet=true&facet.sort=index&facet.mincount=1&facet.field="
                 + "&facet.field=".join(facets)
             )
-
         answer = self.solr.get_json("select?facet=true&rows=0&%s" % query)
         # TODO: why is there a language facet in the solr search?
         answer = answer["facet_counts"]["facet_fields"]

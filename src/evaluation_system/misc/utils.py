@@ -10,7 +10,7 @@ from difflib import get_close_matches
 from re import split
 from string import Template
 from subprocess import PIPE, run
-from typing import IO, Any, Dict, Iterable, List, TextIO, Union
+from typing import IO, Any, Dict, Iterable, Iterator, List, TextIO, Union
 
 
 def run_cmd(cmd: str, **kwargs: Any) -> str:
