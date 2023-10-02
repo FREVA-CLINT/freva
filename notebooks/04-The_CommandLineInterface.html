@@ -912,7 +912,24 @@ Step 2: Opening the netcdf-files, collecting metadata
 Step 3: Converting Units
 Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2127/pr_20160902T0000-20160902T2330.gif in 57 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2127/pr_20160902T0000-20160902T2330.gif in a minute
+Process ForkPoolWorker-1:
+Traceback (most recent call last):
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/process.py&#34;, line 314, in _bootstrap
+    self.run()
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/process.py&#34;, line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/pool.py&#34;, line 114, in worker
+    task = get()
+           ^^^^^
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/queues.py&#34;, line 364, in get
+    with self._rlock:
+  File &#34;/usr/share/miniconda/envs/docs/lib/python3.11/multiprocessing/synchronize.py&#34;, line 98, in __exit__
+    return self._semlock.__exit__(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;/home/runner/work/freva/freva/src/evaluation_system/api/plugin_manager.py&#34;, line 156, in _update_plugin_state_in_db_and_quit
+    raise KeyboardInterrupt
+KeyboardInterrupt
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -932,7 +949,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2127/pr_2
 Scheduled job with history id: 2128
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-7112.out
+tail -f /tmp/share/slurm/animator/Animator-7231.out
 </pre></div></div>
 </div>
 </section>
@@ -952,9 +969,9 @@ tail -f /tmp/share/slurm/animator/Animator-7112.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[12:22:04]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=661405;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=93165;file:///home/runner/work/freva/freva/src/freva/_history.py#93\93]8;;\
+<span class="ansi-cyan-fg">[04:44:20]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=992035;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=232420;file:///home/runner/work/freva/freva/src/freva/_history.py#93\93]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-magenta-fg">None</span>
-2115) dummyplugin [2023-09-28 12:15:05] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2023-10-02 04:34:28] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -970,7 +987,7 @@ tail -f /tmp/share/slurm/animator/Animator-7112.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[12:22:05]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=943459;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=527905;file:///home/runner/work/freva/freva/src/freva/_history.py#93\93]8;;\
+<span class="ansi-cyan-fg">[04:44:22]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=32902;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=233411;file:///home/runner/work/freva/freva/src/freva/_history.py#93\93]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-bold">[</span><span class="ansi-green-fg">&#39;1&#39;</span><span class="ansi-bold">]</span>
 </pre></div></div>
 </div>
@@ -1097,16 +1114,16 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20230928/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20231002/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
