@@ -1,4 +1,5 @@
 """Deploy the evaluation_system / core."""
+
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
 import logging
@@ -19,9 +20,7 @@ ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2022.05")
 CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 
-logging.basicConfig(
-    format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
 
 MODULE = """#%Module4.0 #######################################################
@@ -140,9 +139,7 @@ def reporthook(count, block_size, total_size):
     frac = count * block_size / total_size
     percent = int(100 * frac)
     bar = "#" * int(frac * 40)
-    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(
-        bar, 40, round(percent, 2)
-    )
+    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(bar, 40, round(percent, 2))
     print(msg, end="\r", flush=True)
     if frac >= 1:
         print()
@@ -243,9 +240,7 @@ class Installer:
     def use_or_download_temp_conda(self, tempdir):
         """Return to path an existing conda env, if there is none, cerate one."""
 
-        conda_exec_path = os.environ.get("CONDA_EXEC_PATH") or shutil.which(
-            "conda"
-        )
+        conda_exec_path = os.environ.get("CONDA_EXEC_PATH") or shutil.which("conda")
         if conda_exec_path and Path(conda_exec_path).is_file():
             return Path(conda_exec_path)
         tmp_env = Path(tempdir) / "env"
@@ -316,9 +311,7 @@ class Installer:
         silent=False,
     ):
         self.run_tests = run_tests
-        self.install_prefix: Path = (
-            Path(install_prefix).expanduser().absolute()
-        )
+        self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
         self.packages = packages
         self.channel = channel
         self.arch = arch
@@ -337,12 +330,10 @@ class Installer:
         """Get and prepare the evaluation_system config file."""
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        asset_conf_file = (
-            Path(__file__).parent / "assets" / "evaluation_system.conf"
-        )
+        asset_conf_file = Path(__file__).parent / "assets" / "evaluation_system.conf"
         eval_conf_file = Path(
             os.environ.get("EVALUATION_SYSTEM_CONFIG_FILE", asset_conf_file)
-        )
+        ).expanduser()
         with eval_conf_file.open("r") as fp:
             config_parser.read_file(fp)
         config_dir, data_dir, root_dir = get_data_dirs(install_prefix, user)
@@ -385,14 +376,10 @@ class Installer:
         with eval_conf_file.open("r") as fp:
             config_parser.read_file(fp)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
-        completions = dict(
-            fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION
-        )
+        completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
         for shell in ("fish", "csh", "sh"):
             activate_file = eval_conf_file.parent / f"activate_{shell}"
-            source_file = (
-                eval_conf_file.parent / "completions" / f"complete_{shell}"
-            )
+            source_file = eval_conf_file.parent / "completions" / f"complete_{shell}"
             try:
                 source_file.parent.mkdir(parents=True, exist_ok=True)
                 with (activate_file).open("w") as f:
@@ -400,9 +387,7 @@ class Installer:
                         shell_scripts[shell].format(
                             root_dir=install_prefix,
                             eval_conf_dir=eval_conf_file.parent,
-                            completion=completions[shell].format(
-                                root_dir=root_dir
-                            ),
+                            completion=completions[shell].format(root_dir=root_dir),
                         )
                     )
                 with (source_file).open("w") as f:
@@ -413,14 +398,10 @@ class Installer:
             with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
                 f.write(
                     MODULE.format(
-                        version=find_version(
-                            "src/evaluation_system", "__init__.py"
-                        ),
+                        version=find_version("src/evaluation_system", "__init__.py"),
                         root_dir=install_prefix,
                         eval_conf_dir=eval_conf_file.parent,
-                        project=config_parser["evaluation_system"][
-                            "project_name"
-                        ],
+                        project=config_parser["evaluation_system"]["project_name"],
                     )
                 )
         except Exception as error:
