@@ -1,4 +1,5 @@
 """This module queries the database for plugin history entries."""
+
 from __future__ import annotations
 
 import json
@@ -39,7 +40,7 @@ def history(
       Show Freva commands belonging to the history entries instead
       of the entries themselves.
     limit: int, default: 10
-      Limit the number of entires to be displayed.
+      Limit the number of entries to be displayed.
     plugin: str, default: None
       Display only entries from a given plugin name.
     since: str, datetime.datetime, default: None

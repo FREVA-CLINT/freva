@@ -191,7 +191,7 @@ class UserData:
             p_path = Path(path).expanduser().absolute()
             u_reader = DataReader(p_path, **search_keys)
             for file in u_reader:
-                new_file = u_reader.file_name_from_metdata(file, override=override)
+                new_file = u_reader.file_name_from_metadata(file, override=override)
                 new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
                 if new_file.exists() and override:
                     new_file.unlink()

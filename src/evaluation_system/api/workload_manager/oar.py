@@ -1,4 +1,5 @@
 """Submit jobs using the oar workload manager."""
+
 from __future__ import annotations
 
 import logging

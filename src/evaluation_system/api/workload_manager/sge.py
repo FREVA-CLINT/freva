@@ -1,4 +1,5 @@
 """Submit job to the sge workload manager."""
+
 from __future__ import annotations
 
 import logging

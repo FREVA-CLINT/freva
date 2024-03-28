@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+  # isort should run before black as black sometimes tweaks the isort output
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args:
+          - --profile
+          - black
+          - -t
+          - py311
+          - src
+  # https://github.com/python/black#version-control-integration
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        args:
+          - -t
+          - py311
+          - src
+        exclude: '.*\.ipynb$'
+  # - repo: https://github.com/keewis/blackdoc
+  #   rev: v0.3.9
+  #   hooks:
+  #     - id: blackdoc
+  #       args: ['--target-version', 'py311']
+  # - repo: https://github.com/pycqa/flake8
+  #   rev: 6.0.0
+  #   hooks:
+  #     - id: flake8
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        args: ['--install-types', '--non-interactive']
+        exclude: '^src/evaluation_system/tests/crawl_my_data_test\.py$'
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.16.22
+    hooks:
+      - id: typos
+        exclude: docs/source/notebooks/.*\.ipynb$

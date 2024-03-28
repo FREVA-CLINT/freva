@@ -1,4 +1,5 @@
 """Module to encapsulates the access to repositories."""
+
 from __future__ import annotations
 
 import os

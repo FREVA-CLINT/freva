@@ -20,6 +20,7 @@ executed via:
 With help of this API a Freva plugin can be created in ``/mnt/freva/plugin/new_plugin/plugin.py``
 
 """
+
 from __future__ import annotations
 
 import abc
@@ -193,7 +194,7 @@ class PluginAbstract(abc.ABC):
     USER_OUTPUT_DIR    Absolute path to where the plugin outputs for this user are stored.
     USER_PLOTS_DIR     Absolute path to where the plugin plots for this user are stored.
     USER_CACHE_DIR     Absolute path to the cached data (temp data) for this user.
-    USER_UID           The users' User IDentifier
+    USER_UID           The users' User IIdentifier
     SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
     SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
     SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
@@ -325,7 +326,7 @@ class PluginAbstract(abc.ABC):
                 print(line, end="", flush=True)
             return_code = res.wait()
             if return_code and check:
-                log.error("An error occured calling %s", cmd)
+                log.error("An error occurred calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
                     return_code,
@@ -550,7 +551,7 @@ class PluginAbstract(abc.ABC):
             drs_config["variable"] = variable
         user_data = DataReader(plugin_output, **drs_config)
         for output_file in user_data:
-            new_file = user_data.file_name_from_metdata(output_file)
+            new_file = user_data.file_name_from_metadata(output_file)  # type: ignore
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             shutil.copy(str(output_file), str(new_file))
         if index_data:

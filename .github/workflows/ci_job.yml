@@ -74,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    if: github.ref == 'refs/heads/main'
     env:
       NUMEXPR_MAX_THREADS: 8
       GIT_SUBMODULE_STRATEGY: recursive

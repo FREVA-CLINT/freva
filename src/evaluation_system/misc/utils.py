@@ -1,4 +1,5 @@
 """Provide different utilities that does not depend on any other internal package."""
+
 from __future__ import annotations
 
 import copy
@@ -389,7 +390,7 @@ class TemplateDict(object):
 
 
 def find_similar_words(word: str, list_of_valid_words: Iterable[str]) -> List[str]:
-    """This function implements a "Did you mean? xxx" search algorith.
+    """This function implements a "Did you mean? xxx" search algorithm.
 
     It is used for helping the user find the right word.
 
@@ -526,16 +527,16 @@ class PrintableList(list):
 
     def __init__(self, *args, **kwargs):
         try:
-            self.seperator = kwargs.pop("seperator")
+            self.separator = kwargs.pop("separator")
         except KeyError:
-            self.seperator = ","
+            self.separator = ","
         super(PrintableList, self).__init__(*args, **kwargs)
 
     def __str__(self):  # pragma: no cover
         """
         :returns: String with comma separated list entries
         """
-        return self.seperator.join(map(str, self))
+        return self.separator.join(map(str, self))
 
     def __unicode__(self):  # pragma: no cover
         return self.__str__()

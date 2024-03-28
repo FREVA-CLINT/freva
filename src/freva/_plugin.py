@@ -1,9 +1,10 @@
 """Module to get information on and run Freva plgins.
 
 To make use of any of the methods a Freva plugin has to be set up. Either
-by you, the Freva admins or your collegues. If you want to create a plugin
+by you, the Freva admins or your colleagues. If you want to create a plugin
 pleas refer to the :class:`evaluation_system.api.plugin` section.
 """
+
 from __future__ import annotations
 
 import abc
@@ -400,7 +401,7 @@ def plugin_info(
 
         from tempfile import NamedTemporaryFile
         import freva
-        config = freva.plugin_info("animator", what="config", variabel="pr")
+        config = freva.plugin_info("animator", what="config", variable="pr")
         print(config)
         with NamedTemporaryFile(suffix=".conf") as tf:
             with open(tf.name, "w") as f_obj:

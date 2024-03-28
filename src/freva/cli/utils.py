@@ -6,10 +6,11 @@ import abc
 import argparse
 import logging
 import os
+import sys
 import sysconfig
 from copy import copy
 from pathlib import Path
-from typing import Optional, Type
+from typing import Callable, Optional, Type
 
 import lazy_import
 
@@ -27,7 +28,7 @@ def get_cli_class(name: str) -> Optional[Type[BaseParser]]:
     name: str
         name of the cli sub module that is to be imported. This can be
         either a cli sub module for the freva core (databrowser, plugin etc)
-        or an extension. Extensions are assumed to follow the following nameing
+        or an extension. Extensions are assumed to follow the following naming
         conventions: :py:mod:`<name>.app`. The ``app`` sub module must contain
         a class named :py:class:`Cli`.
 
@@ -130,7 +131,7 @@ class BaseParser(metaclass=abc.ABCMeta):
 
     @property
     def logger(self) -> FrevaLogger:
-        """Use evaluation_system logger in all classes using ths class."""
+        """Use evaluation_system logger in all classes using this class."""
         return logger
 
     def set_debug(self, debug: bool) -> None:
@@ -338,7 +339,7 @@ class BaseCompleter:
             choices = self._get_plugin_choices()
         return {**self.choices, **choices}
 
-    def formated_print(self) -> None:
+    def formatted_print(self) -> None:
         """Print all choices to be processed by the shell completion function."""
 
         out = self.get_print(self.command_choices)
@@ -481,4 +482,35 @@ def print_choices(arguments: list[str]) -> None:
     """
     argv = [arg.strip() for arg in arguments if arg.strip()]
     comp = BaseCompleter.parse_choices(argv)
-    comp.formated_print()
+    comp.formatted_print()
+
+
+def standard_main(
+    cli_class: Callable, version: str, argv: Optional[list[str]] = None
+) -> None:
+    """Wrapper for entry point script.
+
+    Parameters:
+    -----------
+    cli_class:
+        The class that is used to parse the command line arguments.
+    version:
+        The version of the freva command line tool.
+    argv:
+        The command line arguments that are passed to the command line parser.
+    """
+    cli = cli_class()
+    cli.parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="%(prog)s {version}".format(version=version),
+    )
+    args = cli.parse_args(argv or sys.argv[1:])
+    try:
+        cli.run_cmd(args, **cli.kwargs)
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt, exiting", file=sys.stderr, flush=True)
+        sys.exit(130)
+    except Exception as error:
+        freva.utils.exception_handler(error, True)

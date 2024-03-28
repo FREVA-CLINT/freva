@@ -1,4 +1,5 @@
 """Manage the abstraction of a system user."""
+
 from __future__ import annotations
 
 import os
@@ -66,7 +67,7 @@ file that is handled by :class:`evaluation_system.api.config`."""
             raise Exception("Cannot find user %s" % uid)
         self._email = email
         self._userconfig = Config(interpolation=ExtendedInterpolation())
-        # try to load teh configuration from the very first time.
+        # try to load the configuration from the very first time.
         self._userconfig.read(
             [
                 User.EVAL_SYS_DEFAULT_CONFIG,
