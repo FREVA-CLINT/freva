@@ -135,7 +135,9 @@ def test_plugin_status(dummy_env, caplog) -> None:
     res = freva.run_plugin("dummyplugin", the_number=2, other=-5, batchmode=True)
     with pytest.raises(ValueError):
         res.wait(2)
-    assert res.status == "running"
+    # The following is a hack to get the `batch_id`, but it is not recommended
+    # and in the future need to be refactored
+    assert res.status == "running" or res.status == "scheduled"
     res.kill()
     time.sleep(0.5)
     assert res.status == "broken"

@@ -1,4 +1,4 @@
-"""The modules provides interfaces for user to interact with 
+"""The modules provides interfaces for user to interact with
 the freva data stack."""
 
 from __future__ import annotations
@@ -203,7 +203,9 @@ class DataReader:
             new_dirs[v_index] = new_version
         return new_dirs
 
-    def file_name_from_metdata(self, path: os.PathLike, override: bool = False) -> Path:
+    def file_name_from_metadata(
+        self, path: os.PathLike, override: bool = False
+    ) -> Path:
         """Construct file name matching the DRS Spec. from given input path.
 
         Parameters
