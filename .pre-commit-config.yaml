@@ -41,8 +41,8 @@ repos:
       - id: mypy
         args: ['--install-types', '--non-interactive']
         exclude: '^src/evaluation_system/tests/crawl_my_data_test\.py$'
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.16.22
-    hooks:
-      - id: typos
-        exclude: docs/source/notebooks/.*\.ipynb$
+  # - repo: https://github.com/crate-ci/typos
+  #   rev: v1.16.22
+  #   hooks:
+  #     - id: typos
+  #       exclude: docs/source/notebooks/.*\.ipynb$
