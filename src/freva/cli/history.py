@@ -11,7 +11,7 @@ import rich
 from evaluation_system import __version__
 from evaluation_system.misc import logger
 
-from .utils import BaseParser
+from .utils import BaseParser, standard_main
 
 freva = lazy_import.lazy_module("freva")
 
@@ -126,19 +126,4 @@ class Cli(BaseParser):
 
 
 def main(argv: Optional[list[str]] = None) -> None:
-    """Wrapper for entry point script."""
-    cli = Cli()
-    cli.parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version="%(prog)s {version}".format(version=__version__),
-    )
-    args = cli.parse_args(argv or sys.argv[1:])
-    try:
-        cli.run_cmd(args, **cli.kwargs)
-    except KeyboardInterrupt:  # pragma: no cover
-        rich.print("[b]KeyboardInterrupt, exiting[/b]", file=sys.stderr, flush=True)
-        sys.exit(130)
-    except Exception as error:  # pragma: no cover
-        freva.utils.exception_handler(error, True)  # pragma: no cover
+    standard_main(Cli, __version__, argv)

@@ -3,6 +3,7 @@ Created on 30.05.2016
 
 @author: Sebastian Illing
 """
+
 import json
 import shlex
 from pathlib import Path
@@ -44,7 +45,7 @@ def test_query(capsys, search_dict, dummy_config):
 
 
 def test_freva_esgf_method(dummy_config):
-    from freva import esgf_browser, esgf_facets, esgf_download, esgf_query
+    from freva import esgf_browser, esgf_download, esgf_facets, esgf_query
 
     result_to_be = [
         "output1/MPI-M/MPI-ESM-LR/historical/day/atmos/day/r1i1p1/v20111006/"
@@ -122,7 +123,7 @@ def test_freva_esgf_method(dummy_config):
     result_to_be = {
         "version": "20190219",
         "activity_id": ["ScenarioMIP"],
-        "master_id": "CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr",
+        "master_id": "CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.was.gr",
         "mip_era": ["CMIP6"],
         "product": ["model-output"],
         "source_id": ["CNRM-CM6-1"],
@@ -130,7 +131,7 @@ def test_freva_esgf_method(dummy_config):
             "http://esgf3.dkrz.de/thredds/catalog/esgcet/1586/CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219.xml#CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/xml+thredds|THREDDS",
             "http://esgf3.dkrz.de/las/getUI.do?catid=649F6BBCDD98B0633CF0042D119CC69D_ns_CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/las|LAS",
         ],
-        "variable": ["vas"],
+        "variable": ["was"],
         "score": 1.0,
     }
     res = esgf_query(

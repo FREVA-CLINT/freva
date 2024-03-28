@@ -1,4 +1,5 @@
 """Tests for ingesting user data."""
+
 from __future__ import annotations
 
 import datetime
@@ -139,21 +140,21 @@ def test_get_file_name_from_metadata(
     )
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/hr/foo-kingdom/foo/bar/v0/tas"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults["variable"] = "foob"
     defaults["time_frequency"] = "3h"
     defaults.pop("cmor_table")
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v0/foob"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults.pop("version")
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v19990909/foob"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults.pop("ensemble")
     data_reader = DataReader(valid_data_files, **defaults)
     with pytest.raises(ValueError):
-        data_reader.file_name_from_metdata(in_file)
+        data_reader.file_name_from_metadata(in_file)
 
 
 def test_versions(valid_data_files: Path, time_mock: mock_datetime) -> None:
@@ -171,7 +172,7 @@ def test_versions(valid_data_files: Path, time_mock: mock_datetime) -> None:
         from evaluation_system.api.user_data import DataReader
 
         data_reader = DataReader(inp, **defaults)
-        return data_reader.file_name_from_metdata(inp, override=override)
+        return data_reader.file_name_from_metadata(inp, override=override)
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
     new_file = get_new_file(in_file)

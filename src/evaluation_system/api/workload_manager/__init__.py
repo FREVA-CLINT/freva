@@ -1,4 +1,5 @@
 """Collection of methods and classes for submitting plugins to a workload manager."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -112,7 +113,7 @@ def schedule_job(
     try:
         job.start()
     except RuntimeError as error:
-        # Job sould not start
+        # Job should not start
         std_err = str(error)
         submit_status = 1
     job_name = job.job_name or "worker"

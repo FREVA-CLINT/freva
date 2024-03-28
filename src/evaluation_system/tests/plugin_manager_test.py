@@ -3,6 +3,7 @@ Created on 31.05.2016
 
 @author: Sebastian Illing
 """
+
 import datetime
 import logging
 import os
@@ -41,9 +42,9 @@ def test_plugins(dummy_settings, temp_user):
     assert dummy.category == DummyPlugin.__category__
     assert dummy.tags == DummyPlugin.__tags__
     assert dummy.plugin_class == "DummyPlugin"
-    os.environ[
-        f"EVALUATION_SYSTEM_PLUGINS_{temp_user.getName()}"
-    ] = f"{str(Path(__file__).parent / 'mocks')},dummy"
+    os.environ[f"EVALUATION_SYSTEM_PLUGINS_{temp_user.getName()}"] = (
+        f"{str(Path(__file__).parent / 'mocks')},dummy"
+    )
     pm.reload_plugins(temp_user.getName())
     os.environ.pop(f"EVALUATION_SYSTEM_PLUGINS_{temp_user.getName()}")
 

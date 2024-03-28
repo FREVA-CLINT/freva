@@ -1,4 +1,4 @@
-#skipp all python compiled files
+#skip all python compiled files
 *.pyc
 
 #skip all eclipse and other IDE information
@@ -10,6 +10,7 @@
 !.coveragerc
 !.docker/
 !.envrc
+!.pre-commit-config.yaml
 coverage.xml
 compose/activate_*
 compose/completions/*
@@ -26,3 +27,4 @@ docs/build
 docs/source/_static/*.gif
 !docs/build/.empty
 *.egg-info
+venv/

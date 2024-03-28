@@ -1,4 +1,5 @@
 """Test loading different configurations."""
+
 from pathlib import Path
 from tempfile import TemporaryDirectory
 

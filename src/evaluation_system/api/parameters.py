@@ -5,6 +5,7 @@ Plugin parameters are defined in the plugin wrapper class. Please refer to
 plugin wrapper class.
 
 """
+
 from __future__ import annotations
 
 import html
@@ -711,9 +712,9 @@ class Float(ParameterType):
         self,
         **kwargs,
     ):
-        kwargs[
-            "regex"
-        ] = r"^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+        kwargs["regex"] = (
+            r"^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+        )
         super().__init__(**kwargs)
 
 
