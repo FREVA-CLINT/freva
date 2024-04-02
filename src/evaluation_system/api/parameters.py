@@ -1117,7 +1117,7 @@ class SelectField(String):
                 parameters.SelectField(
                                     name="options",
                                     default="first",
-                                    options={1: "first", 2: "second"}
+                                    options={1: "first", 2: "second"},
                                     help="Select from options",
                                       ),
             )
