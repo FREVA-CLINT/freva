@@ -6,6 +6,7 @@ Created on 17.05.2016
 
 import os
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
 

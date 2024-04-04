@@ -126,26 +126,24 @@ def test_run_pyclientplugin(dummy_history):
         freva.run_plugin("dummyplugin0")
 
 
-# def test_plugin_status(dummy_env, caplog) -> None:
-#     """Test the plugin status quries."""
-#     import os
+def test_plugin_status(dummy_env, caplog) -> None:
+    """Test the plugin status quries."""
+    import os
 
-#     import freva
+    import freva
 
-#     res = freva.run_plugin("dummyplugin", the_number=2, other=-5, batchmode=True)
-#     with pytest.raises(ValueError):
-#         res.wait(2)
-#     # The following is a hack to get the `batch_id`, but it is not recommended
-#     # and in the future need to be refactored
-#     assert res.status == "running" or res.status == "scheduled"
-#     res.kill()
-#     time.sleep(0.5)
-#     assert res.status == "broken"
-#     res.kill()
-#     res = freva.run_plugin("dummyplugin", the_number=2, other=-1, batchmode=True)
-#     res.wait()
-#     assert res.status == "finished"
-#     assert isinstance(res.batch_id, int)
+    # res = freva.run_plugin("dummyplugin", the_number=2, other=-5, batchmode=True)
+    # # with pytest.raises(ValueError):
+    # # res.wait()
+    # # assert res.status == "running"
+    # res.kill()
+    # time.sleep(0.5)
+    # assert res.status == "broken"
+    # res.kill()
+    res = freva.run_plugin("dummyplugin", the_number=2, other=-1, batchmode=False)
+    res.wait()
+    assert res.status == "finished"
+    # assert isinstance(res.batch_id, int)
 
 
 def test_plugin_output(dummy_history) -> None:

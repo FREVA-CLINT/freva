@@ -400,7 +400,7 @@ class PluginAbstract(abc.ABC):
 
     @property
     def conda_path(self) -> str:
-        """Add the conda env path of the plugin to the environment.i
+        """Add the conda env path of the plugin to the environment.
 
         :meta private:
         """
@@ -421,6 +421,10 @@ class PluginAbstract(abc.ABC):
         out_file: Optional[Path] = None,
         rowid: Optional[int] = None,
     ) -> Optional[Any]:
+        """Run the plugin with the given configuration.
+
+        :meta private:
+        """
         config_dict = self._append_unique_id(config_dict, unique_output)
         if out_file is None:
             is_interactive_job = True
@@ -632,6 +636,10 @@ class PluginAbstract(abc.ABC):
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
+        """Extend the metadata dictionary with file information.
+
+        :meta private:
+        """
         fstat = os.stat(file_path)
         if "timestamp" not in metadata:
             metadata["timestamp"] = fstat[stat.ST_CTIME]

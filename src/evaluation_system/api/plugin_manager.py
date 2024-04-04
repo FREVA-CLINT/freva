@@ -319,6 +319,17 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
 def get_plugins_user() -> dict[str, dict[str, PluginMetadata]]:
     """Get plugins per user
 
+    Example
+    -------
+
+    In order to get the plugins for the current user, you can use the:
+
+    .. code-block:: python
+
+        from evaluation_system.api.plugin import get_plugins_user
+        plugins = get_plugins_user()
+        print(plugins)
+
     Returns
     -------
     dict[str, dict[str, PluginMetadata]]
@@ -484,7 +495,7 @@ def parse_arguments(
                 complete_conf.update(p.read_configuration(f))
     # now if we still have a config file update what the configuration with it
     if isinstance(config_file, str):
-        if config_file == "-":
+        if config_file == "-":  # TODO: find out what this is for
             # reading from stdin
             complete_conf.update(p.read_configuration(sys.stdin))
         elif config_file is not None:
@@ -1478,5 +1489,5 @@ def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:
 # This only runs once after start. To load new plugins on the fly we have
 # 2 possibilities:
 # 1) Watch the tool directory
-# 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
+# 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`)
 reload_plugins()

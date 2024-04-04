@@ -28,3 +28,4 @@ docs/source/_static/*.gif
 !docs/build/.empty
 *.egg-info
 venv/
+tmp/
