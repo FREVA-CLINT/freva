@@ -400,9 +400,9 @@ submit the previous plugin job to the computing queue:
 
 
 If you want to evaluate the output of the plugin, you can use the ``--json`` flag.
-This flag converts the result of a plugin application into a json string that 
-can be processed by a json parser such as ``jq``. Consider the following 
-example (in bash/zsh) where we use the ``--json`` flag to get all the netcdf 
+This flag converts the result of a plugin application into a json string that
+can be processed by a json parser such as ``jq``. Consider the following
+example (in bash/zsh) where we use the ``--json`` flag to get all the netcdf
 output files from a plugin run.
 
 .. code:: console
@@ -496,7 +496,7 @@ can use the ``--return-command`` option to get the command that was used:
 
 
 As with the ``plugin`` subcommand, you can use the ``--json`` flag
-to make the output of the history command machine-readable, 
+to make the output of the history command machine-readable,
 and to parse its output. For example, we can query the output files
 of the last 3 plugin applications:
 
@@ -666,8 +666,8 @@ Currently, only files on the file system (``--data-type {fs}``) are supported.
 Searching for ESGF data: the ``freva-esgf`` command
 --------------------------------------------------------
 
-The ``freva-esgf`` command or the ``freva esgf`` sub-command provides 
-a search syntax to look the model data through all the ESGF portals and 
+The ``freva-esgf`` command or the ``freva esgf`` sub-command provides
+a search syntax to look the model data through all the ESGF portals and
 it is derived from
 `ESGF's rest API <https://github.com/ESGF/esgf.github.io/wiki/ESGF_Search_REST_API>`__,
 although it has been simplified to be used from the command line and
@@ -679,7 +679,7 @@ which have different query possibilities.
 
     The `Earth System Grid Federation <http://esgf.llnl.gov/>`_ (ESGF)
     maintains a global system of federated data centers that allow access to
-    the largest archive of model climate data world-wide. ESGF portals 
+    the largest archive of model climate data world-wide. ESGF portals
     are an interface for users to access model data that are distributed in several
     data centers, also called data nodes, although they themselves do not
     host any data (e.g. `DKRZ <https://esgf-data.dkrz.de/projects/esgf-dkrz/>`_).
@@ -725,11 +725,11 @@ experiment ``decadal1960`` and project ``CMIP5``, then:
     print("\n".join(files[:5]))
     print("...")
 
-However, be aware that the syntax of the query may change depending 
+However, be aware that the syntax of the query may change depending
 on the targeted dataset, for instance for ``CMIP6``:
 
 .. code:: console
-    
+
     freva esgf project=cmip6 product=scenariomip model=cnrm-cm6-1 institute=cnrm-cerfacs experiment=ssp585 time_frequency=3hr variable=uas ensemble=r1i1p1f2 distrib=false latest=true
 
 .. execute_code::
@@ -748,7 +748,7 @@ on the targeted dataset, for instance for ``CMIP6``:
         latest=True
     )
 
-will not produce any result, while 
+will not produce any result, while
 
 .. code:: console
 
@@ -776,15 +776,15 @@ will not produce any result, while
 
 will yield the desired output. Note that not only the facets are different from
 ``freva-databrowser`` but also each value is case sensitive. The naming of the
-facets can be, for example, consulted at the corresponding ESGF portal 
+facets can be, for example, consulted at the corresponding ESGF portal
 (e.g. for `CMIP6 at DKRZ <https://esgf-data.dkrz.de/search/cmip6-dkrz/>`_).
 
 
-To show the values of certain attributes you can use the ``--show-facet FACET`` flag. 
+To show the values of certain attributes you can use the ``--show-facet FACET`` flag.
 For example, for ``time_frequency`` :
 
 .. code:: console
-    
+
     freva esgf project=CMIP5 experiment=decadal1960 variable=tas distrib=false latest=true --show-facet=time_frequency
 
 
@@ -792,21 +792,21 @@ For example, for ``time_frequency`` :
     :hide_code:
 
     from subprocess import run, PIPE
-    res = run(["freva", "esgf", "project=CMIP5", 
-                        "experiment=decadal1960", 
+    res = run(["freva", "esgf", "project=CMIP5",
+                        "experiment=decadal1960",
                         "variable=tas", "distrib=false", "latest=true",
-                        "--show-facet=time_frequency"], 
+                        "--show-facet=time_frequency"],
                 check=True, stdout=PIPE, stderr=PIPE)
     print(res.stdout.decode())
 
 Similarly to ``--show-facet``, ``--query QUERY`` displays ``key=value`` metadata pairs (not limited
-to attributes only) of selected elements for a search but grouped per dataset. 
+to attributes only) of selected elements for a search but grouped per dataset.
 For example we could query selected metadata information (e.g. ``mip_era,variable,variant_label,url``)
 of a certain CMIP6 search and display it grouped by dataset:
 
 .. code:: console
-    
-    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas,pr distrib=false latest=true --query=mip_era,variable,variant_label,url 
+
+    freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas,pr distrib=false latest=true --query=mip_era,variable,variant_label,url
 
 .. execute_code::
    :hide_code:
@@ -821,16 +821,16 @@ of a certain CMIP6 search and display it grouped by dataset:
 To show the name of the datasets instead of the URLs use the ``--datasets`` flag:
 
 .. code:: console
-    
+
     freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --datasets
 
 .. execute_code::
     :hide_code:
 
     from subprocess import run, PIPE
-    res = run(["freva", "esgf", "mip_era=CMIP6", "activity_id=ScenarioMIP", 
-                "source_id=CNRM-CM6-1", "institution_id=CNRM-CERFACS", 
-                "experiment_id=ssp585", "frequency=3hr", "variable=uas", 
+    res = run(["freva", "esgf", "mip_era=CMIP6", "activity_id=ScenarioMIP",
+                "source_id=CNRM-CM6-1", "institution_id=CNRM-CERFACS",
+                "experiment_id=ssp585", "frequency=3hr", "variable=uas",
                 "variant_label=r1i1p1f2", "distrib=false", "latest=true",
                 "--datasets"], check=True, stdout=PIPE, stderr=PIPE)
     print(res.stdout.decode())
@@ -839,7 +839,7 @@ To show the name of the datasets instead of the URLs use the ``--datasets`` flag
 One can retrieve the opendap endpoints instead of the urls as well with ``--opendap``, for example:
 
 .. code:: console
-    
+
     freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --opendap
 
 .. execute_code::
@@ -865,7 +865,7 @@ One can retrieve the opendap endpoints instead of the urls as well with ``--open
 Or the gridftp endpoints instead (``--gridftp``):
 
 .. code:: console
-    
+
     freva esgf mip_era=CMIP6 activity_id=ScenarioMIP source_id=CNRM-CM6-1 institution_id=CNRM-CERFACS experiment_id=ssp585 frequency=3hr variable=uas variant_label=r1i1p1f2 distrib=false latest=true --gridftp
 
 .. execute_code::
@@ -889,8 +889,8 @@ Or the gridftp endpoints instead (``--gridftp``):
 
 
 Since the queries yield a list of URLs to the netCDF files
-there are not readily available to use. Freva can create a bash script written 
-around wget to simplify data download with the ``--download-script /foo/bar.wget`` 
+there are not readily available to use. Freva can create a bash script written
+around wget to simplify data download with the ``--download-script /foo/bar.wget``
 option, where ``/foo/bar.wget`` is the destination wget file:
 
 .. code:: console
@@ -901,17 +901,17 @@ option, where ``/foo/bar.wget`` is the destination wget file:
    :hide_code:
 
    from subprocess import run, PIPE
-   res = run(["freva", "esgf", "--download-script", "/tmp/script.wget", "project=CMIP5", "experiment=decadal1960", 
+   res = run(["freva", "esgf", "--download-script", "/tmp/script.wget", "project=CMIP5", "experiment=decadal1960",
               "variable=tas", "distrib=false", "latest=true"], check=True, stdout=PIPE, stderr=PIPE)
    print(res.stdout.decode())
 
 
 .. note::
 
-    In order to download the data you will need an ESGF account 
-    (e.g. via `DKRZ's portal <https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/>`_), 
-    where after entering a ``<username>`` and ``password`` 
-    you will get an openID (``https://esgf-data.dkrz.de/esgf-idp/openid/<username>``) 
+    In order to download the data you will need an ESGF account
+    (e.g. via `DKRZ's portal <https://esgf-data.dkrz.de/user/add/?next=http://esgf-data.dkrz.de/projects/esgf-dkrz/>`_),
+    where after entering a ``<username>`` and ``password``
+    you will get an openID (``https://esgf-data.dkrz.de/esgf-idp/openid/<username>``)
     to use while running the script with the ``-H`` flag, e.g.:
 
     .. code:: console
@@ -920,16 +920,16 @@ option, where ``/foo/bar.wget`` is the destination wget file:
 
         Running script.wget version: 1.3.2
         Use script.wget -h for help.
- 
+
         Warning! The total number of files was 2338 but this script will only process 1000.
         There were files with the same name which were requested to be download to the same directory. To avoid overwriting the previous downloaded one they were skipped.
         Please use the parameter 'download_structure' to set up unique directories for them.
         Script created for 916 file(s)
         (The count won't match if you manually edit this file!)
-        
+
         Enter your openid :  https://esgf-data.dkrz.de/esgf-idp/openid/<username>
         Enter password : <password>
 
-    Alternatively you can also retrieve the data using certificates, 
+    Alternatively you can also retrieve the data using certificates,
     for example through the `ESGF PyClient <https://esgf-pyclient.readthedocs.io/en/latest/index.html>`_.
-    You will still need your openID for that.   
+    You will still need your openID for that.

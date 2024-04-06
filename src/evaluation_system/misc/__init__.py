@@ -21,7 +21,7 @@ logging.basicConfig(
 
 
 class FrevaLogger(logging.Logger):
-    """Custom logger to assure that all log handles recieve the same level."""
+    """Custom logger to assure that all log handles receive the same level."""
 
     is_cli: bool = False
     """Indicate whether or not this logger belongs to a cli process."""

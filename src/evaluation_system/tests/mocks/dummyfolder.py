@@ -27,7 +27,7 @@ class DummyPluginFolders(PluginAbstract):
     __short_description__ = "A dummy plugin with outputdir folder"
     __long_description__ = ""
     __tags__ = ["foo"]
-    __version__ = ("foo", "bar")
+    __version__ = ("foo", "bar")  # type: ignore
     __category__ = "statistical"
     __name__ = "DummyPluginFolders"
     __parameters__ = ParameterDictionary(
@@ -39,9 +39,9 @@ class DummyPluginFolders(PluginAbstract):
             help="The default output directory",
         ),
     )
-    _runs = []
+    _runs: list = []
     _template = "${number} - $something - $other"
-    tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}
+    tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}  # type: ignore
 
     def run_tool(self, config_dict=None):
         DummyPluginFolders._runs.append(config_dict)

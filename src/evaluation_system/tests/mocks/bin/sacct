@@ -28,4 +28,3 @@ if [ $check ];then
 fi
 echo -e "JobID|State|ExitCode|\n$JOB_ID|$STATUS|$EXIT_CODE|"
 exit 0
-

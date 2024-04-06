@@ -70,7 +70,6 @@ class UserDB(object):
         self._user = user
 
     @transaction.atomic
-    @transaction.atomic
     def storeHistory(
         self,
         tool,
@@ -83,7 +82,7 @@ class UserDB(object):
         version_details=None,
         caption=None,
     ):
-        """Store a an analysis run into the DB.
+        """Store an analysis run into the DB.
 
         :type tool: :class:`evaluation_system.api.plugin.pluginAbstract`
         :param tool: the plugin for which we are storing the information.
