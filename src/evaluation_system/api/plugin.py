@@ -197,7 +197,7 @@ class PluginAbstract(abc.ABC):
     USER_OUTPUT_DIR    Absolute path to where the plugin outputs for this user are stored.
     USER_PLOTS_DIR     Absolute path to where the plugin plots for this user are stored.
     USER_CACHE_DIR     Absolute path to the cached data (temp data) for this user.
-    USER_UID           The users' User IIdentifier
+    USER_UID           The users' User Identifier
     SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
     SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
     SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
