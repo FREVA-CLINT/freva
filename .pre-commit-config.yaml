@@ -46,4 +46,4 @@ repos:
     rev: v1.16.22
     hooks:
       - id: typos
-        exclude: docs/source/notebooks/.*\.ipynb$|src/evaluation_system/tests/esgf_test.py$'
+        exclude: docs/source/notebooks/.*\.ipynb$|src/evaluation_system/tests/esgf_test.py$

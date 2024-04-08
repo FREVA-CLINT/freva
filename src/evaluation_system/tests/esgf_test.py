@@ -131,7 +131,7 @@ def test_freva_esgf_method(dummy_config):
             "http://esgf3.dkrz.de/thredds/catalog/esgcet/1586/CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219.xml#CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/xml+thredds|THREDDS",
             "http://esgf3.dkrz.de/las/getUI.do?catid=649F6BBCDD98B0633CF0042D119CC69D_ns_CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr.v20190219|application/las|LAS",
         ],
-        "variable": ["was"],
+        "variable": ["vas"],
         "score": 1.0,
     }
     res = esgf_query(
