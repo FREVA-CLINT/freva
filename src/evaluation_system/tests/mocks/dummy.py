@@ -40,9 +40,10 @@ class DummyPlugin(PluginAbstract):
         InputDirectory(name="input", help="An input file"),
         String(name="variable", default="tas", help="An input variable"),
     )
-    _runs = []  # type: ignore
+    _runs: list = []
     _template = "${number} - $something - $other"
-    tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}  # type: ignore
+    # tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"} this needs to be string or None
+    tool_developer = "DummyUser"
 
     def run_tool(self, config_dict=None):
         DummyPlugin._runs.append(config_dict)

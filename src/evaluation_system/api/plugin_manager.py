@@ -1322,7 +1322,7 @@ def unfollow_history_tag(history_id: int, user: User) -> None:
     )
     for row in rows:
         user.getUserDB().updateHistoryTag(
-            row.id, HistoryTag.tagType.unfollow, uid=user_name  # type: ignore
+            row.id, HistoryTag.tagType.unfollow, uid=user_name
         )
 
 
@@ -1432,7 +1432,7 @@ def dict2conf(
             # to foreign key attribute and mypy doesn't understand this yet
             # will skip the typ check. Otherwise mypy will complain that we
             # are trying to access an attribute that doesn't exist.
-            conf_object.parameter_id_id = o[0].id  # type: ignore
+            conf_object.parameter_id_id = o[0].id  # type: ignore [attr-defined] # It needs to be discussed with the team
             conf_object.value = json.dumps(realvalue)
             conf.append(conf_object)
     return conf

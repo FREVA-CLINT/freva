@@ -558,7 +558,7 @@ class PluginAbstract(abc.ABC):
             drs_config["variable"] = variable
         user_data = DataReader(plugin_output, **drs_config)
         for output_file in user_data:
-            new_file = user_data.file_name_from_metadata(output_file)  # type: ignore
+            new_file = user_data.file_name_from_metadata(output_file)
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             shutil.copy(str(output_file), str(new_file))
         if index_data:

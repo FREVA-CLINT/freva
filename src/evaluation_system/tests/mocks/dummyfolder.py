@@ -27,7 +27,7 @@ class DummyPluginFolders(PluginAbstract):
     __short_description__ = "A dummy plugin with outputdir folder"
     __long_description__ = ""
     __tags__ = ["foo"]
-    __version__ = ("foo", "bar")  # type: ignore
+    __version__ = (0, 1, 2)
     __category__ = "statistical"
     __name__ = "DummyPluginFolders"
     __parameters__ = ParameterDictionary(
@@ -41,7 +41,8 @@ class DummyPluginFolders(PluginAbstract):
     )
     _runs: list = []
     _template = "${number} - $something - $other"
-    tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"}  # type: ignore
+    # tool_developer = {"name": "DummyUser", "email": "data@dkrz.de"} it needs to be string or None
+    tool_developer = "DummyUser"
 
     def run_tool(self, config_dict=None):
         DummyPluginFolders._runs.append(config_dict)

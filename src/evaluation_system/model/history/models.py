@@ -4,6 +4,7 @@ import re
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.manager import Manager
 
 from evaluation_system.misc.utils import PrintableList
 from evaluation_system.model.plugins.models import Parameter, Version
@@ -78,7 +79,7 @@ class History(models.Model):
         (Flag.guest, "users and guest"),
         (Flag.free, "no login required"),
     )
-
+    objects: Manager = models.Manager()
     #: Date and time when the process were scheduled
     timestamp = models.DateTimeField()
     #: Name of the tool
@@ -384,6 +385,8 @@ class HistoryTag(models.Model):
     The output files of process will be recorded here.
     """
 
+    objects: Manager = models.Manager()
+
     class tagType:
         [
             caption,
@@ -426,6 +429,7 @@ class HistoryTag(models.Model):
 class BatchSettings(models.Model):
     """All information on any batchmode settings of a plugin run."""
 
+    objects: Manager = models.Manager()
     history_id: models.ForeignKey = models.ForeignKey(History, on_delete=models.CASCADE)
     job_script: models.TextField = models.TextField(null=True, blank=True)
     workload_manager: models.TextField = models.TextField(null=True, blank=True)
@@ -441,6 +445,7 @@ class BatchSettings(models.Model):
 class Output(models.Model):
     """All information Plugin Output file."""
 
+    objects: Manager = models.Manager()
     history_id: models.ForeignKey = models.ForeignKey(History, on_delete=models.CASCADE)
     result: models.JSONField = models.JSONField(null=True, blank=True)
 

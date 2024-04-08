@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.manager import Manager
 
 
 class Version(models.Model):
@@ -40,6 +41,7 @@ class Parameter(models.Model):
     class Meta:
         app_label = "plugins"
 
+    objects: Manager = models.Manager()
     #: name of the parameter
     parameter_name = models.CharField(max_length=50)
     #: type of the parameter

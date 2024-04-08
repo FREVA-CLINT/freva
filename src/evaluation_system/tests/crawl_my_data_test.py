@@ -6,12 +6,21 @@ import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Generator, Tuple
+from unittest.mock import Mock
 
 import cftime
 import mock
 import numpy as np
 import pytest
 import xarray as xr
+
+
+@pytest.fixture
+def mock_datetime():
+    with mock.patch(
+        "evaluation_system.api.user_data.datetime", Mock()
+    ) as mocked_datetime:
+        yield mocked_datetime
 
 
 def create_data(
@@ -69,7 +78,7 @@ def invalid_data_files() -> Generator[Path, None, None]:
     yield from create_data(1, ["tas", "foo"], (10, 10), ("lat", "lon"))
 
 
-def test_invalid_data_files(invalid_data_files: Path, time_mock: mock_datetime) -> Path:
+def test_invalid_data_files(invalid_data_files: Path) -> Path:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(invalid_data_files.rglob("*.*"))[0]
@@ -83,7 +92,7 @@ def test_invalid_data_files(invalid_data_files: Path, time_mock: mock_datetime) 
         data_reader.get_metadata(not_a_nc_file)
 
 
-def test_add_valid_data(valid_data_files: Path, time_mock: mock_datetime) -> None:
+def test_add_valid_data(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
@@ -103,7 +112,7 @@ def test_add_valid_data(valid_data_files: Path, time_mock: mock_datetime) -> Non
     assert data["time_frequency"] == "fx"
 
 
-def test_get_time_frequency(valid_data_files: Path, time_mock: mock_datetime) -> None:
+def test_get_time_frequency(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     data_reader = DataReader(Path("foo/bar.nc"))
@@ -121,9 +130,7 @@ def test_get_time_frequency(valid_data_files: Path, time_mock: mock_datetime) ->
     assert data_reader.get_time_frequency(year) == "yr"
 
 
-def test_get_file_name_from_metadata(
-    valid_data_files: Path, time_mock: mock_datetime
-) -> None:
+def test_get_file_name_from_metadata(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(valid_data_files.rglob("*.*"))[0]

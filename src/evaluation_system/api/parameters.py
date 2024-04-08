@@ -150,7 +150,7 @@ class ParameterType(initOrder):
                 parameter_name=self.name,
                 parameter_type=itype,
             )
-            self.id = tool_obj[0].id  # type: ignore
+            self.id = tool_obj[0].id
         return self.id
 
     def _verified(
