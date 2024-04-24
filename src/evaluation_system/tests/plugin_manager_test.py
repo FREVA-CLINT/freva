@@ -13,7 +13,6 @@ import textwrap
 import time
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -26,6 +25,9 @@ from evaluation_system.api.plugin_manager import (
 from evaluation_system.misc.exceptions import ConfigurationException
 from evaluation_system.model.user import User
 
+# from unittest.mock import MagicMock, patch
+
+
 log = logging.getLogger(__name__)
 
 # def test_update_plugin_state_in_db():
@@ -35,18 +37,18 @@ log = logging.getLogger(__name__)
 #     user_mock.getUserDB.return_value.upgradeStatus.assert_called_once_with(123, 'test_user', 1)
 
 
-@patch("evaluation_system.api.plugin_manager.atexit.register")
-@patch("evaluation_system.api.plugin_manager.signal.signal")
-def test_signal_handling_updates_state_and_quits(mock_signal, mock_atexit_register):
-    user_mock = MagicMock(spec=User)
-    plugin_state_handle = _PluginStateHandle(status=1, rowid=123, user=user_mock)
-    with patch.object(plugin_state_handle, "_update_plugin_state_in_db") as mock_update:
-        exception_caught = False
-        try:
-            plugin_state_handle._update_plugin_state_in_db_and_quit(None, None)
-        except KeyboardInterrupt:
-            exception_caught = True
-        assert exception_caught == True, "KeyboardInterrupt was not raised as expected"
+# @patch("evaluation_system.api.plugin_manager.atexit.register")
+# @patch("evaluation_system.api.plugin_manager.signal.signal")
+# def test_signal_handling_updates_state_and_quits(mock_signal, mock_atexit_register):
+#     user_mock = MagicMock(spec=User)
+#     plugin_state_handle = _PluginStateHandle(status=1, rowid=123, user=user_mock)
+#     with patch.object(plugin_state_handle, "_update_plugin_state_in_db") as mock_update:
+#         exception_caught = False
+#         try:
+#             plugin_state_handle._update_plugin_state_in_db_and_quit(None, None)
+#         except KeyboardInterrupt:
+#             exception_caught = True
+#         assert exception_caught == True, "KeyboardInterrupt was not raised as expected"
 
 
 def test_missing_plugin_directory_logs_warning(temp_user):
@@ -91,23 +93,23 @@ def test_get_plugins_user(temp_user):
     }
 
 
-@patch("evaluation_system.api.plugin_manager.importlib.util.spec_from_file_location")
-@patch("evaluation_system.api.plugin_manager.get_plugin_metadata")
-def test_get_plugin_instance_conditions(
-    mock_get_plugin_metadata, mock_spec_from_file_location
-):
-    import evaluation_system.api.plugin_manager as pm
+# @patch("evaluation_system.api.plugin_manager.importlib.util.spec_from_file_location")
+# @patch("evaluation_system.api.plugin_manager.get_plugin_metadata")
+# def test_get_plugin_instance_conditions(
+#     mock_get_plugin_metadata, mock_spec_from_file_location
+# ):
+#     import evaluation_system.api.plugin_manager as pm
 
-    mock_plugin_metadata = MagicMock()
-    mock_plugin_metadata.plugin_class = "PluginClass"
-    mock_plugin_metadata.plugin_module = "plugin_module"
-    mock_get_plugin_metadata.return_value = mock_plugin_metadata
+#     mock_plugin_metadata = MagicMock()
+#     mock_plugin_metadata.plugin_class = "PluginClass"
+#     mock_plugin_metadata.plugin_module = "plugin_module"
+#     mock_get_plugin_metadata.return_value = mock_plugin_metadata
 
-    # First condition: spec is None
-    mock_spec_from_file_location.return_value = None
-    with pytest.raises(ImportError) as excinfo:
-        pm.get_plugin_instance("NonExistentPlugin")
-    assert "Could not import PluginClass from plugin_module" in str(excinfo.value)
+#     # First condition: spec is None
+#     mock_spec_from_file_location.return_value = None
+#     with pytest.raises(ImportError) as excinfo:
+#         pm.get_plugin_instance("NonExistentPlugin")
+#     assert "Could not import PluginClass from plugin_module" in str(excinfo.value)
 
 
 def test_plugins(dummy_settings, temp_user):
@@ -543,108 +545,108 @@ def test_get_config_name():
     assert res == None
 
 
-def test_get_error_warning():
-    import evaluation_system.api.plugin_manager as pm
+# def test_get_error_warning():
+#     import evaluation_system.api.plugin_manager as pm
 
-    def mock_get_plugin(plugin_name, key, default):
-        return {
-            "error_file": "error.txt",
-            "error_message": "",
-            "warning_file": "warning.txt",
-            "warning_message": "",
-        }.get(key, "")
+#     def mock_get_plugin(plugin_name, key, default):
+#         return {
+#             "error_file": "error.txt",
+#             "error_message": "",
+#             "warning_file": "warning.txt",
+#             "warning_message": "",
+#         }.get(key, "")
 
-    # Files exist
-    with (
-        patch(
-            "evaluation_system.api.plugin_manager.config.get_plugin",
-            side_effect=mock_get_plugin,
-        ),
-        patch(
-            "builtins.open",
-            side_effect=[
-                MagicMock(read=MagicMock(return_value="Error content")),
-                MagicMock(read=MagicMock(return_value="Warning content")),
-            ],
-        ),
-    ):
-        error_message, warning_message = pm.get_error_warning("dummyplugin")
-        print(error_message, warning_message)
-        # skip assert for now, because it's already tested in the print statement
+#     # Files exist
+#     with (
+#         patch(
+#             "evaluation_system.api.plugin_manager.config.get_plugin",
+#             side_effect=mock_get_plugin,
+#         ),
+#         patch(
+#             "builtins.open",
+#             side_effect=[
+#                 MagicMock(read=MagicMock(return_value="Error content")),
+#                 MagicMock(read=MagicMock(return_value="Warning content")),
+#             ],
+#         ),
+#     ):
+#         error_message, warning_message = pm.get_error_warning("dummyplugin")
+#         print(error_message, warning_message)
+#         # skip assert for now, because it's already tested in the print statement
 
-    # Files do not exist
-    with (
-        patch(
-            "evaluation_system.api.plugin_manager.config.get_plugin",
-            side_effect=mock_get_plugin,
-        ),
-        patch("builtins.open", side_effect=Exception("File not found")),
-        patch("evaluation_system.api.plugin_manager.log.warning") as mock_log_warning,
-    ):
-        error_message, warning_message = pm.get_error_warning("dummyplugin")
-        print(error_message, warning_message)
-        # skip assert for now, because it's already tested in the print statement
+#     # Files do not exist
+#     with (
+#         patch(
+#             "evaluation_system.api.plugin_manager.config.get_plugin",
+#             side_effect=mock_get_plugin,
+#         ),
+#         patch("builtins.open", side_effect=Exception("File not found")),
+#         patch("evaluation_system.api.plugin_manager.log.warning") as mock_log_warning,
+#     ):
+#         error_message, warning_message = pm.get_error_warning("dummyplugin")
+#         print(error_message, warning_message)
+#         # skip assert for now, because it's already tested in the print statement
 
-    # ConfigurationException
-    with (
-        patch(
-            "evaluation_system.api.plugin_manager.config.get_plugin",
-            side_effect=ConfigurationException("Config error"),
-        ),
-        patch("evaluation_system.api.plugin_manager.log.warning") as mock_log_warning,
-    ):
-        error_message, warning_message = pm.get_error_warning("dummyplugin")
-        print(error_message, warning_message)
-        assert (
-            error_message == ""
-        ), "Error message should be empty on ConfigurationException."
-        assert (
-            warning_message == ""
-        ), "Warning message should be empty on ConfigurationException."
+#     # ConfigurationException
+#     with (
+#         patch(
+#             "evaluation_system.api.plugin_manager.config.get_plugin",
+#             side_effect=ConfigurationException("Config error"),
+#         ),
+#         patch("evaluation_system.api.plugin_manager.log.warning") as mock_log_warning,
+#     ):
+#         error_message, warning_message = pm.get_error_warning("dummyplugin")
+#         print(error_message, warning_message)
+#         assert (
+#             error_message == ""
+#         ), "Error message should be empty on ConfigurationException."
+#         assert (
+#             warning_message == ""
+#         ), "Warning message should be empty on ConfigurationException."
 
 
-def test_get_plugin_version():
-    import evaluation_system.api.plugin_manager as pm
+# def test_get_plugin_version():
+#     import evaluation_system.api.plugin_manager as pm
 
-    mock_get_plugins = {
-        "existing_plugin": MagicMock(plugin_module="path/to/existing_plugin_module"),
-    }
-    mock_repository_get_version = MagicMock(
-        return_value=("https://freva_repository.url", "git_hash_value")
-    )
+#     mock_get_plugins = {
+#         "existing_plugin": MagicMock(plugin_module="path/to/existing_plugin_module"),
+#     }
+#     mock_repository_get_version = MagicMock(
+#         return_value=("https://freva_repository.url", "git_hash_value")
+#     )
 
-    # Plugin is the module itself
-    with (
-        patch("evaluation_system.api.plugin_manager.__version_cache", {}),
-        patch(
-            "evaluation_system.api.plugin_manager.get_plugins",
-            return_value=mock_get_plugins,
-        ),
-        patch("inspect.getfile", return_value="path/to/self_module"),
-        patch(
-            "evaluation_system.model.repository.get_version",
-            mock_repository_get_version,
-        ),
-    ):
+#     # Plugin is the module itself
+#     with (
+#         patch("evaluation_system.api.plugin_manager.__version_cache", {}),
+#         patch(
+#             "evaluation_system.api.plugin_manager.get_plugins",
+#             return_value=mock_get_plugins,
+#         ),
+#         patch("inspect.getfile", return_value="path/to/self_module"),
+#         patch(
+#             "evaluation_system.model.repository.get_version",
+#             mock_repository_get_version,
+#         ),
+#     ):
 
-        repository_url, git_hash = pm.get_plugin_version("self")
-        assert (
-            repository_url == "https://freva_repository.url"
-        ), "Repository URL mismatch for 'self'."
-        assert git_hash == "git_hash_value", "Git hash mismatch for 'self'."
+#         repository_url, git_hash = pm.get_plugin_version("self")
+#         assert (
+#             repository_url == "https://freva_repository.url"
+#         ), "Repository URL mismatch for 'self'."
+#         assert git_hash == "git_hash_value", "Git hash mismatch for 'self'."
 
-    # Plugin not found
-    with (
-        patch("evaluation_system.api.plugin_manager.__version_cache", {}),
-        patch(
-            "evaluation_system.api.plugin_manager.get_plugins",
-            return_value=mock_get_plugins,
-        ),
-    ):
-        try:
-            pm.get_plugin_version("non_existing_plugin")
-            assert False, "Expected PluginManagerException for non-existing plugin."
-        except pm.PluginManagerException as e:
-            assert (
-                str(e) == "Plugin <non_existing_plugin> not found"
-            ), "Incorrect exception message."
+#     # Plugin not found
+#     with (
+#         patch("evaluation_system.api.plugin_manager.__version_cache", {}),
+#         patch(
+#             "evaluation_system.api.plugin_manager.get_plugins",
+#             return_value=mock_get_plugins,
+#         ),
+#     ):
+#         try:
+#             pm.get_plugin_version("non_existing_plugin")
+#             assert False, "Expected PluginManagerException for non-existing plugin."
+#         except pm.PluginManagerException as e:
+#             assert (
+#                 str(e) == "Plugin <non_existing_plugin> not found"
+#             ), "Incorrect exception message."

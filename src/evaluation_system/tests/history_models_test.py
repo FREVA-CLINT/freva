@@ -6,9 +6,7 @@ Created on 23.05.2016
 
 import os
 import pwd
-import unittest
 from datetime import datetime
-from unittest.mock import MagicMock, patch
 
 
 def test_history_model(test_user):

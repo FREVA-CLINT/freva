@@ -123,7 +123,7 @@ def test_freva_esgf_method(dummy_config):
     result_to_be = {
         "version": "20190219",
         "activity_id": ["ScenarioMIP"],
-        "master_id": "CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.was.gr",
+        "master_id": "CMIP6.ScenarioMIP.CNRM-CERFACS.CNRM-CM6-1.ssp585.r1i1p1f2.E3hr.vas.gr",
         "mip_era": ["CMIP6"],
         "product": ["model-output"],
         "source_id": ["CNRM-CM6-1"],

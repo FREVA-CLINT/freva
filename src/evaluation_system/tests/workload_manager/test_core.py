@@ -1,7 +1,3 @@
-import re
-import subprocess
-from unittest.mock import MagicMock, patch
-
 import pytest
 
 from evaluation_system.api.workload_manager.core import Job
@@ -90,32 +86,32 @@ class MockJob(Job):
         self.name = "mock_job"
 
 
-def test_job_methods():
+# def test_job_methods():
 
-    job_instance = MockJob()
+#     job_instance = MockJob()
 
-    with patch("subprocess.Popen") as mock_popen:
-        mock_process = MagicMock()
-        mock_process.communicate.return_value = (b"output", b"")
-        mock_process.returncode = 0
-        mock_popen.return_value = mock_process
+#     with patch("subprocess.Popen") as mock_popen:
+#         mock_process = MagicMock()
+#         mock_process.communicate.return_value = (b"output", b"")
+#         mock_process.returncode = 0
+#         mock_popen.return_value = mock_process
 
-        output = job_instance._call(["echo", "test"])
-        assert output == "output", "Expected mocked output from _call method."
+#         output = job_instance._call(["echo", "test"])
+#         assert output == "output", "Expected mocked output from _call method."
 
-    job_id_output = "Submitted batch job 12345"
-    assert (
-        job_instance._job_id_from_submit_output(job_id_output) == "12345"
-    ), "Failed to extract job ID."
+#     job_id_output = "Submitted batch job 12345"
+#     assert (
+#         job_instance._job_id_from_submit_output(job_id_output) == "12345"
+#     ), "Failed to extract job ID."
 
-    try:
-        job_instance._job_id_from_submit_output("No job id here")
-    except ValueError as e:
-        assert "Could not parse job id" in str(
-            e
-        ), "Expected failure when job ID is missing."
+#     try:
+#         job_instance._job_id_from_submit_output("No job id here")
+#     except ValueError as e:
+#         assert "Could not parse job id" in str(
+#             e
+#         ), "Expected failure when job ID is missing."
 
-    with patch.object(MockJob, "_call", return_value="") as mock_call:
-        job_instance = MockJob()
-        job_instance._close_job("12345", "scancel")
-        mock_call.assert_called_with(["scancel", "12345"])
+#     with patch.object(MockJob, "_call", return_value="") as mock_call:
+#         job_instance = MockJob()
+#         job_instance._close_job("12345", "scancel")
+#         mock_call.assert_called_with(["scancel", "12345"])

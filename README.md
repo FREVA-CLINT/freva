@@ -134,3 +134,28 @@ The linter testing can be applied by:
 ```bash
 make lint
 ```
+
+### Usage of pre-commit setup
+
+To use the pre-commit setup in freva, follow these steps:
+
+1. **Install Pre-commit**:
+   - First, install the `pre-commit` package using pip:
+     ```bash
+     pip install pre-commit
+     ```
+
+2. **Activate Hooks**:
+   - Navigate to the root directory of your repository and run the following command to set up the git hooks:
+     ```bash
+     pre-commit install
+     ```
+
+3. **Automatic Checks**:
+   - Now, each time you attempt to commit changes, the pre-commit hooks will automatically run to ensure your files adhere to the specified standards.
+
+4. **Manual Execution**:
+   - If you want to manually run the hooks on all files, use:
+     ```bash
+     pre-commit run --all-files
+     ```
