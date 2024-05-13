@@ -102,7 +102,7 @@ Searching for ESGF data
 Freva also allows to query for data in all the ESGF nodes. You have the following 5
 methods:
 
-- :py:meth:`freva.esgf_browser`: The main method for searching data. The browser 
+- :py:meth:`freva.esgf_browser`: The main method for searching data. The browser
   method lets you search for data URLs (default) or their opendap/gridftp endpoints.
 
 - :py:meth:`freva.esgf_facets`: This method lists all search categories (facets) and
@@ -114,14 +114,14 @@ methods:
 - :py:meth:`freva.esgf_download`: You can download the data with the script file
   that this method creates.
 
-- :py:meth:`freva.esgf_query`: Similarly to :py:meth:`freva.esgf_facets`, this method lists 
+- :py:meth:`freva.esgf_query`: Similarly to :py:meth:`freva.esgf_facets`, this method lists
   all query elements but groups them *by dataset*.
 
 .. note::
 
    The collection of methods
    are derived from `ESGF's rest API <https://github.com/ESGF/esgf.github.io/wiki/ESGF_Search_REST_API>`_.
-   The query facets follow the syntax of the datasets hosted there (CMIP5, CORDEX, CMIP6, etc.) 
+   The query facets follow the syntax of the datasets hosted there (CMIP5, CORDEX, CMIP6, etc.)
    that might differ from :py:meth:`freva.databrowser` and **are** case
    sensitive. They also have some special query keys, e.g.:
 
