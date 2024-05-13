@@ -6,33 +6,33 @@ export MOCK_SLURM := /tmp/mock_slurm_$$RANDOM
 export EVALUATION_SYSTEM_PLUGINS := $(EVALUATION_SYSTEM_PLUGINS):$(PWD)/src/evaluation_system/tests/mocks,dummy:$(PWD)/src/evaluation_system/tests/mocks,dummyfolder:/tmp/animator,animator
 export EVALUATION_SYSTEM_CONFIG_FILE := $(PWD)/compose/local-eval-system.conf
 export EVALUATION_SYSTEM_DRS_CONFIG_FILE := $(PWD)/compose/drs_config.toml
-PYTHON := $(shell which python)
+PYTHON3 := $(shell which python3)
 all: install test_coverage
 
 .PHONY: docs
 install:
-	python -m pip install .[test]
+	python3 -m pip install .[test]
 
 test:
-	python -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
+	python3 -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
 
 test_coverage:
-	python -m pytest -vv \
+	python3 -m pytest -vv \
 		--nbval --current-env --cov=$(PWD)/src --cov-report=html:coverage_report \
 	    --junitxml report.xml --current-env --cov-report xml \
 		$(PWD)/src/evaluation_system/tests
-	python -m coverage report
+	python3 -m coverage report
 
 prepdocs:
 	rm -rf /tmp/animator
-	python -m pip install -e .[docs]
+	python3 -m pip install -e .[docs]
 	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
 	mkdir -p /tmp/animator/plugin_env/bin
-	ln -s $(PYTHON) /tmp/animator/plugin_env/bin/python
-	python -m ipykernel install --user --name freva \
+	ln -s $(PYTHON3) /tmp/animator/plugin_env/bin/python
+	python3 -m ipykernel install --user --name freva \
 		--env EVALUATION_SYSTEM_CONFIG_FILE $(EVALUATION_SYSTEM_CONFIG_FILE) \
 		--env EVALUATION_SYSTEM_PLUGINS $(EVALUATION_SYSTEM_PLUGINS)
-	python -m bash_kernel.install
+	python3 -m bash_kernel.install
 	make dummy-data
 	compose/animator_plugin_run.sh
 
@@ -42,8 +42,8 @@ docs:
 
 dummy-data:
 	compose/dummy_plugin_runs.sh
-	python compose/dummy_user_data.py
-	python compose/solr/ingest_dummy_data.py
+	python3 compose/dummy_user_data.py
+	python3 compose/solr/ingest_dummy_data.py
 
 lint:
 	mypy --install-types --non-interactive

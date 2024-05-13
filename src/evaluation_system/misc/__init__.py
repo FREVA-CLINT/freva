@@ -43,7 +43,7 @@ logger.propagate = False
 logger.addHandler(logger_stream_handle)
 
 
-class _ConfigWrapper(str):
+class _ConfigWrapper:
     """Convenience class that helps to dynamically set the location of the
     evaluation system config file."""
 
@@ -55,8 +55,8 @@ class _ConfigWrapper(str):
     ):
         self.default_file = default_file
 
-    def __str__(self) -> str:
-        return os.environ.get(self._env, self.default_file)
-
     def __repr__(self) -> str:
         return self.__str__()
+
+    def __fspath__(self) -> str:
+        return os.environ.get(self._env, self.default_file)
