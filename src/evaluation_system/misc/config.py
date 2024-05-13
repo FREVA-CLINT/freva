@@ -215,7 +215,7 @@ def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
     }
 
     config_file = config_file or os.environ.get(
-        "EVALUATION_SYSTEM_CONFIG_FILE", CONFIG_FILE
+        "EVALUATION_SYSTEM_CONFIG_FILE", str(CONFIG_FILE)
     )
     log.debug("Loading configuration file from: %s" % config_file)
     if config_file and os.path.isfile(config_file):

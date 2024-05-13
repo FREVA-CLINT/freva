@@ -55,8 +55,8 @@ class _ConfigWrapper:
     ):
         self.default_file = default_file
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __fspath__(self) -> str:
         return os.environ.get(self._env, self.default_file)
+
+    def __repr__(self) -> str:
+        return self.__fspath__()
