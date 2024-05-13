@@ -30,7 +30,7 @@ __plugin_options() {
     integer ret=1
     local -a args keys search_keys
     let n=$CURRENT-1
-    # Get all facets and entries depending on what has alread been typed
+    # Get all facets and entries depending on what has already been typed
     if [ $n -ge 2 ];then
         for i in {2..$n};do
             arg=$(echo ${words[$i]}|cut -c1)
@@ -75,7 +75,7 @@ __solr() {
     integer ret=1
     local -a args keys search_keys
     let n=$CURRENT-1
-    # Get all facets and entries depending on what has alread been typed
+    # Get all facets and entries depending on what has already been typed
     if [ $n -ge 2 ];then
         for i in {2..$n};do
             arg=$(echo ${words[$i]}|cut -c1)

@@ -1,16 +1,26 @@
 """Tests for ingesting user data."""
+
 from __future__ import annotations
 
 import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Generator, Tuple
+from unittest.mock import Mock
 
 import cftime
 import mock
 import numpy as np
 import pytest
 import xarray as xr
+
+
+@pytest.fixture
+def mock_datetime():
+    with mock.patch(
+        "evaluation_system.api.user_data.datetime", Mock()
+    ) as mocked_datetime:
+        yield mocked_datetime
 
 
 def create_data(
@@ -68,7 +78,7 @@ def invalid_data_files() -> Generator[Path, None, None]:
     yield from create_data(1, ["tas", "foo"], (10, 10), ("lat", "lon"))
 
 
-def test_invalid_data_files(invalid_data_files: Path, time_mock: mock_datetime) -> Path:
+def test_invalid_data_files(invalid_data_files: Path) -> Path:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(invalid_data_files.rglob("*.*"))[0]
@@ -82,7 +92,7 @@ def test_invalid_data_files(invalid_data_files: Path, time_mock: mock_datetime) 
         data_reader.get_metadata(not_a_nc_file)
 
 
-def test_add_valid_data(valid_data_files: Path, time_mock: mock_datetime) -> None:
+def test_add_valid_data(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
@@ -102,7 +112,7 @@ def test_add_valid_data(valid_data_files: Path, time_mock: mock_datetime) -> Non
     assert data["time_frequency"] == "fx"
 
 
-def test_get_time_frequency(valid_data_files: Path, time_mock: mock_datetime) -> None:
+def test_get_time_frequency(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     data_reader = DataReader(Path("foo/bar.nc"))
@@ -120,9 +130,7 @@ def test_get_time_frequency(valid_data_files: Path, time_mock: mock_datetime) ->
     assert data_reader.get_time_frequency(year) == "yr"
 
 
-def test_get_file_name_from_metadata(
-    valid_data_files: Path, time_mock: mock_datetime
-) -> None:
+def test_get_file_name_from_metadata(valid_data_files: Path) -> None:
     from evaluation_system.api.user_data import DataReader
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
@@ -139,21 +147,21 @@ def test_get_file_name_from_metadata(
     )
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/hr/foo-kingdom/foo/bar/v0/tas"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults["variable"] = "foob"
     defaults["time_frequency"] = "3h"
     defaults.pop("cmor_table")
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v0/foob"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults.pop("version")
     data_reader = DataReader(valid_data_files, **defaults)
     file_part = "foo/fumanshu/tong/mrfu/foo-boo/3h/foo-kingdom/3h/bar/v19990909/foob"
-    assert file_part in str(data_reader.file_name_from_metdata(in_file).parent)
+    assert file_part in str(data_reader.file_name_from_metadata(in_file).parent)
     defaults.pop("ensemble")
     data_reader = DataReader(valid_data_files, **defaults)
     with pytest.raises(ValueError):
-        data_reader.file_name_from_metdata(in_file)
+        data_reader.file_name_from_metadata(in_file)
 
 
 def test_versions(valid_data_files: Path, time_mock: mock_datetime) -> None:
@@ -171,7 +179,7 @@ def test_versions(valid_data_files: Path, time_mock: mock_datetime) -> None:
         from evaluation_system.api.user_data import DataReader
 
         data_reader = DataReader(inp, **defaults)
-        return data_reader.file_name_from_metdata(inp, override=override)
+        return data_reader.file_name_from_metadata(inp, override=override)
 
     in_file = list(valid_data_files.rglob("*.*"))[0]
     new_file = get_new_file(in_file)
@@ -211,7 +219,12 @@ def test_link_my_data(dummy_crawl, dummy_plugin, valid_data_files, time_mock):
 
     input_files = list(valid_data_files.rglob("*.nc"))
     dummy_plugin.add_output_to_databrowser(
-        valid_data_files, "muh", "mah", experiment="foo"
+        valid_data_files,
+        "muh",
+        "mah",
+        experiment="foo",
+        time_frequency="1day",
+        variable="tas",
     )
     assert len(list(freva.databrowser(experiment="foo"))) == len(input_files)
     assert len(list(freva.databrowser(product="muh.mah"))) == len(input_files)

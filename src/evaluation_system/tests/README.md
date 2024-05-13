@@ -11,7 +11,7 @@ $: FREVA_ENV=Path2Eva make test
 ```
 
 ### Uploading code coverage results
-The test coverage report is uploaded to a swift cloud object container, where it can be displayed in html format. 
+The test coverage report is uploaded to a swift cloud object container, where it can be displayed in html format.
 To upload the test coverage report simply do a
 ```bash
 $: FREVA_ENV=Path2Eva make upload

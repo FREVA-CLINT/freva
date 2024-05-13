@@ -13,9 +13,10 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import os
+import subprocess
 import sys
 from datetime import date
-import subprocess
+
 from recommonmark.parser import CommonMarkParser
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
@@ -29,7 +30,6 @@ os.environ.setdefault(
 )
 
 from freva import __version__
-
 
 # -- Project information -----------------------------------------------------
 

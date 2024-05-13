@@ -1,4 +1,5 @@
 """Additional utilities."""
+
 import json
 import logging
 import os
@@ -11,8 +12,8 @@ from pathlib import Path
 from types import TracebackType
 from typing import (
     Any,
-    Dict,
     Callable,
+    Dict,
     List,
     Literal,
     Optional,
@@ -172,7 +173,7 @@ class PluginStatus:
         hist = self._hist
         status_dict = hist.get("status_dict", {})
         status = hist.get("status")
-        return cast(str, status_dict.get(status, "unkown"))
+        return cast(str, status_dict.get(status, "unknown"))
 
     @property
     def configuration(self) -> Dict[str, Any]:
@@ -286,7 +287,7 @@ class PluginStatus:
         text = "Waiting for plugin to finish... "
         spinner = Spinner("weather", text=text)
         with Live(spinner, refresh_per_second=3, console=Console(stderr=True)):
-            while self.status in ("running", "scheduled", "unkown"):
+            while self.status in ("running", "scheduled", "unknown"):
                 time.sleep(dt)
                 n_itt += 1
                 if n_itt > max_itt:

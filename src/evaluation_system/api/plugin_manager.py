@@ -19,6 +19,7 @@ EVALUATION_SYSTEM_PLUGINS=/path/to/some/dir/,something.else.myplugin:\
 /other/different/path,some.plugin:\
 /tmp/test,some.other.plugin
 """
+
 from __future__ import annotations
 
 import atexit
@@ -318,6 +319,17 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
 def get_plugins_user() -> dict[str, dict[str, PluginMetadata]]:
     """Get plugins per user
 
+    Example
+    -------
+
+    In order to get the plugins for the current user, you can use the:
+
+    .. code-block:: python
+
+        from evaluation_system.api.plugin import get_plugins_user
+        plugins = get_plugins_user()
+        print(plugins)
+
     Returns
     -------
     dict[str, dict[str, PluginMetadata]]
@@ -483,7 +495,7 @@ def parse_arguments(
                 complete_conf.update(p.read_configuration(f))
     # now if we still have a config file update what the configuration with it
     if isinstance(config_file, str):
-        if config_file == "-":
+        if config_file == "-":  # TODO: find out what this is for
             # reading from stdin
             complete_conf.update(p.read_configuration(sys.stdin))
         elif config_file is not None:
@@ -1310,7 +1322,7 @@ def unfollow_history_tag(history_id: int, user: User) -> None:
     )
     for row in rows:
         user.getUserDB().updateHistoryTag(
-            row.id, HistoryTag.tagType.unfollow, uid=user_name  # type: ignore
+            row.id, HistoryTag.tagType.unfollow, uid=user_name
         )
 
 
@@ -1420,7 +1432,7 @@ def dict2conf(
             # to foreign key attribute and mypy doesn't understand this yet
             # will skip the typ check. Otherwise mypy will complain that we
             # are trying to access an attribute that doesn't exist.
-            conf_object.parameter_id_id = o[0].id  # type: ignore
+            conf_object.parameter_id_id = o[0].id  # type: ignore [attr-defined] # It needs to be discussed with the team
             conf_object.value = json.dumps(realvalue)
             conf.append(conf_object)
     return conf
@@ -1477,5 +1489,5 @@ def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:
 # This only runs once after start. To load new plugins on the fly we have
 # 2 possibilities:
 # 1) Watch the tool directory
-# 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`
+# 2) Use the plugin metaclass trigger (see `evaluation_system.api.plugin`)
 reload_plugins()

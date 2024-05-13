@@ -142,17 +142,17 @@ def test_parsing(dummy_env):
             else:
                 assert type(parsed_value) == case_type.base_type
             assert parsed_value == result
-        for unparseable in negative_cases:
+        for unparsable in negative_cases:
             try:
                 with pytest.raises(TypeError):
-                    case_type.parse(unparseable)
+                    case_type.parse(unparsable)
             except:
                 try:
                     with pytest.raises(ValueError):
-                        case_type.parse(unparseable)
+                        case_type.parse(unparsable)
                 except:
                     with pytest.raises(ValidationError):
-                        case_type.parse(unparseable)
+                        case_type.parse(unparsable)
 
 
 def test_parameters_dictionary(dummy_env):

@@ -1,7 +1,7 @@
 # .coveragerc to control coverage.py
 [run]
 branch = True
-omit = .converage*
+omit = .coverage*
 [report]
 # Regexes for lines to exclude from consideration
 exclude_lines =

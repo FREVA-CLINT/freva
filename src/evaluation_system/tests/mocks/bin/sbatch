@@ -48,4 +48,3 @@ EOF
 chmod +x ${MOCK_SLURM}/wrapper/${JOB_ID}.sh
 bash -c "nohup ${MOCK_SLURM}/wrapper/${JOB_ID}.sh > ${slurm_out} 2>&1 & "
 echo "Submitted batch job $JOB_ID"
-

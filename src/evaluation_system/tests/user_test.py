@@ -3,6 +3,7 @@ Created on 17.5.2016
 
 @author: Sebastian Illing
 """
+
 import os
 import shutil
 import subprocess
@@ -133,9 +134,9 @@ def test_central_directory_Creation(temp_dir, dummy_settings, dummy_env):
 
     try:
         config._config[config.BASE_DIR_LOCATION] = str(temp_dir)
-        config._config[
-            config.DIRECTORY_STRUCTURE_TYPE
-        ] = config.DIRECTORY_STRUCTURE.CENTRAL
+        config._config[config.DIRECTORY_STRUCTURE_TYPE] = (
+            config.DIRECTORY_STRUCTURE.CENTRAL
+        )
         with DummyUser(random_home=False, **DUMMY_USER) as temp_user:
             dir1 = temp_user.getUserBaseDir()
             assert dir1 == os.path.join(

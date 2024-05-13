@@ -5,6 +5,7 @@
 The module encapsulates all methods for accessing files on the system.
 These are mainly model and observational and reanalysis data.
 """
+
 from __future__ import annotations
 
 import json

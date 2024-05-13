@@ -1,4 +1,5 @@
 """Run job in the background on the same system."""
+
 from __future__ import annotations
 
 import logging

@@ -21,7 +21,7 @@ logging.basicConfig(
 
 
 class FrevaLogger(logging.Logger):
-    """Custom logger to assure that all log handles recieve the same level."""
+    """Custom logger to assure that all log handles receive the same level."""
 
     is_cli: bool = False
     """Indicate whether or not this logger belongs to a cli process."""
@@ -43,7 +43,7 @@ logger.propagate = False
 logger.addHandler(logger_stream_handle)
 
 
-class _ConfigWrapper(str):
+class _ConfigWrapper:
     """Convenience class that helps to dynamically set the location of the
     evaluation system config file."""
 
@@ -55,8 +55,8 @@ class _ConfigWrapper(str):
     ):
         self.default_file = default_file
 
-    def __str__(self) -> str:
+    def __fspath__(self) -> str:
         return os.environ.get(self._env, self.default_file)
 
     def __repr__(self) -> str:
-        return self.__str__()
+        return self.__fspath__()

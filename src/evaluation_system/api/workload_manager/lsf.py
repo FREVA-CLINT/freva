@@ -1,4 +1,5 @@
 """Submit jobs to the lsf workload manager."""
+
 from __future__ import annotations
 
 import logging

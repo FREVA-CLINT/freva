@@ -20,6 +20,7 @@ executed via:
 With help of this API a Freva plugin can be created in ``/mnt/freva/plugin/new_plugin/plugin.py``
 
 """
+
 from __future__ import annotations
 
 import abc
@@ -110,28 +111,31 @@ class PluginAbstract(abc.ABC):
             __parameters__ =  parameters.ParameterDictionary(
                                 parameters.Integer(
                                     name="count",
-                                    default=1,
+                                    default=5,
                                     help=("This is an optional configurable "
                                           "int variable named number without "
                                           "default value and this description")
                                 ),
                                 parameters.Float(
                                     name="number",
+                                    default=6.4,
                                     mandatory=True,
                                     help="Required float value without default"
                                 ),
                                 parameters.Bool(
                                     name="overwrite",
-                                    default=False,
+                                    default=True,
                                     help=("a boolean parameter "
                                           "with default value of false")
                                 ),
-                                parameters.String(name='str')
+                                parameters.String(
+                                    name='name',
+                                    default='Test',)
                               )
             def run_tool(
                 self, config_dict: dict[str, str|int|bool]
             ) -> None:
-                '''Definition of the tool the is running the cli.
+                '''Definition of the tool that runs the cli.
 
                 Parameters:
                 -----------
@@ -142,7 +146,7 @@ class PluginAbstract(abc.ABC):
                 self.call(
                     (
                       f"cli/calculate -c {config_dict['count']} "
-                      f"-n {config_dict['number']} --name={config_dict['name']}
+                      f"-n {config_dict['number']} --name={config_dict['name']}"
                     )
                 )
                 print("MyPlugin was run with", config_dict)
@@ -162,7 +166,7 @@ class PluginAbstract(abc.ABC):
     ``/mnt/freva/plugins/my_plugin/plugin_module.py``), you would tell the system
     how to find the plugin by issuing the following command (bash & co)::
 
-        export EVALUATION_SYSTEM_PLUGINS=/mnt/freva/plugins/my_plugin,plugin
+        export EVALUATION_SYSTEM_PLUGINS=/mnt/freva/plugins/my_plugin,plugin_module
 
     Use a colon to separate multiple items::
 
@@ -193,7 +197,7 @@ class PluginAbstract(abc.ABC):
     USER_OUTPUT_DIR    Absolute path to where the plugin outputs for this user are stored.
     USER_PLOTS_DIR     Absolute path to where the plugin plots for this user are stored.
     USER_CACHE_DIR     Absolute path to the cached data (temp data) for this user.
-    USER_UID           The users' User IDentifier
+    USER_UID           The users' User Identifier
     SYSTEM_DATE        Current date in the form YYYYMMDD (e.g. 20120130).
     SYSTEM_DATETIME    Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).
     SYSTEM_TIMESTAMP   Milliseconds since epoch (i.e. e.g. 1358929581838).
@@ -325,7 +329,7 @@ class PluginAbstract(abc.ABC):
                 print(line, end="", flush=True)
             return_code = res.wait()
             if return_code and check:
-                log.error("An error occured calling %s", cmd)
+                log.error("An error occurred calling %s", cmd)
                 log.error("Check also %s", self.plugin_output_file)
                 raise sub.CalledProcessError(
                     return_code,
@@ -396,7 +400,7 @@ class PluginAbstract(abc.ABC):
 
     @property
     def conda_path(self) -> str:
-        """Add the conda env path of the plugin to the environment.i
+        """Add the conda env path of the plugin to the environment.
 
         :meta private:
         """
@@ -417,6 +421,10 @@ class PluginAbstract(abc.ABC):
         out_file: Optional[Path] = None,
         rowid: Optional[int] = None,
     ) -> Optional[Any]:
+        """Run the plugin with the given configuration.
+
+        :meta private:
+        """
         config_dict = self._append_unique_id(config_dict, unique_output)
         if out_file is None:
             is_interactive_job = True
@@ -550,7 +558,7 @@ class PluginAbstract(abc.ABC):
             drs_config["variable"] = variable
         user_data = DataReader(plugin_output, **drs_config)
         for output_file in user_data:
-            new_file = user_data.file_name_from_metdata(output_file)
+            new_file = user_data.file_name_from_metadata(output_file)
             new_file.parent.mkdir(exist_ok=True, parents=True, mode=0o2775)
             shutil.copy(str(output_file), str(new_file))
         if index_data:
@@ -628,6 +636,10 @@ class PluginAbstract(abc.ABC):
         return result
 
     def _extend_output_metadata(self, file_path, metadata):
+        """Extend the metadata dictionary with file information.
+
+        :meta private:
+        """
         fstat = os.stat(file_path)
         if "timestamp" not in metadata:
             metadata["timestamp"] = fstat[stat.ST_CTIME]

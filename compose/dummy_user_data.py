@@ -1,5 +1,7 @@
 """Python script that creates dummy user data."""
+
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Generator, Tuple
 

@@ -6,6 +6,7 @@ Created on 17.05.2016
 
 import os
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -152,7 +153,7 @@ def test_printable_list():
     p_list = PrintableList(a)
     assert p_list == a  # list creation
     assert str(p_list) == "2,3,4,5"  # string functionality
-    p_list = PrintableList(a, seperator=":")
+    p_list = PrintableList(a, separator=":")
     assert str(p_list) == "2:3:4:5"  # string functionality
 
 

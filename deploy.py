@@ -1,17 +1,17 @@
 """Deploy the evaluation_system / core."""
 
 import argparse
-from configparser import ConfigParser, ExtendedInterpolation
-import logging
 import hashlib
+import logging
 import os
-from os import path as osp
-from pathlib import Path
 import shlex
 import shutil
 import sys
-from subprocess import CalledProcessError, PIPE, run
 import urllib.request
+from configparser import ConfigParser, ExtendedInterpolation
+from os import path as osp
+from pathlib import Path
+from subprocess import PIPE, CalledProcessError, run
 from tempfile import TemporaryDirectory
 
 DEFAULT_PYTHON = "3.11"
@@ -20,9 +20,7 @@ ANACONDA_URL = "https://repo.anaconda.com/archive/"
 CONDA_PREFIX = os.environ.get("CONDA", "Anaconda3-2022.05")
 CONDA_VERSION = "{conda_prefix}-{arch}.sh"
 
-logging.basicConfig(
-    format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+logging.basicConfig(format="%(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__file__)
 
 MODULE = """#%Module4.0 #######################################################
@@ -141,20 +139,18 @@ def reporthook(count, block_size, total_size):
     frac = count * block_size / total_size
     percent = int(100 * frac)
     bar = "#" * int(frac * 40)
-    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(
-        bar, 40, round(percent, 2)
-    )
+    msg = "Downloading: [{0:<{1}}] | {2}% Completed".format(bar, 40, round(percent, 2))
     print(msg, end="\r", flush=True)
     if frac >= 1:
         print()
 
 
 def parse_args(argv=None):
-    """Consturct command line argument parser."""
+    """Construct command line argument parser."""
 
     ap = argparse.ArgumentParser(
         prog="deploy_freva",
-        description="""This Programm installs the evaluation_system package.""",
+        description="""This Program installs the evaluation_system package.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -165,7 +161,7 @@ def parse_args(argv=None):
         "--packages",
         type=str,
         nargs="*",
-        help="Pacakges that are installed",
+        help="Packages that are installed",
         default=[],
     )
     ap.add_argument(
@@ -242,11 +238,9 @@ class Installer:
             raise CalledProcessError(res.returncode, cmd)
 
     def use_or_download_temp_conda(self, tempdir):
-        """Return to path an existing conda env, if there is none, cerate one."""
+        """Return to path an existing conda env, if there is none, create one."""
 
-        conda_exec_path = os.environ.get("CONDA_EXEC_PATH") or shutil.which(
-            "conda"
-        )
+        conda_exec_path = os.environ.get("CONDA_EXEC_PATH") or shutil.which("conda")
         if conda_exec_path and Path(conda_exec_path).is_file():
             return Path(conda_exec_path)
         tmp_env = Path(tempdir) / "env"
@@ -289,7 +283,7 @@ class Installer:
                 f"create -c {self.channel} -q -p {self.install_prefix} "
                 f"python{version_str} " + " ".join(packages) + " -y"
             )
-        # This is awkward, but since we can't guarrantee that we have a yml
+        # This is awkward, but since we can't guarantee that we have a yml
         # parser installed we have to do this manually
         env_file = Path(__file__).parent / "dev-environment.yml"
         return f"env create -q -p {self.install_prefix} -f {env_file} --force"
@@ -317,9 +311,7 @@ class Installer:
         silent=False,
     ):
         self.run_tests = run_tests
-        self.install_prefix: Path = (
-            Path(install_prefix).expanduser().absolute()
-        )
+        self.install_prefix: Path = Path(install_prefix).expanduser().absolute()
         self.packages = packages
         self.channel = channel
         self.arch = arch
@@ -338,9 +330,7 @@ class Installer:
         """Get and prepare the evaluation_system config file."""
 
         config_parser = ConfigParser(interpolation=ExtendedInterpolation())
-        asset_conf_file = (
-            Path(__file__).parent / "assets" / "evaluation_system.conf"
-        )
+        asset_conf_file = Path(__file__).parent / "assets" / "evaluation_system.conf"
         eval_conf_file = Path(
             os.environ.get("EVALUATION_SYSTEM_CONFIG_FILE", asset_conf_file)
         ).expanduser()
@@ -386,14 +376,10 @@ class Installer:
         with eval_conf_file.open("r") as fp:
             config_parser.read_file(fp)
         shell_scripts = dict(fish=FISH_SCRIPT, csh=CSH_SCRIPT, sh=SH_SCRIPT)
-        completions = dict(
-            fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION
-        )
+        completions = dict(fish=FISH_COMPLETION, csh=CSH_COMPLETION, sh=SH_COMPLETION)
         for shell in ("fish", "csh", "sh"):
             activate_file = eval_conf_file.parent / f"activate_{shell}"
-            source_file = (
-                eval_conf_file.parent / "completions" / f"complete_{shell}"
-            )
+            source_file = eval_conf_file.parent / "completions" / f"complete_{shell}"
             try:
                 source_file.parent.mkdir(parents=True, exist_ok=True)
                 with (activate_file).open("w") as f:
@@ -401,9 +387,7 @@ class Installer:
                         shell_scripts[shell].format(
                             root_dir=install_prefix,
                             eval_conf_dir=eval_conf_file.parent,
-                            completion=completions[shell].format(
-                                root_dir=root_dir
-                            ),
+                            completion=completions[shell].format(root_dir=root_dir),
                         )
                     )
                 with (source_file).open("w") as f:
@@ -414,14 +398,10 @@ class Installer:
             with (eval_conf_file.parent / "loadfreva.modules").open("w") as f:
                 f.write(
                     MODULE.format(
-                        version=find_version(
-                            "src/evaluation_system", "__init__.py"
-                        ),
+                        version=find_version("src/evaluation_system", "__init__.py"),
                         root_dir=install_prefix,
                         eval_conf_dir=eval_conf_file.parent,
-                        project=config_parser["evaluation_system"][
-                            "project_name"
-                        ],
+                        project=config_parser["evaluation_system"]["project_name"],
                     )
                 )
         except Exception as error:

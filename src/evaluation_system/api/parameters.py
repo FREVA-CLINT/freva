@@ -5,6 +5,7 @@ Plugin parameters are defined in the plugin wrapper class. Please refer to
 plugin wrapper class.
 
 """
+
 from __future__ import annotations
 
 import html
@@ -149,7 +150,7 @@ class ParameterType(initOrder):
                 parameter_name=self.name,
                 parameter_type=itype,
             )
-            self.id = tool_obj[0].id  # type: ignore
+            self.id = tool_obj[0].id
         return self.id
 
     def _verified(
@@ -711,9 +712,9 @@ class Float(ParameterType):
         self,
         **kwargs,
     ):
-        kwargs[
-            "regex"
-        ] = r"^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+        kwargs["regex"] = (
+            r"^[+-]?(?:[0-9]+\.?[0-9]*|[0-9]*\.?[0-9]+)(?:[eE][+-]?[0-9]+)?$"
+        )
         super().__init__(**kwargs)
 
 
@@ -1116,7 +1117,7 @@ class SelectField(String):
                 parameters.SelectField(
                                     name="options",
                                     default="first",
-                                    options={1: "first", 2: "second"}
+                                    options={1: "first", 2: "second"},
                                     help="Select from options",
                                       ),
             )

@@ -132,5 +132,3 @@ for i in (seq (count $freva_str))
         __fish_default_complete $cmd 0
     end
 end
-
-

@@ -3,6 +3,7 @@ Created on 18.05.2016
 
 @author: Sebastian Illing
 """
+
 import json
 import multiprocessing as mp
 import os
@@ -170,7 +171,7 @@ def test_empty_status(dummy_history, capsys) -> None:
     import freva
 
     res = freva.PluginStatus(12345)
-    assert res.status == "unkown"
+    assert res.status == "unknown"
     assert res.configuration == {}
     assert res.stdout == ""
     assert res.batch_id is None

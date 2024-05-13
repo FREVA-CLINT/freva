@@ -151,7 +151,16 @@ def test_parse_metadict(dummy_plugin):
         dummy.__parameters__ = ParameterDictionary(d)
         res = dummy.parse_config_str_value("a", "1")
         assert res == res_d
-
+    # check user class
+    res = dummy.user
+    assert res == dummy_plugin.user
+    # Check str_value as None
+    res = dummy.parse_config_str_value("a", "None")
+    assert res == None
+    # Check __parameters__ as None
+    dummy.__parameters__ = None
+    res = dummy.parse_config_str_value("a", "1")
+    assert res == "1"
     # check errors
     # Wrong type
     dummy.__parameters__ = ParameterDictionary(Integer(name="a"))
@@ -267,23 +276,23 @@ We'll have to see how that works out...""",
              \..,.-
              .\   |         __
              .|    .-     /  .;
-       _      _|      \__/..     \ 
+       _      _|      \__/..     \
       \ ...\|   X Hamburg        :_
-       |                           \ 
+       |                           \
       /                            /
      -.                           |
-      \  X Rheine      Berlin X    \ 
+      \  X Rheine      Berlin X    \
    __/                              |
   |                                 /
-  |                                 \ 
+  |                                 \
  /                                   |
  \     X Cologne        Dresden  X . ,
   \                            ._-. .
  /                        __.-/
- |         X Frankfurt    \ 
-  \                        \ 
-   \                        \ 
-    ...,.                    \ 
+ |         X Frankfurt    \
+  \                        \
+   \                        \
+    ...,.                    \
         /                     \.
        /                       ,.
       /                      ./
@@ -295,6 +304,15 @@ dj1yfk""",
     )
     res_str.truncate(0)
     dummy.save_configuration(res_str, {"a": 1}, include_defaults=True)
+
+
+@mock.patch("os.getpid", lambda: 12345)
+def test_suggest_batchscript_name(dummy_plugin):
+    from datetime import datetime
+
+    dummy = dummy_plugin
+    res = dummy.suggest_batchscript_name()
+    assert res == datetime.now().strftime("%Y%m%d_%H%M%S_") + "DummyPlugin_0"
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -593,15 +611,23 @@ def test_compose_command():
     )
 
     command = dummy_plugin.compose_command(
-        config_dict={"the_number": 22}, caption="This is the caption"
+        config_dict={"the_number": 22},
+        caption="This is the caption",
+        batchmode=True,
+        email="no@thanks.com",
     )
+
     assert similar_string(
         " ".join(command),
         (
             "dummpyplugin the_number=22 something=test other=1.4 variable=tas "
-            "--caption 'This is the caption' --unique-output true"
+            "--batchmode --mail=no@thanks.com --caption 'This is the caption' "
+            "--unique-output true "
         ),
     )
+    with pytest.raises(dummy_plugin.ExceptionMissingParam) as exc_info:
+        dummy_plugin.compose_command(caption="This will fail")
+    assert "Parameter the_number has to be set" in str(exc_info.value)
 
 
 @mock.patch("os.getpid", lambda: 12345)
@@ -634,6 +660,14 @@ def test_append_unique_output():
 
 
 @mock.patch("os.getpid", lambda: 12345)
+def test_set_environment(dummy_plugin):
+    os.remove(dummy_plugin.plugin_output_file)
+    print(dummy_plugin.plugin_output_file)
+    with dummy_plugin._set_environment(rowid=0, is_interactive_job=False) as context:
+        pass
+
+
+@mock.patch("os.getpid", lambda: 12345)
 def test_run_tool(dummy_plugin):
     from evaluation_system.api.parameters import (
         InputDirectory,
@@ -643,6 +677,17 @@ def test_run_tool(dummy_plugin):
     )
 
     result = dummy_plugin._run_tool({"the_answer": 42})
+    assert result == {
+        "/tmp/dummyfile1": dict(type="plot"),
+        "/tmp/dummyfile2": dict(type="data"),
+    }
+    # Satisfaction of out_file Path argument
+    result = dummy_plugin._run_tool(
+        {
+            "the_number": 42,
+        },
+        out_file=Path("/tmp/dummyfile3"),
+    )
     assert result == {
         "/tmp/dummyfile1": dict(type="plot"),
         "/tmp/dummyfile2": dict(type="data"),
@@ -685,6 +730,8 @@ def test_prepare_output(dummy_plugin):
 
 @mock.patch("os.getpid", lambda: 12345)
 def test_call(dummy_plugin, capsys):
+    import subprocess
+
     from evaluation_system.api.parameters import (
         InputDirectory,
         Integer,
@@ -694,6 +741,12 @@ def test_call(dummy_plugin, capsys):
 
     _ = dummy_plugin.call("echo /bin/bash")  # .strip('\n')
     assert "/bin/bash" in capsys.readouterr().out
+
+    _ = dummy_plugin.call(["echo", "/bin/bash"])
+    assert "/bin/bash" in capsys.readouterr().out
+
+    with pytest.raises(subprocess.CalledProcessError):
+        dummy_plugin.call("false", check=True)
 
 
 @mock.patch("os.getpid", lambda: 12345)

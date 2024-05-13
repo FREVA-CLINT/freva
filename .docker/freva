@@ -14,7 +14,7 @@ else
     solr_pid=$(cat ${solr_pid})
 fi
 if ! ps -p $mysql_pid > /dev/null;then
-   mysqld_safe &> /dev/null & 
+   mysqld_safe &> /dev/null &
 fi
 
 if ! ps -p $solr_pid > /dev/null;then
@@ -27,5 +27,3 @@ fi
 /usr/bin/git config --global user.name "Freva" &> /dev/null
 export PATH=/opt/evaluation_system/bin:$PATH
 exec /opt/evaluation_system/bin/freva "$@"
-
-

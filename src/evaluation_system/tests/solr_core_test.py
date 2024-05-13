@@ -3,6 +3,7 @@ Created on 23.05.2016
 
 @author: Sebastian Illing
 """
+
 import gzip
 import os
 from pathlib import Path

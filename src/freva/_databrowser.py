@@ -1,4 +1,5 @@
 """A Python module to access the apache solr databrowser."""
+
 from __future__ import annotations
 
 import json
@@ -51,8 +52,7 @@ def count_values(
     time_select: Literal["strict", "flexible", "file"] = "flexible",
     multiversion: bool = False,
     **search_facets: str | list[str] | int,
-) -> dict[str, dict[str, int]]:
-    ...
+) -> dict[str, dict[str, int]]: ...
 
 
 @overload
@@ -63,8 +63,7 @@ def count_values(
     time_select: Literal["strict", "flexible", "file"] = "flexible",
     multiversion: bool = False,
     **search_facets: str | list[str] | int,
-) -> int:
-    ...
+) -> int: ...
 
 
 @handled_exception

@@ -3,6 +3,7 @@
 
 This module manages the central configuration of the system.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -214,7 +215,7 @@ def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
     }
 
     config_file = config_file or os.environ.get(
-        "EVALUATION_SYSTEM_CONFIG_FILE", CONFIG_FILE
+        "EVALUATION_SYSTEM_CONFIG_FILE", str(CONFIG_FILE)
     )
     log.debug("Loading configuration file from: %s" % config_file)
     if config_file and os.path.isfile(config_file):
@@ -234,10 +235,10 @@ def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
                 for plugin_section in [
                     s for s in config_parser.sections() if s.startswith(PLUGINS)
                 ]:
-                    _config[PLUGINS][
-                        plugin_section[len(PLUGINS) :]
-                    ] = SPECIAL_VARIABLES.substitute(
-                        dict(config_parser.items(plugin_section))
+                    _config[PLUGINS][plugin_section[len(PLUGINS) :]] = (
+                        SPECIAL_VARIABLES.substitute(
+                            dict(config_parser.items(plugin_section))
+                        )
                     )
 
                 db_hosts = (
