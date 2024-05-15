@@ -62,6 +62,7 @@ and best practices when it comes to plugin development.
 
    Freva
    FrevaCli
+   APIRef
    developers_guide
    plugin_api
    FAQ.ipynb
