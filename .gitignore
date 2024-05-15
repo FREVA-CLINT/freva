@@ -29,3 +29,5 @@ docs/source/_static/*.gif
 *.egg-info
 venv/
 tmp/
+docs/source/APIRef.rst
+compose/evaluation_system.conf

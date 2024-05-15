@@ -33,6 +33,8 @@ prepdocs:
 		--env EVALUATION_SYSTEM_CONFIG_FILE $(EVALUATION_SYSTEM_CONFIG_FILE) \
 		--env EVALUATION_SYSTEM_PLUGINS $(EVALUATION_SYSTEM_PLUGINS)
 	python3 -m bash_kernel.install
+	rm -rf docs/source/APIRef.rst
+	curl -Ls -o docs/source/api/APIRef.rst https://raw.githubusercontent.com/FREVA-CLINT/freva-nextgen/main/docs/source/databrowser/APIRef.rst
 	make dummy-data
 	compose/animator_plugin_run.sh
 

@@ -5,9 +5,28 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2406.0.0
+~~~~~~~~~
+
+Bug fixes
++++++++++
+
+- Fixed plugin batchmode submit bug. Batchmode plugins did not pick up the
+  correct evaluation system config file. This has been fixed now.
+- Revised minor typographical errors in the documentation and code comments.
+- Created a standard_main function in `utils.py` for cli
+
+Documentations
+++++++++++++++
+- Added documentation of the freva databrowser rest api.
+
+Internal Changes
+++++++++++++++++
+- Updated unit tests.
+- Added .pre-commit-config.yaml
+
 v2309.0.1
 ~~~~~~~~~~
-
 New Features
 ++++++++++++
 
