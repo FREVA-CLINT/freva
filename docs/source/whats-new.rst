@@ -13,8 +13,8 @@ Bug fixes
 
 - Fixed plugin batchmode submit bug. Batchmode plugins did not pick up the
   correct evaluation system config file. This has been fixed now.
-- Corrected minor typos in documentation and code comments. (fix typo, minor typo, minor typo separator)
-- making a standard_main function in `utils.py` in cli
+- Revised minor typographical errors in the documentation and code comments.
+- Created a standard_main function in `utils.py` for cli
 
 Documentations
 ++++++++++++++
