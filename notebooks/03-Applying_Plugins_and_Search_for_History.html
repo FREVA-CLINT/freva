@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Applying data analysis Plugins &#8212; freva user guide 2309.0.2 documentation</title>
+    <title>Applying data analysis Plugins &#8212; freva user guide 2406.0.0 documentation</title>
   
   
   
@@ -29,7 +29,9 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/code-tabs.css?v=1bc26e2f" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -37,18 +39,27 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../_static/documentation_options.js?v=3cbba332"></script>
+    <script src="../_static/documentation_options.js?v=3506fa6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/code-tabs.js?v=c983d12e"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/03-Applying_Plugins_and_Search_for_History';</script>
     <link rel="icon" href="../_static/logo.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The Freva command line interface" href="04-The_CommandLineInterface.html" />
+    <link rel="prev" title="Managing your own datasets: the UserData class" href="02-Add_own_datasets.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -125,8 +136,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2309.0.2 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="freva user guide 2309.0.2 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2406.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="freva user guide 2406.0.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -156,22 +167,22 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../plugin_api.html">
+                      <a class="nav-link nav-internal" href="../api/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../FAQ.html">
-                        Frequently Ask Questions and best practices
+                      <a class="nav-link nav-internal" href="../developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
                       </a>
                     </li>
                 
@@ -181,6 +192,13 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
                         What’s new
@@ -275,9 +293,7 @@ document.write(`
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -305,22 +321,22 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../plugin_api.html">
+                      <a class="nav-link nav-internal" href="../api/index.html">
                         API Reference
                       </a>
                     </li>
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../FAQ.html">
-                        Frequently Ask Questions and best practices
+                      <a class="nav-link nav-internal" href="../developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
                       </a>
                     </li>
                 
@@ -330,6 +346,13 @@ document.write(`
                 </button>
                 <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
                         What’s new
@@ -380,6 +403,25 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-Using_the_Databrowser.html">Searching for data: the databrowser method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-Add_own_datasets.html">Managing your own datasets: the UserData class</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Applying data analysis Plugins</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="04-The_CommandLineInterface.html">The Freva command line interface</a></li>
+
+
+
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -412,6 +454,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Applying...</li>
   </ul>
 </nav>
@@ -590,7 +635,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&#34;[-\d]+&#34;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2126/pr_20160902T0000-20160902T2330.mp4 in 44 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2126/pr_20160902T0000-20160902T2330.mp4 in 43 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -706,7 +751,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
  &#39;id&#39;: 2117,
- &#39;timestamp&#39;: &#39;2024-05-13T13:54:45&#39;,
+ &#39;timestamp&#39;: &#39;2024-05-15T15:54:49&#39;,
  &#39;tool&#39;: &#39;animator&#39;,
  &#39;version&#39;: &#39;(2022, 7, 15)&#39;,
  &#39;version_details_id&#39;: 124,
@@ -736,8 +781,8 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   &#39;cbar_label&#39;: &#39;&#39;,
   &#39;suffix&#39;: &#39;mp4&#39;,
   &#39;fps&#39;: 5},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-3043.local&#39;,
- &#39;host&#39;: &#39;fv-az735-603&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-3135.local&#39;,
+ &#39;host&#39;: &#39;fv-az801-305&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,
@@ -817,6 +862,24 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="02-Add_own_datasets.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Managing your own datasets: the UserData class</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="04-The_CommandLineInterface.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The Freva command line interface</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

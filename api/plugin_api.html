@@ -1,0 +1,1018 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Plugin API Reference &#8212; freva user guide 2406.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/code-tabs.css?v=1bc26e2f" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=3506fa6d"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/code-tabs.js?v=c983d12e"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/plugin_api';</script>
+    <link rel="icon" href="../_static/logo.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parameter API Reference" href="parameter_api.html" />
+    <link rel="prev" title="API Reference" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2406.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="freva user guide 2406.0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Freva.html">
+                        Freva python module
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../FrevaCli.html">
+                        The Freva command line interface
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
+                        What’s new
+                      </a>
+                    </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Freva.html">
+                        Freva python module
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../FrevaCli.html">
+                        The Freva command line interface
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../developers_guide.html">
+                        Plugin Developer Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../notebooks/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
+                    More
+                </button>
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
+                        What’s new
+                      </a>
+                    </li>
+                
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FREVA-CLINT/freva" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Plugin API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter_api.html">Parameter API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="APIRef.html">Databrowser Rest API</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Plugin API Reference</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-evaluation_system.api.plugin">
+<span id="plugin-api-reference"></span><span id="pluginapi"></span><h1>Plugin API Reference<a class="headerlink" href="#module-evaluation_system.api.plugin" title="Link to this heading">#</a></h1>
+<p>Definition of the base class that is used to implement user plugins.</p>
+<p>The plugin API (Application Program Interface) is the central connection
+of a user plugin code and the Freva system infrastructure. The API
+enables the users to conveniently set up, run, and keep track of applied plugins.
+The reference below gives an overview of how to set up user defined plugins.
+For this purpose we assume that a plugin core (without Freva) already exists
+- for example as a command line interface tool (cli). Once such a cli has been
+set up a interface to Freva must be defined. This reference will introduce
+the possible definition options below.</p>
+<p>Here we assume that the above mentioned cli code is stored in a directory
+name <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins/new_plugin</span></code> furthermore the actual cli code can be
+executed via:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cli/calculate -c 5 -n 6.4 --overwrite --name=Test</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>With help of this API a Freva plugin can be created in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugin/new_plugin/plugin.py</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evaluation_system.api.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginAbstract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class that is used as a template for all Freva plugins.
+Any api wrapper class defining Freva plugins must inherit from this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>user</strong> (<em>evaluation_system.model.user.User</em><em>, </em><em>default None</em>) – Pre defined evaluation system user object, if None given (default)
+a new instance of a user object for the current user will be created.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>The following attributes are mandatory and have to be set:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__short_description__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__version__" title="evaluation_system.api.plugin.PluginAbstract.__version__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__version__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.run_tool" title="evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="xref py py-class docutils literal notranslate"><span class="pre">run_tool</span></code></a></p></li>
+</ul>
+</dd>
+<dt>Whereas the following properties can be optionally set:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__long_description__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__tags__" title="evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__tags__</span></code></a></p></li>
+<li><p><a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__category__" title="evaluation_system.api.plugin.PluginAbstract.__category__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__category__</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>In order to configure and call this cli, a Freva wrapper api class will
+have the be created in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins/new_plugin/plugin.py</span></code>.
+A minimal configuration example would look as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">evaluation_system.api</span> <span class="kn">import</span> <span class="n">plugin</span><span class="p">,</span> <span class="n">parameters</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">PluginAbstract</span><span class="p">):</span>
+    <span class="n">__short_description__</span> <span class="o">=</span> <span class="s2">&quot;Short plugin description&quot;</span>
+    <span class="n">__long_description__</span> <span class="o">=</span> <span class="s2">&quot;Optional longer description&quot;</span>
+    <span class="n">__version__</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">__parameters__</span> <span class="o">=</span>  <span class="n">parameters</span><span class="o">.</span><span class="n">ParameterDictionary</span><span class="p">(</span>
+                        <span class="n">parameters</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;This is an optional configurable &quot;</span>
+                                  <span class="s2">&quot;int variable named number without &quot;</span>
+                                  <span class="s2">&quot;default value and this description&quot;</span><span class="p">)</span>
+                        <span class="p">),</span>
+                        <span class="n">parameters</span><span class="o">.</span><span class="n">Float</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;number&quot;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="mf">6.4</span><span class="p">,</span>
+                            <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Required float value without default&quot;</span>
+                        <span class="p">),</span>
+                        <span class="n">parameters</span><span class="o">.</span><span class="n">Bool</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;a boolean parameter &quot;</span>
+                                  <span class="s2">&quot;with default value of false&quot;</span><span class="p">)</span>
+                        <span class="p">),</span>
+                        <span class="n">parameters</span><span class="o">.</span><span class="n">String</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+                            <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Test&#39;</span><span class="p">,)</span>
+                      <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">run_tool</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="o">|</span><span class="nb">int</span><span class="o">|</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Definition of the tool that runs the cli.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">        config_dict: dict</span>
+<span class="sd">            Plugin configuration stored in a dictionary</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="p">(</span>
+              <span class="sa">f</span><span class="s2">&quot;cli/calculate -c </span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;-n </span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> --name=</span><span class="si">{</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MyPlugin was run with&quot;</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The actual configuration is defined by the <a class="reference internal" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a>
+property, which is of type
+<a class="reference internal" href="parameter_api.html#evaluation_system.api.parameters.ParameterDictionary" title="evaluation_system.api.parameters.ParameterDictionary"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.parameters.ParameterDictionary</span></code></a>.</p>
+</div>
+<p>If you need to test it use the <code class="docutils literal notranslate"><span class="pre">EVALUATION_SYSTEM_PLUGINS</span></code> environment
+variable to point to the source directory and package.
+For example assuming you have the source code in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins</span></code>
+and the package holding the class implementing
+<a class="reference internal" href="../developers_guide.html#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> is
+<code class="docutils literal notranslate"><span class="pre">my_plugin.plugin</span></code> (i.e. its absolute file path is
+<code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins/my_plugin/plugin_module.py</span></code>), you would tell the system
+how to find the plugin by issuing the following command (bash &amp; co):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">EVALUATION_SYSTEM_PLUGINS</span><span class="o">=/</span><span class="n">mnt</span><span class="o">/</span><span class="n">freva</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span><span class="n">my_plugin</span><span class="p">,</span><span class="n">plugin_module</span>
+</pre></div>
+</div>
+<p>Use a colon to separate multiple items:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">EVALUATION_SYSTEM_PLUGINS</span><span class="o">=/</span><span class="n">path1</span><span class="p">,</span><span class="n">plugin1</span><span class="p">:</span><span class="o">/</span><span class="n">path2</span><span class="p">,</span><span class="n">plugin2</span><span class="p">:</span><span class="o">/</span><span class="n">path3</span><span class="p">,</span><span class="n">plugin3</span>
+</pre></div>
+</div>
+<p>By telling the system where to find the packages it can find the
+<a class="reference internal" href="../developers_guide.html#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> implementations. The system just
+loads the packages and get to the classes using the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">class.__subclasses__()</span></code> method. The reference speaks about
+<em>weak references</em> so it’s not clear if (and when) they get removed.
+We might have to change this in the future if it’s not enough.
+Another approach would be forcing self-registration of a
+class in the <span class="xref std std-ref">__metaclass__</span> attribute when the
+class is implemented.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__category__">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__category__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__category__" title="Link to this definition">#</a></dt>
+<dd><p>Optional category this plugin belongs to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__long_description__">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__long_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="Link to this definition">#</a></dt>
+<dd><p>Optional long description of this plugin.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__parameters__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__parameters__</span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="Link to this definition">#</a></dt>
+<dd><p>Mandatory definitions of all known configurable parameters.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__short_description__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__short_description__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="Link to this definition">#</a></dt>
+<dd><p>Mandatory short description of this plugin.</p>
+<p>It will be displayed to the user in the help and
+when listing all plugins.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__tags__">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__tags__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__tags__" title="Link to this definition">#</a></dt>
+<dd><p>Optional tags, that are the plugin can be described with.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.__version__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.__version__" title="Link to this definition">#</a></dt>
+<dd><p>3-value tuple representing the plugin version.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span>   <span class="n">version</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser">
+<span class="sig-name descname"><span class="pre">add_output_to_databrowser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'freva'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'r1i1p1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser" title="Link to this definition">#</a></dt>
+<dd><p>Add Plugin output data to the solr database.</p>
+<p>This methods crawls the plugin output data directory and adds
+any files that were found to the apache solr database.</p>
+<dl class="simple">
+<dt>..note::</dt><dd><p>Use the <code class="docutils literal notranslate"><span class="pre">ensemble</span></code> and <code class="docutils literal notranslate"><span class="pre">model</span></code>
+arguments to specify the search facets that are going to be
+added to the solr server for this plugin run. This will help
+users better to better distinguish their plugin result search.</p>
+</dd>
+</dl>
+<p>The following facets are fixed:</p>
+<ul class="simple">
+<li><p>project: <code class="docutils literal notranslate"><span class="pre">user-&lt;user_name&gt;</span></code></p></li>
+<li><p>product: <code class="docutils literal notranslate"><span class="pre">&lt;project&gt;.&lt;product&gt;</span></code></p></li>
+<li><p>realm: <code class="docutils literal notranslate"><span class="pre">&lt;plugin_name&gt;</span></code></p></li>
+<li><p>dataset version: <code class="docutils literal notranslate"><span class="pre">&lt;history_id&gt;</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plugin_output</strong> (<em>os.PathLike</em>) – Plugin output directory or file created by the files. If a
+directory is given all data files within the sub directories
+will be collected for ingestion.</p></li>
+<li><p><strong>project</strong> (<em>str</em>) – Project facet of the input data. The project argument will distinguish
+plugin results for different setups.</p></li>
+<li><p><strong>product</strong> (<em>str</em>) – Product facet of the input data. The product argument will distinguish
+plugin results for different setups.</p></li>
+<li><p><strong>model</strong> (<em>str</em><em>, </em><em>default: None</em>) – Default model facet. If None is given (default) the model name will
+be set to <code class="docutils literal notranslate"><span class="pre">freva</span></code>. The model argument can be used to distinguish
+plugin results for different setups.</p></li>
+<li><p><strong>institute</strong> (<em>str</em><em>, </em><em>default: None</em>) – Default institute facet. Use the argument to make plugin results
+from various setups better distinguishable. If None given (default)
+the institute will be set the the freva project name.</p></li>
+<li><p><strong>ensemble</strong> (<em>str</em><em>, </em><em>default: r0i0p0</em>) – Default ensemble facet. Like for model the ensemble argument should
+be used to distinguish plugins results with different setups.</p></li>
+<li><p><strong>time_frequency</strong> (<em>str</em><em>, </em><em>default: None</em>) – Default time frequency facet. If None is given (default) the time
+frequency will be retrieved from the output files.</p></li>
+<li><p><strong>experiment</strong> (<em>str</em><em>, </em><em>default: freva-plugin</em>) – Default time experiment facet.</p></li>
+<li><p><strong>variable</strong> (<em>str</em><em>, </em><em>default: None</em>) – Default variable facet. If None is given (default) the variable
+will be retrieved from the output files.</p></li>
+<li><p><strong>index_data</strong> (<em>bool</em><em>, </em><em>default: True</em>) – Update the freva data browser (default: True). Setting this
+flag to false can be useful if the data structure should only be
+created but the databrowser should not be updated yet.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Path</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path to the new directory that contains the data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Popen</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.call" title="Link to this definition">#</a></dt>
+<dd><p>Run command with arguments and return a CompletedProcess instance.</p>
+<p>The returned instance will have attributes args, returncode, stdout and
+stderr. By default, stdout and stderr are not captured, and those
+attributes will be None. Pass stdout=PIPE and/or stderr=PIPE in order
+to capture them.</p>
+<p>Please refer to the <code class="docutils literal notranslate"><span class="pre">subprocess.Popen</span></code> python build in module for
+more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd_string</strong> – the command to be submitted.</p></li>
+<li><p><strong>check</strong> – If check is True and the exit code was non-zero, it raises a
+CalledProcessError. The CalledProcessError object will have the
+return code in the returncode attribute, and output &amp; stderr
+attributes if those streams were captured.</p></li>
+<li><p><strong>kwargs</strong> – Additional arguments passed to <code class="docutils literal notranslate"><span class="pre">subprocess.Popen</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sub-process return value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>subprocess.Popen</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.class_basedir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_basedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir" title="Link to this definition">#</a></dt>
+<dd><p>Get absolute path to the module defining the plugin class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.getClassBaseDir">
+<span class="sig-name descname"><span class="pre">getClassBaseDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.getHelp">
+<span class="sig-name descname"><span class="pre">getHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.getHelp" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.linkmydata">
+<span class="sig-name descname"><span class="pre">linkmydata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.plugin_output_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_output_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file" title="Link to this definition">#</a></dt>
+<dd><p>Filename where stdout is written to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.prepareOutput">
+<span class="sig-name descname"><span class="pre">prepareOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.prepare_output">
+<span class="sig-name descname"><span class="pre">prepare_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output" title="Link to this definition">#</a></dt>
+<dd><p>Prepare output for files supposedly created.</p>
+<p>This method checks if the files exist and returns a dictionary with
+information about them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="o">&lt;</span><span class="n">absolute_path_to_file</span><span class="o">&gt;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getctime</span><span class="p">(</span><span class="o">&lt;</span><span class="n">absolute_path_to_file</span><span class="o">&gt;</span><span class="p">),</span>
+    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="o">&lt;</span><span class="n">absolute_path_to_file</span><span class="o">&gt;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Use it for the return call of run_tool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>output_files</strong> – iterable of strings or single string with paths to all files that
+where created by the tool.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary with the paths to the files that were created as
+key and a dictionary as value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.readConfiguration">
+<span class="sig-name descname"><span class="pre">readConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.run_tool">
+<span class="sig-name descname"><span class="pre">run_tool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.run_tool" title="Link to this definition">#</a></dt>
+<dd><p>Method executing the tool.</p>
+<p>The method should be overridden by the custom plugin tool method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config_dict</strong> – A dict with the current configuration (param name, value)
+which the tool will be run with</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Return values of <code class="xref py py-class docutils literal notranslate"><span class="pre">prepare_output([&lt;list_of_created_files&gt;])</span></code> method</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.setupConfiguration">
+<span class="sig-name descname"><span class="pre">setupConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.special_variables">
+<span class="sig-name descname"><span class="pre">special_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.special_variables" title="Link to this definition">#</a></dt>
+<dd><p>This dictionary resolves the <em>special variables</em> that are available</p>
+<p>to the plugins in a standardized manner. These variables are initialized per user and
+plugin. They go as follow:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>USER_BASE_DIR</p></td>
+<td><p>Absolute path to the central directory for this user.</p></td>
+</tr>
+<tr class="row-odd"><td><p>USER_OUTPUT_DIR</p></td>
+<td><p>Absolute path to where the plugin outputs for this user are stored.</p></td>
+</tr>
+<tr class="row-even"><td><p>USER_PLOTS_DIR</p></td>
+<td><p>Absolute path to where the plugin plots for this user are stored.</p></td>
+</tr>
+<tr class="row-odd"><td><p>USER_CACHE_DIR</p></td>
+<td><p>Absolute path to the cached data (temp data) for this user.</p></td>
+</tr>
+<tr class="row-even"><td><p>USER_UID</p></td>
+<td><p>The users’ User Identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p>SYSTEM_DATE</p></td>
+<td><p>Current date in the form YYYYMMDD (e.g. 20120130).</p></td>
+</tr>
+<tr class="row-even"><td><p>SYSTEM_DATETIME</p></td>
+<td><p>Current date in the form YYYYMMDD_HHmmSS (e.g. 20120130_101123).</p></td>
+</tr>
+<tr class="row-odd"><td><p>SYSTEM_TIMESTAMP</p></td>
+<td><p>Milliseconds since epoch (i.e. e.g. 1358929581838).</p></td>
+</tr>
+<tr class="row-even"><td><p>SYSTEM_RANDOM_UUID</p></td>
+<td><p>A random Universal Unique Identifier (e.g. 912cca21-6364-4f46-9b03-4263410c9899).</p></td>
+</tr>
+</tbody>
+</table>
+<p>A plugin/user might then use them to define a value in the following way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">output_file</span><span class="o">=</span><span class="s1">&#39;$USER_OUTPUT_DIR/myfile_$</span><span class="si">{SYSTEM_DATETIME}</span><span class="s1">blah.nc&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.tool_developer">
+<span class="sig-name descname"><span class="pre">tool_developer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer" title="Link to this definition">#</a></dt>
+<dd><p>Name of the developer who is responsible for the tool.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.user">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">User</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.user" title="Link to this definition">#</a></dt>
+<dd><p>Return the user class for which this instance was generated.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evaluation_system.api.plugin.PluginAbstract.wrapper_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrapper_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file" title="Link to this definition">#</a></dt>
+<dd><p>Get the location of the wrapper file.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="parameter_api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Parameter API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract"><code class="docutils literal notranslate"><span class="pre">PluginAbstract</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__category__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__category__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__long_description__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__parameters__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__short_description__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__tags__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.__version__"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.__version__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.add_output_to_databrowser"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.add_output_to_databrowser()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.call"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.class_basedir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.class_basedir</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.getClassBaseDir"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getClassBaseDir()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.getHelp"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.getHelp()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.linkmydata"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.linkmydata()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.plugin_output_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.plugin_output_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.prepareOutput"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepareOutput()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.prepare_output"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.prepare_output()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.readConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.readConfiguration()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.run_tool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.setupConfiguration"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.setupConfiguration()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.special_variables"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.special_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.tool_developer"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.tool_developer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.user"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.user</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation_system.api.plugin.PluginAbstract.wrapper_file"><code class="docutils literal notranslate"><span class="pre">PluginAbstract.wrapper_file</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, DKRZ.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

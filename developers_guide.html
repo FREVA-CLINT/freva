@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Plugin Developer Guide &#8212; freva user guide 2309.0.2 documentation</title>
+    <title>Plugin Developer Guide &#8212; freva user guide 2406.0.0 documentation</title>
   
   
   
@@ -29,25 +29,34 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/code-tabs.css?v=1bc26e2f" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="_static/documentation_options.js?v=3cbba332"></script>
+    <script src="_static/documentation_options.js?v=3506fa6d"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/code-tabs.js?v=c983d12e"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'developers_guide';</script>
     <link rel="icon" href="_static/logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="plugin_api.html" />
-    <link rel="prev" title="The Freva command line interface" href="FrevaCli.html" />
+    <link rel="next" title="Examples" href="notebooks/index.html" />
+    <link rel="prev" title="Databrowser Rest API" href="api/APIRef.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -124,8 +133,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="freva user guide 2309.0.2 documentation - Home"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="freva user guide 2309.0.2 documentation - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="freva user guide 2406.0.0 documentation - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="freva user guide 2406.0.0 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -154,6 +163,13 @@
                     </li>
                 
 
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
                         Plugin Developer Guide
@@ -162,15 +178,8 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="plugin_api.html">
-                        API Reference
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="FAQ.html">
-                        Frequently Ask Questions and best practices
+                      <a class="nav-link nav-internal" href="notebooks/index.html">
+                        Examples
                       </a>
                     </li>
                 
@@ -180,6 +189,13 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
                         What’s new
@@ -301,6 +317,13 @@ document.write(`
                     </li>
                 
 
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
                         Plugin Developer Guide
@@ -309,15 +332,8 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="plugin_api.html">
-                        API Reference
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="FAQ.html">
-                        Frequently Ask Questions and best practices
+                      <a class="nav-link nav-internal" href="notebooks/index.html">
+                        Examples
                       </a>
                     </li>
                 
@@ -327,6 +343,13 @@ document.write(`
                 </button>
                 <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
+                    <li class="nav-item">
+                      <a class="nav-link dropdown-item nav-internal" href="FAQ.html">
+                        Frequently Ask Questions and best practices
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
                         What’s new
@@ -442,7 +465,7 @@ document.write(`
 <p>This documentation helps to get started with creating user defined <code class="docutils literal notranslate"><span class="pre">Freva</span></code>
 plugins. This section provides a minimal example to turn your <em>existing</em> data
 analysis code into a Freva plugin. Detailed usage information can be found in the
-<a class="reference internal" href="plugin_api.html#apireference"><span class="std std-ref">API Reference</span></a>.</p>
+<a class="reference internal" href="api/index.html#apireference"><span class="std std-ref">API Reference</span></a>.</p>
 <section id="module-evaluation_system.api.plugin">
 <span id="a-minimal-example"></span><h2>A Minimal Example<a class="headerlink" href="#module-evaluation_system.api.plugin" title="Link to this heading">#</a></h2>
 <p>Definition of the base class that is used to implement user plugins.</p>
@@ -476,16 +499,16 @@ a new instance of a user object for the current user will be created.</p>
 </dl>
 <dl class="simple">
 <dt>The following attributes are mandatory and have to be set:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__short_description__</span></code></a></p></li>
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__version__" title="evaluation_system.api.plugin.PluginAbstract.__version__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__version__</span></code></a></p></li>
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a></p></li>
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.run_tool" title="evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="xref py py-class docutils literal notranslate"><span class="pre">run_tool</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__short_description__" title="evaluation_system.api.plugin.PluginAbstract.__short_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__short_description__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__version__" title="evaluation_system.api.plugin.PluginAbstract.__version__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__version__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.run_tool" title="evaluation_system.api.plugin.PluginAbstract.run_tool"><code class="xref py py-class docutils literal notranslate"><span class="pre">run_tool</span></code></a></p></li>
 </ul>
 </dd>
 <dt>Whereas the following properties can be optionally set:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__long_description__</span></code></a></p></li>
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__tags__" title="evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__tags__</span></code></a></p></li>
-<li><p><a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__category__" title="evaluation_system.api.plugin.PluginAbstract.__category__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__category__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__long_description__" title="evaluation_system.api.plugin.PluginAbstract.__long_description__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__long_description__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__tags__" title="evaluation_system.api.plugin.PluginAbstract.__tags__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__tags__</span></code></a></p></li>
+<li><p><a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__category__" title="evaluation_system.api.plugin.PluginAbstract.__category__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__category__</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -544,15 +567,15 @@ A minimal configuration example would look as follows:</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The actual configuration is defined by the <a class="reference internal" href="plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a>
+<p>The actual configuration is defined by the <a class="reference internal" href="api/plugin_api.html#evaluation_system.api.plugin.PluginAbstract.__parameters__" title="evaluation_system.api.plugin.PluginAbstract.__parameters__"><code class="xref py py-class docutils literal notranslate"><span class="pre">__parameters__</span></code></a>
 property, which is of type
-<a class="reference internal" href="plugin_api.html#evaluation_system.api.parameters.ParameterDictionary" title="evaluation_system.api.parameters.ParameterDictionary"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.parameters.ParameterDictionary</span></code></a>.</p>
+<a class="reference internal" href="api/parameter_api.html#evaluation_system.api.parameters.ParameterDictionary" title="evaluation_system.api.parameters.ParameterDictionary"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.parameters.ParameterDictionary</span></code></a>.</p>
 </div>
 <p>If you need to test it use the <code class="docutils literal notranslate"><span class="pre">EVALUATION_SYSTEM_PLUGINS</span></code> environment
 variable to point to the source directory and package.
 For example assuming you have the source code in <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins</span></code>
 and the package holding the class implementing
-<a class="reference internal" href="plugin_api.html#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> is
+<a class="reference internal" href="#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> is
 <code class="docutils literal notranslate"><span class="pre">my_plugin.plugin</span></code> (i.e. its absolute file path is
 <code class="docutils literal notranslate"><span class="pre">/mnt/freva/plugins/my_plugin/plugin_module.py</span></code>), you would tell the system
 how to find the plugin by issuing the following command (bash &amp; co):</p>
@@ -564,7 +587,7 @@ how to find the plugin by issuing the following command (bash &amp; co):</p>
 </pre></div>
 </div>
 <p>By telling the system where to find the packages it can find the
-<a class="reference internal" href="plugin_api.html#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> implementations. The system just
+<a class="reference internal" href="#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> implementations. The system just
 loads the packages and get to the classes using the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">class.__subclasses__()</span></code> method. The reference speaks about
 <em>weak references</em> so it’s not clear if (and when) they get removed.
@@ -661,7 +684,7 @@ plugin environment.</p>
 by default on your system you can load the Freva environment, which ships
 anaconda.</p>
 </div>
-<p>Afterwards you can refer to the <a class="reference internal" href="plugin_api.html#pluginapi"><span class="std std-ref">Plugin API Reference</span></a> and <a class="reference internal" href="plugin_api.html#parameterapi"><span class="std std-ref">Parameter API Reference</span></a> docs to
+<p>Afterwards you can refer to the <a class="reference internal" href="api/plugin_api.html#pluginapi"><span class="std std-ref">Plugin API Reference</span></a> and <a class="reference internal" href="api/parameter_api.html#parameterapi"><span class="std std-ref">Parameter API Reference</span></a> docs to
 create the wrapper file and finalize the creation of the plugin.</p>
 </section>
 </section>
@@ -678,20 +701,20 @@ create the wrapper file and finalize the creation of the plugin.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="FrevaCli.html"
+       href="api/APIRef.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">The Freva command line interface</p>
+        <p class="prev-next-title">Databrowser Rest API</p>
       </div>
     </a>
     <a class="right-next"
-       href="plugin_api.html"
+       href="notebooks/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API Reference</p>
+        <p class="prev-next-title">Examples</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
