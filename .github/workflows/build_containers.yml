@@ -60,8 +60,8 @@ jobs:
           push: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main' }}
           file: .docker/Dockerfile
           build-args:
-            VERSION=${{steps.repository.outputs.tag}}
-            binder=false
+            - VERSION=${{steps.repository.outputs.tag}}
+            - binder=false
           tags: |
             ghcr.io/freva-clint/freva-dev:${{ steps.repository.outputs.tag }}
             ghcr.io/freva-clint/freva-dev:latest

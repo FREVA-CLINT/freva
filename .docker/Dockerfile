@@ -45,7 +45,7 @@ RUN set -x && \
      mkdir -p /etc/jupyter /usr/freva_output && \
      chmod -R 2777 /usr/freva_output &&\
      mkdir -p /mnt/freva_plugins/dummy/.git &&\
-     mv /tmp/evaluation_system/.git/config /mnt/freva_plugins/dummy/.git/ &&\
+     mv /tmp/evaluation_system/.docker/git_config /mnt/freva_plugins/dummy/.git/ &&\
      cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/dummy.py /mnt/freva_plugins/dummy &&\
      cp /mnt/freva_plugins/animator/.git/config . &&\
      rm -fr /mnt/freva_plugins/animator/.git/* &&\
