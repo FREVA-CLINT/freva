@@ -95,9 +95,9 @@ RUN set -x && \
   echo "mariadb-admin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping || exit 1" >> /tmp/mysql_init &&\
   bash /tmp/mysql_init && rm /tmp/mysql_init &&\
   cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err &&\
-  mysql -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
-  mysql -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
-  mysql -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
+  mariadb -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
+  mariadb -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
+  mariadb -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
   rm -fr /tmp/set_root_pw /tmp/evaluation_system
