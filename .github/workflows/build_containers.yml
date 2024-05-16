@@ -18,7 +18,7 @@ on:
 
 jobs:
 
-  deployment-image-linux:
+  freva-dev-image-linux:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -67,7 +67,7 @@ jobs:
             ghcr.io/freva-clint/freva-dev:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
-  build-and-push-vault-image:
+  freva-image-linux:
     runs-on: ubuntu-latest
     permissions:
       contents: write
