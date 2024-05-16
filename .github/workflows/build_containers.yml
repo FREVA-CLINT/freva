@@ -65,7 +65,7 @@ jobs:
           tags: |
             ghcr.io/freva-clint/freva-dev:${{ steps.repository.outputs.tag }}
             ghcr.io/freva-clint/freva-dev:latest
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64
 
   freva-image-linux:
     runs-on: ubuntu-latest
@@ -107,7 +107,7 @@ jobs:
         name: Build and push freva image
         uses: docker/build-push-action@v4
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64
           file: .docker/Dockerfile
           push: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main' }}
           build-args: VERSION=${{steps.repository.outputs.tag}}
