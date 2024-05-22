@@ -1056,6 +1056,53 @@ def get_history(
     )
 
 
+def get_history_all(
+    plugin_name: Optional[str] = None,
+    limit: int = -1,
+    since: Optional[str] = None,
+    until: Optional[str] = None,
+    entry_ids: Optional[list[int]] = None,
+    user: Optional[User] = None,
+) -> QuerySet[History]:
+    """Returns the history of all users.
+
+    This is just a wrapper for the defined db interface accessed via the
+    user object. See :class:`evaluation_system.model.db.UserDB.getHistory`
+    for more information on this interface.
+
+    Parameters
+    ----------
+    plugin_name
+        Name of plugin to get the history for
+    limit
+        Limits on number of results to get. -1 means no limit
+    since
+        Only get results after since.
+    until
+        Only get results earlier than until.
+    entry_ids
+        Result entry IDs to filter for.
+    user
+        User to get plugins results for.
+
+    Returns
+    -------
+    QuerySet[History]
+        Results from the database query.
+    """
+    user = user or User()
+
+    plugin_name = plugin_name.lower() if plugin_name else None
+
+    return user.getUserDB().getHistory(
+        plugin_name,
+        limit,
+        since=since,
+        until=until,
+        entry_ids=entry_ids,
+    )
+
+
 def get_command_string(
     entry_id: int,
     user: Optional[User] = None,

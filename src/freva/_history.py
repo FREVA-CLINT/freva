@@ -25,6 +25,7 @@ def history(
     return_results: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
+    all_users: bool = False,
 ) -> Union[list[Any], dict[str, Any]]:
     """Get access to the configurations of previously applied freva plugins.
 
@@ -34,11 +35,6 @@ def history(
 
     Parameters
     ----------
-    full_text: bool, default: False
-      Get the full configuration.
-    return_command: bool, default: False
-      Show Freva commands belonging to the history entries instead
-      of the entries themselves.
     limit: int, default: 10
       Limit the number of entries to be displayed.
     plugin: str, default: None
@@ -55,6 +51,8 @@ def history(
       Also return the plugin results.
     return_command: bool, default: False
       Return the commands instead of history objects
+    all_users: bool, default: False
+      Select entries belonging to either self user (default, False), or anyone (True)
     _return_dict: bool, default: True
       Return a dictionary representation, this is only for internal use
 
@@ -95,14 +93,19 @@ def history(
             f"{prefix}, limit={limit}, since={since},"
             f" until={until}, entry_ids={entry_ids}"
         )
-    rows = pm.get_history(
-        user=None,
-        plugin_name=plugin,
-        limit=limit,
-        since=since,
-        until=until,
-        entry_ids=entry_ids,
-    )
+    kwargs = {
+        "user": None,
+        "plugin_name": plugin,
+        "limit": limit,
+        "since": since,
+        "until": until,
+        "entry_ids": entry_ids,
+    }
+    if all_users:
+        rows = pm.get_history_all(**kwargs)
+    else:
+        rows = pm.get_history(**kwargs)
+
     if rows:
         # pass some option for generating the command string
         if return_command:
