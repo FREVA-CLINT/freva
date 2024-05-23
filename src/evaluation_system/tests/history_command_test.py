@@ -17,6 +17,8 @@ from evaluation_system.tests.mocks.dummy import DummyPlugin
 
 
 def test_freva_history_method(dummy_history, dummy_user):
+    from unittest.mock import patch
+
     from freva import history
 
     config_dict = {
@@ -52,6 +54,19 @@ def test_freva_history_method(dummy_history, dummy_user):
         hist = history(entry_ids="bla")
     hist = history(entry_ids="0")
     assert len(hist) == 0
+    with patch(
+        "evaluation_system.api.plugin_manager.get_history_all"
+    ) as mock_get_history_all:
+        history(all_users=True)
+        kwargs = {
+            "user": None,
+            "plugin_name": None,
+            "limit": 10,
+            "since": None,
+            "until": None,
+            "entry_ids": None,
+        }
+        mock_get_history_all.assert_called_once_with(**kwargs)
 
 
 def test_history_cmd(capsys, dummy_history, dummy_user):

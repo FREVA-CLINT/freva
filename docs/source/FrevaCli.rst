@@ -512,6 +512,63 @@ of the last 3 plugin applications:
       for file in hist["result"].keys():
          print(file)
 
+
+By default, Freva only shows your user's history. However,
+with the ``--all-users`` flag, the query is extended to all users.
+For example, while the following Freva command shows the last job run
+by you:
+
+.. code:: console
+
+    freva history --limit 1 --json
+
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   import random
+   import string
+   import datetime
+   import socket
+   from django.contrib.auth.models import User
+   from evaluation_system.model.history.models import History
+   from evaluation_system.tests.mocks.dummy import DummyUser
+   from subprocess import run, PIPE
+   freva.run_plugin("dummypluginfolders")
+   N = 10
+   random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=N))
+   other_user = User.objects.create_user(
+       username=f"user_{random_string}", password="123"
+   )
+   History.objects.create(
+       timestamp=datetime.datetime.now(),
+       status=History.processStatus.running,
+       uid=other_user,
+       configuration='{"some": "config", "dict": "values"}',
+       tool=f"dummytool_{random_string}",
+       slurm_output="/path/to/slurm-44742.out",
+       host=socket.gethostbyname(socket.gethostname()),
+   )
+   other_user.delete()
+   res_my_user = run(["freva", "history", "--limit", "1", "--json"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_my_user.stdout.decode())
+
+
+The following one will also take in account other users:
+
+.. code:: console
+
+    freva history --limit 1 --json --all-users
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res_all_users = run(["freva", "history", "--limit", "1", "--json", "--all-users"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_all_users.stdout.decode())
+
+
 Managing your own datasets: the ``freva-user-data`` command
 -----------------------------------------------------------
 
