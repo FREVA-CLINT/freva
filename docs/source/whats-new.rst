@@ -21,6 +21,8 @@ Bug fixes
   correct evaluation system config file. This has been fixed now.
 - Revised minor typographical errors in the documentation and code comments.
 - Created a standard_main function in `utils.py` for cli
+- Fixed bug that was preventing the `.gif` outputs to be properly copied to
+  the `preview/` (for freva web).
 
 Documentations
 ++++++++++++++
