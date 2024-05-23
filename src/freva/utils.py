@@ -186,7 +186,7 @@ class PluginStatus:
 
         Example
         -------
-        Read the output of the plugin
+        Read the output of the plugin:
 
         .. execute_code::
 
@@ -265,7 +265,7 @@ class PluginStatus:
 
         Raises
         ------
-        ValueError: If the plugin took longer than ``timeout`` seconds to finish
+        ValueError: If the plugin took longer than ``timeout`` seconds to finish.
 
         Example
         -------
@@ -309,7 +309,7 @@ class PluginStatus:
         ----------
         dtype: str
             The data type of the returned paths. This should be either
-            data or plot
+            data or plot.
         glob_pattern: str, default: *.nc
             Refine the output by filtering the returned files by the given
             glob pattern. By default only netCDF files ("*.nc") are added

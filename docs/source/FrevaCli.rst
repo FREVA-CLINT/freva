@@ -68,7 +68,7 @@ Let’s inspect the help menu of the databrowser sub-command:
    print(res.stdout.decode())
 
 
-The databrowser expects a list of key=value pairs. The order of the
+The databrowser expects a list of ``key=value`` pairs. The order of the
 pairs doesn’t really matter. Most important is that you don’t need to
 split the search according to the type of data you are searching for.
 You can search for files within observations, reanalysis and

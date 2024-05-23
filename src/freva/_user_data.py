@@ -113,7 +113,7 @@ class UserData:
             to create symbolic links or ``move`` to move the data into the central
             user directory entirely.
         override: bool, default: False
-            Replace existing files in the user data structure
+            Replace existing files in the user data structure.
         experiment: str, default: None
             By default the method tries to deduce the *experiment* information from
             the metadata. To overwrite this information the *experiment* keyword
@@ -141,7 +141,7 @@ class UserData:
 
         Raises
         ------
-        ValueError: If metadata is insufficient, or product key is empty
+        ValueError: If metadata is insufficient, or product key is empty.
 
 
         Example
@@ -255,7 +255,7 @@ class UserData:
     ) -> None:
         """Index and add user output data to the databrowser.
 
-        This method can be used to update the databrowser for existing user data
+        This method can be used to update the databrowser for existing user data.
 
         Parameters
         ----------

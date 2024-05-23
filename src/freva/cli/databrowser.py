@@ -36,20 +36,20 @@ class Cli(BaseParser):
             "--batch-size",
             default=5000,
             type=int,
-            help="Number of files to retrieve",
+            help="Number of files to retrieve.",
         )
         self.parser.add_argument(
             "--count",
             default=False,
             action="store_true",
-            help="Show the number of files for each search result",
+            help="Show the number of files for each search result.",
         )
         self.parser.add_argument(
             "--facet",
             default=None,
             type=str,
             action="append",
-            help=("Retrieve values of given facet instead of files"),
+            help=("Retrieve values of given facet instead of files."),
         )
         self.parser.add_argument(
             "--facet-limit",
@@ -76,7 +76,7 @@ class Cli(BaseParser):
         self.parser.add_argument(
             "facets",
             nargs="*",
-            help="Search facet(s)",
+            help="Search facet(s).",
             type=str,
             metavar="facets",
         )

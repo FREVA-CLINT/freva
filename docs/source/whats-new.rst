@@ -20,9 +20,9 @@ Bug fixes
 - Fixed plugin batchmode submit bug. Batchmode plugins did not pick up the
   correct evaluation system config file. This has been fixed now.
 - Revised minor typographical errors in the documentation and code comments.
-- Created a standard_main function in `utils.py` for cli
-- Fixed bug that was preventing the `.gif` outputs to be properly copied to
-  the `preview/` (for freva web).
+- Created a standard_main function in ``utils.py`` for cli
+- Fixed bug that was preventing the ``.gif`` outputs to be properly copied to
+  the ``preview/`` folder (for freva web job result previews).
 
 Documentations
 ++++++++++++++

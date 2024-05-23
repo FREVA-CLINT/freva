@@ -210,7 +210,7 @@ def esgf_datasets(
     """List the name of the datasets (and version) in the ESGF.
 
     The method queries the ESGF nodes for dataset information.
-    The key=value syntax follows that of ``freva.databrowser``
+    The ``key=value`` syntax follows that of ``freva.databrowser``
     but the key names follow the ESGF standards for each dataset.
 
     Parameters:

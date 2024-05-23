@@ -44,17 +44,17 @@ def history(
     until: str, datetime.datetime, default: None
       Retrieve entries younger than date, see hint on date format below.
     entry_ids: list, default: None
-       Select entries whose ids are in "ids",
+       Select entries whose ids are in "ids".
     full_text: bool, default: False
       Show the complete configuration.
     return_results: bool, default: False
       Also return the plugin results.
     return_command: bool, default: False
-      Return the commands instead of history objects
+      Return the commands instead of history objects.
     all_users: bool, default: False
-      Select entries belonging to either self user (default, False), or anyone (True)
+      Select entries belonging to either self user (default, False), or anyone (True).
     _return_dict: bool, default: True
-      Return a dictionary representation, this is only for internal use
+      Return a dictionary representation, this is only for internal use.
 
     Returns
     -------
@@ -64,7 +64,7 @@ def history(
     Example
     -------
 
-    Get the last three history entries
+    Get the last three history entries:
 
     .. execute_code::
 

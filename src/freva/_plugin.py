@@ -229,7 +229,7 @@ def list_plugins() -> list[str]:
     Returns
     --------
     list[str]:
-            List of available Freva plugins
+            List of available Freva plugins.
 
     Example
     -------
@@ -458,7 +458,7 @@ def run_plugin(
     Returns
     -------
     tuple:
-        Return code, and the return value of the plugin
+        Return code, and the return value of the plugin.
 
 
     Example
