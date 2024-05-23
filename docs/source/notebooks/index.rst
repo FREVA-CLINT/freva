@@ -1,7 +1,7 @@
 Examples
 ========
 
-This chapters contains a collecton of examples that demonstrate
+This chapters contains a collection of examples that demonstrate
 the usage for freva by jupyter notebooks. Enjoy!
 
 .. toctree::

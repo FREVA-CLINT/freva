@@ -31,7 +31,7 @@ Getting an overview
     :resheader Content-Type: ``application/json``: the available DRS search standards
                              and their search facets.
 
-                             - ``flavours``: array of available DRS stanards.
+                             - ``flavours``: array of available DRS standards.
                              - ``attributes``: array of search facets for each available DRS standard.
 
     Example Request
@@ -372,7 +372,7 @@ Searching for metadata
                              - ``facet_mapping``: Translation rules describing
                                how to map the freva DRS standard to the desired
                                standard. This can be useful if ``GET /search_facets``
-                               was instructed to *not* tranlate the facet entries
+                               was instructed to *not* translate the facet entries
                                and the translation should be done from client side.
                              - ``primary_facets``: Array of facets that are most
                                important. This can be useful for building clients

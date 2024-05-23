@@ -1,4 +1,4 @@
-"""Module to get information on and run Freva plgins.
+"""Module to get information on and run Freva plugins.
 
 To make use of any of the methods a Freva plugin has to be set up. Either
 by you, the Freva admins or your colleagues. If you want to create a plugin
