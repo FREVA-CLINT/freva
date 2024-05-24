@@ -100,11 +100,9 @@ def history(
         "since": since,
         "until": until,
         "entry_ids": entry_ids,
+        "get_all_users": all_users,
     }
-    if all_users:
-        rows = pm.get_history_all(**kwargs)
-    else:
-        rows = pm.get_history(**kwargs)
+    rows = pm.get_history(**kwargs)
 
     if rows:
         # pass some option for generating the command string

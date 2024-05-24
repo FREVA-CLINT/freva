@@ -55,7 +55,7 @@ def test_freva_history_method(dummy_history, dummy_user):
     hist = history(entry_ids="0")
     assert len(hist) == 0
     with patch(
-        "evaluation_system.api.plugin_manager.get_history_all"
+        "evaluation_system.api.plugin_manager.get_history"
     ) as mock_get_history_all:
         history(all_users=True)
         kwargs = {
@@ -65,6 +65,7 @@ def test_freva_history_method(dummy_history, dummy_user):
             "since": None,
             "until": None,
             "entry_ids": None,
+            "get_all_users": True,
         }
         mock_get_history_all.assert_called_once_with(**kwargs)
 

@@ -349,11 +349,11 @@ def test_get_history_all(dummy_settings, temp_user):
     other_user.delete()
 
     res1 = pm.get_history(user=temp_user)
-    res2 = pm.get_history_all(user=temp_user)
+    res2 = pm.get_history(user=temp_user, get_all_users=True)
     search_string1 = bool(re.search(f"dummytool_{random_string}", res1.__str__()))
     search_string2 = bool(re.search(f"dummytool_{random_string}", res2.__str__()))
 
-    assert res1 != res2
+    assert set(res1) != set(res2)
     assert search_string1 is False
     assert search_string2 is True
 
