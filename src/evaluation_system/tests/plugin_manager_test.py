@@ -318,8 +318,6 @@ def test_get_history(dummy_settings, temp_user):
     assert all([g is not None for g in g2])
     assert g1[0] == g2[0]
 
-
-def test_get_history_all(dummy_settings, temp_user):
     import random
     import re
     import socket
@@ -349,7 +347,7 @@ def test_get_history_all(dummy_settings, temp_user):
     other_user.delete()
 
     res1 = pm.get_history(user=temp_user)
-    res2 = pm.get_history(user=temp_user, get_all_users=True)
+    res2 = pm.get_history(user=None)
     search_string1 = bool(re.search(f"dummytool_{random_string}", res1.__str__()))
     search_string2 = bool(re.search(f"dummytool_{random_string}", res2.__str__()))
 

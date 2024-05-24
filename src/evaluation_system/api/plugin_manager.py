@@ -1014,7 +1014,6 @@ def get_history(
     until: Optional[str] = None,
     entry_ids: Optional[list[int]] = None,
     user: Optional[User] = None,
-    get_all_users: Optional[bool] = False,
 ) -> QuerySet[History]:
     """Returns the history of all users.
 
@@ -1036,23 +1035,21 @@ def get_history(
         Result entry IDs to filter for.
     user
         User to get plugins results for.
-    get_all_users
-        To get the all users history.
 
     Returns
     -------
     QuerySet[History]
         Results from the database query.
     """
-    user = user or User()
+    user_ = user or User()
 
-    return user.getUserDB().getHistory(
+    return user_.getUserDB().getHistory(
         tool_name=plugin_name.lower() if plugin_name else None,
         limit=limit,
         since=since,
         until=until,
         entry_ids=entry_ids,
-        uid=None if get_all_users == True else user.getName(),
+        uid=user.getName() if user else None,
     )
 
 

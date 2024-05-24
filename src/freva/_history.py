@@ -10,6 +10,7 @@ import lazy_import
 from evaluation_system.misc import logger
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+from evaluation_system.model.user import User
 
 __all__ = ["history"]
 
@@ -94,13 +95,12 @@ def history(
             f" until={until}, entry_ids={entry_ids}"
         )
     kwargs = {
-        "user": None,
+        "user": None if all_users else User(),
         "plugin_name": plugin,
         "limit": limit,
         "since": since,
         "until": until,
         "entry_ids": entry_ids,
-        "get_all_users": all_users,
     }
     rows = pm.get_history(**kwargs)
 
