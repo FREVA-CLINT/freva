@@ -61,8 +61,8 @@ jobs:
           file: .docker/Dockerfile
           push: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main' }}
           build-args:
-            VERSION=${{ steps.repository.outputs.tag }}
-            binder=${{ matrix.image-name == 'freva-dev' && 'false' || 'true' }}
+            - VERSION=${{ steps.repository.outputs.tag }}
+            - binder=${{ matrix.image-name == 'freva-dev' && 'false' || 'true' }}
           tags: |
             ghcr.io/freva-clint/${{matrix.image-name}}:${{ steps.repository.outputs.tag }}
             ghcr.io/freva-clint/${{matrix.image-name}}:latest
