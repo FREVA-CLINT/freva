@@ -71,7 +71,7 @@ from .plugin import PluginAbstract
 PLUGIN_ENV = "EVALUATION_SYSTEM_PLUGINS"
 """Defines the environmental variable name for pointing to the plug-ins"""
 
-IMAGE_RESIZE_EXCEPTIONS = ["PDF", "HDF5", "GRIB", "GIF"]
+IMAGE_RESIZE_EXCEPTIONS = ["PDF", "HDF5", "GRIB"]
 """Plugin output files of these types will not be resized.
 
     File type is determined by the file extension and the mapping PIL has in
