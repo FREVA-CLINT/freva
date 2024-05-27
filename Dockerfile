@@ -1,4 +1,4 @@
-FROM ghcr.io/freva-clint/freva:latest
+FROM antarcticrainforest/freva
 
 ARG NB_USER="nb_user"
 ARG NB_UID="1000"
