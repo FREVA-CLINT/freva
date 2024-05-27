@@ -1,6 +1,8 @@
 FROM mariadb:latest
-LABEL maintainer="DRKZ-CLINT"
-LABEL repository="https://gitlab.dkrz.de/freva/evaluation_system"
+ARG VERSION
+LABEL org.opencontainers.image.authors="DRKZ-CLINT"
+LABEL org.opencontainers.image.source="https://github.com/FREVA-CLINT/freva"
+LABEL org.opencontainers.image.version="$VERSION"
 ARG binder="true"
 ## Set all environment variables
 ENV SOLR_HOME=/opt/evaluation_system/.solr \
@@ -43,7 +45,7 @@ RUN set -x && \
      mkdir -p /etc/jupyter /usr/freva_output && \
      chmod -R 2777 /usr/freva_output &&\
      mkdir -p /mnt/freva_plugins/dummy/.git &&\
-     mv /tmp/evaluation_system/.git/config /mnt/freva_plugins/dummy/.git/ &&\
+     mv /tmp/evaluation_system/.docker/git_config /mnt/freva_plugins/dummy/.git/ &&\
      cp /tmp/evaluation_system/src/evaluation_system/tests/mocks/dummy.py /mnt/freva_plugins/dummy &&\
      cp /mnt/freva_plugins/animator/.git/config . &&\
      rm -fr /mnt/freva_plugins/animator/.git/* &&\
@@ -90,12 +92,12 @@ RUN set -x && \
   echo "set -e" > /tmp/mysql_init &&\
   echo "mariadb-install-db" >> /tmp/mysql_init &&\
   echo "nohup mariadbd --skip-grant-tables &" >> /tmp/mysql_init &&\
-  echo "mysqladmin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping || exit 1" >> /tmp/mysql_init &&\
+  echo "mariadb-admin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping || exit 1" >> /tmp/mysql_init &&\
   bash /tmp/mysql_init && rm /tmp/mysql_init &&\
   cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err &&\
-  mysql -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
-  mysql -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
-  mysql -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
+  mariadb -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
+  mariadb -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
+  mariadb -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
   rm -fr /tmp/set_root_pw /tmp/evaluation_system
