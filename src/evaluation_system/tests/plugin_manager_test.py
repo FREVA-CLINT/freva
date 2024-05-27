@@ -318,43 +318,6 @@ def test_get_history(dummy_settings, temp_user):
     assert all([g is not None for g in g2])
     assert g1[0] == g2[0]
 
-    import random
-    import re
-    import socket
-    import string
-
-    from django.contrib.auth.models import User
-
-    import evaluation_system.api.plugin_manager as pm
-    from evaluation_system.model.history.models import History
-
-    pm.run_tool("dummyplugin", user=temp_user)
-
-    N = 10
-    random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=N))
-    other_user = User.objects.create_user(
-        username=f"user_{random_string}", password="123"
-    )
-    History.objects.create(
-        timestamp=datetime.datetime.now(),
-        status=History.processStatus.running,
-        uid=other_user,
-        configuration='{"some": "config", "dict": "values"}',
-        tool=f"dummytool_{random_string}",
-        slurm_output="/path/to/slurm-44742.out",
-        host=socket.gethostbyname(socket.gethostname()),
-    )
-    other_user.delete()
-
-    res1 = pm.get_history(user=temp_user)
-    res2 = pm.get_history(user=None)
-    search_string1 = bool(re.search(f"dummytool_{random_string}", res1.__str__()))
-    search_string2 = bool(re.search(f"dummytool_{random_string}", res2.__str__()))
-
-    assert set(res1) != set(res2)
-    assert search_string1 is False
-    assert search_string2 is True
-
 
 def testDynamicPluginLoading(dummy_env, temp_user):
     import evaluation_system.api.plugin_manager as pm

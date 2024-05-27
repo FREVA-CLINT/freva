@@ -520,8 +520,7 @@ by you:
 
 .. code:: console
 
-    freva history --limit 1 --json
-
+    freva history --json
 
 .. execute_code::
    :hide_code:
@@ -533,7 +532,6 @@ by you:
    import socket
    from django.contrib.auth.models import User
    from evaluation_system.model.history.models import History
-   from evaluation_system.tests.mocks.dummy import DummyUser
    from subprocess import run, PIPE
    freva.run_plugin("dummypluginfolders")
    N = 10
@@ -551,7 +549,7 @@ by you:
        host=socket.gethostbyname(socket.gethostname()),
    )
    other_user.delete()
-   res_my_user = run(["freva", "history", "--limit", "1", "--json"], check=True, stdout=PIPE, stderr=PIPE)
+   res_my_user = run(["freva", "history", "--json"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_my_user.stdout.decode())
 
 
@@ -559,13 +557,13 @@ The following one will also take in account other users:
 
 .. code:: console
 
-    freva history --limit 1 --json --all-users
+    freva history --json --all-users
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res_all_users = run(["freva", "history", "--limit", "1", "--json", "--all-users"], check=True, stdout=PIPE, stderr=PIPE)
+   res_all_users = run(["freva", "history", "--json", "--all-users"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_all_users.stdout.decode())
 
 
