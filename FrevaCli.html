@@ -783,20 +783,20 @@ the data). For example to see all facets that are available in the
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>project: cmip6,cordex,observations,reanalysis,user-runner
-time_frequency: 1day,1hr,30min,3hr,mon
-cmor_table: 1hr,30min,3hr,aday,amon,omon
-future: 
-fs_type: posix
-variable: hc700,pr,tas,ua
 realm: atmos,ocean,user_data
-time_aggregation: mean
-institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
-model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
-experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
-product: cmip,eur-11,eur-11b,grid,reanalysis
-ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
 grid_label: gn
+experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
+future: 
+time_aggregation: mean
+fs_type: posix
+institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
+ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
+variable: hc700,pr,tas,ua
+model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
+product: cmip,eur-11,eur-11b,grid,reanalysis
+cmor_table: 1hr,30min,3hr,aday,amon,omon
 future_id: 
+time_frequency: 1day,1hr,30min,3hr,mon
 
 </pre></div>
 </div>
@@ -827,21 +827,21 @@ can be achieved by using the <code class="docutils literal notranslate"><span cl
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>grid_label: gn
-future: 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>future_id: 
 time_aggregation: mean
-product: grid
 institute: cpc
+project: observations
+model: cpc
+variable: pr
+product: grid
+ensemble: r1i1p1
+future: 
+time_frequency: 30min
+fs_type: posix
+grid_label: gn
 experiment: cmorph
 realm: atmos
-model: cpc
-project: observations
-future_id: 
-variable: pr
-fs_type: posix
-time_frequency: 30min
 cmor_table: 30min
-ensemble: r1i1p1
 </pre></div>
 </div>
 </section>
@@ -1023,7 +1023,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&quot;[-\d]+&quot;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4 in 41 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4 in 40 seconds
 
 </pre></div>
 </div>
@@ -1044,7 +1044,7 @@ submit the previous plugin job to the computing queue:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2124
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-3776.out
+tail -f /tmp/share/slurm/animator/Animator-3645.out
 
 </pre></div>
 </div>
@@ -1058,8 +1058,8 @@ output files from a plugin run.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639/2125
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639/2125/data.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730/2125
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730/2125/data.nc
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1112,7 +1112,7 @@ options:
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2024-05-27 12:13:13] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2024-05-27 12:24:03] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -1124,9 +1124,9 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(0, 1, 2) debce12af795b6b69906473b3e39fa84dd68c0fb [2024-05-27 12:16:39] finished 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(0, 1, 2) 1c2e7a9a181b268b7cc013d3f49187c5fd265e4c [2024-05-27 12:27:30] finished 
 Configuration:
-      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639
+      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730
        variable=tas
 
 </pre></div>
@@ -1137,7 +1137,7 @@ can use the <code class="docutils literal notranslate"><span class="pre">--retur
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730
 
 </pre></div>
 </div>
@@ -1149,10 +1149,10 @@ of the last 3 plugin applications:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639/2125/plot.png
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_121639/2125/data.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730/2125/plot.png
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_122730/2125/data.nc
 /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4
-[12:16:42] INFO     freva - INFO - history, limit=3, since=None,  _history.py:94
+[12:27:34] INFO     freva - INFO - history, limit=3, since=None,  _history.py:94
                     until=None, entry_ids=None                                  
 </pre></div>
 </div>
