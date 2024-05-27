@@ -1,7 +1,6 @@
 name: Creating container images
 run-name: Creating container images 🧉
 
-# Set the access for individual scopes, or use permissions: write-all
 permissions:
   pull-requests: write
   contents: write
@@ -15,36 +14,38 @@ on:
       - main
   workflow_dispatch:
 
-
 jobs:
-
-  freva-dev-image-linux:
+  build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
+
+    strategy:
+      matrix:
+        image-name: [freva-dev, freva]
+        build-args: [binder=false, ""]
+
     steps:
-      -
-        name: Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      -
-        name: Set up Python 3.X
+
+      - name: Set up Python 3.X
         uses: actions/setup-python@v4
         with:
           python-version: "3.X"
-      -
-        name: Get tag
+
+      - name: Get tag
         id: repository
         run: |
           echo "tag=$(python src/evaluation_system/__init__.py)" >> $GITHUB_OUTPUT
-      -
-        name: Set up QEMU
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Log in to the Container registry
@@ -53,64 +54,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and push freva-dev image
-        uses: docker/build-push-action@v4
-        with:
-          push: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main' }}
-          file: .docker/Dockerfile
-          build-args: |
-            VERSION=${{steps.repository.outputs.tag}}
-            binder=false
-          tags: |
-            ghcr.io/freva-clint/freva-dev:${{ steps.repository.outputs.tag }}
-            ghcr.io/freva-clint/freva-dev:latest
-          platforms: linux/amd64
 
-  freva-image-linux:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      -
-        name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      -
-        name: Set up Python 3.X
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.X"
-      -
-        name: Get tag
-        id: repository
-        run: |
-          echo "tag=$(python src/evaluation_system/__init__.py)" >> $GITHUB_OUTPUT
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      -
-        name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and push freva image
+      - name: Build and push ${{ matrix.image-name }} image
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64
           file: .docker/Dockerfile
           push: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.ref == 'refs/heads/main' }}
-          build-args: VERSION=${{steps.repository.outputs.tag}}
+          build-args:
+            VERSION=${{ steps.repository.outputs.tag }}
+            ${{ matrix.build-args }}
           tags: |
-            ghcr.io/freva-clint/freva:${{ steps.repository.outputs.tag }}
-            ghcr.io/freva-clint/freva:latest
+            ghcr.io/freva-clint/${{matrix.image-name}}:${{ steps.repository.outputs.tag }}
+            ghcr.io/freva-clint/${{matrix.image-name}}:latest
