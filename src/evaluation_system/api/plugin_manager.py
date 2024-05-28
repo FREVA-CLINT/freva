@@ -1042,7 +1042,6 @@ def get_history(
         Results from the database query.
     """
     user_ = user or User()
-
     return user_.getUserDB().getHistory(
         tool_name=plugin_name.lower() if plugin_name else None,
         limit=limit,

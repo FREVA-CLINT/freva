@@ -74,10 +74,13 @@ class Cli(BaseParser):
             help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 ).",
         )
         self.parser.add_argument(
-            "--all-users",
-            default=False,
-            action="store_true",
-            help="Show the history of every user instead of only self.",
+            "--user",
+            default=None,
+            type=str,
+            help=(
+                "Show the history of other user (e.g. --user <username>)"
+                " or all users (--user all or --user '*')."
+            ),
         )
         self.parser.add_argument(
             "--debug",

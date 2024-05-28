@@ -26,7 +26,7 @@ def history(
     return_results: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
-    all_users: bool = False,
+    user: Optional[str] = None,
 ) -> Union[list[Any], dict[str, Any]]:
     """Get access to the configurations of previously applied freva plugins.
 
@@ -52,8 +52,9 @@ def history(
       Also return the plugin results.
     return_command: bool, default: False
       Return the commands instead of history objects.
-    all_users: bool, default: False
-      Select entries belonging to either self user (default, False), or anyone (True).
+    user: str, default: None
+      Select entries belonging to another user (e.g., user="<username>")
+      or all users (all or *).
     _return_dict: bool, default: True
       Return a dictionary representation, this is only for internal use.
 
@@ -95,7 +96,7 @@ def history(
             f" until={until}, entry_ids={entry_ids}"
         )
     kwargs = {
-        "user": None if all_users else User(),
+        "user": None if user == "all" or user == "*" else User(user),
         "plugin_name": plugin,
         "limit": limit,
         "since": since,
