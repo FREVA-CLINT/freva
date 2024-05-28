@@ -514,9 +514,9 @@ of the last 3 plugin applications:
 
 
 By default, Freva only shows your user's history. However,
-with the ``--all-users`` flag, the query is extended to all users.
-For example, while the following Freva command shows the last job run
-by you:
+with the ``--user`` flag, the query can be extended to other users (e.g.
+``--user <username>``) or all users (``--user all`` or ``--user "*"``).
+For example, while the following Freva command shows the jobs run by you:
 
 .. code:: console
 
@@ -526,44 +526,60 @@ by you:
    :hide_code:
 
    import freva
-   import random
-   import string
    import datetime
    import socket
+   import pwd
    from django.contrib.auth.models import User
+   from evaluation_system.tests.mocks.dummy import DummyUser
    from evaluation_system.model.history.models import History
    from subprocess import run, PIPE
+
    freva.run_plugin("dummypluginfolders")
-   N = 10
-   random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=N))
+
+   temp_user = DummyUser(random_home=True, pw_name=f"root", pw_passwd="123")
+   temp_user._userdata = pwd.struct_passwd(temp_user._userdata)
    other_user = User.objects.create_user(
-       username=f"user_{random_string}", password="123"
+       username=f"root", password="123"
    )
    History.objects.create(
        timestamp=datetime.datetime.now(),
-       status=History.processStatus.running,
+       status=History.processStatus.finished,
        uid=other_user,
        configuration='{"some": "config", "dict": "values"}',
-       tool=f"dummytool_{random_string}",
+       tool=f"new_dummytool",
        slurm_output="/path/to/slurm-44742.out",
        host=socket.gethostbyname(socket.gethostname()),
    )
    other_user.delete()
+
    res_my_user = run(["freva", "history", "--json"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_my_user.stdout.decode())
 
 
-The following one will also take in account other users:
+The following one will show you the history of e.g. ``root`` user:
 
 .. code:: console
 
-    freva history --json --all-users
+    freva history --json --user=root
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res_all_users = run(["freva", "history", "--json", "--all-users"], check=True, stdout=PIPE, stderr=PIPE)
+   res_other_user = run(["freva", "history", "--json", "--user=root"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_other_user.stdout.decode())
+
+And the following one, of *all* users (that is, including you):
+
+.. code:: console
+
+    freva history --json --user all
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res_all_users = run(["freva", "history", "--json", "--user=all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_all_users.stdout.decode())
 
 

@@ -11,8 +11,8 @@ v2406.0.0
 New Features
 ++++++++++++
 - The history method and cli history command can expand the query
-  to all users with ``all_users=True`` in the python module or
-  ``--all-users`` in the cli
+  to other user with ``user=<username>`` (for all users, ``user=all``)
+  in the python module or ``--user`` in the cli.
 
 Bug fixes
 +++++++++
@@ -21,8 +21,6 @@ Bug fixes
   correct evaluation system config file. This has been fixed now.
 - Revised minor typographical errors in the documentation and code comments.
 - Created a standard_main function in ``utils.py`` for cli
-- Fixed bug that was preventing the ``.gif`` outputs to be properly copied to
-  the ``preview/`` folder (for freva web job result previews).
 
 Documentations
 ++++++++++++++
