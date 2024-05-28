@@ -43,7 +43,7 @@ from types import ModuleType
 from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 from django.db.models.query import QuerySet
-from PIL import Image
+from PIL import Image, ImageSequence
 from rich import print as pprint
 from typing_extensions import TypedDict
 
@@ -609,11 +609,33 @@ def _preview_convert(source_path: str, dest_path: str, width: int = 800) -> None
         so height is calculated automatically. Default is 800
     """
 
-    with Image.open(source_path) as img:
+    def resizer(img, width):
         x, y = img.size
         height = 2 * (int(y / (x / width)) // 2)
-        im_resize = img.resize((width, height))
-        im_resize.save(dest_path)
+        return img.resize((width, height))
+
+    with Image.open(source_path) as img:
+        if img.format == "GIF":
+            frames = []
+            duration = []
+            for frame in ImageSequence.Iterator(img):
+                im_resize = resizer(frame, width)
+                frames.append(im_resize)
+                duration.append(frame.info.get("duration", 0))
+            frames[0].save(
+                dest_path,
+                format="GIF",
+                save_all=True,
+                append_images=frames[1:],
+                loop=0,
+                duration=duration,
+                optimize=True,
+                quality=95,
+            )
+        else:
+            im_resize = resizer(img, width)
+            im_resize.save(dest_path)
+
     os.chmod(dest_path, 509)
 
 

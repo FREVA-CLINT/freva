@@ -436,6 +436,11 @@ def test_preview_generation(dummy_env):
         s = os.path.dirname(__file__) + "/test_output/test_image.png"
         pm._preview_convert(s, d)
         assert os.path.isfile(d)
+    with tempfile.TemporaryDirectory() as td:
+        d = str(Path(td) / "tmp.gif")
+        s = os.path.dirname(__file__) + "/test_output/test_animation.gif"
+        pm._preview_convert(s, d)
+        assert os.path.isfile(d)
 
     r = pm._preview_generate_name("dummy", {})
     assert "dummy" in r

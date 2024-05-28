@@ -725,7 +725,7 @@ def test_prepare_output(dummy_plugin):
         assert meta_data["type"] == check["type"]
         assert meta_data["caption"] == "Manually added result"
     meta_data = plugin._run_tool({"folder": str(fn.parent)})
-    assert len(meta_data) == 2
+    assert len(meta_data) == 3
 
 
 @mock.patch("os.getpid", lambda: 12345)
