@@ -95,15 +95,15 @@ def history(
             f"{prefix}, limit={limit}, since={since},"
             f" until={until}, entry_ids={entry_ids}"
         )
-    kwargs = {
-        "user": None if user == "all" or user == "*" else User(user),
-        "plugin_name": plugin,
-        "limit": limit,
-        "since": since,
-        "until": until,
-        "entry_ids": entry_ids,
-    }
-    rows = pm.get_history(**kwargs)
+
+    rows = pm.get_history(
+        user=None if user == "all" or user == "*" else User(user),
+        plugin_name=plugin,
+        limit=limit,
+        since=since,
+        until=until,
+        entry_ids=entry_ids,
+    )
 
     if rows:
         # pass some option for generating the command string
