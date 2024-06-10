@@ -9,7 +9,7 @@ from rich.logging import RichHandler
 logger_stream_handle = RichHandler(
     rich_tracebacks=True,
     show_path=True,
-    console=Console(soft_wrap=True, stderr=True),
+    console=Console(soft_wrap=False, stderr=True, force_jupyter=False),
 )
 logger_stream_handle.setLevel(logging.INFO)
 logging.basicConfig(
