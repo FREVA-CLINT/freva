@@ -53,7 +53,8 @@ RUN set -x && \
   else\
      /opt/conda/bin/conda create -y -q -c conda-forge make pip git conda -p /opt/evaluation_system;\
   fi &&\
-  rm -rf /opt/conda &&\
+  rm -rf /opt/conda
+RUN set -e &&\
   mkdir -p ${EVAL_HOME}/bin ${EVAL_HOME}/share/freva /mnt/freva_plugins \
   ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR} ${MYSQL_HOME}/tmpl &&\
   mv /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ && \
