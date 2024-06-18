@@ -5,7 +5,8 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2406.0.0
+
+v2406.0.1
 ~~~~~~~~~
 
 New Features
@@ -13,6 +14,24 @@ New Features
 - The history method and cli history command can expand the query
   to other user with ``user-name=<username>`` (for all users, ``user-name=all``)
   in the python module or ``--user-name`` in the cli.
+
+Bug fixes
++++++++++
+
+- Fixed how the .gif animations are transformed and moved into the `preview` folder
+  (for the web).
+
+Documentations
+++++++++++++++
+- Added documentation of the freva history.
+
+Internal Changes
+++++++++++++++++
+- Updated unit tests.
+
+
+v2406.0.0
+~~~~~~~~~
 
 Bug fixes
 +++++++++
