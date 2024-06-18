@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
@@ -35,9 +35,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="../_static/documentation_options.js?v=3506fa6d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -69,27 +69,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -111,12 +107,17 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
@@ -152,59 +153,59 @@
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../Freva.html">
-                        Freva python module
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../Freva.html">
+    Freva python module
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../FrevaCli.html">
-                        The Freva command line interface
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api/index.html">
-                        API Reference
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../FrevaCli.html">
+    The Freva command line interface
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Examples
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    Plugin Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown pst-header-nav-item">
                 <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
-                        Frequently Ask Questions and best practices
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
+    Frequently Ask Questions and best practices
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
-                        What’s new
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
+    What’s new
+  </a>
+</li>
+
                 </ul>
             </li>
             
@@ -279,9 +280,9 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -302,68 +303,63 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../Freva.html">
-                        Freva python module
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../Freva.html">
+    Freva python module
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../FrevaCli.html">
-                        The Freva command line interface
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api/index.html">
-                        API Reference
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../FrevaCli.html">
+    The Freva command line interface
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="index.html">
-                        Examples
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
-                    More
-                </button>
-                <ul id="pst-nav-more-links-2" class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../FAQ.html">
-                        Frequently Ask Questions and best practices
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Reference
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../whats-new.html">
-                        What’s new
-                      </a>
-                    </li>
-                
-                </ul>
-            </li>
-            
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    Plugin Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../FAQ.html">
+    Frequently Ask Questions and best practices
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../whats-new.html">
+    What’s new
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -431,13 +427,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -446,7 +442,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -635,7 +631,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&#34;[-\d]+&#34;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2126/pr_20160902T0000-20160902T2330.mp4 in 44 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2128/pr_20160902T0000-20160902T2330.mp4 in 42 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -666,7 +662,7 @@ PluginStatus(&#39;animator&#39;, config={&#39;input_file&#39;: None, &#39;variab
 <div class="highlight"><pre>
 Help on function history in module freva._history:
 
-history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[str]&#39; = None, since: &#39;Optional[str]&#39; = None, until: &#39;Optional[str]&#39; = None, entry_ids: &#39;Union[int, list[int], None]&#39; = None, full_text: &#39;bool&#39; = False, return_results: &#39;bool&#39; = False, return_command: &#39;bool&#39; = False, _return_dict: &#39;bool&#39; = True) -&gt; &#39;Union[list[Any], dict[str, Any]]&#39;
+history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[str]&#39; = None, since: &#39;Optional[str]&#39; = None, until: &#39;Optional[str]&#39; = None, entry_ids: &#39;Union[int, list[int], None]&#39; = None, full_text: &#39;bool&#39; = False, return_results: &#39;bool&#39; = False, return_command: &#39;bool&#39; = False, _return_dict: &#39;bool&#39; = True, user_name: &#39;Optional[str]&#39; = None) -&gt; &#39;Union[list[Any], dict[str, Any]]&#39;
     Get access to the configurations of previously applied freva plugins.
 
     The `.history` method displays the entries with a one-line compact description.
@@ -675,11 +671,6 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
 
     Parameters
     ----------
-    full_text: bool, default: False
-      Get the full configuration.
-    return_command: bool, default: False
-      Show Freva commands belonging to the history entries instead
-      of the entries themselves.
     limit: int, default: 10
       Limit the number of entries to be displayed.
     plugin: str, default: None
@@ -689,15 +680,18 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
     until: str, datetime.datetime, default: None
       Retrieve entries younger than date, see hint on date format below.
     entry_ids: list, default: None
-       Select entries whose ids are in &#34;ids&#34;,
+       Select entries whose ids are in &#34;ids&#34;.
     full_text: bool, default: False
       Show the complete configuration.
     return_results: bool, default: False
       Also return the plugin results.
     return_command: bool, default: False
-      Return the commands instead of history objects
+      Return the commands instead of history objects.
+    user_name: str, default: None
+      Select entries belonging to another user (e.g., user_name=&#34;&lt;username&gt;&#34;)
+      or all users (all or *).
     _return_dict: bool, default: True
-      Return a dictionary representation, this is only for internal use
+      Return a dictionary representation, this is only for internal use.
 
     Returns
     -------
@@ -707,7 +701,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
     Example
     -------
 
-    Get the last three history entries
+    Get the last three history entries:
 
     .. execute_code::
 
@@ -750,14 +744,14 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   5: &#39;not_scheduled&#39;,
   3: &#39;running&#39;,
   4: &#39;scheduled&#39;},
- &#39;id&#39;: 2117,
- &#39;timestamp&#39;: &#39;2024-05-27T13:48:07&#39;,
+ &#39;id&#39;: 2118,
+ &#39;timestamp&#39;: &#39;2024-06-18T15:33:48&#39;,
  &#39;tool&#39;: &#39;animator&#39;,
  &#39;version&#39;: &#39;(2022, 7, 15)&#39;,
  &#39;version_details_id&#39;: 124,
  &#39;configuration&#39;: {&#39;input_file&#39;: None,
   &#39;variable&#39;: &#39;pr&#39;,
-  &#39;project&#39;: &#39;obs*&#39;,
+  &#39;project&#39;: &#39;observations&#39;,
   &#39;product&#39;: None,
   &#39;experiment&#39;: None,
   &#39;institute&#39;: None,
@@ -781,8 +775,8 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   &#39;cbar_label&#39;: &#39;&#39;,
   &#39;suffix&#39;: &#39;mp4&#39;,
   &#39;fps&#39;: 5},
- &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-3154.local&#39;,
- &#39;host&#39;: &#39;fv-az658-657&#39;,
+ &#39;slurm_output&#39;: &#39;/tmp/share/slurm/animator/Animator-3267.out&#39;,
+ &#39;host&#39;: &#39;fv-az2028-989&#39;,
  &#39;uid_id&#39;: &#39;runner&#39;,
  &#39;status&#39;: 0,
  &#39;flag&#39;: 0,
@@ -806,7 +800,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
 <div class="highlight"><pre>
 {&#39;input_file&#39;: None,
  &#39;variable&#39;: &#39;pr&#39;,
- &#39;project&#39;: &#39;obs*&#39;,
+ &#39;project&#39;: &#39;observations&#39;,
  &#39;product&#39;: None,
  &#39;experiment&#39;: None,
  &#39;institute&#39;: None,
@@ -859,7 +853,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -917,8 +911,8 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -951,7 +945,7 @@ history(*args: &#39;str&#39;, limit: &#39;int&#39; = 10, plugin: &#39;Optional[s
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
 </p></div>
       
     </div>

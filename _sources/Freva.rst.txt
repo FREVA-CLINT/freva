@@ -17,8 +17,9 @@ You can the to following methods
 
 - :py:meth:`freva.databrowser`: The main method for searching data is the
   :py:meth:`freva.databrowser` method. The data browser method lets you search
-  for data *files* or *uris*. *Uris* instead of file paths are useful because
-  an uri indicates the storage system where the *files* are located.
+  for data *files* or *uris* (Uniform Resource Identifier). *Uris* instead of file
+  paths are useful because an uri indicates the storage system where the *files* are
+  located.
 
 - :py:meth:`freva.facet_search`: This method lists all search categories (facets) and
   their values.

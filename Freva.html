@@ -14,19 +14,19 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="_static/code-tabs.css?v=1bc26e2f" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
     <script src="_static/documentation_options.js?v=3506fa6d"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
@@ -66,27 +66,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -108,12 +104,17 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
@@ -149,59 +150,59 @@
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Freva python module
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Freva python module
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="FrevaCli.html">
-                        The Freva command line interface
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/index.html">
-                        API Reference
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="FrevaCli.html">
+    The Freva command line interface
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="notebooks/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    Plugin Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="notebooks/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown pst-header-nav-item">
                 <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="FAQ.html">
-                        Frequently Ask Questions and best practices
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-internal" href="FAQ.html">
+    Frequently Ask Questions and best practices
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
-                        What’s new
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
+    What’s new
+  </a>
+</li>
+
                 </ul>
             </li>
             
@@ -276,9 +277,9 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -299,68 +300,63 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 <nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="#">
-                        Freva python module
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Freva python module
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="FrevaCli.html">
-                        The Freva command line interface
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/index.html">
-                        API Reference
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="FrevaCli.html">
+    The Freva command line interface
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="developers_guide.html">
-                        Plugin Developer Guide
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="notebooks/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
-                    More
-                </button>
-                <ul id="pst-nav-more-links-2" class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="FAQ.html">
-                        Frequently Ask Questions and best practices
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API Reference
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="whats-new.html">
-                        What’s new
-                      </a>
-                    </li>
-                
-                </ul>
-            </li>
-            
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    Plugin Developer Guide
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="notebooks/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="FAQ.html">
+    Frequently Ask Questions and best practices
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="whats-new.html">
+    What’s new
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -418,13 +414,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -433,7 +429,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -474,8 +470,9 @@ You can the to following methods</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#freva.databrowser" title="freva.databrowser"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.databrowser()</span></code></a>: The main method for searching data is the
 <a class="reference internal" href="#freva.databrowser" title="freva.databrowser"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.databrowser()</span></code></a> method. The data browser method lets you search
-for data <em>files</em> or <em>uris</em>. <em>Uris</em> instead of file paths are useful because
-an uri indicates the storage system where the <em>files</em> are located.</p></li>
+for data <em>files</em> or <em>uris</em> (Uniform Resource Identifier). <em>Uris</em> instead of file
+paths are useful because an uri indicates the storage system where the <em>files</em> are
+located.</p></li>
 <li><p><a class="reference internal" href="#freva.facet_search" title="freva.facet_search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.facet_search()</span></code></a>: This method lists all search categories (facets) and
 their values.</p></li>
 <li><p><a class="reference internal" href="#freva.count_values" title="freva.count_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">freva.count_values()</span></code></a>: You can count the occurrences of search results with
@@ -537,7 +534,7 @@ is given.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;future&#39;: {}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;future_id&#39;: {}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;future&#39;: {}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;future_id&#39;: {}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}}
 </pre></div>
 </div>
 </dd></dl>
@@ -599,7 +596,7 @@ iterator with results.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7fb692f48820&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7fba068e78b0&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
 </pre></div>
@@ -668,7 +665,7 @@ the whole dataset will be queried.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionary with a list search facet values for each search facet key</p>
+<dd class="field-even"><p>Dictionary with a list search facet values for each search facet key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict[str, list[str]]</p>
@@ -685,7 +682,7 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [&#39;cpc&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;future&#39;: [], &#39;realm&#39;: [&#39;atmos&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;product&#39;: [&#39;grid&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;future&#39;: [], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;future_id&#39;: [], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;fs_type&#39;: [&#39;posix&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
@@ -697,10 +694,10 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;model&#39;, &#39;ensemble&#39;, &#39;project&#39;, &#39;time_frequency&#39;, &#39;future&#39;, &#39;realm&#39;, &#39;product&#39;, &#39;grid_label&#39;, &#39;experiment&#39;, &#39;variable&#39;, &#39;institute&#39;, &#39;fs_type&#39;, &#39;future_id&#39;, &#39;time_aggregation&#39;, &#39;cmor_table&#39;]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;product&#39;, &#39;variable&#39;, &#39;realm&#39;, &#39;future&#39;, &#39;institute&#39;, &#39;time_frequency&#39;, &#39;future_id&#39;, &#39;grid_label&#39;, &#39;project&#39;, &#39;ensemble&#39;, &#39;model&#39;, &#39;time_aggregation&#39;, &#39;experiment&#39;, &#39;cmor_table&#39;, &#39;fs_type&#39;]
 </pre></div>
 </div>
-<p>Reverse search: retrieving meta data from a known file</p>
+<p>Reverse search: retrieving meta data from a known file.</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">freva</span>
 <span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc&quot;</span>
@@ -709,7 +706,7 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;model&#39;: [&#39;cpc&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;future&#39;: [], &#39;realm&#39;: [&#39;atmos&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;product&#39;: [&#39;grid&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;future&#39;: [], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;future_id&#39;: [], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;fs_type&#39;: [&#39;posix&#39;]}
 </pre></div>
 </div>
 </dd></dl>
@@ -759,7 +756,7 @@ existing plugins and the documentation of each plugins.</p>
 <dd><p>Get the plugins that are available on the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of available Freva plugins</p>
+<dd class="field-odd"><p>List of available Freva plugins.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list[str]</p>
@@ -908,7 +905,7 @@ creates plots of solr facets and an animation.
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Return code, and the return value of the plugin</p>
+<dd class="field-even"><p>Return code, and the return value of the plugin.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple</p>
@@ -950,7 +947,7 @@ the <code class="docutils literal notranslate"><span class="pre">.wait</span></c
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2118
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-3366.out
+tail -f /tmp/share/slurm/animator/Animator-3267.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -988,7 +985,7 @@ of the <a class="reference internal" href="#freva.PluginStatus" title="freva.Plu
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_134933/2119
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240618_153432/2119
 finished
 </pre></div>
 </div>
@@ -1004,7 +1001,7 @@ by making use of the :py:meth:<code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[13:49:33] INFO     freva - INFO - history of {plugin}, limit=1,  _history.py:94
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[15:34:32] INFO     freva - INFO - history of {plugin}, limit=1,  _history.py:94
                     since=None, until=None, entry_ids=None                      
 </pre></div>
 </div>
@@ -1030,7 +1027,7 @@ You can either search for data files or plotted output.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dtype</strong> (<em>str</em>) – The data type of the returned paths. This should be either
-data or plot</p></li>
+data or plot.</p></li>
 <li><p><strong>glob_pattern</strong> (str, default: <a href="#id5"><span class="problematic" id="id6">*</span></a>.nc) – Refine the output by filtering the returned files by the given
 glob pattern. By default only netCDF files (”<a href="#id3"><span class="problematic" id="id4">*</span></a>.nc”) are added
 to the list.</p></li>
@@ -1059,7 +1056,7 @@ constraint <code class="docutils literal notranslate"><span class="pre">*data.nc
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_134933/2120
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240618_153432/2120
 pr
 </pre></div>
 </div>
@@ -1096,7 +1093,7 @@ pr
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stdout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#freva.PluginStatus.stdout" title="Link to this definition">#</a></dt>
 <dd><p>Get the stdout of the plugin.</p>
 <p class="rubric">Example</p>
-<p>Read the output of the plugin</p>
+<p>Read the output of the plugin:</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">)</span>
@@ -1104,8 +1101,8 @@ pr
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_134933/2121
-Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_134933/2121
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240618_153433/2121
+Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240618_153433/2121
 
 </pre></div>
 </div>
@@ -1128,7 +1125,7 @@ Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfold
 hasn’t been finish raise a ValueError.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the plugin took longer than <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds to finish:</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If the plugin took longer than <code class="docutils literal notranslate"><span class="pre">timeout</span></code> seconds to finish.:</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1145,7 +1142,7 @@ finished.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2122
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3541.out
+tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3445.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -1158,7 +1155,7 @@ tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3541.out
 <span id="accessing-the-previous-plugin-runs"></span><h2>Accessing the previous plugin runs<a class="headerlink" href="#module-2" title="Link to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="freva.history">
-<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_return_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.history" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">since</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_return_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.history" title="Link to this definition">#</a></dt>
 <dd><p>Get access to the configurations of previously applied freva plugins.</p>
 <p>The <cite>.history</cite> method displays the entries with a one-line compact description.
 The first number you see is the entry id, which you might use to select
@@ -1166,18 +1163,17 @@ single entries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>full_text</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Get the full configuration.</p></li>
-<li><p><strong>return_command</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Show Freva commands belonging to the history entries instead
-of the entries themselves.</p></li>
 <li><p><strong>limit</strong> (<em>int</em><em>, </em><em>default: 10</em>) – Limit the number of entries to be displayed.</p></li>
 <li><p><strong>plugin</strong> (<em>str</em><em>, </em><em>default: None</em>) – Display only entries from a given plugin name.</p></li>
 <li><p><strong>since</strong> (<em>str</em><em>, </em><em>datetime.datetime</em><em>, </em><em>default: None</em>) – Retrieve entries older than date, see hint on date format below.</p></li>
 <li><p><strong>until</strong> (<em>str</em><em>, </em><em>datetime.datetime</em><em>, </em><em>default: None</em>) – Retrieve entries younger than date, see hint on date format below.</p></li>
-<li><p><strong>entry_ids</strong> (<em>list</em><em>, </em><em>default: None</em>) – Select entries whose ids are in “ids”,</p></li>
-<li><p><strong>full_text</strong> – Show the complete configuration.</p></li>
+<li><p><strong>entry_ids</strong> (<em>list</em><em>, </em><em>default: None</em>) – Select entries whose ids are in “ids”.</p></li>
+<li><p><strong>full_text</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Show the complete configuration.</p></li>
 <li><p><strong>return_results</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Also return the plugin results.</p></li>
-<li><p><strong>return_command</strong> – Return the commands instead of history objects</p></li>
-<li><p><strong>_return_dict</strong> (<em>bool</em><em>, </em><em>default: True</em>) – Return a dictionary representation, this is only for internal use</p></li>
+<li><p><strong>return_command</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Return the commands instead of history objects.</p></li>
+<li><p><strong>user_name</strong> (<em>str</em><em>, </em><em>default: None</em>) – Select entries belonging to another user (e.g., user_name=”&lt;username&gt;”)
+or all users (all or <a href="#id7"><span class="problematic" id="id8">*</span></a>).</p></li>
+<li><p><strong>_return_dict</strong> (<em>bool</em><em>, </em><em>default: True</em>) – Return a dictionary representation, this is only for internal use.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1188,7 +1184,7 @@ of the entries themselves.</p></li>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<p>Get the last three history entries</p>
+<p>Get the last three history entries:</p>
 <p><span class="caption-text">Code </span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -1201,8 +1197,8 @@ of the entries themselves.</p></li>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;list&#39;&gt; 3
 dict_keys([&#39;status_dict&#39;, &#39;id&#39;, &#39;timestamp&#39;, &#39;tool&#39;, &#39;version&#39;, &#39;version_details_id&#39;, &#39;configuration&#39;, &#39;slurm_output&#39;, &#39;host&#39;, &#39;uid_id&#39;, &#39;status&#39;, &#39;flag&#39;, &#39;caption&#39;, &#39;result&#39;])
-{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240527_134933&#39;}
-[13:49:35] INFO     freva - INFO - history, limit=3, since=None,  _history.py:94
+{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20240618_153432&#39;}
+[15:34:35] INFO     freva - INFO - history, limit=3, since=None,  _history.py:94
                     until=None, entry_ids=None                                  
 </pre></div>
 </div>
@@ -1254,7 +1250,7 @@ To avoid a this redundancy you can set the <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">symlink</span></code> for symbolic links or <code class="docutils literal notranslate"><span class="pre">link</span></code> for creating hard links
 to create symbolic links or <code class="docutils literal notranslate"><span class="pre">move</span></code> to move the data into the central
 user directory entirely.</p></li>
-<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Replace existing files in the user data structure</p></li>
+<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>default: False</em>) – Replace existing files in the user data structure.</p></li>
 <li><p><strong>experiment</strong> (<em>str</em><em>, </em><em>default: None</em>) – By default the method tries to deduce the <em>experiment</em> information from
 the metadata. To overwrite this information the <em>experiment</em> keyword
 should be set.</p></li>
@@ -1276,7 +1272,7 @@ should be set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If metadata is insufficient, or product key is empty:</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If metadata is insufficient, or product key is empty.:</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -1303,16 +1299,16 @@ and <code class="docutils literal notranslate"><span class="pre">experiment</spa
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240527/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20240618/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div>
 </div>
 <p>By default the data is copied. By using the <code class="docutils literal notranslate"><span class="pre">how</span></code> keyword you can
@@ -1356,7 +1352,7 @@ be deleted from the databrowser and also from the central data location:</p>
 <dt class="sig sig-object py" id="freva.UserData.index">
 <span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">crawl_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#freva.UserData.index" title="Link to this definition">#</a></dt>
 <dd><p>Index and add user output data to the databrowser.</p>
-<p>This method can be used to update the databrowser for existing user data</p>
+<p>This method can be used to update the databrowser for existing user data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1489,7 +1485,7 @@ with <strong>no</strong> space between variables) or as a <code class="docutils 
 <dt>gridftp: bool, default: False</dt><dd><p>Show gridftp endpoints instead of the http default
 ones (or skip them if none found)</p>
 </dd>
-<dt><a href="#id7"><span class="problematic" id="id8">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+<dt><a href="#id9"><span class="problematic" id="id10">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
 </dd>
 </dl>
 </section>
@@ -1575,17 +1571,17 @@ http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-
 <span class="sig-prename descclassname"><span class="pre">freva.</span></span><span class="sig-name descname"><span class="pre">esgf_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">search_constraints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#freva.esgf_datasets" title="Link to this definition">#</a></dt>
 <dd><p>List the name of the datasets (and version) in the ESGF.</p>
 <p>The method queries the ESGF nodes for dataset information.
-The key=value syntax follows that of <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>
+The <code class="docutils literal notranslate"><span class="pre">key=value</span></code> syntax follows that of <code class="docutils literal notranslate"><span class="pre">freva.databrowser</span></code>
 but the key names follow the ESGF standards for each dataset.</p>
-<section id="id9">
-<h3>Parameters:<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h3>Parameters:<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <dl class="simple">
-<dt><a href="#id10"><span class="problematic" id="id11">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+<dt><a href="#id12"><span class="problematic" id="id13">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
 </dd>
 </dl>
 </section>
-<section id="id12">
-<h3>Returns:<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id14">
+<h3>Returns:<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>list[tuple[str, str]]:</dt><dd><p>list of (dataset_name, version_number) tuples</p>
 </dd>
@@ -1628,18 +1624,18 @@ realization within the project <code class="docutils literal notranslate"><span 
 <dd><p>Create a script file to download the queried files at ESGF.</p>
 <p>The method creates a bash script wrapper of a wget query
 from ESGF dataset(s) (only http).</p>
-<section id="id13">
-<h3>Parameters:<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>Parameters:<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>download_script: Union[str, Path], default: None</dt><dd><p>Download wget_script for getting the files
 instead of displaying anything (only http)</p>
 </dd>
-<dt><a href="#id14"><span class="problematic" id="id15">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+<dt><a href="#id16"><span class="problematic" id="id17">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
 </dd>
 </dl>
 </section>
-<section id="id16">
-<h3>Returns:<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id18">
+<h3>Returns:<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>Union[str, Path]:</dt><dd><p>wget_script to download the files (only http).</p>
 </dd>
@@ -1664,7 +1660,7 @@ instead of displaying anything (only http)</p>
  # ESG Federation download script
  #
  # Template version: 1.2
- # Generated by esgf-data.dkrz.de - 2024/05/27 15:49:41
+ # Generated by esgf-data.dkrz.de - 2024/06/18 17:34:39
  # Search URL: http://esgf-data.dkrz.de/esg-search/wget?project=CMIP5&amp;experiment=decadal1960&amp;variable=tas&amp;distrib=False&amp;latest=True&amp;type=File
  #
  ###############################################################################
@@ -1689,8 +1685,8 @@ for example <a class="reference external" href="https://esgf-data.dkrz.de/user/a
 like model, experiment etc. The <code class="docutils literal notranslate"><span class="pre">key=value</span></code> syntax follows that of
 <code class="docutils literal notranslate"><span class="pre">freva.facet_search</span></code> but the key names follow the ESGF standards
 for each dataset.</p>
-<section id="id17">
-<h3>Parameters:<a class="headerlink" href="#id17" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h3>Parameters:<a class="headerlink" href="#id19" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>show_facet: Union[str, list[str]], default: None</dt><dd><p>List all values for the given facet (might be
 defined multiple times). The results show the possible
@@ -1699,12 +1695,12 @@ constraints and the number of <em>datasets</em> (not files)
 that selecting such value as a constraint will result
 (faceted search)</p>
 </dd>
-<dt><a href="#id18"><span class="problematic" id="id19">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
+<dt><a href="#id20"><span class="problematic" id="id21">**</span></a>search_constraints: Union[str, Path, in, list[str]]</dt><dd><p>Search facets to be applied in the data search.</p>
 </dd>
 </dl>
 </section>
-<section id="id20">
-<h3>Returns:<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
+<section id="id22">
+<h3>Returns:<a class="headerlink" href="#id22" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>dict[str, list[str]]:</dt><dd><p>Collection of facets</p>
 </dd>
@@ -1741,17 +1737,17 @@ for a particular realization within the project <code class="docutils literal no
 <dd><p>Query fields from ESGF and group them per dataset</p>
 <p>The method queries fields (e.g. facets) and groups them by dataset
 in a list of dictionaries.</p>
-<section id="id21">
-<h3>Parameters:<a class="headerlink" href="#id21" title="Link to this heading">#</a></h3>
+<section id="id23">
+<h3>Parameters:<a class="headerlink" href="#id23" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>query:</dt><dd><p>Display results from &lt;list&gt; queried fields</p>
 </dd>
-<dt><a href="#id22"><span class="problematic" id="id23">**</span></a>search_constraints:</dt><dd><p>Search facets to be applied in the data search.</p>
+<dt><a href="#id24"><span class="problematic" id="id25">**</span></a>search_constraints:</dt><dd><p>Search facets to be applied in the data search.</p>
 </dd>
 </dl>
 </section>
-<section id="id24">
-<h3>Returns:<a class="headerlink" href="#id24" title="Link to this heading">#</a></h3>
+<section id="id26">
+<h3>Returns:<a class="headerlink" href="#id26" title="Link to this heading">#</a></h3>
 <dl class="simple">
 <dt>list[dict[str, list[str]]]:</dt><dd><p>List of dictionaries with the queried elements for each dataset</p>
 </dd>
@@ -1846,7 +1842,7 @@ in a list of dictionaries.</p>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -1956,8 +1952,8 @@ in a list of dictionaries.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1990,7 +1986,7 @@ in a list of dictionaries.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
 </p></div>
       
     </div>

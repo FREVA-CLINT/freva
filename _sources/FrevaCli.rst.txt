@@ -68,7 +68,7 @@ Let’s inspect the help menu of the databrowser sub-command:
    print(res.stdout.decode())
 
 
-The databrowser expects a list of key=value pairs. The order of the
+The databrowser expects a list of ``key=value`` pairs. The order of the
 pairs doesn’t really matter. Most important is that you don’t need to
 split the search according to the type of data you are searching for.
 You can search for files within observations, reanalysis and
@@ -511,6 +511,77 @@ of the last 3 plugin applications:
    for hist in freva.history(limit=3, return_results=True):
       for file in hist["result"].keys():
          print(file)
+
+
+By default, Freva only shows your user's history. However,
+with the ``--user-name`` flag, the query can be extended to other users (e.g.
+``--user-name <username>``) or all users (``--user-name all`` or ``--user-name "*"``).
+For example, while the following Freva command shows the jobs run by you:
+
+.. code:: console
+
+    freva history --json
+
+.. execute_code::
+   :hide_code:
+
+   import freva
+   import datetime
+   import socket
+   import pwd
+   from django.contrib.auth.models import User
+   from evaluation_system.tests.mocks.dummy import DummyUser
+   from evaluation_system.model.history.models import History
+   from subprocess import run, PIPE
+
+   freva.run_plugin("dummypluginfolders")
+
+   temp_user = DummyUser(random_home=True, pw_name=f"root", pw_passwd="123")
+   temp_user._userdata = pwd.struct_passwd(temp_user._userdata)
+   other_user = User.objects.create_user(
+       username=f"root", password="123"
+   )
+   History.objects.create(
+       timestamp=datetime.datetime.now(),
+       status=History.processStatus.finished,
+       uid=other_user,
+       configuration='{"some": "config", "dict": "values"}',
+       tool=f"new_dummytool",
+       slurm_output="/path/to/slurm-44742.out",
+       host=socket.gethostbyname(socket.gethostname()),
+   )
+   other_user.delete()
+
+   res_my_user = run(["freva", "history", "--json"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_my_user.stdout.decode())
+
+
+The following one will show you the history of e.g. ``root`` user:
+
+.. code:: console
+
+    freva history --json --user-name=root
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res_other_user = run(["freva", "history", "--json", "--user-name=root"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_other_user.stdout.decode())
+
+And the following one, of *all* users (that is, including you):
+
+.. code:: console
+
+    freva history --json --user-name all
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res_all_users = run(["freva", "history", "--json", "--user-name=all"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res_all_users.stdout.decode())
+
 
 Managing your own datasets: the ``freva-user-data`` command
 -----------------------------------------------------------
