@@ -11,8 +11,8 @@ v2406.0.0
 New Features
 ++++++++++++
 - The history method and cli history command can expand the query
-  to other user with ``user=<username>`` (for all users, ``user=all``)
-  in the python module or ``--user`` in the cli.
+  to other user with ``user-name=<username>`` (for all users, ``user-name=all``)
+  in the python module or ``--user-name`` in the cli.
 
 Bug fixes
 +++++++++
