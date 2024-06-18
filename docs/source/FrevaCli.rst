@@ -514,8 +514,8 @@ of the last 3 plugin applications:
 
 
 By default, Freva only shows your user's history. However,
-with the ``--user`` flag, the query can be extended to other users (e.g.
-``--user <username>``) or all users (``--user all`` or ``--user "*"``).
+with the ``--user-name`` flag, the query can be extended to other users (e.g.
+``--user-name <username>``) or all users (``--user-name all`` or ``--user-name "*"``).
 For example, while the following Freva command shows the jobs run by you:
 
 .. code:: console
@@ -560,26 +560,26 @@ The following one will show you the history of e.g. ``root`` user:
 
 .. code:: console
 
-    freva history --json --user=root
+    freva history --json --user-name=root
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res_other_user = run(["freva", "history", "--json", "--user=root"], check=True, stdout=PIPE, stderr=PIPE)
+   res_other_user = run(["freva", "history", "--json", "--user-name=root"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_other_user.stdout.decode())
 
 And the following one, of *all* users (that is, including you):
 
 .. code:: console
 
-    freva history --json --user all
+    freva history --json --user-name all
 
 .. execute_code::
    :hide_code:
 
    from subprocess import run, PIPE
-   res_all_users = run(["freva", "history", "--json", "--user=all"], check=True, stdout=PIPE, stderr=PIPE)
+   res_all_users = run(["freva", "history", "--json", "--user-name=all"], check=True, stdout=PIPE, stderr=PIPE)
    print(res_all_users.stdout.decode())
 
 
