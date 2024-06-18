@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The Freva command line interface &#8212; freva user guide 2406.0.0 documentation</title>
+    <title>The Freva command line interface &#8212; freva user guide 2406.0.1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="../_static/documentation_options.js?v=3506fa6d"></script>
+    <script src="../_static/documentation_options.js?v=9c468e0b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -137,8 +137,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2406.0.0 documentation - Home"/>
-    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="freva user guide 2406.0.0 documentation - Home"/>`);</script>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2406.0.1 documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="freva user guide 2406.0.1 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -487,18 +487,18 @@ document.write(`
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-usage: freva [-h] [-V] {plugin,history,user-data,esgf,databrowser} ...
+usage: freva [-h] [-V] {plugin,databrowser,user-data,history,esgf} ...
 
 Free EVAluation system framework (freva)
 
 positional arguments:
-  {plugin,history,user-data,esgf,databrowser}
+  {plugin,databrowser,user-data,history,esgf}
                         Available sub-commands:
     plugin              Apply data analysis plugin.
-    history             Read the plugin application history.
-    user-data           Update users project data.
-    esgf                Search/Download ESGF the data catalogue.
     databrowser         Find data in the system.
+    user-data           Update users project data.
+    history             Read the plugin application history.
+    esgf                Search/Download ESGF the data catalogue.
 
 options:
   -h, --help            show this help message and exit
@@ -977,7 +977,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_2
 Scheduled job with history id: 2130
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-4715.out
+tail -f /tmp/share/slurm/animator/Animator-4738.out
 </pre></div></div>
 </div>
 </section>
@@ -997,9 +997,9 @@ tail -f /tmp/share/slurm/animator/Animator-4715.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[16:44:49]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=816034;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=390878;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
+<span class="ansi-cyan-fg">[16:52:55]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=624391;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=335594;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-magenta-fg">None</span>
-2115) dummyplugin [2024-06-18 16:38:48] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2024-06-18 16:46:56] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1015,7 +1015,7 @@ tail -f /tmp/share/slurm/animator/Animator-4715.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[16:44:50]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=645394;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=933626;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
+<span class="ansi-cyan-fg">[16:52:56]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=608938;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=588394;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-bold">[</span><span class="ansi-green-fg">&#39;1&#39;</span><span class="ansi-bold">]</span>
 </pre></div></div>
 </div>
