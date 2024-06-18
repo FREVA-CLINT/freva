@@ -49,7 +49,7 @@ class Cli(BaseParser):
                 "values of the selected facet according to the given "
                 "constraints and the number of *datasets* (not files) "
                 "that selecting such value as a constraint will result "
-                "(faceted search)"
+                "(faceted search)."
             ),
         )
         self.parser.add_argument(
@@ -64,7 +64,7 @@ class Cli(BaseParser):
             action="store_true",
             help=(
                 "Show gridftp endpoints instead of the http default "
-                "ones (or skip them if none found)"
+                "ones (or skip them if none found)."
             ),
         )
         self.parser.add_argument(
@@ -73,14 +73,14 @@ class Cli(BaseParser):
             type=Path,
             help=(
                 "Download wget_script for getting the files "
-                "instead of displaying anything (only http) "
+                "instead of displaying anything (only http)."
             ),
         )
         self.parser.add_argument(
             "--query",
             default=None,
             type=str,
-            help=("Query fields from ESGF and group them per dataset"),
+            help=("Query fields from ESGF and group them per dataset."),
         )
         self.parser.add_argument(
             "--debug",
@@ -94,7 +94,7 @@ class Cli(BaseParser):
         self.parser.add_argument(
             "facets",
             nargs="*",
-            help="Search facet(s)",
+            help="Search facet(s).",
             type=str,
             metavar="facets",
         )

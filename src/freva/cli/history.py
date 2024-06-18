@@ -46,7 +46,7 @@ class Cli(BaseParser):
             "--limit",
             default=10,
             type=int,
-            help="Limit the number of displayed entries to N",
+            help="Limit the number of displayed entries to N.",
         )
         self.parser.add_argument(
             "--plugin",
@@ -58,20 +58,29 @@ class Cli(BaseParser):
             "--since",
             default=None,
             type=str,
-            help="Retrieve entries older than date",
+            help="Retrieve entries older than date.",
         )
         self.parser.add_argument(
             "--until",
             default=None,
             type=str,
-            help="Retrieve entries newer than date",
+            help="Retrieve entries newer than date.",
         )
         self.parser.add_argument(
             "--entry-ids",
             default=None,
             type=str,
             nargs="+",
-            help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 )",
+            help="Select entry id(s) (e.g. --entry-ids 1 --entry-ids 2 ).",
+        )
+        self.parser.add_argument(
+            "--user-name",
+            default=None,
+            type=str,
+            help=(
+                "Show the history of other user (e.g. --user-name <username>)"
+                " or all users (--user-name all or --user-name '*')."
+            ),
         )
         self.parser.add_argument(
             "--debug",

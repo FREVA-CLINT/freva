@@ -1,4 +1,4 @@
-"""Module to get information on and run Freva plgins.
+"""Module to get information on and run Freva plugins.
 
 To make use of any of the methods a Freva plugin has to be set up. Either
 by you, the Freva admins or your colleagues. If you want to create a plugin
@@ -229,7 +229,7 @@ def list_plugins() -> list[str]:
     Returns
     --------
     list[str]:
-            List of available Freva plugins
+            List of available Freva plugins.
 
     Example
     -------
@@ -458,7 +458,7 @@ def run_plugin(
     Returns
     -------
     tuple:
-        Return code, and the return value of the plugin
+        Return code, and the return value of the plugin.
 
 
     Example

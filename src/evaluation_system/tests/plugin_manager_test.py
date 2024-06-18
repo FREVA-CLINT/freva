@@ -16,14 +16,12 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from evaluation_system.api.plugin_manager import (
+from evaluation_system.api.plugin_manager import (  # _PluginStateHandle,
     CommandConfig,
-    PluginAbstract,
     PluginMetadata,
-    _PluginStateHandle,
 )
-from evaluation_system.misc.exceptions import ConfigurationException
-from evaluation_system.model.user import User
+
+# from evaluation_system.model.user import User
 
 # from unittest.mock import MagicMock, patch
 

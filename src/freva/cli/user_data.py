@@ -22,7 +22,7 @@ from evaluation_system.misc.exceptions import ValidationError
 class IndexData(BaseParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Index existing user project data to the databrowser"
+    desc = "Index existing user project data to the databrowser."
 
     def __init__(self, subparser: argparse.ArgumentParser):
         super().__init__(subparser)
@@ -82,7 +82,7 @@ class IndexData(BaseParser):
 class AddData(BaseParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Add new user project data to the databrowser"
+    desc = "Add new user project data to the databrowser."
 
     def __init__(self, subparser: argparse.ArgumentParser):
         super().__init__(subparser)
@@ -98,7 +98,7 @@ class AddData(BaseParser):
             metavar="paths",
             help=(
                 "Filename(s) or Directories that are going to be added to the"
-                "databrowser"
+                "databrowser."
             ),
         )
         self.parser.add_argument(
@@ -114,7 +114,7 @@ class AddData(BaseParser):
             "--override",
             "--overwrite",
             action="store_true",
-            help="Replace existing files in the user data structure",
+            help="Replace existing files in the user data structure.",
             default=False,
         )
         self.parser.add_argument(
@@ -126,7 +126,7 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <experiment> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -135,7 +135,7 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <institute> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -143,7 +143,8 @@ class AddData(BaseParser):
             type=str,
             default=None,
             help=(
-                "Set the <model> information if they can't be found in the " "meta data"
+                "Set the <model> information if they can't be found in the "
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -152,7 +153,7 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <variable> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -162,7 +163,7 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <time_frequency> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -171,7 +172,7 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <ensemble> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
@@ -181,14 +182,16 @@ class AddData(BaseParser):
             default=None,
             help=(
                 "Set the <cmor-table> information if they can't be found in the "
-                "meta data"
+                "meta data."
             ),
         )
         self.parser.add_argument(
             "--realm",
             type=str,
             default=None,
-            help=("Set the <realm> information if they can't be found in the metadata"),
+            help=(
+                "Set the <realm> information if they can't be found in the metadata."
+            ),
         )
         self.parser.add_argument(
             "--debug",
@@ -234,7 +237,7 @@ class AddData(BaseParser):
 class DeleteData(BaseParser):
     """CLI class that deals with indexing the data."""
 
-    desc = "Delete existing user project data from the databrowser"
+    desc = "Delete existing user project data from the databrowser."
 
     def __init__(self, subparser: argparse.ArgumentParser):
         self.parser = subparser
@@ -243,7 +246,7 @@ class DeleteData(BaseParser):
             nargs="+",
             type=Path,
             metavar="paths",
-            help="The user directory(s) that needs to be crawled",
+            help="The user directory(s) that needs to be crawled.",
         )
         self.parser.add_argument(
             "--delete-from-fs",
@@ -277,7 +280,7 @@ class DeleteData(BaseParser):
 class Cli(SubCommandParser):
     """Class that constructs the Data Crawler Argument Parser."""
 
-    desc = "Update users project data"
+    desc = "Update users project data."
 
     def __init__(
         self,

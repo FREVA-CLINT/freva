@@ -17,6 +17,7 @@ from evaluation_system.tests.mocks.dummy import DummyPlugin
 
 
 def test_freva_history_method(dummy_history, dummy_user):
+
     from freva import history
 
     config_dict = {

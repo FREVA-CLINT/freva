@@ -8,13 +8,19 @@ What's new
 v2406.0.0
 ~~~~~~~~~
 
+New Features
+++++++++++++
+- The history method and cli history command can expand the query
+  to other user with ``user-name=<username>`` (for all users, ``user-name=all``)
+  in the python module or ``--user-name`` in the cli.
+
 Bug fixes
 +++++++++
 
 - Fixed plugin batchmode submit bug. Batchmode plugins did not pick up the
   correct evaluation system config file. This has been fixed now.
 - Revised minor typographical errors in the documentation and code comments.
-- Created a standard_main function in `utils.py` for cli
+- Created a standard_main function in ``utils.py`` for cli
 
 Documentations
 ++++++++++++++
@@ -112,7 +118,7 @@ New Features
 ++++++++++++
 - User data can be ingested also if not all data files match directory reference
   standard.
-- A new databrowser key (uri) was added that representing the object storage
+- A new databrowser key (uri) was added which represents the object storage
   where the data is stored.
 
 Breaking changes

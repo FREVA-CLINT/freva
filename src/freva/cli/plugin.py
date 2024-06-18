@@ -61,14 +61,14 @@ class Cli(BaseParser):
             "tool-name",
             nargs="?",
             metavar="plugin_name",
-            help="Plugin name",
+            help="Plugin name.",
             default=None,
         )
         self.parser.add_argument(
             "--repo-version",
             default=False,
             action="store_true",
-            help="Show the version number from the repository",
+            help="Show the version number from the repository.",
         )
         self.parser.add_argument(
             "--caption",

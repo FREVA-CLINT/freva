@@ -354,20 +354,20 @@ class BaseCompleter:
     def arg_to_dict(
         args: Optional[list[str]], append: bool = False
     ) -> dict[str, list[str]]:
-        """Convert a parsed arguments with key=value pairs to a dictionary.
+        """Convert a parsed arguments with ``key=value`` pairs to a dictionary.
 
         Parameters:
         ----------
         args:
             Collection of arguments that are converted to dict, the arguments
-            should be of form key=value
+            should be of form ``key=value``.
         append:
             If a key occurs twice convert first value to list and append second
             value to list, the default behaviour is updating the entry with
-            the second value
+            the second value.
         Returns:
         --------
-        dict: Dictionary representation of key=value pairs
+        dict: Dictionary representation of ``key=value`` pairs.
         """
         out_dict: dict[str, list[str]] = {}
         for arg in args or []:
@@ -434,18 +434,18 @@ class BaseCompleter:
             description="Get choices for command line arguments"
         )
         parser.add_argument(
-            "command", help="First command, freva, freva-histor etc", type=str
+            "command", help="First command, freva, freva-history etc.", type=str
         )
         parser.add_argument("--shell", help="Shell in use", default="bash", type=str)
         parser.add_argument(
             "--strip",
-            help="Do not print options starting with -",
+            help="Do not print options starting with - .",
             default=False,
             action="store_true",
         )
         parser.add_argument(
             "--flags-only",
-            help="Only print options starting with -",
+            help="Only print options starting with - .",
             default=False,
             action="store_true",
         )
@@ -478,7 +478,7 @@ def print_choices(arguments: list[str]) -> None:
     Parameters:
     -----------
     arguments:
-        List of command line arguments, that are evaluated by the choice printer
+        List of command line arguments, that are evaluated by the choice printer.
     """
     argv = [arg.strip() for arg in arguments if arg.strip()]
     comp = BaseCompleter.parse_choices(argv)

@@ -10,6 +10,7 @@ import lazy_import
 from evaluation_system.misc import logger
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
+from evaluation_system.model.user import User
 
 __all__ = ["history"]
 
@@ -25,6 +26,7 @@ def history(
     return_results: bool = False,
     return_command: bool = False,
     _return_dict: bool = True,
+    user_name: Optional[str] = None,
 ) -> Union[list[Any], dict[str, Any]]:
     """Get access to the configurations of previously applied freva plugins.
 
@@ -34,11 +36,6 @@ def history(
 
     Parameters
     ----------
-    full_text: bool, default: False
-      Get the full configuration.
-    return_command: bool, default: False
-      Show Freva commands belonging to the history entries instead
-      of the entries themselves.
     limit: int, default: 10
       Limit the number of entries to be displayed.
     plugin: str, default: None
@@ -48,15 +45,18 @@ def history(
     until: str, datetime.datetime, default: None
       Retrieve entries younger than date, see hint on date format below.
     entry_ids: list, default: None
-       Select entries whose ids are in "ids",
+       Select entries whose ids are in "ids".
     full_text: bool, default: False
       Show the complete configuration.
     return_results: bool, default: False
       Also return the plugin results.
     return_command: bool, default: False
-      Return the commands instead of history objects
+      Return the commands instead of history objects.
+    user_name: str, default: None
+      Select entries belonging to another user (e.g., user_name="<username>")
+      or all users (all or *).
     _return_dict: bool, default: True
-      Return a dictionary representation, this is only for internal use
+      Return a dictionary representation, this is only for internal use.
 
     Returns
     -------
@@ -66,7 +66,7 @@ def history(
     Example
     -------
 
-    Get the last three history entries
+    Get the last three history entries:
 
     .. execute_code::
 
@@ -95,6 +95,7 @@ def history(
             f"{prefix}, limit={limit}, since={since},"
             f" until={until}, entry_ids={entry_ids}"
         )
+
     rows = pm.get_history(
         user=None,
         plugin_name=plugin,
@@ -102,7 +103,9 @@ def history(
         since=since,
         until=until,
         entry_ids=entry_ids,
+        user_name=user_name,
     )
+
     if rows:
         # pass some option for generating the command string
         if return_command:

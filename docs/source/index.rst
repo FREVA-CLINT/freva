@@ -38,9 +38,9 @@ science community. With help of Freva researchers can:
 - create a common interface for user defined data analysis tools.
 - apply data analysis tools in a reproducible manner.
 
-Data analysis is realised by user developed data analysis plugins. These plugins
+Data analysis is performed using user-developed data analysis plugins. These plugins
 are code agnostic, meaning that users don't have to rewrite the core of their
-plugins to make them work with Freva. All that Freva does is providing a user
+plugins to make them work with Freva. All Freva does is provide a user
 interface for the plugins.
 
 Currently Freva comes in three different flavours:

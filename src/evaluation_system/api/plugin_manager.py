@@ -1014,8 +1014,9 @@ def get_history(
     until: Optional[str] = None,
     entry_ids: Optional[list[int]] = None,
     user: Optional[User] = None,
+    user_name: Optional[str] = None,
 ) -> QuerySet[History]:
-    """Returns the history from the given user.
+    """Returns the history of all users.
 
     This is just a wrapper for the defined db interface accessed via the
     user object. See :class:`evaluation_system.model.db.UserDB.getHistory`
@@ -1034,25 +1035,28 @@ def get_history(
     entry_ids
         Result entry IDs to filter for.
     user
+        User object to query results for
+    user_name
         User to get plugins results for.
-
     Returns
     -------
     QuerySet[History]
         Results from the database query.
     """
     user = user or User()
-
+    user_name = user_name or user.getName()
+    if user_name in ["*", "all"]:
+        user_name = None
     if plugin_name is not None:
         plugin_name = plugin_name.lower()
 
     return user.getUserDB().getHistory(
-        plugin_name,
-        limit,
+        tool_name=plugin_name,
+        limit=limit,
         since=since,
         until=until,
         entry_ids=entry_ids,
-        uid=user.getName(),
+        uid=user_name,
     )
 
 

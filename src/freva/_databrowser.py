@@ -205,7 +205,7 @@ def facet_search(
     Returns
     -------
     dict[str, list[str]]:
-        Dictionary with a list search facet values for each search facet key
+        Dictionary with a list search facet values for each search facet key.
 
 
     Example
@@ -228,7 +228,7 @@ def facet_search(
         model = list(freva.facet_search(project="obs*", time="2016-09-02T22:10"))
         print(model)
 
-    Reverse search: retrieving meta data from a known file
+    Reverse search: retrieving meta data from a known file.
 
     .. execute_code::
 

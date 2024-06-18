@@ -127,7 +127,7 @@ def test_run_pyclientplugin(dummy_history):
 
 
 def test_plugin_status(dummy_env, caplog) -> None:
-    """Test the plugin status quries."""
+    """Test the plugin status queries."""
     import os
 
     import freva
@@ -167,7 +167,7 @@ def test_plugin_output(dummy_history) -> None:
 
 
 def test_empty_status(dummy_history, capsys) -> None:
-    """Test the plugin status quries."""
+    """Test the plugin status queries."""
     import freva
 
     res = freva.PluginStatus(12345)

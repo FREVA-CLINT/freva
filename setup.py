@@ -177,6 +177,7 @@ setup(
             "sphinx-copybutton",
             "xarray",
             "h5netcdf",
+            "mock",
         ],
         "test": [
             "allure-pytest",
