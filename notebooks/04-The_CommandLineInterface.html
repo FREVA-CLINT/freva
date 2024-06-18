@@ -487,18 +487,18 @@ document.write(`
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-usage: freva [-h] [-V] {plugin,databrowser,user-data,history,esgf} ...
+usage: freva [-h] [-V] {plugin,history,user-data,esgf,databrowser} ...
 
 Free EVAluation system framework (freva)
 
 positional arguments:
-  {plugin,databrowser,user-data,history,esgf}
+  {plugin,history,user-data,esgf,databrowser}
                         Available sub-commands:
     plugin              Apply data analysis plugin.
-    databrowser         Find data in the system.
-    user-data           Update users project data.
     history             Read the plugin application history.
+    user-data           Update users project data.
     esgf                Search/Download ESGF the data catalogue.
+    databrowser         Find data in the system.
 
 options:
   -h, --help            show this help message and exit
@@ -957,24 +957,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&#34;[-\d]+&#34;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 46 seconds
-Process ForkPoolWorker-1:
-Traceback (most recent call last):
-  File &#34;/usr/share/miniconda/envs/docs/lib/python3.12/multiprocessing/process.py&#34;, line 314, in _bootstrap
-    self.run()
-  File &#34;/usr/share/miniconda/envs/docs/lib/python3.12/multiprocessing/process.py&#34;, line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File &#34;/usr/share/miniconda/envs/docs/lib/python3.12/multiprocessing/pool.py&#34;, line 114, in worker
-    task = get()
-           ^^^^^
-  File &#34;/usr/share/miniconda/envs/docs/lib/python3.12/multiprocessing/queues.py&#34;, line 386, in get
-    with self._rlock:
-  File &#34;/usr/share/miniconda/envs/docs/lib/python3.12/multiprocessing/synchronize.py&#34;, line 98, in __exit__
-    return self._semlock.__exit__(*args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File &#34;/home/runner/work/freva/freva/src/evaluation_system/api/plugin_manager.py&#34;, line 157, in _update_plugin_state_in_db_and_quit
-    raise KeyboardInterrupt
-KeyboardInterrupt
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 45 seconds
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -994,7 +977,7 @@ KeyboardInterrupt
 Scheduled job with history id: 2130
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-4721.out
+tail -f /tmp/share/slurm/animator/Animator-4715.out
 </pre></div></div>
 </div>
 </section>
@@ -1014,9 +997,9 @@ tail -f /tmp/share/slurm/animator/Animator-4721.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[15:38:10]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=50258;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=474701;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
+<span class="ansi-cyan-fg">[16:44:49]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>,  ]8;id=816034;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=390878;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-magenta-fg">None</span>
-2115) dummyplugin [2024-06-18 15:32:05] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2024-06-18 16:38:48] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1032,7 +1015,7 @@ tail -f /tmp/share/slurm/animator/Animator-4721.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[15:38:12]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=509830;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=272337;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
+<span class="ansi-cyan-fg">[16:44:50]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, ]8;id=645394;file:///home/runner/work/freva/freva/src/freva/_history.py\_history.py]8;;\:]8;id=933626;file:///home/runner/work/freva/freva/src/freva/_history.py#94\94]8;;\
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-bold">[</span><span class="ansi-green-fg">&#39;1&#39;</span><span class="ansi-bold">]</span>
 </pre></div></div>
 </div>
