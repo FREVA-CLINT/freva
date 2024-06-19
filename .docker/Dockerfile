@@ -8,6 +8,9 @@ ARG binder="true"
 ENV SOLR_HOME=/opt/evaluation_system/.solr \
     MYSQL_HOME=/tmp/mysql\
     MYSQL_PORT=3306\
+    MARIADB_DATABASE=freva\
+    MARIADB_USER=freva\
+    MARIADB_PASSWORD=T3st\
     MARIADB_ROOT_PASSWORD=T3st\
     IS_BINDER=$binder \
     EVALUATION_SYSTEM_CONFIG_FILE=/opt/evaluation_system/share/freva/evaluation_system.conf\
@@ -30,6 +33,7 @@ COPY --from=solr:latest /var/solr/ /var/solr/
 COPY --from=condaforge/mambaforge:latest /opt/conda /opt/conda
 COPY . /tmp/evaluation_system
 RUN set -x && \
+  if groupdel -f ubuntu; then echo 'ubuntu group removed'; fi && \
   groupadd -r --gid  1000 freva && \
   groupadd -r --gid  8983 solr && \
   adduser --uid 1001 --gid 1000 --gecos "Default user" \
@@ -55,7 +59,7 @@ RUN set -x && \
   fi &&\
   rm -rf /opt/conda &&\
   mkdir -p ${EVAL_HOME}/bin ${EVAL_HOME}/share/freva /mnt/freva_plugins \
-  ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR} ${MYSQL_HOME}/tmpl &&\
+     ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR} ${MYSQL_HOME}/tmpl &&\
   mv /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ && \
   cp /tmp/evaluation_system/.docker/evaluation_system.conf ${EVAL_HOME}/share/freva/ &&\
   cat /tmp/evaluation_system/compose/drs_config.toml |sed 's#.docker/data#/mnt/data4freva#g' > ${EVAL_HOME}/share/freva/drs_config.toml &&\
@@ -68,7 +72,6 @@ RUN set -x && \
   mv /tmp/evaluation_system/compose/dummy_user_data.py ${EVAL_HOME}/ &&\
   chmod -R 775 /mnt/data4freva /var/lib/mysql &&\
   chmod +x /opt/evaluation_system/bin/* &&\
-  mv /tmp/evaluation_system/.docker/*.sql /docker-entrypoint-initdb.d/ &&\
   mv /tmp/evaluation_system/compose/config/mysql/*.sql /docker-entrypoint-initdb.d/ &&\
   /opt/solr/docker/scripts/init-var-solr && \
   /opt/solr/docker/scripts/precreate-core latest &&\
@@ -80,27 +83,18 @@ RUN set -x && \
   mv /var/solr ${SOLR_HOME} &&\
   ln -s ${SOLR_HOME} /var/solr &&\
   chown -R freva:freva ${MYSQL_HOME} &&\
-  echo "[mariadbd]" > /etc/mysql/my.cnf &&\
-  echo "user            = freva" >> /etc/mysql/my.cnf &&\
-  echo "port            = ${MYSQL_PORT}" >> /etc/mysql/my.cnf &&\
-  echo "datadir         = ${MYSQL_DATA_DIR}" >> /etc/mysql/my.cnf &&\
-  echo "socket          = ${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock" >> /etc/mysql/my.cnf &&\
-  echo "log-error       = ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err" >> /etc/mysql/my.cnf &&\
-  echo "max_connections = 10" >> /etc/mysql/my.cnf &&\
-  echo "key_buffer_size = 8M" >> /etc/mysql/my.cnf &&\
-  echo "FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY 'T3st';" > /tmp/set_root_pw &&\
-  echo "set -e" > /tmp/mysql_init &&\
-  echo "mariadb-install-db" >> /tmp/mysql_init &&\
-  echo "nohup mariadbd --skip-grant-tables &" >> /tmp/mysql_init &&\
-  echo "mariadb-admin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping || exit 1" >> /tmp/mysql_init &&\
-  bash /tmp/mysql_init && rm /tmp/mysql_init &&\
-  cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err &&\
-  mariadb -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
-  mariadb -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
-  mariadb -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
+  MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf
+  echo "[mariadbd]" > $MARIADB_CONF_FILE &&\
+  echo "user            = freva" >> $MARIADB_CONF_FILE &&\
+  echo "datadir         = ${MYSQL_DATA_DIR}" >> $MARIADB_CONF_FILE &&\
+  echo "log-error       = ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err" >> $MARIADB_CONF_FILE &&\
+  echo "max_connections = 10" >> $MARIADB_CONF_FILE &&\
+  echo "key_buffer_size = 8M" >> $MARIADB_CONF_FILE &&\
+  echo "[client-server]" >> $MARIADB_CONF_FILE &&\
+  echo "port            = ${MYSQL_PORT}" >> $MARIADB_CONF_FILE &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
-  rm -fr /tmp/set_root_pw /tmp/evaluation_system
+  rm -fr /tmp/evaluation_system
 EXPOSE 8888
 USER freva
 WORKDIR /home/freva
