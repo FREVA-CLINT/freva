@@ -30,9 +30,9 @@ COPY --from=solr:latest /var/solr/ /var/solr/
 COPY --from=condaforge/mambaforge:latest /opt/conda /opt/conda
 COPY . /tmp/evaluation_system
 RUN set -x && \
-  groupadd -r --gid  1001 freva && \
+  groupadd -r --gid  1000 freva && \
   groupadd -r --gid  8983 solr && \
-  adduser --uid 1001 --gid 1001 --gecos "Default user" \
+  adduser --uid 1001 --gid 1000 --gecos "Default user" \
   --shell /bin/bash --disabled-password freva && \
   usermod -aG solr,mysql freva &&\
   if [ "$binder" = "true" ]; then\
@@ -53,8 +53,7 @@ RUN set -x && \
   else\
      /opt/conda/bin/conda create -y -q -c conda-forge make pip git conda -p /opt/evaluation_system;\
   fi &&\
-  rm -rf /opt/conda
-RUN set -e &&\
+  rm -rf /opt/conda &&\
   mkdir -p ${EVAL_HOME}/bin ${EVAL_HOME}/share/freva /mnt/freva_plugins \
   ${MYSQL_LOGS_DIR} ${SOLR_LOGS_DIR} ${MYSQL_DATA_DIR} ${MYSQL_HOME}/tmpl &&\
   mv /tmp/evaluation_system/src/evaluation_system/tests/mocks/bin/* /usr/local/bin/ && \
