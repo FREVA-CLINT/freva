@@ -83,7 +83,7 @@ RUN set -x && \
   mv /var/solr ${SOLR_HOME} &&\
   ln -s ${SOLR_HOME} /var/solr &&\
   chown -R freva:freva ${MYSQL_HOME} &&\
-  MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf
+  MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf && \
   echo "[mariadbd]" > $MARIADB_CONF_FILE &&\
   echo "user            = freva" >> $MARIADB_CONF_FILE &&\
   echo "datadir         = ${MYSQL_DATA_DIR}" >> $MARIADB_CONF_FILE &&\
