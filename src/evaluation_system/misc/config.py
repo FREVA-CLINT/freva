@@ -18,7 +18,6 @@ from typing import Optional, Sequence, Union
 import appdirs
 import requests
 import toml
-
 from evaluation_system.misc import _ConfigWrapper
 from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
@@ -363,4 +362,6 @@ def get_drs_config():
     )
     with open(drs_config, "r") as drs_file:
         _drs_config = toml.load(drs_file)
+    for key in _drs_config:
+        _drs_config[key].setdefault("root_path", _drs_config[key].get("root_dir", ""))
     return _drs_config

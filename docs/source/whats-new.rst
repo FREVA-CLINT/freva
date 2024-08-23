@@ -6,6 +6,15 @@ What's new
    :titlesonly:
 
 
+v2408.0.0
+~~~~~~~~~
+
+Internal Changes
+++++++++++++++++
+- Change ``root_dir`` -> ``root_path`` in DRS specs.
+
+
+
 v2406.0.1
 ~~~~~~~~~
 
