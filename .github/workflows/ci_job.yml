@@ -57,7 +57,7 @@ jobs:
       -
         name: Set up services
         run: |
-          docker-compose up -d --remove-orphans
+          docker compose up -d --remove-orphans
       -
         name: Install dependencies on python ${{matrix.python-version}}
         run: |
@@ -98,7 +98,7 @@ jobs:
       -
         name: Set up services
         run: |
-          docker-compose up -d --remove-orphans
+          docker compose up -d --remove-orphans
       -
         name: Preparing docs
         run: |
