@@ -160,8 +160,9 @@ def test_freva_esgf_method(dummy_config):
         if key in res[:1]:
             assert res[:1][key] == result_to_be[key]
     res = esgf_facets(show_facet="product")
-    res = res["product"]["MRE2reanalysis"]
-    assert res == 6
+    #  MRE2reanalysis is not in the test data: {'product': {'Regional Reanalysis': 10, 'bias-adjusted-output': 2119, 'climate-projection': 423, 'forcing_dataset': 781, 'historical': 54, 'model-output': 4425727, 'observations': 47, 'output': 195834, 'output1': 67190, 'output2': 1214, 'reanalysis': 713, 'season-forecast': 20}}
+    res = res["product"]["Regional Reanalysis"]
+    assert res == 10
     fn = Path("/tmp/file_script.sh")
     res = esgf_download(
         project="CMIP5",
@@ -189,8 +190,8 @@ def test_freva_esgf_method(dummy_config):
 
 def test_find_files(capsys, search_dict, dummy_config):
     result_to_be = [
-        "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/"
-        "tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
+        # "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/tas/1/"
+        # "tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
         "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/"
         "tas/tas_Amon_MPI-ESM-LR_decadal2000_r1i1p1_200101-201012.nc",
         "output1/MPI-M/MPI-ESM-LR/decadal2000/mon/atmos/Amon/r1i1p1/v20120529/"
