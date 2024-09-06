@@ -1176,7 +1176,7 @@ def get_command_string_from_config(
     ]
     for key, value in config["args"].items():
         if isinstance(value, list):
-            result.append(f"{key}={','.join(str(value))}")
+            result.append(f"{key}={','.join(map(str, value))}")
         elif isinstance(value, bool):
             result.append(f"{key}={str(value).lower()}")
         else:
