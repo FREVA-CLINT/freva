@@ -5,18 +5,17 @@ if [ "$VERBOSE" == "yes" ];then
 fi
 source /usr/local/bin/docker-entrypoint.sh
 # call main bits of the mariadb entrypoint to have DB initialized
-docker_setup_env
-docker_create_db_directories
+docker_setup_env "$@"
+docker_create_db_directories "$@"
 # there's no database, so it needs to be initialized
 if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
-        docker_verify_minimum_env
-
-        docker_mariadb_init "$@"
+    docker_verify_minimum_env "$@"
+    docker_mariadb_init "$@"
 elif _check_if_upgrade_is_needed; then
-        docker_mariadb_upgrade "$@"
+    docker_mariadb_upgrade "$@"
 fi
-mariadbd &
-until healthcheck.sh --connect --innodb_initialized;
+mariadbd --user=${MARIADB_USER} --datadir=${MYSQL_DATA_DIR} --socket=/run/mysqld/mysqld.sock --console &
+until mariadb-admin ping --user="${MARIADB_USER}" --password="${MARIADB_PASSWORD}" --socket="/run/mysqld/mysqld.sock" --silent;
 do
     echo "waiting for mariadb"
     sleep 1
