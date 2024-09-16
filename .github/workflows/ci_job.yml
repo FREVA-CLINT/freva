@@ -61,6 +61,7 @@ jobs:
       -
         name: Install dependencies on python ${{matrix.python-version}}
         run: |
+          python -m pip install dask==2024.8.0
           python3 -m pip install -e .[test]
       -
         name: Running tests for python ${{ matrix.python-version }}
@@ -94,7 +95,7 @@ jobs:
       -
         name: Install freva
         run: |
-          conda create -c conda-forge -n docs -y -q python==3.12 pip cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient
+          conda create -c conda-forge -n docs -y -q python==3.12 pip cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient dask==2024.8.0
           conda run -n docs pip install -e .[test]
       -
         name: Set up services

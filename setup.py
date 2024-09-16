@@ -130,7 +130,7 @@ setup(
     install_requires=[
         "appdirs",
         "GitPython",
-        "dask==2024.8.0",
+        "dask",
         "Django",
         "humanize",
         "h5netcdf",
