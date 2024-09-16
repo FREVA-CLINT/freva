@@ -9,7 +9,7 @@ parts_time = "start_time-end_time"
 drs_format="custom"
 
 [crawl_my_data]
-root_dir = "/tmp/user_data"
+root_path = "/tmp/user_data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable"
