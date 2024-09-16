@@ -25,14 +25,14 @@ test_coverage:
 
 prepdocs:
 	rm -rf /tmp/animator
-	python -m pip install -e .[docs]
+	python3 -m pip install -e .[docs]
 	git clone --recursive https://gitlab.dkrz.de/freva/plugins4freva/animator.git /tmp/animator
 	mkdir -p /tmp/animator/plugin_env/bin
 	ln -s $(PYTHON3) /tmp/animator/plugin_env/bin/python
-	python -m ipykernel install --user --name freva \
+	python3 -m ipykernel install --user --name freva \
 		--env EVALUATION_SYSTEM_CONFIG_FILE $(EVALUATION_SYSTEM_CONFIG_FILE) \
 		--env EVALUATION_SYSTEM_PLUGINS $(EVALUATION_SYSTEM_PLUGINS)
-	python -m bash_kernel.install
+	python3 -m bash_kernel.install
 	rm -rf docs/source/APIRef.rst
 	curl -Ls -o docs/source/api/APIRef.rst https://raw.githubusercontent.com/FREVA-CLINT/freva-nextgen/main/docs/source/databrowser/APIRef.rst
 	make dummy-data
@@ -44,8 +44,8 @@ docs:
 
 dummy-data:
 	compose/dummy_plugin_runs.sh
-	python compose/dummy_user_data.py
-	python compose/solr/ingest_dummy_data.py
+	python3 compose/dummy_user_data.py
+	python3 compose/solr/ingest_dummy_data.py
 
 lint:
 	mypy --install-types --non-interactive
