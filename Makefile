@@ -14,10 +14,10 @@ install:
 	python3 -m pip install .[test]
 
 test:
-	python3 -m pytest -s -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
+	python3 -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
 
 test_coverage:
-	python3 -m pytest -s -vv \
+	python3 -m pytest -vv \
 		--nbval --current-env --cov=$(PWD)/src --cov-report=html:coverage_report \
 	    --junitxml report.xml --current-env --cov-report xml \
 		$(PWD)/src/evaluation_system/tests

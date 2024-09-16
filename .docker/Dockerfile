@@ -32,7 +32,6 @@ COPY --from=solr:latest /opt/java/ /opt/java/
 COPY --from=solr:latest /var/solr/ /var/solr/
 COPY --from=condaforge/mambaforge:latest /opt/conda /opt/conda
 COPY . /tmp/evaluation_system
-ENV LD_LIBRARY_PATH="/usr/lib/mysql/plugin/:${LD_LIBRARY_PATH}"
 RUN set -x && \
   if groupdel -f ubuntu; then echo 'ubuntu group removed'; fi && \
   groupadd -r --gid  1000 freva && \
