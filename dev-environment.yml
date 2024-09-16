@@ -15,6 +15,7 @@ dependencies:
   - mysqlclient
   - pip:
       - -e .[test]
+  - freva
   - pytest
   - pytest-env
   - pytest-cov
