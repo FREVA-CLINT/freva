@@ -236,7 +236,7 @@ Searching for datasets locations
             import requests
             response = requests.get(
                 "https://www.freva.dkrz.de/api/databrowser/data_search/freva/file",
-                pramas={"product": "EUR-11", "fs_type": "swift"}
+                params={"product": "EUR-11", "fs_type": "swift"}
             )
             data = list(response.iter_lines(decode_unicode=True))
 
@@ -468,7 +468,7 @@ Searching for metadata
             import requests
             response = requests.get(
                 "https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file",
-                pramas={"product": "EUR-11"}
+                params={"product": "EUR-11"}
             )
             data = response.json()
 
@@ -678,7 +678,7 @@ Generating an intake-esm catalogue
             import intake
             response = requests.get(
                 "https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file",
-                pramas={"product": "EUR-11"}
+                params={"product": "EUR-11"}
             )
             cat = intake.open_esm_datastore(cat)
 
@@ -834,7 +834,7 @@ Creating zarr endpoints for streaming data
            import intake
            response = requests.get(
                "https://www.freva.dkrz.de/api/databrowser/load/freva",
-               pramas={"dataset": "cmip6-fs"},
+               params={"dataset": "cmip6-fs"},
                headers={"Authorization": "Bearer YOUR_ACCESS_TOKEN"},
                stream=True,
            )
