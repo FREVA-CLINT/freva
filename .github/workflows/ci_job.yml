@@ -39,7 +39,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
     steps:
       -
-        name: Checkout
+        name: Ceckout
         uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -61,12 +61,11 @@ jobs:
       -
         name: Install dependencies on python ${{matrix.python-version}}
         run: |
-          conda create -c conda-forge -n tests -y -q python pip cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient
-          conda run -n tests python -m pip install -e .[test] dask==2024.8.0
+          python3 -m pip install -e .[test]
       -
         name: Running tests for python ${{ matrix.python-version }}
         run: |
-          conda run -n tests make test_coverage
+          make test_coverage
       -
         name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -95,7 +94,7 @@ jobs:
       -
         name: Install freva
         run: |
-          conda create -c conda-forge -n docs -y -q cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient dask==2024.8.0 freva
+          conda create -c conda-forge -n docs -y -q freva cartopy make
       -
         name: Set up services
         run: |
