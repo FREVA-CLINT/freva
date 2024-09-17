@@ -4,16 +4,15 @@ if [ "$VERBOSE" == "yes" ];then
     set -xe
 fi
 source /usr/local/bin/docker-entrypoint.sh
-set -- mariadbd
 # call main bits of the mariadb entrypoint to have DB initialized
-docker_setup_env "$@"
-docker_create_db_directories "$@"
+docker_setup_env "mariadbd"
+docker_create_db_directories "mariadbd"
 # there's no database, so it needs to be initialized
 if [ -z "$DATABASE_ALREADY_EXISTS" ]; then
-    docker_verify_minimum_env "$@"
-    docker_mariadb_init "$@"
+    docker_verify_minimum_env "mariadbd"
+    docker_mariadb_init "mariadbd"
 elif _check_if_upgrade_is_needed; then
-    docker_mariadb_upgrade "$@"
+    docker_mariadb_upgrade "mariadbd"
 fi
 mariadbd --user=${MARIADB_USER} --datadir=${MYSQL_DATA_DIR} --socket=/tmp/mysql.sock --console &
 until mariadb-admin ping --user="${MARIADB_USER}" --password="${MARIADB_PASSWORD}" --socket="/tmp/mysql.sock" --silent;
@@ -38,4 +37,4 @@ if [ "${IS_BINDER}" = "true" ];then
         freva plugin dummyplugin the_number=$i
     done
 fi
-exec "/opt/evaluation_system/bin/loadfreva.sh"
+exec "$@"
