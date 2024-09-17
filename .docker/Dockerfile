@@ -98,5 +98,4 @@ RUN set -x && \
 EXPOSE 8888
 USER freva
 WORKDIR /home/freva
-CMD ["/opt/evaluation_system/bin/loadfreva.sh"]
 ENTRYPOINT ["/opt/evaluation_system/bin/docker-entrypoint.sh"]

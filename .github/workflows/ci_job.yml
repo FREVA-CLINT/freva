@@ -1,6 +1,5 @@
 name: CI Tests
 run-name: ${{ github.actor }} is testing the code
-
 # Set the access for individual scopes, or use permissions: write-all
 permissions:
   pull-requests: write
@@ -8,7 +7,6 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -70,7 +68,6 @@ jobs:
       -
         name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
-
   docs:
     runs-on: ubuntu-latest
     permissions:
@@ -126,7 +123,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
-
   dependabot:
     name: Merge PR by dependabot
     runs-on: ubuntu-latest
