@@ -40,7 +40,7 @@ RUN set -x && \
   --shell /bin/bash --disabled-password freva && \
   usermod -aG solr,mysql freva &&\
   if [ "$binder" = "true" ]; then\
-     /opt/conda/bin/conda create -y -q -c conda-forge cftime make bash_kernel curl cartopy\
+     /opt/conda/bin/conda create -y -q -c conda-forge cftime make bash_kernel curl mysql-common==8.3.0 mysql-libs=8.3.0 dask==2024.8.0 cartopy\
      h5netcdf netcdf4 ffmpeg pip notebook jupyterlab jupyterhub freva -p /opt/evaluation_system &&\
      /opt/evaluation_system/bin/python -m pip install pint-xarray cf_xarray nc-time-axis &&\
      /opt/evaluation_system/bin/python -m ipykernel install --name freva &&\
@@ -55,7 +55,7 @@ RUN set -x && \
      rm -fr /mnt/freva_plugins/animator/.git/* &&\
      mv config /mnt/freva_plugins/animator/.git/ ;\
   else\
-     /opt/conda/bin/conda create -y -q -c conda-forge make pip git conda curl -p /opt/evaluation_system;\
+     /opt/conda/bin/conda create -y -q -c conda-forge make pip git conda -p /opt/evaluation_system;\
   fi &&\
   rm -rf /opt/conda &&\
   mkdir -p ${EVAL_HOME}/bin ${EVAL_HOME}/share/freva /mnt/freva_plugins \
@@ -73,7 +73,6 @@ RUN set -x && \
   chmod -R 775 /mnt/data4freva /var/lib/mysql &&\
   chmod +x /opt/evaluation_system/bin/* &&\
   mv /tmp/evaluation_system/compose/config/mysql/*.sql /docker-entrypoint-initdb.d/ &&\
-  mv /tmp/evaluation_system/compose/*.sql /docker-entrypoint-initdb.d/ &&\
   /opt/solr/docker/scripts/init-var-solr && \
   /opt/solr/docker/scripts/precreate-core latest &&\
   /opt/solr/docker/scripts/precreate-core files &&\
@@ -84,26 +83,15 @@ RUN set -x && \
   mv /var/solr ${SOLR_HOME} &&\
   ln -s ${SOLR_HOME} /var/solr &&\
   chown -R freva:freva ${MYSQL_HOME} &&\
-  echo "[mariadbd]" > /etc/mysql/my.cnf &&\
-  echo "user            = freva" >> /etc/mysql/my.cnf &&\
-  echo "datadir         = ${MYSQL_DATA_DIR}" >> /etc/mysql/my.cnf &&\
-  echo "log-error       = ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err" >> /etc/mysql/my.cnf &&\
-  echo "socket          = ${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock" >> /etc/mysql/my.cnf &&\
-  echo "max_connections = 10" >> /etc/mysql/my.cnf &&\
-  echo "key_buffer_size = 8M" >> /etc/mysql/my.cnf &&\
-  echo "[client-server]" >> /etc/mysql/my.cnf &&\
-  echo "port            = ${MYSQL_PORT}" >> /etc/mysql/my.cnf &&\
-  # THE FOLLOWING LINES RELATED TO set_root_pw AND mysql_init NOT TO BE REMOVED!
-  echo "FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY 'T3st';" > /tmp/set_root_pw &&\
-  echo "set -e" > /tmp/mysql_init &&\
-  echo "mariadb-install-db" >> /tmp/mysql_init &&\
-  echo "nohup mariadbd --skip-grant-tables &" >> /tmp/mysql_init &&\
-  echo "mariadb-admin --socket=${MYSQL_HOME}/mysql.${MYSQL_PORT}.sock --wait=5 ping || exit 1" >> /tmp/mysql_init &&\
-  bash /tmp/mysql_init &&\
-  cat ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err &&\
-  mariadb -u root -h 127.0.0.1 < /tmp/set_root_pw &&\
-  mariadb -u root -h 127.0.0.1 -pT3st < /docker-entrypoint-initdb.d/create_user.sql &&\
-  mariadb -u root -pT3st -h 127.0.0.1 -D freva < /docker-entrypoint-initdb.d/create_tables.sql &&\
+  export MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf &&\
+  echo "[mariadbd]" > $MARIADB_CONF_FILE &&\
+  echo "user            = freva" >> $MARIADB_CONF_FILE &&\
+  echo "datadir         = ${MYSQL_DATA_DIR}" >> $MARIADB_CONF_FILE &&\
+  echo "log-error       = ${MYSQL_LOGS_DIR}/mysql-${MYSQL_PORT}-console.err" >> $MARIADB_CONF_FILE &&\
+  echo "max_connections = 10" >> $MARIADB_CONF_FILE &&\
+  echo "key_buffer_size = 8M" >> $MARIADB_CONF_FILE &&\
+  echo "[client-server]" >> $MARIADB_CONF_FILE &&\
+  echo "port            = ${MYSQL_PORT}" >> $MARIADB_CONF_FILE &&\
   chown -R freva:freva  ${EVAL_HOME} ${MYSQL_HOME} ${SOLR_HOME} && \
   chmod -R 775 ${MYSQL_HOME} ${SOLR_HOME} && \
   rm -fr /tmp/evaluation_system
