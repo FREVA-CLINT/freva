@@ -30,4 +30,4 @@ if [ "${IS_BINDER}" = "true" ];then
         freva plugin dummyplugin the_number=$i
     done
 fi
-exec "$@"
+exec "/opt/evaluation_system/bin/loadfreva.sh"
