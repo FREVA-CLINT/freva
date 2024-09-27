@@ -8,7 +8,7 @@ h5netcdf==1.2.0
 humanize==4.10.0
 lazy-import==0.2.2
 metadata-inspector==2023.7.7
-mysqlclient==2.2.0
+mysqlclient==2.2.4
 netCDF4==1.6.4
 numpy==2.1.1
 pandas==2.1.1
