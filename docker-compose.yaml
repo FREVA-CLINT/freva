@@ -9,6 +9,12 @@ services:
       MYSQL_ROOT_PASSWORD: test_password_please_ignore
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3      
     volumes:
       - ./compose/config/mysql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
   solr:
