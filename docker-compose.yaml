@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   db:
-    image: mariadb:11.3
+    image: mariadb:latest
     environment:
       MYSQL_USER: freva
       MYSQL_PASSWORD: T3st
