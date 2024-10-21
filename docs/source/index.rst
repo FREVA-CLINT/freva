@@ -25,6 +25,12 @@ Welcome to Freva's documentation!
    :target: https://github.com/FREVA-CLINT/freva/blob/main/LICENSE.md
 
 
+.. note::
+   A new version of Freva is on the way! While it’s still under development,
+   you can already start using it. If your primary focus is searching and
+   accessing data, we highly recommend trying out the new Freva client
+   <https://pypi.org/project/freva-client/>_.
+
 .. image:: _static/freva_flowchart-new.jpg
    :width: 320
    :align: center
@@ -71,6 +77,8 @@ and best practices when it comes to plugin development.
 
 .. seealso::
 
+   `Next Generation Freva <https://pypi.org/project/freva-client/>`_
+        A brand new version of freva.
    `Freva intro talk <https://freva-clint.github.io/Talks/FrevaIntro/index.slides.html#/>`_
         A short introduction given at the Julich computing centre.
    `Freva admin docs <https://freva-deployment.readthedocs.io>`_
