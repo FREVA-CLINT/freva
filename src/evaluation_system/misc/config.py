@@ -18,7 +18,6 @@ from typing import Optional, Sequence, Union
 import appdirs
 import requests
 import toml
-
 from evaluation_system.misc import _ConfigWrapper
 from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
@@ -28,7 +27,9 @@ CONFIG_FILE = _ConfigWrapper(
     os.path.join(sys.prefix, "freva", "evaluation_system.conf")
 )
 
-DIRECTORY_STRUCTURE = Struct(LOCAL="local", CENTRAL="central", SCRATCH="scratch")
+DIRECTORY_STRUCTURE = Struct(
+    LOCAL="local", CENTRAL="central", SCRATCH="scratch"
+)
 """Type of directory structure that will be used to maintain state::
 
     local   := <home>/<base_dir>...
@@ -43,7 +44,9 @@ USER_CONFIG_FILE_LOC = osp.join(
 )
 if Path(USER_CONFIG_FILE_LOC).exists():
     CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
-EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
+EVALUATION_SYSTEM_HOME = (os.sep).join(
+    osp.abspath(__file__).split(osp.sep)[:-4]
+)
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 _PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
 #: config options
@@ -157,22 +160,19 @@ def _get_public_key(
     project_name: str, config_file: Union[str, Path, None] = None
 ) -> str:
     config_ = Path(config_file or _PUBLIC_KEY_DIR / "evaluation_system.conf")
-    key_file = os.environ.get("PUBKEY", None) or config_.parent / f"{project_name}.crt"
-    sha = ""
+    key_file = (
+        os.environ.get("PUBKEY", None)
+        or config_.parent / f"{project_name}.crt"
+    )
+    sha = hashlib.sha512("".encode()).hexdigest()
     try:
         with Path(key_file).open() as f:
-            key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
+            key = "".join(
+                [k.strip() for k in f.readlines() if not k.startswith("-")]
+            )
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
-        warnings.warn(
-            (
-                f"{key_file} not found. Secrets are stored in central vault and a"
-                "public key is needed to open the vault. Without the public key"
-                " you won't be probably be able to establish as database "
-                "connection."
-            ),
-            category=Warning,
-        )
+        pass
     return sha
 
 
@@ -233,7 +233,9 @@ def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
             else:
                 _config.update(config_parser.items(CONFIG_SECTION_NAME))
                 for plugin_section in [
-                    s for s in config_parser.sections() if s.startswith(PLUGINS)
+                    s
+                    for s in config_parser.sections()
+                    if s.startswith(PLUGINS)
                 ]:
                     _config[PLUGINS][plugin_section[len(PLUGINS) :]] = (
                         SPECIAL_VARIABLES.substitute(
@@ -243,7 +245,8 @@ def reloadConfiguration(config_file: Union[str, Path, None] = None) -> None:
 
                 db_hosts = (
                     config_parser[CONFIG_SECTION_NAME]["db.host"],
-                    config_parser[CONFIG_SECTION_NAME]["project_name"] + "_vault",
+                    config_parser[CONFIG_SECTION_NAME]["project_name"]
+                    + "_vault",
                 )
                 # This will look first for secrets set in the config file. It will only
                 # load the public key for the vault if any are missing and it will only
@@ -328,7 +331,8 @@ def get_plugin(plugin_name, config_prop, default=_nothing):
             return default
         else:
             raise ConfigurationException(
-                "No configuration for %s for plug-in %s" % (config_prop, plugin_name)
+                "No configuration for %s for plug-in %s"
+                % (config_prop, plugin_name)
             )
     else:
         raise ConfigurationException("No plug-in named %s" % plugin_name)
@@ -349,7 +353,9 @@ def get_section(section_name, config_file=None):
     try:
         section = dict(conf.items(section_name))
     except NoSectionError:
-        raise NoSectionError(f'There is no "{section_name}" section in config file')
+        raise NoSectionError(
+            f'There is no "{section_name}" section in config file'
+        )
     return SPECIAL_VARIABLES.substitute(section)
 
 
@@ -364,5 +370,7 @@ def get_drs_config():
     with open(drs_config, "r") as drs_file:
         _drs_config = toml.load(drs_file)
     for key in _drs_config:
-        _drs_config[key].setdefault("root_path", _drs_config[key].get("root_dir", ""))
+        _drs_config[key].setdefault(
+            "root_path", _drs_config[key].get("root_dir", "")
+        )
     return _drs_config
