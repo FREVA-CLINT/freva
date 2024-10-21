@@ -18,7 +18,6 @@ from typing import Optional, Sequence, Union
 import appdirs
 import requests
 import toml
-
 from evaluation_system.misc import _ConfigWrapper
 from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
@@ -158,21 +157,13 @@ def _get_public_key(
 ) -> str:
     config_ = Path(config_file or _PUBLIC_KEY_DIR / "evaluation_system.conf")
     key_file = os.environ.get("PUBKEY", None) or config_.parent / f"{project_name}.crt"
-    sha = ""
+    sha = hashlib.sha512("".encode()).hexdigest()
     try:
         with Path(key_file).open() as f:
             key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
-        warnings.warn(
-            (
-                f"{key_file} not found. Secrets are stored in central vault and a"
-                "public key is needed to open the vault. Without the public key"
-                " you won't be probably be able to establish as database "
-                "connection."
-            ),
-            category=Warning,
-        )
+        pass
     return sha
 
 

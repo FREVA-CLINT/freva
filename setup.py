@@ -145,6 +145,7 @@ setup(
         "PyPDF2!=2.10.1",
         "requests",
         "rich",
+        "setuptools",
         "toml",
         "toolz",
         "typing_extensions",
