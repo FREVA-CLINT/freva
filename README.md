@@ -9,6 +9,13 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/FREVA-CLINT/freva/main?labpath=Readme.ipynb)
 [![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/FREVA-CLINT/freva)
 
+ > 💡 A new version of Freva is on the way! While it’s still under development,
+   you can already start using it. If your primary focus is searching and
+   accessing data, we highly recommend trying out the new Freva client
+   (https://pypi.org/project/freva-client/)
+
+
+
 <img src="docs/source/_static/freva_flowchart-new.jpg" alt="Freva" width="400"/>
 
 ## What is Freva ?
