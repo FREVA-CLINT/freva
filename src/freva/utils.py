@@ -382,6 +382,22 @@ class config:
         freva.config("/work/freva/evaluation_system.conf")
         files = sorted(freva.databrowser(project="user-1234", experiment="extremes"))
 
+    .. note::
+        You cannot freshly set a configuration via ``freva.config("/work/freva/evaluation_system.conf")``
+        if there was no previous ones. For that you will need to:
+
+        ::
+
+           # 1. Set up the environment variables:
+           import os
+           os.environ["EVALUATION_SYSTEM_CONFIG_FILE"]="/work/freva/evaluation_system.conf"
+           os.environ["EVALUATION_SYSTEM_CONFIG_DIR"]="/work/freva"
+           # 2. load Freva library:
+           import freva
+
+        Then, you can use :py:class:`freva.config` to switch to a new configuration.
+
+
     """
 
     _original_config_env = os.environ.get(

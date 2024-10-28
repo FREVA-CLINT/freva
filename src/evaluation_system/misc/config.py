@@ -18,6 +18,7 @@ from typing import Optional, Sequence, Union
 import appdirs
 import requests
 import toml
+
 from evaluation_system.misc import _ConfigWrapper
 from evaluation_system.misc import logger as log
 from evaluation_system.misc.exceptions import ConfigurationException
