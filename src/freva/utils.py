@@ -82,9 +82,7 @@ def handled_exception(func: Callable[..., Any]) -> Callable[..., Any]:
             return func(*args, **kwargs)
         except (ImproperlyConfigured, OperationalError):  # prgama: no cover
             # Wrap django error in a more informative exception
-            msg = (
-                "Your freva instance doesn't seem to be properly configured: "
-            )
+            msg = "Your freva instance doesn't seem to be properly configured: "
             raise ConfigurationException(
                 msg + wrong_config_msg[logger.is_cli]
             ) from None
@@ -464,9 +462,7 @@ class config:
     ) -> None:
         os.environ.pop("EVALUATION_SYSTEM_CONFIG_FILE")
         if self._original_config_env:
-            os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = (
-                self._original_config_env
-            )
+            os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
         db_settings.reconfigure_django(self._original_config_env)
         try:
             pm.reload_plugins()
