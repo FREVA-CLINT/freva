@@ -497,7 +497,8 @@ and their search facets.</p>
 <span class="w">        </span><span class="s2">&quot;cmip6&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="s2">&quot;cmip5&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="s2">&quot;cordex&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;nextgems&quot;</span>
+<span class="w">        </span><span class="s2">&quot;nextgems&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;user&quot;</span>
 <span class="w">      </span><span class="p">],</span>
 <span class="w">      </span><span class="nt">&quot;attributes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;freva&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1367,6 +1368,443 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div></div></section>
 </dd></dl>
 
+<p id="databrowser-api-userdata">—</p>
+</section>
+<section id="adding-and-deleting-user-data-in-databrowser">
+<h2>Adding and deleting User Data in Databrowser<a class="headerlink" href="#adding-and-deleting-user-data-in-databrowser" title="Link to this heading">#</a></h2>
+<dl class="http post">
+<dt class="sig sig-object http" id="post--api-databrowser-userdata">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/userdata</span></span><a class="headerlink" href="#post--api-databrowser-userdata" title="Link to this definition">#</a></dt>
+<dd><p>This endpoint allows authenticated users to add metadata about their own data to the databrowser. Users provide a list of metadata entries and optional facets for indexing and searching their datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Reqbody user_metadata<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of metadata entries about the user’s data to be added. Each entry must include the required fields: <strong>file</strong>, <strong>variable</strong>, <strong>time</strong>, and <strong>time_frequency</strong>.</p>
+</dd>
+<dt class="field-even">Reqbody facets<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional key-value pairs representing metadata search attributes. These facets are used for indexing and searching the data.</p>
+</dd>
+<dt class="field-odd">Request Headers<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc7235#section-4.2">Authorization</a></span> – Bearer token for authentication.</p></li>
+<li><p><span><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc7231#section-3.1.1.5">Content-Type</a></span> – application/json</p></li>
+</ul>
+</dd>
+<dt class="field-even">Status Codes<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">202 Accepted</a></span> – Request accepted, returns status message indicating ingestion results.</p></li>
+<li><p><span><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc4918#section-11.2">422 Unprocessable Entity</a></span> – Invalid request parameters.</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a></span> – Failed to add user data due to a server error.</p></li>
+</ul>
+</dd>
+</dl>
+<section id="id12">
+<h3>Example Request<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>The user must authenticate using a valid access token. The metadata entries and facets are included in the JSON body of the request.</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer YOUR_ACCESS_TOKEN</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;user_metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/file1.nc&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tas&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;time_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mon&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;additional_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Sample data file&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;facets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;project&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;institute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;globe&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-response-success">
+<h3>Example Response (Success)<a class="headerlink" href="#example-response-success" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">202</span> <span class="ne">Accepted</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Your data has been successfully added to the databrowser. (Ingested 5 files into Solr and MongoDB)&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-response-no-files">
+<h3>Example Response (No Files)<a class="headerlink" href="#example-response-no-files" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">202</span> <span class="ne">Accepted</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;No data was added to the databrowser. (No files ingested into Solr and MongoDB)&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id13">
+<h3>Example<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>Below you can find example usages of this request in different scripting and programming languages.</p>
+<div class="tabs docutils container" data-tabgroup="">
+<ul class="tabbar">
+<li class="tabbutton selected" data-id="0" onclick="sphinx_code_tabs_onclick(this)">
+Shell</li><li class="tabbutton" data-id="1" onclick="sphinx_code_tabs_onclick(this)">
+Python</li><li class="tabbutton" data-id="2" onclick="sphinx_code_tabs_onclick(this)">
+R</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(this)">
+Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
+C/C++</li></ul><div class="tab codetab selected" data-id="0">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;user_metadata&quot;: [</span>
+<span class="s1">        {</span>
+<span class="s1">            &quot;file&quot;: &quot;/data/file1.nc&quot;,</span>
+<span class="s1">            &quot;variable&quot;: &quot;tas&quot;,</span>
+<span class="s1">            &quot;time&quot;: &quot;[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]&quot;,</span>
+<span class="s1">            &quot;time_frequency&quot;: &quot;mon&quot;,</span>
+<span class="s1">            &quot;additional_info&quot;: &quot;Sample data file&quot;</span>
+<span class="s1">        }</span>
+<span class="s1">    ],</span>
+<span class="s1">    &quot;facets&quot;: {</span>
+<span class="s1">        &quot;project&quot;: &quot;user-data&quot;,</span>
+<span class="s1">        &quot;product&quot;: &quot;new&quot;,</span>
+<span class="s1">        &quot;institute&quot;: &quot;globe&quot;</span>
+<span class="s1">    }</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="1">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
+<span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;user_metadata&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;/data/file1.nc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;variable&quot;</span><span class="p">:</span> <span class="s2">&quot;tas&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;time_frequency&quot;</span><span class="p">:</span> <span class="s2">&quot;mon&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;additional_info&quot;</span><span class="p">:</span> <span class="s2">&quot;Sample data file&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;facets&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;user-data&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;institute&quot;</span><span class="p">:</span> <span class="s2">&quot;globe&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="2">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
+
+<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">)</span>
+<span class="n">body</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">    </span><span class="n">user_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">        </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">            </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/data/file1.nc&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">variable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;tas&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">time_frequency</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mon&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">additional_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Sample data file&quot;</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">),</span>
+<span class="w">    </span><span class="n">facets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">        </span><span class="n">project</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">institute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;globe&quot;</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">POST</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="nf">add_headers</span><span class="p">(</span><span class="n">.headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">),</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">,</span><span class="w"> </span><span class="n">encode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;json&quot;</span><span class="p">)</span>
+<span class="n">content</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;parsed&quot;</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="3">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span>
+
+<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;Authorization&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;Content-Type&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;application/json&quot;</span>
+<span class="p">)</span>
+<span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;user_metadata&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;file&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;/data/file1.nc&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;variable&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;tas&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;time&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;time_frequency&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;mon&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;additional_info&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Sample data file&quot;</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="s">&quot;facets&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;project&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s">&quot;product&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s">&quot;institute&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;globe&quot;</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">))</span>
+
+<span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;POST&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">)</span>
+<span class="n">println</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="4">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;curl/curl.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;YOUR_ACCESS_TOKEN&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;{&quot;</span>
+<span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">user_metadata</span><span class="se">\&quot;</span><span class="s">: [&quot;</span>
+<span class="w">            </span><span class="s">&quot;{&quot;</span>
+<span class="w">                </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">file</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">/data/file1.nc</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">                </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">variable</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">tas</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">                </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">time</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">                </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">time_frequency</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">mon</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">                </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">additional_info</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">Sample data file</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+<span class="w">            </span><span class="s">&quot;}&quot;</span>
+<span class="w">        </span><span class="s">&quot;],&quot;</span>
+<span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">facets</span><span class="se">\&quot;</span><span class="s">: {&quot;</span>
+<span class="w">            </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">project</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">user-data</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">            </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">product</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">new</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">            </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">institute</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">globe</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+<span class="w">        </span><span class="s">&quot;}&quot;</span>
+<span class="w">    </span><span class="s">&quot;}&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Initialize curl</span>
+<span class="w">    </span><span class="n">curl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_init</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">curl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">struct</span><span class="w"> </span><span class="nc">curl_slist</span><span class="w"> </span><span class="o">*</span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">        </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_slist_append</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Content-Type: application/json&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">auth_header</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="w">        </span><span class="n">snprintf</span><span class="p">(</span><span class="n">auth_header</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">auth_header</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Authorization: Bearer %s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">token</span><span class="p">);</span>
+<span class="w">        </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_slist_append</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="n">auth_header</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the URL</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_URL</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set headers</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_HTTPHEADER</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the HTTP method to POST</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_POST</span><span class="p">,</span><span class="w"> </span><span class="mf">1L</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the JSON data to send</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_POSTFIELDS</span><span class="p">,</span><span class="w"> </span><span class="n">json_data</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Perform the request</span>
+<span class="w">        </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_perform</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">res</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CURLE_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;curl_easy_perform() failed: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">curl_easy_strerror</span><span class="p">(</span><span class="n">res</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Clean up</span>
+<span class="w">        </span><span class="n">curl_slist_free_all</span><span class="p">(</span><span class="n">headers</span><span class="p">);</span>
+<span class="w">        </span><span class="n">curl_easy_cleanup</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div></section>
+</dd></dl>
+
+<dl class="http delete">
+<dt class="sig sig-object http" id="delete--api-databrowser-userdata">
+<span class="sig-name descname"><span class="pre">DELETE</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/userdata</span></span><a class="headerlink" href="#delete--api-databrowser-userdata" title="Link to this definition">#</a></dt>
+<dd><p>This endpoint allows authenticated users to delete their previously indexed data from the databrowser. Users specify search keys to identify the data entries they wish to remove.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Reqbody search_keys<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Search keys (key-value pairs) used to identify the data to delete.</p>
+</dd>
+<dt class="field-even">Request Headers<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc7235#section-4.2">Authorization</a></span> – Bearer token for authentication.</p></li>
+<li><p><span><a class="reference external" href="https://www.rfc-editor.org/rfc/rfc7231#section-3.1.1.5">Content-Type</a></span> – application/json</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Status Codes<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.3">202 Accepted</a></span> – User data has been deleted successfully.</p></li>
+<li><p><span><a class="reference external" href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1">500 Internal Server Error</a></span> – Failed to delete user data due to a server error.</p></li>
+</ul>
+</dd>
+</dl>
+<section id="id14">
+<h3>Example Request<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<p>The user must authenticate using a valid access token. The search keys are provided in the JSON body of the request to specify which data entries to delete.</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer YOUR_ACCESS_TOKEN</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;project&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;institute&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;globe&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>Example Response<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">202</span> <span class="ne">Accepted</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User data has been deleted successfully&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h3>Example<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<p>Below you can find example usages of this request in different scripting and programming languages.</p>
+<div class="tabs docutils container" data-tabgroup="">
+<ul class="tabbar">
+<li class="tabbutton selected" data-id="0" onclick="sphinx_code_tabs_onclick(this)">
+Shell</li><li class="tabbutton" data-id="1" onclick="sphinx_code_tabs_onclick(this)">
+Python</li><li class="tabbutton" data-id="2" onclick="sphinx_code_tabs_onclick(this)">
+R</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(this)">
+Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
+C/C++</li></ul><div class="tab codetab selected" data-id="0">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="se">\</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;project&quot;: &quot;user-data&quot;,</span>
+<span class="s1">    &quot;product&quot;: &quot;new&quot;,</span>
+<span class="s1">    &quot;institute&quot;: &quot;globe&quot;</span>
+<span class="s1">}&#39;</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="1">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
+<span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;user-data&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;institute&quot;</span><span class="p">:</span> <span class="s2">&quot;globe&quot;</span>
+<span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="2">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
+
+<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">)</span>
+<span class="n">body</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+<span class="w">    </span><span class="n">project</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">institute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;globe&quot;</span>
+<span class="p">)</span>
+
+<span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">DELETE</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="nf">add_headers</span><span class="p">(</span><span class="n">.headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">),</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">,</span><span class="w"> </span><span class="n">encode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;json&quot;</span><span class="p">)</span>
+<span class="n">content</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;parsed&quot;</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="3">
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span>
+
+<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;Authorization&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;Content-Type&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;application/json&quot;</span>
+<span class="p">)</span>
+<span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="kt">Dict</span><span class="p">(</span>
+<span class="w">    </span><span class="s">&quot;project&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;user-data&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;product&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;new&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;institute&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;globe&quot;</span>
+<span class="p">))</span>
+
+<span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s">&quot;DELETE&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">body</span><span class="p">)</span>
+<span class="n">println</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
+</pre></div>
+</div>
+</div><div class="tab codetab" data-id="4">
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;curl/curl.h&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;YOUR_ACCESS_TOKEN&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;{&quot;</span>
+<span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">project</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">user-data</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">product</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">new</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
+<span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">institute</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">globe</span><span class="se">\&quot;</span><span class="s">&quot;</span>
+<span class="w">    </span><span class="s">&quot;}&quot;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Initialize curl</span>
+<span class="w">    </span><span class="n">curl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_init</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">curl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">struct</span><span class="w"> </span><span class="nc">curl_slist</span><span class="w"> </span><span class="o">*</span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">        </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_slist_append</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Content-Type: application/json&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">auth_header</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="w">        </span><span class="n">snprintf</span><span class="p">(</span><span class="n">auth_header</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">auth_header</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Authorization: Bearer %s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">token</span><span class="p">);</span>
+<span class="w">        </span><span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_slist_append</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span><span class="w"> </span><span class="n">auth_header</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the URL</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_URL</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set headers</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_HTTPHEADER</span><span class="p">,</span><span class="w"> </span><span class="n">headers</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the HTTP method to DELETE</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_CUSTOMREQUEST</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;DELETE&quot;</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Set the JSON data to send</span>
+<span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_POSTFIELDS</span><span class="p">,</span><span class="w"> </span><span class="n">json_data</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// Perform the request</span>
+<span class="w">        </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_perform</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">res</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">CURLE_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;curl_easy_perform() failed: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">curl_easy_strerror</span><span class="p">(</span><span class="n">res</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Clean up</span>
+<span class="w">        </span><span class="n">curl_slist_free_all</span><span class="p">(</span><span class="n">headers</span><span class="p">);</span>
+<span class="w">        </span><span class="n">curl_easy_cleanup</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div></section>
+</dd></dl>
+
 <p>—</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1431,6 +1869,7 @@ The actual response will include more datasets in the <cite>catalog_dict</cite> 
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searching-for-metadata">Searching for metadata</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generating-an-intake-esm-catalogue">Generating an intake-esm catalogue</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-zarr-endpoints-for-streaming-data">Creating zarr endpoints for streaming data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-and-deleting-user-data-in-databrowser">Adding and deleting User Data in Databrowser</a></li>
 </ul>
   </nav></div>
 

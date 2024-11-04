@@ -56,7 +56,8 @@ Getting an overview
                 "cmip6",
                 "cmip5",
                 "cordex",
-                "nextgems"
+                "nextgems",
+                "user"
               ],
               "attributes": {
                 "freva": [
@@ -908,8 +909,438 @@ Creating zarr endpoints for streaming data
                return 0;
            }
 
+.. _databrowser-api-userdata:
 
 ---
+
+Adding and deleting User Data in Databrowser
+---------------------------------------------
+
+.. http:post:: /api/databrowser/userdata
+
+   This endpoint allows authenticated users to add metadata about their own data to the databrowser. Users provide a list of metadata entries and optional facets for indexing and searching their datasets.
+
+   :reqbody user_metadata: A list of metadata entries about the user's data to be added. Each entry must include the required fields: **file**, **variable**, **time**, and **time_frequency**.
+   :type user_metadata: list[dict[str, str]]
+
+   :reqbody facets: Optional key-value pairs representing metadata search attributes. These facets are used for indexing and searching the data.
+   :type facets: dict[str, Any]
+
+   :reqheader Authorization: Bearer token for authentication.
+   :reqheader Content-Type: application/json
+
+   :statuscode 202: Request accepted, returns status message indicating ingestion results.
+   :statuscode 422: Invalid request parameters.
+   :statuscode 500: Failed to add user data due to a server error.
+
+   Example Request
+   ~~~~~~~~~~~~~~~~
+
+   The user must authenticate using a valid access token. The metadata entries and facets are included in the JSON body of the request.
+
+   .. sourcecode:: http
+
+       POST /api/databrowser/userdata HTTP/1.1
+       Host: www.freva.dkrz.de
+       Authorization: Bearer YOUR_ACCESS_TOKEN
+       Content-Type: application/json
+
+       {
+           "user_metadata": [
+               {
+                   "file": "/data/file1.nc",
+                   "variable": "tas",
+                   "time": "[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]",
+                   "time_frequency": "mon",
+                   "additional_info": "Sample data file"
+               }
+           ],
+           "facets": {
+               "project": "user-data",
+               "product": "new",
+               "institute": "globe"
+           }
+       }
+
+   Example Response (Success)
+   ~~~~~~~~~~~~~~~~
+
+   .. sourcecode:: http
+
+       HTTP/1.1 202 Accepted
+       Content-Type: application/json
+
+       {
+           "status": "Your data has been successfully added to the databrowser. (Ingested 5 files into Solr and MongoDB)"
+       }
+
+   Example Response (No Files)
+   ~~~~~~~~~~~~~~~~
+
+   .. sourcecode:: http
+
+       HTTP/1.1 202 Accepted
+       Content-Type: application/json
+
+       {
+           "status": "No data was added to the databrowser. (No files ingested into Solr and MongoDB)"
+       }
+
+
+   Example
+   ~~~~~~~
+
+   Below you can find example usages of this request in different scripting and programming languages.
+
+   .. tabs::
+
+       .. code-tab:: bash
+           :caption: Shell
+
+           curl -X POST \
+           'https://www.freva.dkrz.de/api/databrowser/userdata' \
+           -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+           -H "Content-Type: application/json" \
+           -d '{
+               "user_metadata": [
+                   {
+                       "file": "/data/file1.nc",
+                       "variable": "tas",
+                       "time": "[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]",
+                       "time_frequency": "mon",
+                       "additional_info": "Sample data file"
+                   }
+               ],
+               "facets": {
+                   "project": "user-data",
+                   "product": "new",
+                   "institute": "globe"
+               }
+           }'
+
+       .. code-tab:: python
+           :caption: Python
+
+           import requests
+
+           url = "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers = {
+               "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+               "Content-Type": "application/json"
+           }
+           data = {
+               "user_metadata": [
+                   {
+                       "file": "/data/file1.nc",
+                       "variable": "tas",
+                       "time": "[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]",
+                       "time_frequency": "mon",
+                       "additional_info": "Sample data file"
+                   }
+               ],
+               "facets": {
+                   "project": "user-data",
+                   "product": "new",
+                   "institute": "globe"
+               }
+           }
+
+           response = requests.post(url, headers=headers, json=data)
+           print(response.json())
+
+       .. code-tab:: r
+           :caption: R
+
+           library(httr)
+
+           url <- "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers <- c(Authorization = "Bearer YOUR_ACCESS_TOKEN")
+           body <- list(
+               user_metadata = list(
+                   list(
+                       file = "/data/file1.nc",
+                       variable = "tas",
+                       time = "[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]",
+                       time_frequency = "mon",
+                       additional_info = "Sample data file"
+                   )
+               ),
+               facets = list(
+                   project = "user-data",
+                   product = "new",
+                   institute = "globe"
+               )
+           )
+
+           response <- POST(url, add_headers(.headers = headers), body = body, encode = "json")
+           content <- content(response, "parsed")
+           print(content)
+
+       .. code-tab:: julia
+           :caption: Julia
+
+           using HTTP, JSON
+
+           url = "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers = Dict(
+               "Authorization" => "Bearer YOUR_ACCESS_TOKEN",
+               "Content-Type" => "application/json"
+           )
+           body = JSON.json(Dict(
+               "user_metadata" => [
+                   Dict(
+                       "file" => "/data/file1.nc",
+                       "variable" => "tas",
+                       "time" => "[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]",
+                       "time_frequency" => "mon",
+                       "additional_info" => "Sample data file"
+                   )
+               ],
+               "facets" => Dict(
+                   "project" => "user-data",
+                   "product" => "new",
+                   "institute" => "globe"
+               )
+           ))
+
+           response = HTTP.request("POST", url, headers = headers, body = body)
+           println(String(response.body))
+
+       .. code-tab:: c
+           :caption: C/C++
+
+           #include <stdio.h>
+           #include <curl/curl.h>
+
+           int main() {
+               CURL *curl;
+               CURLcode res;
+
+               const char *url = "https://www.freva.dkrz.de/api/databrowser/userdata";
+               const char *token = "YOUR_ACCESS_TOKEN";
+               const char *json_data = "{"
+                   "\"user_metadata\": ["
+                       "{"
+                           "\"file\": \"/data/file1.nc\","
+                           "\"variable\": \"tas\","
+                           "\"time\": \"[1979-01-16T12:00:00Z TO 1979-11-16T00:00:00Z]\","
+                           "\"time_frequency\": \"mon\","
+                           "\"additional_info\": \"Sample data file\""
+                       "}"
+                   "],"
+                   "\"facets\": {"
+                       "\"project\": \"user-data\","
+                       "\"product\": \"new\","
+                       "\"institute\": \"globe\""
+                   "}"
+               "}";
+
+               // Initialize curl
+               curl = curl_easy_init();
+               if (curl) {
+                   struct curl_slist *headers = NULL;
+                   headers = curl_slist_append(headers, "Content-Type: application/json");
+                   char auth_header[256];
+                   snprintf(auth_header, sizeof(auth_header), "Authorization: Bearer %s", token);
+                   headers = curl_slist_append(headers, auth_header);
+
+                   // Set the URL
+                   curl_easy_setopt(curl, CURLOPT_URL, url);
+
+                   // Set headers
+                   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+                   // Set the HTTP method to POST
+                   curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
+                   // Set the JSON data to send
+                   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_data);
+
+                   // Perform the request
+                   res = curl_easy_perform(curl);
+                   if (res != CURLE_OK) {
+                       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+                   }
+
+                   // Clean up
+                   curl_slist_free_all(headers);
+                   curl_easy_cleanup(curl);
+               }
+               return 0;
+           }
+
+.. http:delete:: /api/databrowser/userdata
+
+   This endpoint allows authenticated users to delete their previously indexed data from the databrowser. Users specify search keys to identify the data entries they wish to remove.
+
+   :reqbody search_keys: Search keys (key-value pairs) used to identify the data to delete.
+   :type search_keys: dict[str, Any]
+
+   :reqheader Authorization: Bearer token for authentication.
+   :reqheader Content-Type: application/json
+
+   :statuscode 202: User data has been deleted successfully.
+   :statuscode 500: Failed to delete user data due to a server error.
+
+   Example Request
+   ~~~~~~~~~~~~~~~
+
+   The user must authenticate using a valid access token. The search keys are provided in the JSON body of the request to specify which data entries to delete.
+
+   .. sourcecode:: http
+
+       DELETE /api/databrowser/userdata HTTP/1.1
+       Host: www.freva.dkrz.de
+       Authorization: Bearer YOUR_ACCESS_TOKEN
+       Content-Type: application/json
+
+       {
+           "project": "user-data",
+           "product": "new",
+           "institute": "globe"
+       }
+
+   Example Response
+   ~~~~~~~~~~~~~~~~
+
+   .. sourcecode:: http
+
+       HTTP/1.1 202 Accepted
+       Content-Type: application/json
+
+       {
+           "status": "User data has been deleted successfully"
+       }
+
+   Example
+   ~~~~~~~
+
+   Below you can find example usages of this request in different scripting and programming languages.
+
+   .. tabs::
+
+       .. code-tab:: bash
+           :caption: Shell
+
+           curl -X DELETE \
+           'https://www.freva.dkrz.de/api/databrowser/userdata' \
+           -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+           -H "Content-Type: application/json" \
+           -d '{
+               "project": "user-data",
+               "product": "new",
+               "institute": "globe"
+           }'
+
+       .. code-tab:: python
+           :caption: Python
+
+           import requests
+
+           url = "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers = {
+               "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+               "Content-Type": "application/json"
+           }
+           data = {
+               "project": "user-data",
+               "product": "new",
+               "institute": "globe"
+           }
+
+           response = requests.delete(url, headers=headers, json=data)
+           print(response.json())
+
+       .. code-tab:: r
+           :caption: R
+
+           library(httr)
+
+           url <- "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers <- c(Authorization = "Bearer YOUR_ACCESS_TOKEN")
+           body <- list(
+               project = "user-data",
+               product = "new",
+               institute = "globe"
+           )
+
+           response <- DELETE(url, add_headers(.headers = headers), body = body, encode = "json")
+           content <- content(response, "parsed")
+           print(content)
+
+       .. code-tab:: julia
+           :caption: Julia
+
+           using HTTP, JSON
+
+           url = "https://www.freva.dkrz.de/api/databrowser/userdata"
+           headers = Dict(
+               "Authorization" => "Bearer YOUR_ACCESS_TOKEN",
+               "Content-Type" => "application/json"
+           )
+           body = JSON.json(Dict(
+               "project" => "user-data",
+               "product" => "new",
+               "institute" => "globe"
+           ))
+
+           response = HTTP.request("DELETE", url, headers = headers, body = body)
+           println(String(response.body))
+
+       .. code-tab:: c
+           :caption: C/C++
+
+           #include <stdio.h>
+           #include <curl/curl.h>
+
+           int main() {
+               CURL *curl;
+               CURLcode res;
+
+               const char *url = "https://www.freva.dkrz.de/api/databrowser/userdata";
+               const char *token = "YOUR_ACCESS_TOKEN";
+               const char *json_data = "{"
+                   "\"project\": \"user-data\","
+                   "\"product\": \"new\","
+                   "\"institute\": \"globe\""
+               "}";
+
+               // Initialize curl
+               curl = curl_easy_init();
+               if (curl) {
+                   struct curl_slist *headers = NULL;
+                   headers = curl_slist_append(headers, "Content-Type: application/json");
+                   char auth_header[256];
+                   snprintf(auth_header, sizeof(auth_header), "Authorization: Bearer %s", token);
+                   headers = curl_slist_append(headers, auth_header);
+
+                   // Set the URL
+                   curl_easy_setopt(curl, CURLOPT_URL, url);
+
+                   // Set headers
+                   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+                   // Set the HTTP method to DELETE
+                   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+                   // Set the JSON data to send
+                   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_data);
+
+                   // Perform the request
+                   res = curl_easy_perform(curl);
+                   if (res != CURLE_OK) {
+                       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+                   }
+
+                   // Clean up
+                   curl_slist_free_all(headers);
+                   curl_easy_cleanup(curl);
+               }
+               return 0;
+           }
+
+---
+
 
 .. note::
    Please note that in these examples,
