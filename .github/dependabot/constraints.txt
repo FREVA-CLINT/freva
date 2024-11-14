@@ -4,7 +4,7 @@ Pillow==11.0.0
 PyPDF2==3.0.1
 appdirs==1.4.4
 dask==2024.11.1
-h5netcdf==1.4.0
+h5netcdf==1.4.1
 humanize==4.11.0
 lazy-import==0.2.2
 metadata-inspector==2024.10.15
