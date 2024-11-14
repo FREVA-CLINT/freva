@@ -454,8 +454,8 @@ request capabilities, the Freva Databrowser REST API accommodates your needs.</p
 <section id="getting-an-overview">
 <span id="databrowser-api-overview"></span><h2>Getting an overview<a class="headerlink" href="#getting-an-overview" title="Link to this heading">#</a></h2>
 <dl class="http get">
-<dt class="sig sig-object http" id="get--api-databrowser-overview">
-<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/overview</span></span><a class="headerlink" href="#get--api-databrowser-overview" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="get--api-freva-nextgen-databrowser-overview">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/overview</span></span><a class="headerlink" href="#get--api-freva-nextgen-databrowser-overview" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint allows you to retrieve an overview of the different
 Data Reference Syntax (DRS) standards implemented in the Freva Databrowser
 REST API. The DRS standards define the structure and metadata organisation
@@ -481,7 +481,7 @@ and their search facets.</p>
 </dl>
 <section id="example-request">
 <h3>Example Request<a class="headerlink" href="#example-request" title="Link to this heading">#</a></h3>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/databrowser/overview</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/freva-nextgen/databrowser/overview</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 </pre></div>
 </div>
@@ -541,25 +541,25 @@ Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(th
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parse the json-content with jq</span>
 curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>https://www.freva.dkrz.de/api/databrowser/overview<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.attributes.cordex
+<span class="w">    </span>https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.attributes.cordex
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/overview&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview&quot;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
-<span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/overview&quot;</span><span class="p">)</span>
+<span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview&quot;</span><span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">jsonlite</span><span class="o">::</span><span class="nf">fromJSON</span><span class="p">(</span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span>
 <span class="k">using</span><span class="w"> </span><span class="n">JSON</span>
-<span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/overview&quot;</span><span class="p">)</span>
+<span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview&quot;</span><span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">HTTP</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
 </pre></div>
 </div>
@@ -573,7 +573,7 @@ curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span
 
 <span class="w">    </span><span class="n">curl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_init</span><span class="p">();</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">curl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">url</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/overview&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">url</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview&quot;</span><span class="p">;</span>
 
 <span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_URL</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">);</span>
 <span class="w">        </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_perform</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
@@ -592,8 +592,8 @@ curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span
 <section id="searching-for-datasets-locations">
 <span id="databrowser-api-search"></span><h2>Searching for datasets locations<a class="headerlink" href="#searching-for-datasets-locations" title="Link to this heading">#</a></h2>
 <dl class="http get">
-<dt class="sig sig-object http" id="get--api-databrowser-data_search-(str-flavour)-(str-uniq_key)">
-<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/data_search/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-databrowser-data_search-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="get--api-freva-nextgen-databrowser-data-search-(str-flavour)-(str-uniq_key)">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/data-search/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-freva-nextgen-databrowser-data-search-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint allows you to search for climate datasets based on the specified
 Data Reference Syntax (DRS) standard (<cite>flavour</cite>) and the type of search result
 (<cite>uniq_key</cite>), which can be either “file” or “uri”. The <cite>databrowser</cite> method
@@ -644,7 +644,7 @@ files or locations that match the search criteria.</p></li>
 In this example we use the <cite>freva</cite> DRS standard and search for <cite>file</cite> entries.
 Here we also want to get only those datasets that belong to the <code class="docutils literal notranslate"><span class="pre">EUR-11</span></code>
 <code class="docutils literal notranslate"><span class="pre">product</span></code> and are store in the cloud (<code class="docutils literal notranslate"><span class="pre">fs_type=swift</span></code>)</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/databrowser/data_search/freva/file?product=EUR-11&amp;fs_type=swift</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/freva-nextgen/databrowser/data-search/freva/file?product=EUR-11&amp;fs_type=swift</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 </pre></div>
 </div>
@@ -678,13 +678,13 @@ gnuR</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(thi
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/data_search/freva/file?product=EUR-11&amp;fs_type=swift&#39;</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file?product=EUR-11&amp;fs_type=swift&#39;</span>
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/data_search/freva/file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">,</span> <span class="s2">&quot;fs_type&quot;</span><span class="p">:</span> <span class="s2">&quot;swift&quot;</span><span class="p">}</span>
 <span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">(</span><span class="n">decode_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
@@ -693,7 +693,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 <span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/data_search/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fs_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;swift&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">strsplit</span><span class="p">(</span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;UTF-8&quot;</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span>
@@ -702,7 +702,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span>
 <span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/data_search/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="s">&quot;product&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fs_type&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;swift&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">HTTP</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">response</span><span class="p">)),</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -715,7 +715,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/data_search/freva/file&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file&quot;</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// Query parameters</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">;</span>
@@ -768,8 +768,8 @@ effortlessly in the Freva Databrowser REST API!</p>
 <section id="searching-for-metadata">
 <span id="databrowser-api-search-facets"></span><h2>Searching for metadata<a class="headerlink" href="#searching-for-metadata" title="Link to this heading">#</a></h2>
 <dl class="http get">
-<dt class="sig sig-object http" id="get--api-databrowser-metadata_search-(str-flavour)-(str-uniq_key)">
-<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/metadata_search/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-databrowser-metadata_search-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="get--api-freva-nextgen-databrowser-metadata-search-(str-flavour)-(str-uniq_key)">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/metadata-search/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-freva-nextgen-databrowser-metadata-search-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint allows you to search metadata (facets) based on the
 specified Data Reference Syntax (DRS) standard (<cite>flavour</cite>) and the type of
 search result (<cite>uniq_key</cite>), which can be either <cite>file</cite> or <cite>uri</cite>.
@@ -839,7 +839,7 @@ that should hide lesser used metadata by default.</p></li>
 In this example we use the <cite>freva</cite> DRS standard and search for <cite>file</cite> entries.
 Here we also want to get only those datasets that belong to the <code class="docutils literal notranslate"><span class="pre">EUR-11</span></code>
 <code class="docutils literal notranslate"><span class="pre">product</span></code>.</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/databrowser/metadata_search/freva/file?product=EUR-11</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/freva-nextgen/databrowser/metadata-search/freva/file?product=EUR-11</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 </pre></div>
 </div>
@@ -912,13 +912,13 @@ Python</li><li class="tabbutton" data-id="2" onclick="sphinx_code_tabs_onclick(t
 gnuR</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(this)">
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file?product=EUR-11&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file?product=EUR-11&#39;</span>
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">}</span>
 <span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -927,7 +927,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 <span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">jsonlite</span><span class="o">::</span><span class="nf">fromJSON</span><span class="p">(</span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;utf-8&quot;</span><span class="p">))</span>
@@ -937,7 +937,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span>
 <span class="k">using</span><span class="w"> </span><span class="n">JSON</span>
 <span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="s">&quot;product&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">HTTP</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
@@ -950,7 +950,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/metadata_search/freva/file&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file&quot;</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// Query parameters</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">;</span>
@@ -994,8 +994,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <section id="generating-an-intake-esm-catalogue">
 <span id="databrowser-api-intake"></span><h2>Generating an intake-esm catalogue<a class="headerlink" href="#generating-an-intake-esm-catalogue" title="Link to this heading">#</a></h2>
 <dl class="http get">
-<dt class="sig sig-object http" id="get--api-databrowser-intake_catalogue-(str-flavour)-(str-uniq_key)">
-<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/intake_catalogue/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-databrowser-intake_catalogue-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="get--api-freva-nextgen-databrowser-intake-catalogue-(str-flavour)-(str-uniq_key)">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/intake-catalogue/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><span class="sig-name descname"><span class="pre">/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">uniq_key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-freva-nextgen-databrowser-intake-catalogue-(str-flavour)-(str-uniq_key)" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint generates an intake-esm catalogue in JSON format from a <cite>freva</cite>
 search. The catalogue includes metadata about the datasets found in the search
 results. Intake-esm is a data cataloging system that allows easy organization,
@@ -1050,7 +1050,7 @@ In this example we want to create an intake-catalogue that follows the
 <cite>freva</cite> DRS standard and points to data files rather than uris.
 Here we also want to get only those datasets that belong to the <code class="docutils literal notranslate"><span class="pre">EUR-11</span></code>
 <code class="docutils literal notranslate"><span class="pre">product</span></code>.</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/databrowser/intake_catalogue/freva/file?product=EUR-11</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/freva-nextgen/databrowser/intake-catalogue/freva/file?product=EUR-11</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 </pre></div>
 </div>
@@ -1123,14 +1123,14 @@ gnuR</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(thi
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file?product=EUR-11&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>catalogue.json
+<span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file?product=EUR-11&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>catalogue.json
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">intake</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">}</span>
 <span class="p">)</span>
 <span class="n">cat</span> <span class="o">=</span> <span class="n">intake</span><span class="o">.</span><span class="n">open_esm_datastore</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
@@ -1139,22 +1139,22 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 <span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">json_content</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
-<span class="nf">write</span><span class="p">(</span><span class="n">json_content</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;intake_catalogue.json&quot;</span><span class="p">)</span>
+<span class="nf">write</span><span class="p">(</span><span class="n">json_content</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;intake-catalogue.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span>
 <span class="k">using</span><span class="w"> </span><span class="n">JSON</span>
 <span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="s">&quot;product&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;EUR-11&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">HTTP</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">response</span><span class="p">)))</span>
-<span class="n">open</span><span class="p">(</span><span class="s">&quot;intake_catalogue.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;w&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="n">io</span>
+<span class="n">open</span><span class="p">(</span><span class="s">&quot;intake-catalogue.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;w&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="n">io</span>
 <span class="w">    </span><span class="n">write</span><span class="p">(</span><span class="n">io</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 <span class="k">end</span>
 </pre></div>
@@ -1170,10 +1170,10 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 
 <span class="w">    </span><span class="n">curl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_init</span><span class="p">();</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">curl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">url</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/intake_catalogue/freva/file?product=EUR-11&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">url</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file?product=EUR-11&quot;</span><span class="p">;</span>
 <span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_URL</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">);</span>
 
-<span class="w">        </span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="s">&quot;intake_catalogue.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;w&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">fp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fopen</span><span class="p">(</span><span class="s">&quot;intake-catalogue.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;w&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="n">curl_easy_setopt</span><span class="p">(</span><span class="n">curl</span><span class="p">,</span><span class="w"> </span><span class="n">CURLOPT_WRITEDATA</span><span class="p">,</span><span class="w"> </span><span class="n">fp</span><span class="p">);</span>
 
 <span class="w">        </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curl_easy_perform</span><span class="p">(</span><span class="n">curl</span><span class="p">);</span>
@@ -1196,8 +1196,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <section id="creating-zarr-endpoints-for-streaming-data">
 <span id="databrowser-api-zarr"></span><h2>Creating zarr endpoints for streaming data<a class="headerlink" href="#creating-zarr-endpoints-for-streaming-data" title="Link to this heading">#</a></h2>
 <dl class="http get">
-<dt class="sig sig-object http" id="get--api-databrowser-load-(str-flavour)">
-<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/load/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-databrowser-load-(str-flavour)" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="get--api-freva-nextgen-databrowser-load-(str-flavour)">
+<span class="sig-name descname"><span class="pre">GET</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/load/</span></span><span class="sig-paren">(</span><em class="property"><span class="pre">str:</span> </em><em class="sig-param"><span class="pre">flavour</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get--api-freva-nextgen-databrowser-load-(str-flavour)" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint searches for datasets and streams the results as Zarr data.
 The Zarr format allows for efficient storage and retrieval of large,
 multidimensional arrays. This endpoint can be used to query datasets and
@@ -1251,12 +1251,12 @@ on the DRS standard flavour <code class="docutils literal notranslate"><span cla
 </dl>
 <section id="id9">
 <h3>Example Request<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
-<p>The logic works just like for the <code class="docutils literal notranslate"><span class="pre">data_search</span></code> and <code class="docutils literal notranslate"><span class="pre">intake_catalogue</span></code>
+<p>The logic works just like for the <code class="docutils literal notranslate"><span class="pre">data-search</span></code> and <code class="docutils literal notranslate"><span class="pre">intake-catalogue</span></code>
 endpoints. We constrain the data search by <code class="docutils literal notranslate"><span class="pre">key=value</span></code> search pairs.
 The only difference is that we have to authenticate by using an access token.
 You will also have to use a valid access token if you want to access the
 zarr data via http. Please refer to the <span class="xref std std-ref">auth</span> chapter for more details.</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/databrowser/load/freva/file?dataset=cmip6-fs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/api/freva-nextgen/databrowser/load/freva/file?dataset=cmip6-fs</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer your_access_token</span>
 </pre></div>
@@ -1267,8 +1267,8 @@ zarr data via http. Please refer to the <span class="xref std std-ref">auth</spa
 <div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">plain/text</span>
 
-https://www.freva.dkrz.de/api/freva-data-portal/zarr/dcb608a0-9d77-5045-b656-f21dfb5e9acf.zarr
-https://www.freva.dkrz.de/api/freva-data-portal/zarr/f56264e3-d713-5c27-bc4e-c97f15b5fe86.zarr
+https://www.freva.dkrz.de/api/freva-nextgen/data-portal/zarr/dcb608a0-9d77-5045-b656-f21dfb5e9acf.zarr
+https://www.freva.dkrz.de/api/freva-nextgen/data-portal/zarr/f56264e3-d713-5c27-bc4e-c97f15b5fe86.zarr
 </pre></div>
 </div>
 </section>
@@ -1285,7 +1285,7 @@ gnuR</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(thi
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/load/freva?dataset=cmip6-fs&#39;</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva?dataset=cmip6-fs&#39;</span>
 <span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span>
 </pre></div>
 </div>
@@ -1293,7 +1293,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">intake</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/load/freva&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="s2">&quot;cmip6-fs&quot;</span><span class="p">},</span>
     <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">},</span>
     <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1304,7 +1304,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 <span class="n">response</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">GET</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/load/freva&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cmip6-fs&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">strsplit</span><span class="p">(</span><span class="nf">content</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;text&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">encoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;UTF-8&quot;</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span>
@@ -1313,7 +1313,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span>
 <span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HTTP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/load/freva&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span><span class="s">&quot;dataset&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;cmip6-fs&quot;</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">split</span><span class="p">(</span><span class="kt">String</span><span class="p">(</span><span class="n">HTTP</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">response</span><span class="p">)),</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
@@ -1326,7 +1326,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/load/freva&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva&quot;</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// Query parameters</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cmip6-fs&quot;</span><span class="p">;</span>
@@ -1373,8 +1373,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <section id="adding-and-deleting-user-data-in-databrowser">
 <h2>Adding and deleting User Data in Databrowser<a class="headerlink" href="#adding-and-deleting-user-data-in-databrowser" title="Link to this heading">#</a></h2>
 <dl class="http post">
-<dt class="sig sig-object http" id="post--api-databrowser-userdata">
-<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/userdata</span></span><a class="headerlink" href="#post--api-databrowser-userdata" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="post--api-freva-nextgen-databrowser-userdata">
+<span class="sig-name descname"><span class="pre">POST</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/userdata</span></span><a class="headerlink" href="#post--api-freva-nextgen-databrowser-userdata" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint allows authenticated users to add metadata about their own data to the databrowser. Users provide a list of metadata entries and optional facets for indexing and searching their datasets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Reqbody user_metadata<span class="colon">:</span></dt>
@@ -1400,7 +1400,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <section id="id12">
 <h3>Example Request<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <p>The user must authenticate using a valid access token. The metadata entries and facets are included in the JSON body of the request.</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/api/freva-nextgen/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer YOUR_ACCESS_TOKEN</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
@@ -1458,7 +1458,7 @@ R</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(this)"
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
 -H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
 -H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 -d<span class="w"> </span><span class="s1">&#39;{</span>
@@ -1482,7 +1482,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
@@ -1511,7 +1511,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 
-<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">)</span>
 <span class="n">body</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
 <span class="w">    </span><span class="n">user_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
@@ -1538,7 +1538,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span>
 
-<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span>
 <span class="w">    </span><span class="s">&quot;Authorization&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="s">&quot;Content-Type&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;application/json&quot;</span>
@@ -1572,7 +1572,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;YOUR_ACCESS_TOKEN&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;{&quot;</span>
 <span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">user_metadata</span><span class="se">\&quot;</span><span class="s">: [&quot;</span>
@@ -1630,8 +1630,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </dd></dl>
 
 <dl class="http delete">
-<dt class="sig sig-object http" id="delete--api-databrowser-userdata">
-<span class="sig-name descname"><span class="pre">DELETE</span> </span><span class="sig-name descname"><span class="pre">/api/databrowser/userdata</span></span><a class="headerlink" href="#delete--api-databrowser-userdata" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object http" id="delete--api-freva-nextgen-databrowser-userdata">
+<span class="sig-name descname"><span class="pre">DELETE</span> </span><span class="sig-name descname"><span class="pre">/api/freva-nextgen/databrowser/userdata</span></span><a class="headerlink" href="#delete--api-freva-nextgen-databrowser-userdata" title="Link to this definition">#</a></dt>
 <dd><p>This endpoint allows authenticated users to delete their previously indexed data from the databrowser. Users specify search keys to identify the data entries they wish to remove.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Reqbody search_keys<span class="colon">:</span></dt>
@@ -1653,7 +1653,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <section id="id14">
 <h3>Example Request<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>The user must authenticate using a valid access token. The search keys are provided in the JSON body of the request to specify which data entries to delete.</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/api/freva-nextgen/databrowser/userdata</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">www.freva.dkrz.de</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer YOUR_ACCESS_TOKEN</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
@@ -1689,7 +1689,7 @@ R</li><li class="tabbutton" data-id="3" onclick="sphinx_code_tabs_onclick(this)"
 Julia</li><li class="tabbutton" data-id="4" onclick="sphinx_code_tabs_onclick(this)">
 C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="se">\</span>
-<span class="s1">&#39;https://www.freva.dkrz.de/api/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="s1">&#39;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&#39;</span><span class="w"> </span><span class="se">\</span>
 -H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
 -H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 -d<span class="w"> </span><span class="s1">&#39;{</span>
@@ -1702,7 +1702,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="1">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
@@ -1720,7 +1720,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="2">
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">httr</span><span class="p">)</span>
 
-<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">)</span>
 <span class="n">body</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
 <span class="w">    </span><span class="n">project</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;user-data&quot;</span><span class="p">,</span>
@@ -1736,7 +1736,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </div><div class="tab codetab" data-id="3">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">HTTP</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span>
 
-<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span>
+<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">(</span>
 <span class="w">    </span><span class="s">&quot;Authorization&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Bearer YOUR_ACCESS_TOKEN&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="s">&quot;Content-Type&quot;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;application/json&quot;</span>
@@ -1759,7 +1759,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <span class="w">    </span><span class="n">CURL</span><span class="w"> </span><span class="o">*</span><span class="n">curl</span><span class="p">;</span>
 <span class="w">    </span><span class="n">CURLcode</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
 
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/databrowser/userdata&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;YOUR_ACCESS_TOKEN&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">json_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;{&quot;</span>
 <span class="w">        </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">project</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">user-data</span><span class="se">\&quot;</span><span class="s">,&quot;</span>
@@ -1809,9 +1809,9 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please note that in these examples,
-I used “<a class="reference external" href="https://www.freva.dkrz.de">https://www.freva.dkrz.de</a>” as a placeholder URL.
+“<a class="reference external" href="https://www.freva.dkrz.de">https://www.freva.dkrz.de</a>” were used as a placeholder URL.
 You should replace it with the actual URL of your
-Freva Databrowser REST API. The response above is truncated for brevity.
+Freva Databrowser REST API. The responses above are truncated for brevity.
 The actual response will include more datasets in the <cite>catalog_dict</cite> list.</p>
 </div>
 </section>
