@@ -963,7 +963,7 @@ Adding and deleting User Data in Databrowser
        }
 
    Example Response (Success)
-   ~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    .. sourcecode:: http
 
@@ -975,7 +975,7 @@ Adding and deleting User Data in Databrowser
        }
 
    Example Response (No Files)
-   ~~~~~~~~~~~~~~~~
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    .. sourcecode:: http
 
