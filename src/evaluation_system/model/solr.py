@@ -158,7 +158,7 @@ class SolrFindFiles(object):
 
     @staticmethod
     def _add_time_query(
-        search_dict: dict[str, Union[str, list[str]]]
+        search_dict: dict[str, Union[str, list[str]]],
     ) -> dict[str, Union[list[str], str]]:
         """Add a potential time query string to the search dict."""
         time_subset = cast(str, search_dict.pop("time", ""))
