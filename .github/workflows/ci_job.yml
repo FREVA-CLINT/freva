@@ -111,7 +111,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
       -
         name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           # Upload entire repository
