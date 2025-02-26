@@ -356,6 +356,18 @@ def databrowser(
         file_range = freva.databrowser(project="obs*", time="2016-09-02T22:15 to 2016-10", time_select="strict")
         for file in file_range:
             print(file)
+
+    In datasets with multiple versions only the `latest` version (i.e. `highest`
+    version number) is returned by default. Querying a specific version from a
+    multi versioned datasets requires the ``multiversion`` flag in combination with
+    the ``version`` special facet:
+
+    .. execute_code::
+
+        import freva
+        specific_version = list(freva.databrowser(project="reanalysis", version="v20200101", multiversion=True))
+        print(specific_version)
+
     """
     core = {True: "latest", False: "files"}[not multiversion]
     search_facets = _proc_search_facets(

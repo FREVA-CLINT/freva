@@ -43,8 +43,8 @@ from types import ModuleType
 from typing import (
     Any,
     Dict,
-    List,
     Iterator,
+    List,
     Optional,
     Sequence,
     Tuple,
@@ -54,6 +54,10 @@ from typing import (
 )
 
 from django.db.models.query import QuerySet
+from PIL import Image, ImageSequence
+from rich import print as pprint
+from typing_extensions import TypedDict
+
 from evaluation_system import __version__ as version_api
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
@@ -72,9 +76,6 @@ from evaluation_system.model.history.models import (
 )
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
-from PIL import Image, ImageSequence
-from rich import print as pprint
-from typing_extensions import TypedDict
 
 from .plugin import PluginAbstract
 

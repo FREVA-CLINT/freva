@@ -14,6 +14,7 @@ from subprocess import Popen
 
 import mock
 import pytest
+
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 from evaluation_system.tests import run_cli, similar_string
 

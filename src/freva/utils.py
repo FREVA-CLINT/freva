@@ -32,14 +32,14 @@ import lazy_import
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.utils import OperationalError
-from evaluation_system.misc import logger
-from evaluation_system.misc.exceptions import ConfigurationException
-from evaluation_system.misc.utils import metadict as meta_type
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
 
 import freva
+from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import ConfigurationException
+from evaluation_system.misc.utils import metadict as meta_type
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
 cancel_command = lazy_import.lazy_callable(
