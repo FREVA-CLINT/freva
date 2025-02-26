@@ -5,6 +5,19 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2502.0.0
+~~~~~~~~~
+
+New Features
+++++++++++++
+- When submitting a plugin the freva history ID can be queried by
+  accessing the ``history_id`` property of the ``PluginStatus`` response
+  class.
+
+Bug fixes
++++++++++
+- Fixed unique output file bug for interactive plugin jobs.
+
 
 v2408.0.0
 ~~~~~~~~~

@@ -187,6 +187,11 @@ class PluginStatus:
         return hist
 
     @property
+    def history_id(self) -> int:
+        """Get the ID of this plugin run in the freva history."""
+        return self._id
+
+    @property
     def status(self) -> str:
         """Get the state of the current plugin run."""
         hist = self._hist

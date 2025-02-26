@@ -170,7 +170,7 @@ setup(
             "pydata-sphinx-theme",
             "pint-xarray",
             "recommonmark",
-            "sphinx",
+            "sphinx==7.3.7",
             "sphinx-togglebutton",
             "sphinx-code-tabs",
             "sphinxcontrib_github_alt",
