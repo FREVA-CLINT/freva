@@ -36,9 +36,7 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         plugin_cli(["dummyplugin", "the_number=13", "--batchmode"])
         output = capsys.readouterr().out
         assert "tail -f" in output
-        out_f = Path(
-            [o.split()[-1] for o in output.split("\n") if "tail" in o][0]
-        )
+        out_f = Path([o.split()[-1] for o in output.split("\n") if "tail" in o][0])
         assert out_f.exists()
 
         import freva
@@ -49,17 +47,13 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
             os.path.normpath(folder_path)
         )
 
-        plugin_cli(
-            ["dummypluginfolders", "variable=pr", "--unique-output", "true"]
-        )
+        plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "true"])
         folder_path = capsys.readouterr().out.strip().split()[-1]
         assert str(freva.history()[0]["id"]) in os.path.basename(
             os.path.normpath(folder_path)
         )
 
-        plugin_cli(
-            ["dummypluginfolders", "variable=pr", "--unique-output", "false"]
-        )
+        plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "false"])
         folder_path = capsys.readouterr().out.strip().split()[-1]
         assert str(freva.history()[0]["id"]) not in os.path.basename(
             os.path.normpath(folder_path)
@@ -142,9 +136,7 @@ def test_plugin_output(dummy_history) -> None:
     """Test the output of the plugin."""
     import freva
 
-    res = freva.run_plugin(
-        "dummypluginfolders", variable="pr", caption="Some caption"
-    )
+    res = freva.run_plugin("dummypluginfolders", variable="pr", caption="Some caption")
     assert res.status == "finished"
     assert isinstance(res.get_result_paths(), list)
     assert len(res.get_result_paths()) > 0
