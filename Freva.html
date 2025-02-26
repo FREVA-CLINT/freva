@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Freva python module &#8212; freva user guide 2410.0.0 documentation</title>
+    <title>Freva python module &#8212; freva user guide 2502.0.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
   <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/code-tabs.css?v=1bc26e2f" />
@@ -41,8 +41,8 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=a6e24d77"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/documentation_options.js?v=e15c9e9f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="freva user guide 2410.0.0 documentation - Home"/>
-    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2410.0.0 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-light" alt="freva user guide 2502.0.0 documentation - Home"/>
+    <img src="_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2502.0.0 documentation - Home"/>
   
   
 </a></div>
@@ -503,7 +503,7 @@ is given.</p>
 </dl>
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">num_files</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">count_values</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;cmorph&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">num_files</span><span class="p">)</span>
 </pre></div>
@@ -513,12 +513,12 @@ is given.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">count_values</span><span class="p">(</span><span class="n">facet</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;future_id&#39;: {}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;future&#39;: {}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;bbox&#39;: {}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: {&#39;atmos&#39;: 38, &#39;ocean&#39;: 1}, &#39;cmor_table&#39;: {&#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;aday&#39;: 10, &#39;amon&#39;: 2, &#39;omon&#39;: 1}, &#39;project&#39;: {&#39;cmip6&#39;: 2, &#39;cordex&#39;: 12, &#39;observations&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;product&#39;: {&#39;cmip&#39;: 2, &#39;eur-11&#39;: 12, &#39;grid&#39;: 24, &#39;reanalysis&#39;: 1}, &#39;future_id&#39;: {}, &#39;time_aggregation&#39;: {&#39;mean&#39;: 39}, &#39;institute&#39;: {&#39;clmcom&#39;: 10, &#39;cpc&#39;: 24, &#39;csiro-arccss&#39;: 1, &#39;gerics&#39;: 2, &#39;mpi-m&#39;: 1, &#39;noaa&#39;: 1}, &#39;time_frequency&#39;: {&#39;1day&#39;: 10, &#39;30min&#39;: 24, &#39;3hr&#39;: 2, &#39;mon&#39;: 3}, &#39;ensemble&#39;: {&#39;r1i1p1&#39;: 37, &#39;r1i1p1f1&#39;: 1, &#39;r2i1p1f1&#39;: 1}, &#39;experiment&#39;: {&#39;amip&#39;: 2, &#39;cmorph&#39;: 24, &#39;historical&#39;: 10, &#39;oc5&#39;: 1, &#39;rcp85&#39;: 2}, &#39;future&#39;: {}, &#39;model&#39;: {&#39;access-cm2&#39;: 1, &#39;cpc&#39;: 24, &#39;mpi-esm1-2-lr&#39;: 1, &#39;mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1&#39;: 10, &#39;ncc-noresm1-m-gerics-remo2015-v1&#39;: 2, &#39;nodc&#39;: 1}, &#39;grid_label&#39;: {&#39;gn&#39;: 39}, &#39;variable&#39;: {&#39;hc700&#39;: 1, &#39;pr&#39;: 26, &#39;tas&#39;: 10, &#39;ua&#39;: 2}, &#39;bbox&#39;: {}, &#39;fs_type&#39;: {&#39;posix&#39;: 39}}
 </pre></div>
 </div>
 </dd></dl>
@@ -568,7 +568,7 @@ iterator with results.</p>
 <p class="rubric">Example</p>
 <p>Search for files in the system:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">files</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;obs*&#39;</span><span class="p">,</span> <span class="n">institute</span><span class="o">=</span><span class="s1">&#39;cpc&#39;</span><span class="p">,</span>
                           <span class="n">time_frequency</span><span class="o">=</span><span class="s1">&#39;??min&#39;</span><span class="p">,</span>
                           <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;pr&#39;</span><span class="p">)</span>
@@ -580,14 +580,14 @@ iterator with results.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f1ec681f0d0&gt;
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;generator object SolrFindFiles._search at 0x7f89573a2f80&gt;
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022300-201609022330.nc
 /home/runner/work/freva/freva/.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609022200-201609022230.nc
 </pre></div>
 </div>
 <p>Search for files between a two given time steps:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">file_range</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">&quot;2016-09-02T22:15 to 2016-10&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_range</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -605,7 +605,7 @@ covered by the files. Using the <code class="docutils literal notranslate"><span
 only yield one file because the first file contains time steps prior to the
 start of the time period:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">file_range</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">&quot;2016-09-02T22:15 to 2016-10&quot;</span><span class="p">,</span> <span class="n">time_select</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_range</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -657,7 +657,7 @@ the whole dataset will be queried.</p></li>
 </dl>
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">all_facets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;obs*&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">all_facets</span><span class="p">)</span>
 <span class="n">spec_facets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s1">&#39;obs*&#39;</span><span class="p">,</span>
@@ -666,31 +666,31 @@ the whole dataset will be queried.</p></li>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;future_id&#39;: [], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;future&#39;: [], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;bbox&#39;: [], &#39;institute&#39;: [&#39;cpc&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: [&#39;atmos&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;future&#39;: [], &#39;model&#39;: [&#39;cpc&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;bbox&#39;: [], &#39;fs_type&#39;: [&#39;posix&#39;]}
 {&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;variable&#39;: [&#39;pr&#39;]}
 </pre></div>
 </div>
 <p>Get all models that have a given time step:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">model</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="s2">&quot;2016-09-02T22:10&quot;</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;time_frequency&#39;, &#39;product&#39;, &#39;project&#39;, &#39;fs_type&#39;, &#39;model&#39;, &#39;ensemble&#39;, &#39;time_aggregation&#39;, &#39;variable&#39;, &#39;experiment&#39;, &#39;future_id&#39;, &#39;grid_label&#39;, &#39;realm&#39;, &#39;future&#39;, &#39;cmor_table&#39;, &#39;bbox&#39;, &#39;institute&#39;]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[&#39;realm&#39;, &#39;cmor_table&#39;, &#39;project&#39;, &#39;product&#39;, &#39;future_id&#39;, &#39;time_aggregation&#39;, &#39;institute&#39;, &#39;time_frequency&#39;, &#39;ensemble&#39;, &#39;experiment&#39;, &#39;future&#39;, &#39;model&#39;, &#39;grid_label&#39;, &#39;variable&#39;, &#39;bbox&#39;, &#39;fs_type&#39;]
 </pre></div>
 </div>
 <p>Reverse search: retrieving meta data from a known file.</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;../.docker/data/observations/grid/CPC/CPC/cmorph/30min/atmos/30min/r1i1p1/v20210618/pr/pr_30min_CPC_cmorph_r1i1p1_201609020000-201609020030.nc&quot;</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">facet_search</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file</span><span class="p">)))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;time_frequency&#39;: [&#39;30min&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;fs_type&#39;: [&#39;posix&#39;], &#39;model&#39;: [&#39;cpc&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;future_id&#39;: [], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;realm&#39;: [&#39;atmos&#39;], &#39;future&#39;: [], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;bbox&#39;: [], &#39;institute&#39;: [&#39;cpc&#39;]}
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;realm&#39;: [&#39;atmos&#39;], &#39;cmor_table&#39;: [&#39;30min&#39;], &#39;project&#39;: [&#39;observations&#39;], &#39;product&#39;: [&#39;grid&#39;], &#39;future_id&#39;: [], &#39;time_aggregation&#39;: [&#39;mean&#39;], &#39;institute&#39;: [&#39;cpc&#39;], &#39;time_frequency&#39;: [&#39;30min&#39;], &#39;ensemble&#39;: [&#39;r1i1p1&#39;], &#39;experiment&#39;: [&#39;cmorph&#39;], &#39;future&#39;: [], &#39;model&#39;: [&#39;cpc&#39;], &#39;grid_label&#39;: [&#39;gn&#39;], &#39;variable&#39;: [&#39;pr&#39;], &#39;bbox&#39;: [], &#39;fs_type&#39;: [&#39;posix&#39;]}
 </pre></div>
 </div>
 </dd></dl>
@@ -717,8 +717,8 @@ existing plugins and the documentation of each plugins.</p>
 </dl>
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="kn">import</span> <span class="nn">rich</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rich</span>
 <span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">get_tools_list</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -748,8 +748,8 @@ existing plugins and the documentation of each plugins.</p>
 </dl>
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="kn">import</span> <span class="nn">rich</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rich</span>
 <span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">list_plugins</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -779,8 +779,8 @@ existing plugins and the documentation of each plugins.</p>
 </dl>
 <p class="rubric">Example</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="kn">import</span> <span class="nn">rich</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rich</span>
 <span class="n">rich</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">plugin_doc</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -898,7 +898,7 @@ creates plots of solr facets and an animation.
 <p class="rubric">Example</p>
 <p>Run a plugin in the foreground.</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;obs*&quot;</span><span class="p">)</span>
 <span class="n">output</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get_result_paths</span><span class="p">(</span><span class="s2">&quot;plot&quot;</span><span class="p">,</span> <span class="s2">&quot;*.*&quot;</span><span class="p">)</span> <span class="c1"># Check the plot output</span>
 </pre></div>
@@ -913,13 +913,13 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&quot;[-\d]+&quot;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 39 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4 in 40 seconds
 </pre></div>
 </div>
 <p>Run a plugin in the background. You can interact with the plugin using
 the <code class="docutils literal notranslate"><span class="pre">.wait</span></code> method of the :py:class:<code class="docutils literal notranslate"><span class="pre">freva.PluginStatus</span></code> class.</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;animator&quot;</span><span class="p">,</span>
                        <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">,</span>
                        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">,</span>
@@ -931,7 +931,7 @@ the <code class="docutils literal notranslate"><span class="pre">.wait</span></c
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2118
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-3312.out
+tail -f /tmp/share/slurm/animator/Animator-3517.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -963,13 +963,13 @@ of the <a class="reference internal" href="#freva.PluginStatus" title="freva.Plu
 <code class="docutils literal notranslate"><span class="pre">PluginStatus</span></code> class. That means you can directly use the output of
 :py:meth:<code class="docutils literal notranslate"><span class="pre">freva.run_plugin</span></code> to interact with the plugin status:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250103_050217/2119
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250226_093004/2119
 finished
 </pre></div>
 </div>
@@ -977,7 +977,7 @@ finished
 <code class="docutils literal notranslate"><span class="pre">history_id</span></code> of a specific plugin run. Note that you can query these ids
 by making use of the :py:meth:<code class="docutils literal notranslate"><span class="pre">freva.history</span></code> method:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="c1"># Get the last run of the dummypluginfolders plugin</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">PluginStatus</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
@@ -985,7 +985,7 @@ by making use of the :py:meth:<code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[05:02:17] INFO     freva - INFO - history of {plugin}, limit=1, since=None,    
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[09:30:04] INFO     freva - INFO - history of {plugin}, limit=1, since=None,    
                     until=None, entry_ids=None                                  
 </pre></div>
 </div>
@@ -1030,8 +1030,8 @@ which creates plots and netCDF files. In this example we want to
 open all netCDF files (<code class="docutils literal notranslate"><span class="pre">dtype</span> <span class="pre">=</span> <span class="pre">'data'</span></code>) that match the filename
 constraint <code class="docutils literal notranslate"><span class="pre">*data.nc</span></code>.</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
 <span class="n">dset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
     <span class="n">res</span><span class="o">.</span><span class="n">get_result_paths</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">glob_pattern</span><span class="o">=</span><span class="s2">&quot;*data.nc&quot;</span><span class="p">)</span>
@@ -1040,10 +1040,16 @@ constraint <code class="docutils literal notranslate"><span class="pre">*data.nc
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250103_050217/2120
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250226_093004/2120
 pr
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="freva.PluginStatus.history_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#freva.PluginStatus.history_id" title="Link to this definition">#</a></dt>
+<dd><p>Get the ID of this plugin run in the freva history.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1079,14 +1085,14 @@ pr
 <p class="rubric">Example</p>
 <p>Read the output of the plugin:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250103_050218/2121
-Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250103_050218/2121
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250226_093005/2121
+Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250226_093005/2121
 
 </pre></div>
 </div>
@@ -1117,7 +1123,7 @@ hasn’t been finish raise a ValueError.</p>
 option and the execution of the code should wait until the plugin is
 finished.</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;dummypluginfolders&quot;</span><span class="p">,</span> <span class="n">batchmode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">res</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span> <span class="c1"># Give the plugin 60 seconds to finish.</span>
 </pre></div>
@@ -1126,7 +1132,7 @@ finished.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2122
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3491.out
+tail -f /tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3698.out
 ☀️  Waiting for plugin to finish... ok
 </pre></div>
 </div>
@@ -1170,7 +1176,7 @@ or all users (all or <a href="#id7"><span class="problematic" id="id8">*</span><
 <p class="rubric">Example</p>
 <p>Get the last three history entries:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">hist</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">hist</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -1181,8 +1187,8 @@ or all users (all or <a href="#id7"><span class="problematic" id="id8">*</span><
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;list&#39;&gt; 3
 dict_keys([&#39;status_dict&#39;, &#39;id&#39;, &#39;timestamp&#39;, &#39;tool&#39;, &#39;version&#39;, &#39;version_details_id&#39;, &#39;configuration&#39;, &#39;slurm_output&#39;, &#39;host&#39;, &#39;uid_id&#39;, &#39;status&#39;, &#39;flag&#39;, &#39;caption&#39;, &#39;result&#39;])
-{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250103_050217&#39;}
-[05:02:19] INFO     freva - INFO - history, limit=3, since=None, until=None,    
+{&#39;variable&#39;: &#39;pr&#39;, &#39;outputdir&#39;: &#39;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250226_093004&#39;}
+[09:30:07] INFO     freva - INFO - history, limit=3, since=None, until=None,    
                     entry_ids=None                                              
 </pre></div>
 </div>
@@ -1270,7 +1276,7 @@ have to provide additional metadata if mandatory keywords are missing.
 To make the routine work you’ll have to provide the <code class="docutils literal notranslate"><span class="pre">institute</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>
 and <code class="docutils literal notranslate"><span class="pre">experiment</span></code> keywords:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">freva</span> <span class="kn">import</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">databrowser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">freva</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserData</span><span class="p">,</span> <span class="n">databrowser</span>
 <span class="n">user_data</span> <span class="o">=</span> <span class="n">UserData</span><span class="p">()</span>
 <span class="c1"># You can also provide wild cards to search for data</span>
 <span class="n">user_data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;eur-11b&quot;</span><span class="p">,</span> <span class="s2">&quot;/tmp/my_awesome_data/outfile_?.nc&quot;</span><span class="p">,</span>
@@ -1283,16 +1289,16 @@ and <code class="docutils literal notranslate"><span class="pre">experiment</spa
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250103/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250226/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div>
 </div>
 <p>By default the data is copied. By using the <code class="docutils literal notranslate"><span class="pre">how</span></code> keyword you can
@@ -1321,7 +1327,7 @@ central location where they have been added to.</p></li>
 <p>Any data in the central user directory that belongs to the user can
 be deleted from the databrowser and also from the central data location:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">freva</span> <span class="kn">import</span> <span class="n">UserData</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">freva</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserData</span>
 <span class="n">user_data</span> <span class="o">=</span> <span class="n">UserData</span><span class="p">()</span>
 <span class="n">user_data</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">user_dir</span><span class="p">)</span>
 </pre></div>
@@ -1353,7 +1359,7 @@ be deleted from the databrowser and also from the central data location:</p>
 <p>If data has been removed from the databrowser it can be re added using
 the <code class="docutils literal notranslate"><span class="pre">index</span></code> method:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">freva</span> <span class="kn">import</span> <span class="n">UserData</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">freva</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserData</span>
 <span class="n">user_data</span> <span class="o">=</span> <span class="n">UserData</span><span class="p">()</span>
 <span class="n">user_data</span><span class="o">.</span><span class="n">index</span><span class="p">()</span>
 </pre></div>
@@ -1402,7 +1408,7 @@ export multiple plugins.</p></li>
 <p>Temporarily override the existing configuration file and use a new one.
 You can use a context manager to temporally use a different configuration
 and switch back later.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="k">with</span> <span class="n">freva</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">&quot;/work/freva/evaluation_system.conf&quot;</span><span class="p">):</span>
     <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s2">&quot;plugin_from_another_project&quot;</span><span class="p">)</span>
 </pre></div>
@@ -1411,7 +1417,7 @@ and switch back later.</p>
 temporarily, but want to use it permanently, you can use
 <a class="reference internal" href="#freva.config" title="freva.config"><code class="xref py py-class docutils literal notranslate"><span class="pre">freva.config</span></code></a> without a context manager:
 a context manager:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">freva</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="s2">&quot;/work/freva/evaluation_system.conf&quot;</span><span class="p">)</span>
 <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">freva</span><span class="o">.</span><span class="n">databrowser</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;user-1234&quot;</span><span class="p">,</span> <span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;extremes&quot;</span><span class="p">))</span>
 </pre></div>
@@ -1419,7 +1425,7 @@ a context manager:</p>
 <p>Import a new user defined plugin, for example if you have created a plugin
 called <code class="docutils literal notranslate"><span class="pre">MyPlugin</span></code> that is located in <code class="docutils literal notranslate"><span class="pre">~/freva/myplugin/plugin.py</span></code>
 you would set to <code class="docutils literal notranslate"><span class="pre">plugin_path='~/freva/my_plugin,plugin_module'</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">freva</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">plugin_path</span><span class="o">=</span><span class="s2">&quot;~/freva/my_plugin,plugin_module&quot;</span><span class="p">)</span>
 <span class="n">freva</span><span class="o">.</span><span class="n">run_plugin</span><span class="p">(</span><span class="s1">&#39;MyPlugin&quot;, variable1=1, variable2=&quot;a&quot;)</span>
 </pre></div>
@@ -1514,7 +1520,7 @@ time frequencies ( <code class="docutils literal notranslate"><span class="pre">
 and for a particular realization within the
 project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">files</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_browser</span><span class="p">(</span>
     <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
     <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
@@ -1543,7 +1549,7 @@ http://esgf3.dkrz.de/thredds/fileServer/cmip6/ScenarioMIP/CNRM-CERFACS/CNRM-CM6-
 </div>
 <p>In order to list the opendap endpoints (<code class="docutils literal notranslate"><span class="pre">opendap=True</span></code>):</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">opendap</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_browser</span><span class="p">(</span>
     <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
     <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
@@ -1598,7 +1604,7 @@ stored at the (DKRZ) local node (<code class="docutils literal notranslate"><spa
 holding the latest version (<code class="docutils literal notranslate"><span class="pre">latest=true</span></code>) for a particular
 realization within the project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">datasets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_datasets</span><span class="p">(</span>
     <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
     <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
@@ -1649,7 +1655,7 @@ instead of displaying anything (only http)</p>
 <p class="rubric">Example</p>
 <p>Create a wget script to download the queried URLs:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">freva</span><span class="o">.</span><span class="n">esgf_download</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="s2">&quot;CMIP5&quot;</span><span class="p">,</span>
             <span class="n">experiment</span><span class="o">=</span><span class="s2">&quot;decadal1960&quot;</span><span class="p">,</span>
             <span class="n">variable</span><span class="o">=</span><span class="s2">&quot;tas&quot;</span><span class="p">,</span> <span class="n">distrib</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">latest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1666,7 +1672,7 @@ instead of displaying anything (only http)</p>
  # ESG Federation download script
  #
  # Template version: 1.2
- # Generated by esgf-data.dkrz.de - 2025/01/03 05:02:25
+ # Generated by esgf-data.dkrz.de - 2025/02/26 09:30:13
  # Search URL: https://esgf-data.dkrz.de/esg-search/wget?project=CMIP5&amp;experiment=decadal1960&amp;variable=tas&amp;distrib=False&amp;latest=True&amp;type=File
  #
  ###############################################################################
@@ -1717,7 +1723,7 @@ and <code class="docutils literal notranslate"><span class="pre">time_frequency<
 (<code class="docutils literal notranslate"><span class="pre">distrib=false</span></code>) holding the latest version (<code class="docutils literal notranslate"><span class="pre">latest=true</span></code>)
 for a particular realization within the project <code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>:</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">facets</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_facets</span><span class="p">(</span>
     <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
     <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
@@ -1764,7 +1770,7 @@ in a list of dictionaries.</p>
 <p>Show the <code class="docutils literal notranslate"><span class="pre">key=value</span></code> pair of selected elements for a search (e.g.
 <code class="docutils literal notranslate"><span class="pre">query=[&quot;url&quot;,&quot;master_id&quot;,&quot;distribution&quot;,&quot;mip_era&quot;,&quot;activity_id&quot;,&quot;source_id&quot;,&quot;variable&quot;,&quot;product&quot;,&quot;version&quot;]</span></code>):</p>
 <p><span class="caption-text">Code </span></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">freva</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span><span class="o">,</span><span class="w"> </span><span class="nn">freva</span>
 <span class="n">queries</span> <span class="o">=</span> <span class="n">freva</span><span class="o">.</span><span class="n">esgf_query</span><span class="p">(</span>
     <span class="n">mip_era</span><span class="o">=</span><span class="s2">&quot;CMIP6&quot;</span><span class="p">,</span>
     <span class="n">activity_id</span><span class="o">=</span><span class="s2">&quot;ScenarioMIP&quot;</span><span class="p">,</span>
@@ -1903,6 +1909,7 @@ in a list of dictionaries.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.batch_id"><code class="docutils literal notranslate"><span class="pre">PluginStatus.batch_id</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.configuration"><code class="docutils literal notranslate"><span class="pre">PluginStatus.configuration</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.get_result_paths"><code class="docutils literal notranslate"><span class="pre">PluginStatus.get_result_paths()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.history_id"><code class="docutils literal notranslate"><span class="pre">PluginStatus.history_id</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.job_script"><code class="docutils literal notranslate"><span class="pre">PluginStatus.job_script</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.kill"><code class="docutils literal notranslate"><span class="pre">PluginStatus.kill()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#freva.PluginStatus.plugin"><code class="docutils literal notranslate"><span class="pre">PluginStatus.plugin</span></code></a></li>
@@ -1980,7 +1987,7 @@ in a list of dictionaries.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>

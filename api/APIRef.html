@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Databrowser Rest API &#8212; freva user guide 2410.0.0 documentation</title>
+    <title>Databrowser Rest API &#8212; freva user guide 2502.0.0 documentation</title>
   
   
   
@@ -30,7 +30,7 @@
   <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/code-tabs.css?v=1bc26e2f" />
@@ -41,8 +41,8 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a6e24d77"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/documentation_options.js?v=e15c9e9f"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2410.0.0 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2410.0.0 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2502.0.0 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2502.0.0 documentation - Home"/>
   
   
 </a></div>
@@ -552,7 +552,7 @@ curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/overview&quot;</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </pre></div>
@@ -689,7 +689,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
     <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/data-search/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">,</span> <span class="s2">&quot;fs_type&quot;</span><span class="p">:</span> <span class="s2">&quot;swift&quot;</span><span class="p">}</span>
@@ -923,7 +923,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
     <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/metadata-search/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">}</span>
@@ -1134,8 +1134,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">intake</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">intake</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
     <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/intake-catalogue/freva/file&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;product&quot;</span><span class="p">:</span> <span class="s2">&quot;EUR-11&quot;</span><span class="p">}</span>
@@ -1297,8 +1297,8 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">intake</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">intake</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
     <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/load/freva&quot;</span><span class="p">,</span>
     <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dataset&quot;</span><span class="p">:</span> <span class="s2">&quot;cmip6-fs&quot;</span><span class="p">},</span>
@@ -1487,7 +1487,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
@@ -1707,7 +1707,7 @@ C/C++</li></ul><div class="tab codetab selected" data-id="0">
 </pre></div>
 </div>
 </div><div class="tab codetab" data-id="1">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.freva.dkrz.de/api/freva-nextgen/databrowser/userdata&quot;</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
@@ -1914,7 +1914,7 @@ The actual response will include more datasets in the <cite>catalog_dict</cite> 
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>
