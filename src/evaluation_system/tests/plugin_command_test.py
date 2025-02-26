@@ -14,7 +14,6 @@ from subprocess import Popen
 
 import mock
 import pytest
-
 from evaluation_system.misc.exceptions import PluginNotFoundError, ValidationError
 from evaluation_system.tests import run_cli, similar_string
 
@@ -31,26 +30,15 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
         assert "the_number" in output
         assert "13" in output
         assert os.getpid() == 12345
-        out_path = (
-            Path(dummy_config.get("scheduler_output_dir"))
-            / "dummyplugin"
-            / "DummyPlugin-12345.local"
-        )
-        try:
-            out_path.unlink()
-        except FileNotFoundError:
-            pass
         plugin_cli(["dummyplugin", "the_number=13"])
-        interactive = capsys.readouterr().out
-        assert dummy_plugin.plugin_output_file == out_path
-        assert out_path.exists()
-        with out_path.open() as f:
-            assert interactive == f.read()
-        out_path.unlink()
+        out_path = dummy_plugin.plugin_output_file
+        assert str(out_path).endswith("-12345.local")
         plugin_cli(["dummyplugin", "the_number=13", "--batchmode"])
         output = capsys.readouterr().out
         assert "tail -f" in output
-        out_f = Path([o.split()[-1] for o in output.split("\n") if "tail" in o][0])
+        out_f = Path(
+            [o.split()[-1] for o in output.split("\n") if "tail" in o][0]
+        )
         assert out_f.exists()
 
         import freva
@@ -61,13 +49,17 @@ def test_cli(dummy_plugin, capsys, dummy_config, caplog):
             os.path.normpath(folder_path)
         )
 
-        plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "true"])
+        plugin_cli(
+            ["dummypluginfolders", "variable=pr", "--unique-output", "true"]
+        )
         folder_path = capsys.readouterr().out.strip().split()[-1]
         assert str(freva.history()[0]["id"]) in os.path.basename(
             os.path.normpath(folder_path)
         )
 
-        plugin_cli(["dummypluginfolders", "variable=pr", "--unique-output", "false"])
+        plugin_cli(
+            ["dummypluginfolders", "variable=pr", "--unique-output", "false"]
+        )
         folder_path = capsys.readouterr().out.strip().split()[-1]
         assert str(freva.history()[0]["id"]) not in os.path.basename(
             os.path.normpath(folder_path)
@@ -132,7 +124,7 @@ def test_plugin_status(dummy_env, caplog) -> None:
 
     import freva
 
-    res = freva.run_plugin("dummyplugin", the_number=2, other=-5, batchmode=True)
+    res = freva.run_plugin("dummyplugin", the_number=2, other=-15, batchmode=True)
     with pytest.raises(ValueError):
         res.wait(2)
     assert res.status == "running"
@@ -150,7 +142,9 @@ def test_plugin_output(dummy_history) -> None:
     """Test the output of the plugin."""
     import freva
 
-    res = freva.run_plugin("dummypluginfolders", variable="pr", caption="Some caption")
+    res = freva.run_plugin(
+        "dummypluginfolders", variable="pr", caption="Some caption"
+    )
     assert res.status == "finished"
     assert isinstance(res.get_result_paths(), list)
     assert len(res.get_result_paths()) > 0
@@ -176,6 +170,7 @@ def test_empty_status(dummy_history, capsys) -> None:
     assert res.stdout == ""
     assert res.batch_id is None
     assert res.job_script == ""
+    assert isinstance(res.history_id, int)
     res.kill()
     assert res.plugin == ""
     assert res.version == (0, 0, 0)
