@@ -15,10 +15,10 @@ jobs:
       name: Ceckout
       uses: actions/checkout@v4
     -
-      name: Set up Python 3.10
+      name: Set up Python 3.X
       uses: actions/setup-python@v3
       with:
-        python-version: "3.10"
+        python-version: "3.X"
     -
       name: Install packages
       run: |
@@ -34,7 +34,7 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
+        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
     steps:
       -
         name: Checkout
