@@ -20,6 +20,7 @@ exclude_lines =
     if 0:
     if __name__ == .__main__.:
     except ImportError:
+    except PermissionError:
     except (ImproperlyConfigured, OperationalError):
     except (ImproperlyConfigured, AttributeError):
 omit = src/evaluation_system/tests/*,./src/evaluation_system/fuse/*,./src/evaluation_system/external/*,./src/freva/cli/__main__.py
