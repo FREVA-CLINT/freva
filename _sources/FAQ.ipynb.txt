@@ -92,7 +92,7 @@
    "source": [
     "### How can I add my own plugins?\n",
     "\n",
-    "If you are working with python and want to load your own plugin definitions you can also use `freva.config` to load you own plugin definitons. Assuming you have\n",
+    "If you are working with python and want to load your own plugin definitions you can also use `freva.config` to load you own plugin definitions. Assuming you have\n",
     "your plugin definition saved in `~/freva/mypluging/the_plugin.py` you can load your own plugin via:\n",
     "\n",
     "```python\n",

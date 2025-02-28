@@ -219,6 +219,35 @@ Giving single time steps is also possible:
     ``2000-01 to 2100-12`` and alike. Single time steps are given without the
     ``to`` keyword.
 
+In multi versioned datasets only the *latest* version (i.e. *highest* version
+number) is returned by default. In order to retrieve all the available versions
+the ``--multiversion`` flag must be activated, e.g.:
+
+.. code:: console
+
+    freva databrowser project=reanalysis --multiversion
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "project=reanalysis", "--multiversion"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
+Querying a specific version from a multi versioned datasets requires the
+``--multiversion`` flag in combination with the ``version`` special attribute:
+
+.. code:: console
+
+    freva databrowser project=reanalysis version=20200101 --multiversion
+
+.. execute_code::
+   :hide_code:
+
+   from subprocess import run, PIPE
+   res = run(["freva", "databrowser", "project=reanalysis", "version=v20200101", "--multiversion"], check=True, stdout=PIPE, stderr=PIPE)
+   print(res.stdout.decode())
+
 
 You might as well want to know about possible values that an attribute
 can take after a certain search is done. For this you use the
