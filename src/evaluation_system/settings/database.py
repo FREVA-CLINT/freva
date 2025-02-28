@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 
 import django
 from django.conf import settings
+
 from evaluation_system.misc import config
 from evaluation_system.misc.config import reloadConfiguration
 

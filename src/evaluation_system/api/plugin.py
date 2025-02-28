@@ -42,18 +42,13 @@ from functools import partial
 from hashlib import sha512
 from pathlib import Path
 from time import time
-from typing import (
-    IO,
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    Optional,
-    TextIO,
-    Union,
-    cast,
-)
+from typing import IO, Any, Dict, Iterable, Iterator, Optional, TextIO, Union, cast
 from uuid import uuid4
+
+from PyPDF2 import PdfReader
+from rich.console import Console
+from rich.file_proxy import FileProxy
+from rich.traceback import Traceback
 
 import evaluation_system.model.history.models as hist_model
 import evaluation_system.model.repository as repository
@@ -67,10 +62,6 @@ from evaluation_system.misc.exceptions import (
 from evaluation_system.misc.utils import PIPE_OUT, TemplateDict
 from evaluation_system.model.solr_core import SolrCore
 from evaluation_system.model.user import User
-from PyPDF2 import PdfReader
-from rich.console import Console
-from rich.file_proxy import FileProxy
-from rich.traceback import Traceback
 
 from .user_data import DataReader
 from .workload_manager import JobStatus, schedule_job

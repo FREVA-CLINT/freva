@@ -7,6 +7,7 @@ from typing import Any, Optional, Union
 
 import lazy_import
 from django.core.exceptions import ImproperlyConfigured
+
 from evaluation_system.misc import logger
 from evaluation_system.misc.config import reloadConfiguration
 
