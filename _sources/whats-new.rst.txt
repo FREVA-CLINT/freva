@@ -5,6 +5,19 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2502.0.1
+~~~~~~~~~
+
+Bug fixes
++++++++++
+- Catch PermissionError when user config dir does not exist.
+
+Documentations
+++++++++++++++
+- Added mulit-version queries.
+
+
+
 v2502.0.0
 ~~~~~~~~~
 

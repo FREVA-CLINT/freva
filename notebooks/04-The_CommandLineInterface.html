@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The Freva command line interface &#8212; freva user guide 2502.0.0 documentation</title>
+    <title>The Freva command line interface &#8212; freva user guide 2502.0.1 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=e15c9e9f"></script>
+    <script src="../_static/documentation_options.js?v=481ceaf9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -131,8 +131,8 @@
       
     
     
-    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2502.0.0 documentation - Home"/>
-    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2502.0.0 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-light" alt="freva user guide 2502.0.1 documentation - Home"/>
+    <img src="../_static/logo.png" class="logo__image only-dark pst-js-only" alt="freva user guide 2502.0.1 documentation - Home"/>
   
   
 </a></div>
@@ -941,7 +941,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&#34;[-\d]+&#34;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 47 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 45 seconds
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -961,7 +961,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_2
 Scheduled job with history id: 2130
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-5031.out
+tail -f /tmp/share/slurm/animator/Animator-5056.out
 </pre></div></div>
 </div>
 </section>
@@ -981,9 +981,9 @@ tail -f /tmp/share/slurm/animator/Animator-5031.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[16:04:42]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>,
+<span class="ansi-cyan-fg">[05:14:13]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>,
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-magenta-fg">None</span>
-2115) dummyplugin [2025-02-28 15:58:08] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2025-03-02 05:07:56] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -999,7 +999,7 @@ tail -f /tmp/share/slurm/animator/Animator-5031.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[16:04:44]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>,
+<span class="ansi-cyan-fg">[05:14:14]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>,
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-bold">[</span><span class="ansi-green-fg">&#39;1&#39;</span><span class="ansi-bold">]</span>
 </pre></div></div>
 </div>
@@ -1126,16 +1126,16 @@ freva-databrowser<span class="w"> </span><span class="nv">experiment</span><span
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Status: crawling ...ok
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
-/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250228/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001041800-197001050300.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001040800-197001041700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001032200-197001040700.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001031200-197001032100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001030200-197001031100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001021600-197001030100.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001020600-197001021500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001012000-197001020500.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001011000-197001011900.nc
+/tmp/user_data/user-runner/eur-11b/clex/UM-RA2T/Bias-correct/hr/user_data/hr/r0i0p0/v20250302/tas/tas_hr_UM-RA2T_Bias-correct_r0i0p0_197001010000-197001010900.nc
 </pre></div></div>
 </div>
 </section>
