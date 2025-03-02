@@ -41,8 +41,11 @@ the future for the next project phase."""
 USER_CONFIG_FILE_LOC = osp.join(
     appdirs.user_config_dir(), "freva", "evaluation_system.conf"
 )
-if Path(USER_CONFIG_FILE_LOC).exists():
-    CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
+try:
+    if Path(USER_CONFIG_FILE_LOC).exists():
+        CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
+except PermissionError:
+    pass
 EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 _PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
