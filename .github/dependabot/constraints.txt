@@ -5,7 +5,7 @@ PyPDF2==3.0.1
 appdirs==1.4.4
 dask==2025.2.0
 h5netcdf==1.6.1
-humanize==4.11.0
+humanize==4.12.1
 lazy-import==0.2.2
 metadata-inspector==2024.10.15
 mysqlclient==2.2.6
