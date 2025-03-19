@@ -169,7 +169,8 @@ class ParameterType(initOrder):
 
         if len(values) > self.max_items:
             raise ValidationError(
-                "Expected %s items at most, got %s" % (self.max_items, len(values))
+                "Expected %s items at most, got %s"
+                % (self.max_items, len(values))
             )
 
         if (
@@ -237,7 +238,8 @@ class ParameterType(initOrder):
                 elif value[0] == "[":
                     # assume is a json array:
                     return [
-                        self.base_type(v) for v in self._verified(json.loads(value))
+                        self.base_type(v)
+                        for v in self._verified(json.loads(value))
                     ]
                 else:
                     # this is a single string, but we expect multiple,
@@ -331,7 +333,11 @@ class ParameterDictionary(dict):
     def __init__(self, *parameters: ParameterType) -> None:
         """Instantiate ParameterDictionary with the given list of parameters."""
         super().__init__()
-        extra = config.get_section("scheduler_options").get("extra_options", "").strip()
+        extra = (
+            config.get_section("scheduler_options")
+            .get("extra_options", "")
+            .strip()
+        )
         if extra.lower() == "none":
             extra = ""
         extra_scheduler_options = String(
@@ -347,12 +353,15 @@ class ParameterDictionary(dict):
             # check name is unique
             if param.name in self._params:
                 raise ValueError(
-                    "Parameters name must be unique. Got second %s key." % param.name
+                    "Parameters name must be unique. Got second %s key."
+                    % param.name
                 )
             self._params[param.name] = param
             self[param.name] = param.default
         self.setdefault("extra_scheduler_options", extra)
-        self._params.setdefault("extra_scheduler_options", extra_scheduler_options)
+        self._params.setdefault(
+            "extra_scheduler_options", extra_scheduler_options
+        )
 
     def __str__(self):
         return "%s(%s)" % (
@@ -455,12 +464,15 @@ class ParameterDictionary(dict):
                         missing_values
                     )
                 if too_many_items:
-                    msg += "Too many entries for these parameters: %s" % ", ".join(
-                        [
-                            "%s(max:%s, found:%s)"
-                            % (param, max, len(config_dict[param]))
-                            for param, max in too_many_items
-                        ]
+                    msg += (
+                        "Too many entries for these parameters: %s"
+                        % ", ".join(
+                            [
+                                "%s(max:%s, found:%s)"
+                                % (param, max, len(config_dict[param]))
+                                for param, max in too_many_items
+                            ]
+                        )
                     )
                 raise ValidationError(msg)
             return dict(missing=missing, too_many_items=too_many_items)
@@ -522,7 +534,9 @@ class ParameterDictionary(dict):
             try:
                 parsed_values: Any = self._params[key].parse(value)
             except KeyError as error:
-                raise ValidationError(f"{key} is not a valid parameter") from error
+                raise ValidationError(
+                    f"{key} is not a valid parameter"
+                ) from error
             if isinstance(parsed_values, list):
                 if isinstance(param_config[key], list):
                     param_config[key] = param_config[key] + parsed_values
@@ -1019,7 +1033,9 @@ class Range(String):
                 del_list += self._parse_comma(part)
             return PrintableList(sorted([x for x in result if x not in del_list]))
         except AttributeError as err:
-            raise ValueError(f"'{value}' is no recognized as a range value") from err
+            raise ValueError(
+                f"'{value}' is no recognized as a range value"
+            ) from err
 
     def to_str(self, value: Any) -> str:
         """Conevert input value to string."""
@@ -1145,7 +1161,7 @@ class SelectField(ParameterType):
         **kwargs,
     ):
         self.options = options
-        self.custom = allow_user_input
+        self.allow_user_input = allow_user_input
         self.multiple = multiple
         if multiple:
             self.max_items = sys.maxsize
@@ -1163,7 +1179,7 @@ class SelectField(ParameterType):
             if val in self.options.values():
                 key = next(k for k, v in self.options.items() if v == val)
                 result.append(key)
-            elif self.custom:
+            elif self.allow_user_input:
                 result.append(val)
             else:
                 allowed_values = ", ".join(list(self.options.values()))
