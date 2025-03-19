@@ -36,6 +36,7 @@ import warnings
 warnings.filterwarnings(
     "always", category=PendingDeprecationWarning, module="evaluation_system.*"
 )
+warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
 __version__ = "2502.0.1"

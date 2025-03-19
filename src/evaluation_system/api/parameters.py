@@ -8,17 +8,20 @@ plugin wrapper class.
 
 from __future__ import annotations
 
-import html
 import json
 import re
+import sys
 import textwrap
-import warnings
 from collections import defaultdict
-from typing import Any, Optional, Type, Union
+from typing import Any, Optional, Type, Union, cast
 
 from evaluation_system.misc import config
 from evaluation_system.misc.exceptions import ValidationError, deprecated_method
-from evaluation_system.misc.utils import PrintableList, find_similar_words, initOrder
+from evaluation_system.misc.utils import (
+    PrintableList,
+    find_similar_words,
+    initOrder,
+)
 from evaluation_system.model.plugins.models import Parameter
 
 ParameterBaseType = Union[str, int, float, bool, PrintableList]
@@ -438,7 +441,10 @@ class ParameterDictionary(dict):
             default_value = config_dict.get(key, [])
             if not isinstance(default_value, list):
                 default_value = [default_value]
-            if len(default_value) > param.max_items:
+            if (
+                len(default_value) > param.max_items
+                and getattr(param, "multiple", False) is False
+            ):
                 too_many_items.append((key, param.max_items))
         if missing or too_many_items:
             if raise_exception:
@@ -1096,13 +1102,18 @@ class SolrField(String):
         super().__init__(*args, **kwargs)
 
 
-class SelectField(String):
+class SelectField(ParameterType):
     """Select field to select parameter from predefined values.
 
     Parameters
     ----------
     options: dict[str, str]
         Directory representing the names and values of the predefined options.
+    allow_user_input: bool, default: False
+        Set to True to allow user input beyond predefined options.
+    multiple: bool, default: False
+        Allow that users can pick multiple options.
+
     kwargs:
         Additional :class:`ParameterType` parameters.
 
@@ -1124,19 +1135,45 @@ class SelectField(String):
 
     """
 
-    def __init__(self, options: dict[str, str], *args, **kwargs):
+    base_type = str
+
+    def __init__(
+        self,
+        options: dict[str, str],
+        allow_user_input: bool = False,
+        multiple: bool = False,
+        **kwargs,
+    ):
         self.options = options
-        super().__init__(*args, **kwargs)
+        self.custom = allow_user_input
+        self.multiple = multiple
+        if multiple:
+            self.max_items = sys.maxsize
 
-    def _verified(self, orig_values):
-        if orig_values not in self.options.values():
-            values = ",".join(list(self.options.values()))
-            raise ValueError(
-                f'Only the following values are allowed for "{self.name}": {values}'
-            )
-        return orig_values
+        super().__init__(**kwargs)
 
-    def parse(self, value: Any) -> str:
+    def _verified(self, orig_values: Union[str, list[str]]) -> list[str]:
+        values_list = (
+            orig_values
+            if isinstance(orig_values, list)
+            else orig_values.split(self.item_separator)
+        )
+        result = []
+        for val in (v.strip() for v in values_list if v.strip()):
+            if val in self.options.values():
+                key = next(k for k, v in self.options.items() if v == val)
+                result.append(key)
+            elif self.custom:
+                result.append(val)
+            else:
+                allowed_values = ", ".join(list(self.options.values()))
+                raise ValidationError(
+                    f'"{val}" not allowed! Only those values are allowed'
+                    f' for "{self.name}": {allowed_values}'
+                )
+        return result or [""]
+
+    def parse(self, value: Union[str, list[str]]) -> Union[PrintableList, str]:
         """Parse a parameter value.
 
         Parameters
@@ -1154,9 +1191,12 @@ class SelectField(String):
         ValueError:
             if value is not part of possible options.
         """
-
-        if self._verified(value):
-            for key, val in self.options.items():
-                if value == val:
-                    return key
-        return ""
+        values = self._verified(value)
+        if self.multiple is False and len(values) > 1:
+            raise ValidationError(
+                f'Multiple values are not allowed for "{self.name}". '
+                f"Only a single value is permitted."
+            )
+        if len(values) > 1:
+            self.max_items = len(values)
+        return cast(PrintableList, values) if self.multiple else values[0]
