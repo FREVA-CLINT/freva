@@ -154,7 +154,6 @@ def test_parsing(dummy_env):
                 assert type(parsed_value) == case_type.base_type
             assert parsed_value == result
         for unparsable in negative_cases:
-            print(unparsable)
             try:
                 with pytest.raises(TypeError):
                     case_type.parse(unparsable)

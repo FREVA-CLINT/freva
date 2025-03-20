@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import textwrap
 from collections import defaultdict
 from typing import Any, Optional, Type, Union, cast
@@ -89,7 +90,7 @@ class ParameterType(initOrder):
         name=None,
         default=None,
         mandatory=False,
-        max_items=1,
+        max_items=None,
         item_separator=",",
         regex=None,
         version=1,
@@ -101,11 +102,13 @@ class ParameterType(initOrder):
         self.name = name
 
         self.mandatory = mandatory
-        if max_items < 1:
+        if max_items is not None and max_items < 1:
             raise ValidationError(
                 "max_items must be set to a value >= 1. Current='%s'" % max_items
             )
-        self.max_items = max_items
+        if max_items is None and getattr(self, "multiple", False):
+            max_items = sys.maxsize
+        self.max_items = max_items or 1
         self.item_separator = item_separator
 
         self.regex = regex
@@ -440,10 +443,7 @@ class ParameterDictionary(dict):
             default_value = config_dict.get(key, [])
             if not isinstance(default_value, list):
                 default_value = [default_value]
-            if (
-                len(default_value) > param.max_items
-                and getattr(param, "multiple", False) is False
-            ):
+            if len(default_value) > param.max_items:
                 too_many_items.append((key, param.max_items))
         if missing or too_many_items:
             if raise_exception:
