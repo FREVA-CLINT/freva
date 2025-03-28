@@ -158,10 +158,16 @@ class PluginStatus:
         hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
         res = freva.PluginStatus(hist["id"])
         print(res.status)
+
+    You can consult other users' runs status by setting the
+    ``user_name=<user_id>`` parameter (``user_name="all"`` for any). Note
+    that you will not be able to fully interact with the status of others'
+    plugin runs (e.g. ``res.kill()``).
     """
 
-    def __init__(self, history_id: int) -> None:
+    def __init__(self, history_id: int, user_name=None) -> None:
         self._id: int = history_id
+        self._user_name: Optional[str] = user_name
 
     def __repr__(self) -> str:
         return (
@@ -176,7 +182,9 @@ class PluginStatus:
         try:
             hist = cast(
                 List[Dict[str, Any]],
-                freva.history(entry_ids=self._id, return_results=True),
+                freva.history(
+                    entry_ids=self._id, return_results=True, user_name=self._user_name
+                ),
             )[0]
         except IndexError:
             logger.setLevel(log_level)

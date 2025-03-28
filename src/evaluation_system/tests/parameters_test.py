@@ -455,11 +455,7 @@ def test_validate_errors(dummy_env):
 
 
 def test_help(dummy_env):
-    from evaluation_system.api.parameters import (
-        Float,
-        Integer,
-        ParameterDictionary,
-    )
+    from evaluation_system.api.parameters import Float, Integer, ParameterDictionary
 
     p_dict = ParameterDictionary(
         Integer(name="answer", help="just some value", default=42, print_format="%sm"),
