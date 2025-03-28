@@ -5,6 +5,14 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2502.1.0
+~~~~~~~~~
+
+New Features
+++++++++++++
+- Plugin SelectField can recieve multiple and custom user input values.
+
+
 v2502.0.1
 ~~~~~~~~~
 
