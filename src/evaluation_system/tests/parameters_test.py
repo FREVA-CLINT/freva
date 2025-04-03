@@ -33,7 +33,11 @@ def test_parameter_type(dummy_env):
     with pytest.raises(ValidationError):
         String(name="foo", max_items=0)
     s_type = String(
-        name="foo", default="foo;bar", mandatory=True, max_items=2, item_separator=";"
+        name="foo",
+        default="foo;bar",
+        mandatory=True,
+        max_items=2,
+        item_separator=";",
     )
     assert s_type.to_str("foo;bar") == "foo;bar"
     assert s_type.to_str(["foo", "bar"]) == "foo;bar"
@@ -59,7 +63,11 @@ def test_parsing(dummy_env):
     )
 
     test_cases = [
-        (String(), [("asd", "asd"), (None, "None"), (1, "1"), (True, "True")], []),
+        (
+            String(),
+            [("asd", "asd"), (None, "None"), (1, "1"), (True, "True")],
+            [],
+        ),
         (
             String(regex="^x.*$"),
             [("xasd", "xasd")],
@@ -125,10 +133,13 @@ def test_parsing(dummy_env):
         ),
         (
             SelectField(
-                options={"option1": "value1", "another_option": "Some other value"}
+                options={
+                    "option1": "value1",
+                    "another_option": "Some other value",
+                }
             ),
             [("value1", "option1"), ("Some other value", "another_option")],
-            [("bad value", "")],
+            ["bad value"],
         ),
         (SolrField(facet="variable"), [("tas", "tas"), ("pr", "pr")], []),
         (InputDirectory(), [("/home/user", "/home/user")], []),
@@ -155,6 +166,40 @@ def test_parsing(dummy_env):
                         case_type.parse(unparsable)
 
 
+def test_select_field(dummy_env):
+    """Test the SelectField parameter."""
+
+    from evaluation_system.api.parameters import SelectField, ValidationError
+
+    param1 = SelectField(
+        options={"option1": "value1", "another_option": "Some other value"}
+    )
+    assert param1.parse(["value1"]) == "option1"
+    assert param1.parse("Some other value") == "another_option"
+    with pytest.raises(ValidationError):
+        param1.parse("foo")
+    with pytest.raises(ValidationError):
+        param1.parse(["value1", "Some other value"])
+    param2 = SelectField(
+        options={"option1": "value1", "another_option": "Some other value"},
+        multiple=True,
+    )
+    assert len(param2.parse(["value1", "Some other value"])) == 2
+    with pytest.raises(ValidationError):
+        param2.parse(["foo"])
+    param3 = SelectField(
+        options={"option1": "value1", "another_option": "Some other value"},
+        allow_user_input=True,
+    )
+    assert param3.parse(["foo"]) == "foo"
+    param4 = SelectField(
+        options={"option1": "value1", "another_option": "Some other value"},
+        allow_user_input=True,
+        multiple=True,
+    )
+    assert isinstance(param4.parse(["foo"]), list)
+
+
 def test_parameters_dictionary(dummy_env):
     from evaluation_system.api.parameters import (
         ParameterDictionary,
@@ -164,7 +209,10 @@ def test_parameters_dictionary(dummy_env):
 
     p1 = String(name="a_param1", default="default default 1")
     p2 = String(
-        name="a_param2", default="default default 2", max_items=3, item_separator=":"
+        name="a_param2",
+        default="default default 2",
+        max_items=3,
+        item_separator=":",
     )
     assert p2.parse("a:b:C") == ["a", "b", "C"]
     with pytest.raises(ValueError):
@@ -302,7 +350,9 @@ def test_complete(dummy_env):
     )
 
     p_dict = ParameterDictionary(
-        Integer(name="int"), File(name="file", default="/tmp/file1"), Date(name="date")
+        Integer(name="int"),
+        File(name="file", default="/tmp/file1"),
+        Date(name="date"),
     )
     conf = dict(int=1)
     p_dict._complete(conf)
@@ -315,7 +365,10 @@ def test_complete(dummy_env):
         "file": "/tmp/file1",
     }
 
-    assert p_dict._complete() == {"extra_scheduler_options": "", "file": "/tmp/file1"}
+    assert p_dict._complete() == {
+        "extra_scheduler_options": "",
+        "file": "/tmp/file1",
+    }
     assert p_dict._complete(add_missing_defaults=True) == {
         "int": None,
         "date": None,
@@ -402,7 +455,11 @@ def test_validate_errors(dummy_env):
 
 
 def test_help(dummy_env):
-    from evaluation_system.api.parameters import Float, Integer, ParameterDictionary
+    from evaluation_system.api.parameters import (
+        Float,
+        Integer,
+        ParameterDictionary,
+    )
 
     p_dict = ParameterDictionary(
         Integer(name="answer", help="just some value", default=42, print_format="%sm"),

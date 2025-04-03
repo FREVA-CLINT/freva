@@ -5,9 +5,6 @@ import time
 from pathlib import Path
 from subprocess import PIPE, run
 
-from netCDF4 import Dataset as nc
-from PIL import Image
-
 from evaluation_system.api.parameters import (
     Directory,
     Float,
@@ -19,6 +16,8 @@ from evaluation_system.api.parameters import (
 from evaluation_system.api.plugin import PluginAbstract
 from evaluation_system.model.db import UserDB
 from evaluation_system.model.user import User
+from netCDF4 import Dataset as nc
+from PIL import Image
 
 
 class DummyPluginFolders(PluginAbstract):
