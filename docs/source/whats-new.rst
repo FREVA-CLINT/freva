@@ -5,12 +5,13 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2502.1.0
+v2504.0.0
 ~~~~~~~~~
 
 New Features
 ++++++++++++
-- Plugin SelectField can recieve multiple and custom user input values.
+- Plugin SelectField can receive multiple and custom user input values.
+- ``PluginStatus`` can access the status of ``job_ids`` of any user.
 
 
 v2502.0.1
@@ -22,7 +23,7 @@ Bug fixes
 
 Documentations
 ++++++++++++++
-- Added mulit-version queries.
+- Added multi-version queries.
 
 
 

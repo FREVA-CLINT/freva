@@ -164,7 +164,6 @@ class PluginStatus:
 
     def __init__(self, history_id: int) -> None:
         self._id: int = history_id
-        
 
     def __repr__(self) -> str:
         return (
@@ -179,9 +178,7 @@ class PluginStatus:
         try:
             hist = cast(
                 List[Dict[str, Any]],
-                freva.history(
-                    entry_ids=self._id, return_results=True, user_name="*"
-                ),
+                freva.history(entry_ids=self._id, return_results=True, user_name="*"),
             )[0]
         except IndexError:
             logger.setLevel(log_level)
