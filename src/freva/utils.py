@@ -158,6 +158,8 @@ class PluginStatus:
         hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
         res = freva.PluginStatus(hist["id"])
         print(res.status)
+
+    Note: You won't be able to kill running jobs associated to history id's from other users.
     """
 
     def __init__(self, history_id: int) -> None:
@@ -176,7 +178,7 @@ class PluginStatus:
         try:
             hist = cast(
                 List[Dict[str, Any]],
-                freva.history(entry_ids=self._id, return_results=True),
+                freva.history(entry_ids=self._id, return_results=True, user_name="*"),
             )[0]
         except IndexError:
             logger.setLevel(log_level)

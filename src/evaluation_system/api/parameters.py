@@ -17,11 +17,7 @@ from typing import Any, Optional, Type, Union, cast
 
 from evaluation_system.misc import config
 from evaluation_system.misc.exceptions import ValidationError, deprecated_method
-from evaluation_system.misc.utils import (
-    PrintableList,
-    find_similar_words,
-    initOrder,
-)
+from evaluation_system.misc.utils import PrintableList, find_similar_words, initOrder
 from evaluation_system.model.plugins.models import Parameter
 
 ParameterBaseType = Union[str, int, float, bool, PrintableList]
