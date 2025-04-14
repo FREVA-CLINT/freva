@@ -1,6 +1,6 @@
 Django==5.1.7
 GitPython==3.1.44
-Pillow==11.2.0
+Pillow==11.2.1
 PyPDF2==3.0.1
 appdirs==1.4.4
 dask==2025.2.0
