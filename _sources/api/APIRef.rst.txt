@@ -540,6 +540,157 @@ Searching for metadata
 
 
 ---
+.. _databrowser-api-stac:
+
+Generating a STAC Catalogue
+----------------------------
+
+.. http:get:: /api/freva-nextgen/databrowser/stac-catalogue/(str:flavour)/(str:uniq_key)
+
+    This endpoint transforms Freva databrowser search results into a static SpatioTemporal Asset Catalog (STAC). 
+    STAC is an open standard for geospatial data cataloguing, enabling consistent discovery and access of climate datasets, 
+    satellite imagery and spatiotemporal data. It provides a common language for describing geospatial information and related metadata.
+
+    :param flavour: The Data Reference Syntax (DRS) standard specifying the
+                    type of climate datasets to query. The available
+                    DRS standards can be retrieved using the
+                    ``GET /api/datasets/overview`` method.
+    :type flavour: str
+    :param uniq_key: The type of search result, which can be either "file" or
+                    "uri". This parameter determines whether the search
+                    will be based on file paths or Uniform Resource
+                    Identifiers (URIs).
+    :type uniq_key: str
+    :query start: Specify the starting point for receiving search results.
+                    Default is 0.
+    :type start: int
+    :query max-results: Raise an Error if more results are found than that
+                    number, -1 for do not raise at all.
+    :type max-results: int
+    :query multi-version: Use versioned datasets for querying instead of the
+                    latest datasets. Default is false.
+    :type multi-version: bool
+    :query translate: Translate the metadata output to the required DRS flavour.
+                     Default is true.
+    :type translate: bool
+    :query \**search_facets: With any other query parameters you refine your
+                    data search. Query parameters could be, depending
+                    on the DRS standard flavour ``product``, ``project``
+                    ``model`` etc.
+    :type \**search_facets: str, list[str]
+
+    :statuscode 200: Static STAC catalog creation successful
+    :statuscode 404: No entries found for this query
+    :statuscode 413: Result stream too big
+    :statuscode 422: Invalid flavour or search keys
+    :statuscode 500: Internal server error
+    :statuscode 503: Search backend error
+    :resheader Content-Type: ``application/zip``
+
+    Example Request
+    ~~~~~~~~~~~~~~~~~
+    Here's an example of how to create a static STAC catalog as a downloadable archive that follows the
+    `freva` DRS standard and points to data files rather than URIs.
+    We're specifically looking for datasets from the ``EUR-11`` ``product``.
+
+    .. sourcecode:: http
+
+        GET /api/freva-nextgen/databrowser/stac-catalogue/freva/file?product=EUR-11 HTTP/1.1
+        Host: www.freva.dkrz.de
+
+    Example Response
+    ~~~~~~~~~~~~~~~~~~
+
+    .. sourcecode:: http
+
+        HTTP/1.1 200 OK
+        Content-Type: application/zip
+        Content-Disposition: attachment; filename="stac-catalog-Dataset-freva-674ff427-2e2-file.zip"
+
+        [Json content of the zip archive]
+
+    Example
+    ~~~~~~~
+    Below you can find example usages of this request in different scripting and programming languages.
+
+    .. tabs::
+
+        .. code-tab:: bash
+            :caption: Shell
+
+            curl -X GET \
+            'https://www.freva.dkrz.de/api/freva-nextgen/databrowser/stac-catalogue/freva/file?product=EUR-11' \
+            --output stac-catalog.zip
+
+        .. code-tab:: python
+            :caption: Python
+
+            import requests
+
+            response = requests.get(
+                "https://www.freva.dkrz.de/api/freva-nextgen/databrowser/stac-catalogue/freva/file",
+                params={"product": "EUR-11"},
+                stream=True
+            )
+            with open("stac-catalog.zip", "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+        .. code-tab:: r
+            :caption: gnuR
+
+            library(httr)
+
+            # For static STAC
+            response <- GET(
+                "https://www.freva.dkrz.de/api/freva-nextgen/databrowser/stac-catalogue/freva/file",
+                query = list(product = "EUR-11"),
+                write_disk("stac-catalog.zip", overwrite = TRUE)
+            )
+
+        .. code-tab:: julia
+            :caption: Julia
+
+            using HTTP
+            using JSON
+
+            response = HTTP.get(
+                "https://www.freva.dkrz.de/api/freva-nextgen/databrowser/stac-catalogue/freva/file",
+                query = Dict("product" => "EUR-11")
+            )
+            open("stac-catalog.zip", "w") do f
+                write(f, response.body)
+            end
+
+        .. code-tab:: c
+            :caption: C/C++
+
+            #include <stdio.h>
+            #include <curl/curl.h>
+
+            int main() {
+                CURL *curl;
+                CURLcode res;
+                FILE *fp;
+
+                curl = curl_easy_init();
+                if (curl) {
+                    char static_url[] = "https://www.freva.dkrz.de/api/freva-nextgen/databrowser/stac-catalogue/freva/file?product=EUR-11";
+                    fp = fopen("stac-catalog.zip", "wb");
+                    curl_easy_setopt(curl, CURLOPT_URL, static_url);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                    res = curl_easy_perform(curl);
+                    fclose(fp);
+
+                    if (res != CURLE_OK) {
+                        printf("Error: %s\n", curl_easy_strerror(res));
+                    }
+
+                    curl_easy_cleanup(curl);
+                }
+                return 0;
+            }
+---
 
 .. _databrowser-api-intake:
 
