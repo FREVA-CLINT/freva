@@ -11,7 +11,7 @@ metadata-inspector==2024.10.15
 mysqlclient==2.2.6
 netCDF4==1.7.2
 numpy==2.2.4
-pandas==2.1.1
+pandas==2.3.0
 pymysql==1.1.1
 requests==2.32.3
 toml==0.10.2
