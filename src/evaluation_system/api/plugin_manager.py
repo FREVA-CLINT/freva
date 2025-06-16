@@ -158,14 +158,20 @@ class _PluginStateHandle:
 
     def _update_plugin_state_in_db(self):
         """Update the state of a plugin in the db."""
-        self.user.getUserDB().upgradeStatus(
-            self.rowid, self.user.getName(), self.status
-        )
+        try:
+            self.user.getUserDB().upgradeStatus(
+                self.rowid, self.user.getName(), self.status
+            )
+        except Exception as error:
+            log.error("Could not update status %s to db: %s", self.status, error)
 
-    def _update_plugin_state_in_db_and_quit(self, *args):
+    def _update_plugin_state_in_db_and_quit(self, signum: int, *args):
         """Update the plugin state of a plugin and quit."""
-        self._update_plugin_state_in_db()
-        raise KeyboardInterrupt
+        signal_name = signal.Signals(signum).name
+        if self.status > 2:
+            log.warning("Received termination signal: %s (%i)", signal_name, signum)
+            self._update_plugin_state_in_db()
+        sys.exit(signum)
 
 
 T = TypeVar("T")

@@ -5,6 +5,13 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2506.0.0
+~~~~~~~~~
+
+Bug fixes
++++++++++
+- Fix sig term handler.
+
 v2504.0.0
 ~~~~~~~~~
 
