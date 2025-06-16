@@ -54,6 +54,10 @@ from typing import (
 )
 
 from django.db.models.query import QuerySet
+from PIL import Image, ImageSequence
+from rich import print as pprint
+from typing_extensions import TypedDict
+
 from evaluation_system import __version__ as version_api
 from evaluation_system.misc import config
 from evaluation_system.misc import logger as log
@@ -72,9 +76,6 @@ from evaluation_system.model.history.models import (
 )
 from evaluation_system.model.plugins.models import Parameter
 from evaluation_system.model.user import User
-from PIL import Image, ImageSequence
-from rich import print as pprint
-from typing_extensions import TypedDict
 
 from .plugin import PluginAbstract
 
@@ -168,9 +169,7 @@ class _PluginStateHandle:
         """Update the plugin state of a plugin and quit."""
         signal_name = signal.Signals(signum).name
         if self.status > 2:
-            log.warning(
-                "Received termination signal: %s (%i)", signal_name, signum
-            )
+            log.warning("Received termination signal: %s (%i)", signal_name, signum)
             self._update_plugin_state_in_db()
         sys.exit(signum)
 
@@ -242,9 +241,7 @@ def reload_plugins(
             __plugin_modules__[module_name] = os.path.join(path, module_name)
             extra_plugins.append(module_name)
         else:
-            log.warning(
-                "Cannot load %s, directory missing: %s", module_name, path
-            )
+            log.warning("Cannot load %s, directory missing: %s", module_name, path)
     # the same for user specific env variable
     if user_name:  # is it possible for User().getName() to be None?
         if PLUGIN_ENV + "_" + user_name in os.environ:
@@ -254,18 +251,14 @@ def reload_plugins(
             ):
                 # extend path to be exact by resolving all
                 # "user shortcuts" (e.g. '~' or '$HOME')
-                path = os.path.abspath(
-                    os.path.expandvars(os.path.expanduser(path))
-                )
+                path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
                 if os.path.isdir(path):
                     # we have a plugin_imp with defined api
                     sys.path.append(path)
                     # TODO this is not working like in the previous loop. Though we
                     # might just want to remove it, as there seem to be no use for
                     # this info...
-                    __plugin_modules__[module_name] = os.path.join(
-                        path, module_name
-                    )
+                    __plugin_modules__[module_name] = os.path.join(path, module_name)
                     extra_plugins.append(module_name)
                 else:
                     log.warning(
@@ -299,9 +292,7 @@ def reload_plugins(
                 sys.path.append(py_dir)
                 __plugin_modules__[plugin_name] = os.path.join(py_dir, py_mod)
         else:
-            log.warning(
-                "Cannot load '%s' directory missing: %s", plugin_name, py_dir
-            )
+            log.warning("Cannot load '%s' directory missing: %s", plugin_name, py_dir)
 
     for plugin_name, plugin_mod in __plugin_modules__.items():
         try:
@@ -325,10 +316,7 @@ def reload_plugins(
             log.warning(f"Error loading plugin {plugin_name}: {e}")
             continue
 
-        if (
-            class_name_str != ""
-            and class_name_str.lower() not in __plugins_meta.keys()
-        ):
+        if class_name_str != "" and class_name_str.lower() not in __plugins_meta.keys():
             __plugins_meta[class_name_str.lower()] = PluginMetadata(
                 name=class_name_str,
                 plugin_class=class_name_str,
@@ -621,10 +609,7 @@ def _preview_copy(source_path: str, dest_path: str) -> None:
 
     extension = Path(source_path).suffix
     supported = Image.registered_extensions()
-    if (
-        extension in supported
-        and supported[extension] not in IMAGE_RESIZE_EXCEPTIONS
-    ):
+    if extension in supported and supported[extension] not in IMAGE_RESIZE_EXCEPTIONS:
         _preview_convert(source_path, dest_path)
     else:
         shutil.copyfile(source_path, dest_path)
@@ -702,9 +687,7 @@ def _preview_generate_name(plugin_name: str, metadata: dict[str, Any]) -> str:
     return plugin_name + "_" + ctime + random_suffix
 
 
-def _preview_unique_file(
-    plugin_name: str, ext: str, metadata: dict[str, str]
-) -> str:
+def _preview_unique_file(plugin_name: str, ext: str, metadata: dict[str, str]) -> str:
     """Creates a unique filename for the preview
 
     Parameters
@@ -899,9 +882,7 @@ def run_tool(
 def schedule_tool(
     plugin_name: str,
     log_directory: Optional[str] = None,
-    config_dict: Optional[
-        dict[str, Optional[Union[str, int, bool, float]]]
-    ] = None,
+    config_dict: Optional[dict[str, Optional[Union[str, int, bool, float]]]] = None,
     user: Optional[User] = None,
     caption: Optional[str] = None,
     extra_options: list[str] = [],
@@ -1246,15 +1227,11 @@ def get_command_string_from_row(
     str
         CLI command string to run this command.
     """
-    config = get_command_config_from_row(
-        history_row, command_name, command_options
-    )
+    config = get_command_config_from_row(history_row, command_name, command_options)
     return get_command_string_from_config(config)
 
 
-def load_scheduled_conf(
-    plugin_name: str, entry_id: int, user: User
-) -> dict[str, str]:
+def load_scheduled_conf(plugin_name: str, entry_id: int, user: User) -> dict[str, str]:
     """Loads the configuration from a scheduled plug-in.
 
     Parameters
@@ -1454,17 +1431,13 @@ def get_version(pluginname: str) -> tuple[int, int, int]:
     version_id = (
         User()
         .getUserDB()
-        .getVersionId(
-            tool_name, version, "", version_api, repos_tool, version_tool
-        )
+        .getVersionId(tool_name, version, "", version_api, repos_tool, version_tool)
     )
     if version_id is None:
         version_id = (
             User()
             .getUserDB()
-            .newVersion(
-                tool_name, version, "", version_api, repos_tool, version_tool
-            )
+            .newVersion(tool_name, version, "", version_api, repos_tool, version_tool)
         )
     return version_id
 
@@ -1492,9 +1465,7 @@ def dict2conf(
     paramstring = []
     tool = get_plugin_instance(toolname, user)
     for key, value in conf_dict.items():
-        o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by(
-            "-id"
-        )
+        o = Parameter.objects.filter(tool=toolname, parameter_name=key).order_by("-id")
         if len(o) == 0:
             string = "Parameter <%s> not found" % key
             raise ParameterNotFoundError(string)
