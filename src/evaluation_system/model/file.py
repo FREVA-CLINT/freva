@@ -13,9 +13,9 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, ClassVar, Generator, List, Optional, Union, cast
+from typing import Any, ClassVar, Generator, Optional, Union, cast
 
-from typing_extensions import Literal, TypedDict
+from typing_extensions import TypedDict
 
 from evaluation_system.misc import config
 
@@ -98,7 +98,7 @@ class DRSStructure:
             DRSStructure created from dict
         """
         d = cls(
-            root_dir=str(drs_dict.get("root_path", drs_dict.get("root_dir"))),
+            root_dir=cast(str, drs_dict.get("root_path", drs_dict.get("root_dir"))),
             parts_dir=drs_dict["parts_dir"],
             parts_file_name=drs_dict["parts_file_name"],
             parts_time=drs_dict.get("parts_time", ""),

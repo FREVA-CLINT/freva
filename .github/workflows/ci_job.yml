@@ -92,7 +92,7 @@ jobs:
       -
         name: Install freva
         run: |
-          conda create -c conda-forge -n docs -y -q cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient dask==2024.8.0 freva
+          conda create -c conda-forge -n docs -y -q pandoc cartopy make mysql-common==8.3.0 mysql-libs=8.3.0 mysqlclient dask==2024.8.0 freva
       -
         name: Set up services
         run: |
