@@ -51,7 +51,6 @@ class History(models.Model):
         """
         The possible flags are:
         free    - can be accessed by all
-        guest   - like public and permission for guest users
         public  - the data is accessible for every registered user
         shared  - the data is can be only accessed by certain users (to be implemented)
         private - the data is private
@@ -59,7 +58,6 @@ class History(models.Model):
         """
 
         public, shared, private, deleted = range(4)
-        guest = 8
         free = 9
 
     STATUS_CHOICES = (
@@ -76,7 +74,6 @@ class History(models.Model):
         (Flag.shared, "shared"),
         (Flag.private, "private"),
         (Flag.deleted, "deleted"),
-        (Flag.guest, "users and guest"),
         (Flag.free, "no login required"),
     )
     objects: Manager = models.Manager()
