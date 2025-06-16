@@ -98,7 +98,7 @@ class DRSStructure:
             DRSStructure created from dict
         """
         d = cls(
-            root_dir=drs_dict.get("root_path", drs_dict.get("root_dir")),
+            root_dir=str(drs_dict.get("root_path", drs_dict.get("root_dir"))),
             parts_dir=drs_dict["parts_dir"],
             parts_file_name=drs_dict["parts_file_name"],
             parts_time=drs_dict.get("parts_time", ""),
