@@ -13,11 +13,10 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, ClassVar, Generator, List, Optional, Union, cast
-
-from typing_extensions import Literal, TypedDict
+from typing import Any, ClassVar, Generator, Optional, Union, cast
 
 from evaluation_system.misc import config
+from typing_extensions import TypedDict
 
 log = logging.getLogger(__name__)
 
@@ -98,7 +97,9 @@ class DRSStructure:
             DRSStructure created from dict
         """
         d = cls(
-            root_dir=drs_dict.get("root_path", drs_dict.get("root_dir")),
+            root_dir=cast(
+                str, drs_dict.get("root_path", drs_dict.get("root_dir"))
+            ),
             parts_dir=drs_dict["parts_dir"],
             parts_file_name=drs_dict["parts_file_name"],
             parts_time=drs_dict.get("parts_time", ""),
@@ -420,7 +421,9 @@ class DRSFile:
             return structures
 
     @staticmethod
-    def from_path(path: os.PathLike, activity: Optional[Activity] = None) -> DRSFile:
+    def from_path(
+        path: os.PathLike, activity: Optional[Activity] = None
+    ) -> DRSFile:
         """Extract a DRSFile object out of a path.
 
         Parameters
@@ -481,7 +484,9 @@ class DRSFile:
             raise ValueError(
                 f"File {path} does not follow the expected naming scheme for {activity}"
             )
-        for key, value in dict(zip(structure.parts_file_name, file_name_parts)).items():
+        for key, value in dict(
+            zip(structure.parts_file_name, file_name_parts)
+        ).items():
             result["parts"].setdefault(key, value)
         return DRSFile(
             result,
@@ -568,7 +573,9 @@ class DRSFile:
             The DRSFile generated from the given dictionary and DRS
             structure name
         """
-        return DRSFile.from_dict(json.loads(json_str), drs_structure=drs_structure)
+        return DRSFile.from_dict(
+            json.loads(json_str), drs_structure=drs_structure
+        )
 
     @staticmethod
     def solr_search(
@@ -603,10 +610,14 @@ class DRSFile:
         if drs_structure is not None:
             partial_dict["dataset"] = drs_structure
         if path_only:
-            for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
+            for path in SolrFindFiles.search(
+                batch_size=batch_size, **partial_dict
+            ):
                 yield path
         else:
-            for path in SolrFindFiles.search(batch_size=batch_size, **partial_dict):
+            for path in SolrFindFiles.search(
+                batch_size=batch_size, **partial_dict
+            ):
                 yield DRSFile.from_path(path)
 
     @staticmethod
