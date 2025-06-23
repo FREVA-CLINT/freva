@@ -14,6 +14,9 @@ Internal Changes
   used to indicate that the plugin was run by a guest user, but this is no longer
   relevant as all users are now authenticated.
 
+Bug fixes
++++++++++
+- Fix sig term handler.
 
 v2504.0.0
 ~~~~~~~~~
