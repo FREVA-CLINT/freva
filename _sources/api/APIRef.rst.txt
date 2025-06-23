@@ -547,8 +547,8 @@ Generating a STAC Catalogue
 
 .. http:get:: /api/freva-nextgen/databrowser/stac-catalogue/(str:flavour)/(str:uniq_key)
 
-    This endpoint transforms Freva databrowser search results into a static SpatioTemporal Asset Catalog (STAC). 
-    STAC is an open standard for geospatial data cataloguing, enabling consistent discovery and access of climate datasets, 
+    This endpoint transforms Freva databrowser search results into a static SpatioTemporal Asset Catalog (STAC).
+    STAC is an open standard for geospatial data cataloguing, enabling consistent discovery and access of climate datasets,
     satellite imagery and spatiotemporal data. It provides a common language for describing geospatial information and related metadata.
 
     :param flavour: The Data Reference Syntax (DRS) standard specifying the
@@ -690,6 +690,7 @@ Generating a STAC Catalogue
                 }
                 return 0;
             }
+
 ---
 
 .. _databrowser-api-intake:
