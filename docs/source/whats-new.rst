@@ -8,6 +8,12 @@ What's new
 v2506.0.0
 ~~~~~~~~~
 
+Internal Changes
+++++++++++++
+- Remove the ``guest`` flag from the ``PluginStatus`` class. The guest flag was
+  used to indicate that the plugin was run by a guest user, but this is no longer
+  relevant as all users are now authenticated.
+
 Bug fixes
 +++++++++
 - Fix sig term handler.
