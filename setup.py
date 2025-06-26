@@ -61,7 +61,8 @@ def gather_completion_scripts(tempdir):
     data_files = []
     for shell, target_path in shells.items():
         comp_files = [
-            str(f.relative_to(this_dir)) for f in (COMPLETION_DIR / shell).rglob("*")
+            str(f.relative_to(this_dir))
+            for f in (COMPLETION_DIR / shell).rglob("*")
         ]
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
@@ -98,7 +99,9 @@ def get_data_files():
     files = []
     for d in dirs:
         target_dir = d.relative_to(this_dir)
-        add_files = [str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()]
+        add_files = [
+            str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()
+        ]
         if add_files:
             files.append((str(target_dir), add_files))
     files.append(("", ["deploy.py"]))
@@ -176,6 +179,7 @@ setup(
             "sphinxcontrib_github_alt",
             "sphinx-execute-code-python3",
             "sphinx-copybutton",
+            "sphinx-social-previews",
             "xarray",
             "h5netcdf",
             "mock",
