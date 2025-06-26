@@ -17,9 +17,9 @@ from .utils import handled_exception
 SolrFindFiles = lazy_import.lazy_class(
     "evaluation_system.model.solr.SolrFindFiles"
 )
-
-COMPLAINT = """freva.{func} is depricated for the newer and better library freva-client
-please cunsult the documention: https://freva-org.github.io/freva-nextgen/"""
+COMPLAINT = """⚠  CRITICAL: freva.{func} is deprecated in favour of the 
+newer and improved freva-client library.
+Please refer to the documentation: https://freva-org.github.io/freva-nextgen/databrowser/index.html"""
 
 __all__ = ["databrowser", "search_facets", "count_values"]
 
