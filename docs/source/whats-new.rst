@@ -5,6 +5,13 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2506.0.1
+~~~~~~~~~
+
+Internal Changes
+++++++++++++++++
+- Add deprication warning.
+
 v2506.0.0
 ~~~~~~~~~
 
