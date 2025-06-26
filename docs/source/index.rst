@@ -10,19 +10,19 @@ Welcome to Freva's documentation!
 .. image:: https://badge.fury.io/py/freva.svg
    :target: https://badge.fury.io/py/freva
 .. image:: https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg
-   :target: https://github.com/FREVA-CLINT/freva
+   :target: https://github.com/freva-org/freva-legacy
 .. image:: https://anaconda.org/conda-forge/freva/badges/version.svg
    :target: https://anaconda.org/conda-forge/freva
 .. image:: https://img.shields.io/badge/Freva-Docs-green.svg
-   :target: https://freva-clint.github.io/freva
-.. image:: https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/FREVA-CLINT/freva
-.. image:: https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg
-   :target: https://github.com/FREVA-CLINT/freva/actions
+   :target: https://freva-org.github.io/freva-legacy
+.. image:: https://codecov.io/gh/freva-org/freva-legacy/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/freva-org/freva-legacy
+.. image:: https://github.com/freva-org/freva-legacy/actions/workflows/ci_job.yml/badge.svg
+   :target: https://github.com/freva-org/freva-legacy/actions
 .. image:: https://mybinder.org/badge_logo.svg
- :target: https://mybinder.org/v2/gh/FREVA-CLINT/freva/main?labpath=Readme.ipynb
+ :target: https://mybinder.org/v2/gh/freva-org/freva-legacy/main?labpath=Readme.ipynb
 .. image:: https://anaconda.org/conda-forge/freva/badges/license.svg
-   :target: https://github.com/FREVA-CLINT/freva/blob/main/LICENSE.md
+   :target: https://github.com/freva-org/freva-legacy/blob/main/LICENSE.md
 
 
 .. note::
