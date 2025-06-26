@@ -59,7 +59,7 @@ extensions = [
     "sphinx_execute_code",
     "sphinxcontrib_github_alt",
     "sphinx_copybutton",
-    "sphinx-social-previews",
+    "sphinxext.opengraph",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
