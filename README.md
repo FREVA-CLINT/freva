@@ -1,13 +1,13 @@
 # Free Evaluation System Framework
 
 [![PyPI version](https://badge.fury.io/py/freva.svg)](https://badge.fury.io/py/freva)
-[![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://github.com/FREVA-CLINT/freva)
+[![Update](https://anaconda.org/conda-forge/freva/badges/latest_release_date.svg)](https://github.com/freva-org/freva-legacy)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/freva/badges/version.svg)](https://anaconda.org/conda-forge/freva)
-[![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva-clint.github.io/freva)
-[![codecov](https://codecov.io/gh/FREVA-CLINT/freva/branch/main/graph/badge.svg)](https://codecov.io/gh/FREVA-CLINT/freva)
-[![Pipeline](https://github.com/FREVA-CLINT/freva/actions/workflows/ci_job.yml/badge.svg)](https://github.com/FREVA-CLINT/freva/actions)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/FREVA-CLINT/freva/main?labpath=Readme.ipynb)
-[![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/FREVA-CLINT/freva)
+[![Docs](https://img.shields.io/badge/Freva-Docs-green.svg)](https://freva-org.github.io/freva-legacy)
+[![codecov](https://codecov.io/gh/freva-org/freva/branch/main/graph/badge.svg)](https://codecov.io/gh/freva-org/freva-legacy)
+[![Pipeline](https://github.com/freva-org/freva/actions/workflows/ci_job.yml/badge.svg)](https://github.com/freva-org/freva-legacy/actions)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/freva-org/freva-legacy/main?labpath=Readme.ipynb)
+[![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/freva-org/freva-legacy)
 
  > 💡 A new version of Freva is on the way! While it’s still under development,
    you can already start using it. If your primary focus is searching and
@@ -45,7 +45,7 @@ Currently Freva comes in three different flavours:
 
 ## Where can I find the Freva user documentation?
 A more detailed overview on the usage of freva can be found on the
-[freva user documentation page](https://freva-clint.github.io/freva)
+[freva user documentation page](https://freva-org.github.io/freva)
 
 
 
@@ -61,7 +61,7 @@ mode consult [deployment docs](https://freva.gitlab-pages.dkrz.de/deployment/ind
 To start development with freva clone the repository and its submodules:
 
 ```
-git clone --recursive https://github.com/FREVA-CLINT/freva.git
+git clone --recursive https://github.com/freva-org/freva.git
 ```
 
 A basic local development setup can be created using

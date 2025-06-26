@@ -121,10 +121,10 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     project_urls={
-        "Documentation": "https://freva-clint.github.io/freva/",
-        "Release notes": "https://freva-clint.github.io/freva/whats-new.html",
-        "Issues": "https://github.com/FREVA-CLINT/freva/issues",
-        "Source": "https://github.com/FREVA-CLINT/freva",
+        "Documentation": "https://freva-org.github.io/freva-legacy/",
+        "Release notes": "https://freva-org.github.io/freva-legacy/whats-new.html",
+        "Issues": "https://github.com/freva-org/freva-legacy/issues",
+        "Source": "https://github.com/freva-org/freva-legacy",
     },
     cmdclass={"install": InstallCommand},
     install_requires=[

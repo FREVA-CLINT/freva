@@ -22,7 +22,9 @@ from recommonmark.parser import CommonMarkParser
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "src")))
 os.environ.setdefault(
     "EVALUATION_SYSTEM_CONFIG_FILE",
-    os.path.abspath(os.path.join("..", "..", "compose", "local-eval-system.conf")),
+    os.path.abspath(
+        os.path.join("..", "..", "compose", "local-eval-system.conf")
+    ),
 )
 os.environ.setdefault(
     "EVALUATION_SYSTEM_DRS_CONFIG_FILE",
@@ -57,6 +59,7 @@ extensions = [
     "sphinx_execute_code",
     "sphinxcontrib_github_alt",
     "sphinx_copybutton",
+    "sphinx-social-previews",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -79,7 +82,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/FREVA-CLINT/freva",
+            "url": "https://github.com/freva-org/freva-legacy",
             "icon": "fa-brands fa-github",
         }
     ],
@@ -97,13 +100,38 @@ html_theme_options = {
     },
 }
 html_context = {
-    "github_user": "FREVA-CLINT",
-    "github_repo": "freva",
+    "github_user": "freva-org",
+    "github_repo": "freva-legacy",
     "github_version": "main",
     "doc_path": "docs",
 }
 html_logo = os.path.join(html_static_path[0], "logo.png")
 html_favicon = html_logo
+html_meta = {
+    "description": "Freva - the Free Evaluation system framework.",
+    "keywords": "freva, climate, data analysis, evaluation, framework, climate science",
+    "author": "Freva Team",
+    "og:title": "Freva – Free Evaluation System Framework",
+    "og:description": "Admin guide for Freva.",
+    "og:type": "website",
+    "og:url": "https://freva-org.github.io/freva-legacy/",
+    "og:image": "https://freva-org.github.io/freva-admin/_images/freva_flowchart-new.png",
+    "twitter:card": "summary_large_image",
+    "twitter:title": "Freva – Evaluation System Framework",
+    "twitter:description": "Search, analyse and evaluate climate model data.",
+    "twitter:image": "https://freva-org.github.io/freva-admin/_images/freva_flowchart-new.png",
+}
+
+ogp_site_url = "https://freva-org.github.io/freva-legacy"
+opg_image = (
+    "https://freva-org.github.io/freva-admin/_images/freva_flowchart-new.png",
+)
+ogp_type = "website"
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="keywords" content="freva, climate, data, evaluation, science, reproducibility">',
+]
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
