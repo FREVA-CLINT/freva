@@ -179,7 +179,7 @@ setup(
             "sphinxcontrib_github_alt",
             "sphinx-execute-code-python3",
             "sphinx-copybutton",
-            "sphinx-social-previews",
+            "sphinxext-opengraph",
             "xarray",
             "h5netcdf",
             "mock",
