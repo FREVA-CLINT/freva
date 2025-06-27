@@ -15,8 +15,7 @@ from typing_extensions import Literal
 from .utils import handled_exception
 
 SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
-COMPLAINT = """⚠  CRITICAL: freva.{func} is deprecated in favour of the 
-newer and improved freva-client library.
+COMPLAINT = """[i]freva.{func}[/i] is deprecated in favour of the newer and improved [i]freva-client[/i] library.
 Please refer to the documentation: https://freva-org.github.io/freva-nextgen/databrowser/index.html"""
 
 __all__ = ["databrowser", "search_facets", "count_values"]
@@ -25,7 +24,7 @@ __all__ = ["databrowser", "search_facets", "count_values"]
 def _complain(func: str) -> None:
     con = Console(markup=True, force_terminal=True, stderr=True)
     msg = COMPLAINT.format(func=func)
-    con.print(f"[b red]:warning: CRITICAL: {msg}[/b red]")
+    con.print(f"[b red]:warning:  CRITICAL: {msg}[/b red]")
 
 
 def _proc_search_facets(

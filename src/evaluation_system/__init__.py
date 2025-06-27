@@ -39,7 +39,7 @@ warnings.filterwarnings(
 warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
-__version__ = "2506.0.1"
+__version__ = "2506.0.2"
 
 if __name__ == "__main__":
     print(__version__)
