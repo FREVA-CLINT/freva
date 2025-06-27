@@ -5,7 +5,7 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
-v2506.0.1
+v2506.0.2
 ~~~~~~~~~
 
 Internal Changes
