@@ -978,7 +978,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&#34;[-\d]+&#34;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 45 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_20160902T0000-20160902T2330.gif in 46 seconds
 </pre></div></div>
 </div>
 <p>This plugin will run in so called interactive mode. That means that it will run on the login node and block your shell until the command is completed. This can be problematic if you have jobs that might take time to finish. An alternative is setting the <code class="docutils literal notranslate"><span class="pre">-–batchmode</span></code> flag. This flag tells the plugin to submit a job to the computing queue. The computing nodes are the core of any high performance computing system. Let’s submit the previous plugin job to the computing queue:</p>
@@ -998,7 +998,7 @@ Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2129/pr_2
 Scheduled job with history id: 2130
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-5215.out
+tail -f /tmp/share/slurm/animator/Animator-5203.out
 </pre></div></div>
 </div>
 </section>
@@ -1018,9 +1018,9 @@ tail -f /tmp/share/slurm/animator/Animator-5215.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[05:37:34]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>,
+<span class="ansi-cyan-fg">[13:16:52]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history of <span class="ansi-bold">{</span>plugin<span class="ansi-bold">}</span>, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">1</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>,
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-magenta-fg">None</span>
-2115) dummyplugin [2025-07-08 05:31:21] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
+2115) dummyplugin [2025-07-08 13:10:24] finished {&#34;number&#34;: null, &#34;the_number&#34;: 5, &#34;something&#34;: &#34;test&#34;, &#34;other&#34;: 1.4...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1036,7 +1036,7 @@ tail -f /tmp/share/slurm/animator/Animator-5215.out
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-cyan-fg">[05:37:35]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>,
+<span class="ansi-cyan-fg">[13:16:53]</span><span class="ansi-cyan-fg"> </span><span class="ansi-blue-fg">INFO    </span> freva - INFO - history, <span class="ansi-yellow-fg">limit</span>=<span class="ansi-cyan-intense-fg ansi-bold">10</span>, <span class="ansi-yellow-fg">since</span>=<span class="ansi-magenta-fg">None</span>, <span class="ansi-yellow-fg">until</span>=<span class="ansi-magenta-fg">None</span>,
 <span class="ansi-cyan-fg">           </span>         <span class="ansi-yellow-fg">entry_ids</span>=<span class="ansi-bold">[</span><span class="ansi-green-fg">&#39;1&#39;</span><span class="ansi-bold">]</span>
 </pre></div></div>
 </div>
