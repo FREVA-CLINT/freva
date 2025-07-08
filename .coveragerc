@@ -19,6 +19,10 @@ exclude_lines =
     # Don't complain if non-runnable code isn't run:
     if 0:
     if __name__ == .__main__.:
-omit = ./src/evaluation_system/fuse/*,./src/evaluation_system/external/*,./src/freva/cli/__main__.py
+    except ImportError:
+    except PermissionError:
+    except (ImproperlyConfigured, OperationalError):
+    except (ImproperlyConfigured, AttributeError):
+omit = src/evaluation_system/tests/*,./src/evaluation_system/fuse/*,./src/evaluation_system/external/*,./src/freva/cli/__main__.py
 
 ignore_errors = False

@@ -6,11 +6,21 @@ import json
 from typing import Any, Optional, Union
 
 import lazy_import
+from django.core.exceptions import ImproperlyConfigured
 
 from evaluation_system.misc import logger
+from evaluation_system.misc.config import reloadConfiguration
 
+db_settings = lazy_import.lazy_module("evaluation_system.settings.database")
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
-from evaluation_system.model.user import User
+from .utils import config
+
+try:
+    from evaluation_system.model.user import User
+except ImproperlyConfigured:
+    reloadConfiguration()
+    db_settings.reconfigure_django()
+
 
 __all__ = ["history"]
 

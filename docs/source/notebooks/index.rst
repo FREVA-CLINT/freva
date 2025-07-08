@@ -16,6 +16,7 @@ the following command:
     python -m ipykernel install --user --name my-kernel-name --env EVALUATION_SYSTEM_CONFIG_FILE <path_to_evalfile>
 
 The path to the environment variable is project specific for example
+
 ``/work/ch1187/clint/nextgems/freva/evaluation_system.conf``
 
 Enjoy!

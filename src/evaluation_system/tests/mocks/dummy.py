@@ -11,6 +11,7 @@ from evaluation_system.api.parameters import (
     InputDirectory,
     Integer,
     ParameterDictionary,
+    SelectField,
     String,
 )
 from evaluation_system.api.plugin import PluginAbstract
@@ -38,7 +39,12 @@ class DummyPlugin(PluginAbstract):
         String(name="something", default="test"),
         Float(name="other", default=1.4),
         InputDirectory(name="input", help="An input file"),
-        String(name="variable", default="tas", help="An input variable"),
+        SelectField(
+            name="variable",
+            default="tas",
+            options={"tas": "tas", "pr": "pr"},
+            help="An input variable",
+        ),
     )
     _runs: list = []
     _template = "${number} - $something - $other"

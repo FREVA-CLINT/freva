@@ -1,4 +1,4 @@
-# How to issue an freva release in 16 easy steps
+# How to issue an freva release in 12 easy steps
 
  1. Ensure your main branch is synced to upstream:
      ```sh
@@ -9,7 +9,8 @@
     (check the date!) and add the release summary at the top.
     Things to watch out for:
     - Important new features should be highlighted towards the top.
-    - Function/method references should include links to the API docs.
+    - Function/method references should include links to the API docs
+    (e.g. `` :py:meth:`freva.esgf_browser` ``).
  3. Open a MR with the release summary and whatsnew changes; in particular the
     release headline should get feedback from the team on what's important to include.
  4. After merging, again ensure your freva-dev branch is synced to upstream:
@@ -61,16 +62,22 @@
       ```
     You're done pushing to freva-dev!
 
-10. Create a new tag on [GitLab](https://gitlab.dkrz.de/freva/evaluation_system/-/tags/new)
-    Type in the version number (with a "v")  and paste the release summary in the notes.
+10. Create a new tag. Type in the version number (with a "v") and paste the
+    release summary in the notes:
+    ```sh
+    git tag -a vAAMM.X.Y -m "summary of changes #PR"
+    git push origin vAAMM.X.Y
+    ```
 11. This should automatically trigger an upload of the new build to GitLab Registry.
-    Check this has run [here](https://github.com/pydata/xarray/actions/workflows/pypi-release.yaml),
-    and that the version number you expect is displayed [on PyPI](https://pypi.org/project/xarray/)
+    Check this has run [here](https://github.com/FREVA-CLINT/freva/actions),
+    and that the version number you expect is displayed [on PyPI](https://pypi.org/project/freva/)
+12. Release a new version clicking [here](https://github.com/FREVA-CLINT/freva/releases/new).
+    Choose the latest tag, include the summary.
 
 
 ## Note on version numbering
 
-We utilise a mix of [CALVER](https://calver.org/) and [SEMVER](https://semver.org/)
+We use a mix of [CALVER](https://calver.org/) and [SEMVER](https://semver.org/)
 version system. Specifically, we have adopted the pattern `YYMM.minor.p`, where
 `YY` is a 2-digit year (e.g. `22` for 2022), `MM` is a 2-digit zero-padded month
 (e.g. `01` for January), minor is the semver minor version and `p` is the

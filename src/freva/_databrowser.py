@@ -8,16 +8,23 @@ from pathlib import Path
 from typing import Any, Iterator, Optional, Union, overload
 
 import lazy_import
-from typing_extensions import Literal
-
 from evaluation_system.misc import logger
+from rich.console import Console
+from typing_extensions import Literal
 
 from .utils import handled_exception
 
 SolrFindFiles = lazy_import.lazy_class("evaluation_system.model.solr.SolrFindFiles")
-
+COMPLAINT = """[i]freva.{func}[/i] is deprecated in favour of the newer and improved [i]freva-client[/i] library.
+Please refer to the documentation: https://freva-org.github.io/freva-nextgen/databrowser/index.html"""
 
 __all__ = ["databrowser", "search_facets", "count_values"]
+
+
+def _complain(func: str) -> None:
+    con = Console(markup=True, force_terminal=True, stderr=True)
+    msg = COMPLAINT.format(func=func)
+    con.print(f"[b red]:warning:  CRITICAL: {msg}[/b red]")
 
 
 def _proc_search_facets(
@@ -126,6 +133,7 @@ def count_values(
         print(freva.count_values(facet="*"))
 
     """
+    _complain("count_values")
     search_facets = _proc_search_facets(
         time_select=time_select, time=time, **search_facets
     )
@@ -238,6 +246,7 @@ def facet_search(
         print(res)
 
     """
+    _complain("facet_search")
     search_facets = _proc_search_facets(
         time_select=time_select, time=time, **search_facets
     )
@@ -356,7 +365,20 @@ def databrowser(
         file_range = freva.databrowser(project="obs*", time="2016-09-02T22:15 to 2016-10", time_select="strict")
         for file in file_range:
             print(file)
+
+    In datasets with multiple versions only the `latest` version (i.e. `highest`
+    version number) is returned by default. Querying a specific version from a
+    multi versioned datasets requires the ``multiversion`` flag in combination with
+    the ``version`` special facet:
+
+    .. execute_code::
+
+        import freva
+        specific_version = list(freva.databrowser(project="reanalysis", version="v20200101", multiversion=True))
+        print(specific_version)
+
     """
+    _complain("databrowser")
     core = {True: "latest", False: "files"}[not multiversion]
     search_facets = _proc_search_facets(
         time_select=time_select, time=time, **search_facets

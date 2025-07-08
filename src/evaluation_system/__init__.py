@@ -36,9 +36,10 @@ import warnings
 warnings.filterwarnings(
     "always", category=PendingDeprecationWarning, module="evaluation_system.*"
 )
+warnings.filterwarnings("ignore", category=SyntaxWarning)
 
 
-__version__ = "2410.0.0"
+__version__ = "2506.0.2"
 
 if __name__ == "__main__":
     print(__version__)
