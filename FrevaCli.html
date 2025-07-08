@@ -799,21 +799,21 @@ the data). For example to see all facets that are available in the
 </div>
 <p><span class="caption-text">Results</span></p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ensemble: r0i0p0,r1i1p1,r1i1p1f1,r2i1p1f1
-cmor_table: 1hr,30min,3hr,aday,amon,omon
-experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
-time_frequency: 1day,1hr,30min,3hr,mon
-bbox: 
-product: cmip,eur-11,eur-11b,grid,reanalysis
-future_id: 
-variable: hc700,pr,tas,ua
-project: cmip6,cordex,observations,reanalysis,user-runner
-realm: atmos,ocean,user_data
-time_aggregation: mean
-model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
-grid_label: gn
-fs_type: posix
 future: 
+experiment: amip,bias-correct,cmorph,historical,oc5,rcp85
+grid_label: gn
+project: cmip6,cordex,observations,reanalysis,user-runner
 institute: clex,clmcom,cpc,csiro-arccss,gerics,mpi-m,noaa
+product: cmip,eur-11,eur-11b,grid,reanalysis
+model: access-cm2,cpc,mpi-esm1-2-lr,mpi-m-mpi-esm-lr-clmcom-cclm4-8-17-v1,ncc-noresm1-m-gerics-remo2015-v1,nodc,um-ra2t
+future_id: 
+cmor_table: 1hr,30min,3hr,aday,amon,omon
+time_aggregation: mean
+fs_type: posix
+time_frequency: 1day,1hr,30min,3hr,mon
+realm: atmos,ocean,user_data
+bbox: 
+variable: hc700,pr,tas,ua
 
 </pre></div>
 </div>
@@ -844,22 +844,22 @@ can be achieved by using the <code class="docutils literal notranslate"><span cl
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>future_id: 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>time_frequency: 30min
 time_aggregation: mean
-model: cpc
-future: 
-cmor_table: 30min
-experiment: cmorph
-project: observations
-bbox: 
-grid_label: gn
 ensemble: r1i1p1
-time_frequency: 30min
+cmor_table: 30min
+grid_label: gn
 institute: cpc
-variable: pr
-fs_type: posix
-realm: atmos
 product: grid
+future: 
+fs_type: posix
+variable: pr
+project: observations
+model: cpc
+future_id: 
+realm: atmos
+experiment: cmorph
+bbox: 
 [1;31m⚠  CRITICAL: [0m[1;3;31mfreva.facet_search[0m[1;31m is deprecated in favour of the newer and [0m
 [1;31mimproved [0m[1;3;31mfreva-client[0m[1;31m library.[0m
 [1;31mPlease refer to the documentation: [0m
@@ -1045,7 +1045,7 @@ Step 4: Loading the dataset, getting min/max values
 Step 5: Creating the animation
 /tmp/animator/run.py:91: SyntaxWarning: invalid escape sequence &#39;\d&#39;
   for i in re.findall(&quot;[-\d]+&quot;, unit[n]):
-Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4 in 40 seconds
+Created animation /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4 in 39 seconds
 
 </pre></div>
 </div>
@@ -1066,7 +1066,7 @@ submit the previous plugin job to the computing queue:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Scheduled job with history id: 2124
 You can view the job&#39;s status with the command squeue
 Your job&#39;s progress will be shown with the command
-tail -f /tmp/share/slurm/animator/Animator-4156.out
+tail -f /tmp/share/slurm/animator/Animator-4221.out
 
 </pre></div>
 </div>
@@ -1080,8 +1080,8 @@ output files from a plugin run.</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/data.nc
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/data.nc
 </pre></div>
 </div>
 <div class="admonition note">
@@ -1138,7 +1138,7 @@ options:
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2025-07-08 13:10:24] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2115) dummyplugin [2025-07-08 13:15:28] finished {&quot;number&quot;: null, &quot;the_number&quot;: 5, &quot;something&quot;: &quot;test&quot;, &quot;other&quot;: 1.4...
 
 </pre></div>
 </div>
@@ -1150,9 +1150,9 @@ full configuration by giving the id:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(0, 1, 2) fff1d3906a237dd4231e7b2a01a330a65a811c8c [2025-07-08 13:14:09] finished 
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>2125) dummypluginfolders(0, 1, 2) 4177a4910f58d423f7f50fc4aa128248537143c7 [2025-07-08 13:19:08] finished 
 Configuration:
-      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409
+      outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908
        variable=tas
 
 </pre></div>
@@ -1163,7 +1163,7 @@ can use the <code class="docutils literal notranslate"><span class="pre">--retur
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>freva-plugin dummypluginfolders variable=tas outputdir=/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908
 
 </pre></div>
 </div>
@@ -1175,10 +1175,10 @@ of the last 3 plugin applications:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/data.nc
-/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/plot.png
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/data.nc
+/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/plot.png
 /tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4
-[13:14:15] INFO     freva - INFO - history, limit=3, since=None, until=None,    
+[13:19:13] INFO     freva - INFO - history, limit=3, since=None, until=None,    
                     entry_ids=None                                              
 </pre></div>
 </div>
@@ -1190,7 +1190,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
 </pre></div>
 </div>
 <p><span class="caption-text">Results</span></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415/2126
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Processing output in /tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913/2126
 [
    {
       &quot;status_dict&quot;: {
@@ -1202,32 +1202,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2126,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:15&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:13&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-86520688-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-75393a79-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415/2126/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980455,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913/2126/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980753,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415/2126/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980455,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913/2126/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980753,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131415_dfXmHKFX.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131913_ixQysXav.png&quot;
          }
       }
    },
@@ -1241,32 +1241,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2125,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:09&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:08&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-e70a1e8f-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-d25a4388-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980449,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980748,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980449,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980748,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131409_GcRkHLCF.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131908_unkjLFtr.png&quot;
          }
       }
    },
@@ -1280,7 +1280,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2124,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:09&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:08&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1312,8 +1312,8 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;gif&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-4156.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-4221.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 3,
       &quot;flag&quot;: 0,
@@ -1330,7 +1330,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2123,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:13:25&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:18:26&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1362,19 +1362,19 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;mp4&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-07cf52b2-4057.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-b97f8d2e-4119.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
          &quot;/tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4&quot;: {
-            &quot;timestamp&quot;: 1751980447,
+            &quot;timestamp&quot;: 1751980747,
             &quot;size&quot;: 1492223,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131407_OXKWvixG.mp4&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131907_wAMWpvKU.mp4&quot;
          }
       }
    },
@@ -1388,32 +1388,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2122,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:57&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:57&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3925.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3981.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2122/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980378,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2122/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980678,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2122/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980378,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2122/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980678,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131258_tblOEFhr.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131758_YYvuMNlD.png&quot;
          }
       }
    },
@@ -1427,32 +1427,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2121,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:57&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:57&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-8cb5ac85-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-26322b48-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2121/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980377,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2121/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980677,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2121/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980377,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2121/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980677,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131257_EgJoIRXd.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131757_BqWChJIb.png&quot;
          }
       }
    },
@@ -1466,32 +1466,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2120,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:56&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:56&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;pr&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-043bf11d-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-fad23d5d-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2120/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2120/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 254,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2120/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2120/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131256_YhOkMzbp.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131756_RIQVEIOe.png&quot;
          }
       }
    },
@@ -1505,32 +1505,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2119,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:56&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:56&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-1684bcb4-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-54d9f53a-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2119/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2119/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2119/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2119/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131256_oiutraAd.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131756_FqgyVbpO.png&quot;
          }
       }
    },
@@ -1544,7 +1544,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2118,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:12&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:13&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1576,19 +1576,19 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;mp4&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-3751.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-3803.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
          &quot;/tmp/eval_conf/work/runner/freva-ces/output/animator/2118/pr_20160902T0000-20160902T2330.mp4&quot;: {
-            &quot;timestamp&quot;: 1751980375,
+            &quot;timestamp&quot;: 1751980675,
             &quot;size&quot;: 1492223,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131255_XOhJmAnv.mp4&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131755_czDVQPzA.mp4&quot;
          }
       }
    },
@@ -1602,7 +1602,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2117,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:11:28&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:16:32&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1634,19 +1634,19 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;mp4&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-da39ea15-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-5b663b28-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
          &quot;/tmp/eval_conf/work/runner/freva-ces/output/animator/2117/pr_20160902T0000-20160902T2330.mp4&quot;: {
-            &quot;timestamp&quot;: 1751980331,
+            &quot;timestamp&quot;: 1751980633,
             &quot;size&quot;: 1492223,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131211_vRjdmbVX.mp4&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131713_ihuxdRKE.mp4&quot;
          }
       }
    }
@@ -1670,7 +1670,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2127,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:15&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:14&quot;,
       &quot;tool&quot;: &quot;new_dummytool&quot;,
       &quot;version&quot;: &quot;&quot;,
       &quot;version_details_id&quot;: 1,
@@ -1679,7 +1679,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;dict&quot;: &quot;values&quot;
       },
       &quot;slurm_output&quot;: &quot;/path/to/slurm-44742.out&quot;,
-      &quot;host&quot;: &quot;10.1.0.86&quot;,
+      &quot;host&quot;: &quot;10.1.1.1&quot;,
       &quot;uid_id&quot;: &quot;root&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
@@ -1706,7 +1706,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2127,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:15&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:14&quot;,
       &quot;tool&quot;: &quot;new_dummytool&quot;,
       &quot;version&quot;: &quot;&quot;,
       &quot;version_details_id&quot;: 1,
@@ -1715,7 +1715,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;dict&quot;: &quot;values&quot;
       },
       &quot;slurm_output&quot;: &quot;/path/to/slurm-44742.out&quot;,
-      &quot;host&quot;: &quot;10.1.0.86&quot;,
+      &quot;host&quot;: &quot;10.1.1.1&quot;,
       &quot;uid_id&quot;: &quot;root&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
@@ -1732,32 +1732,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2126,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:15&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:13&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-86520688-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-75393a79-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415/2126/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980455,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913/2126/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980753,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131415/2126/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980455,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131913/2126/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980753,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131415_dfXmHKFX.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131913_ixQysXav.png&quot;
          }
       }
    },
@@ -1771,32 +1771,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2125,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:09&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:08&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-e70a1e8f-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-d25a4388-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980449,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980748,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131409/2125/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980449,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131908/2125/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980748,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131409_GcRkHLCF.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131908_unkjLFtr.png&quot;
          }
       }
    },
@@ -1810,7 +1810,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2124,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:14:09&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:19:08&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1842,8 +1842,8 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;gif&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-4156.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-4221.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 3,
       &quot;flag&quot;: 0,
@@ -1860,7 +1860,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2123,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:13:25&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:18:26&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -1892,19 +1892,19 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;mp4&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-07cf52b2-4057.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-b97f8d2e-4119.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
          &quot;/tmp/eval_conf/work/runner/freva-ces/output/animator/2123/pr_20160902T0000-20160902T2330.mp4&quot;: {
-            &quot;timestamp&quot;: 1751980447,
+            &quot;timestamp&quot;: 1751980747,
             &quot;size&quot;: 1492223,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131407_OXKWvixG.mp4&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131907_wAMWpvKU.mp4&quot;
          }
       }
    },
@@ -1918,32 +1918,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2122,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:57&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:57&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3925.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-3981.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2122/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980378,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2122/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980678,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2122/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980378,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2122/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980678,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131258_tblOEFhr.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131758_YYvuMNlD.png&quot;
          }
       }
    },
@@ -1957,32 +1957,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2121,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:57&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:57&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-8cb5ac85-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-26322b48-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2121/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980377,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2121/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980677,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131257/2121/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980377,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131757/2121/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980677,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131257_EgJoIRXd.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131757_BqWChJIb.png&quot;
          }
       }
    },
@@ -1996,32 +1996,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2120,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:56&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:56&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;pr&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-043bf11d-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-fad23d5d-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2120/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2120/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 254,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2120/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2120/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131256_YhOkMzbp.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131756_RIQVEIOe.png&quot;
          }
       }
    },
@@ -2035,32 +2035,32 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2119,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:56&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:56&quot;,
       &quot;tool&quot;: &quot;dummypluginfolders&quot;,
       &quot;version&quot;: &quot;(0, 1, 2)&quot;,
       &quot;version_details_id&quot;: 125,
       &quot;configuration&quot;: {
          &quot;variable&quot;: &quot;tas&quot;,
-         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256&quot;
+         &quot;outputdir&quot;: &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756&quot;
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-1684bcb4-3526.local&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/dummypluginfolders/DummyPluginFolders-54d9f53a-3576.local&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2119/data.nc&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2119/data.nc&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 255,
             &quot;type&quot;: &quot;data&quot;
          },
-         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131256/2119/plot.png&quot;: {
-            &quot;timestamp&quot;: 1751980376,
+         &quot;/tmp/eval_conf/work/runner/freva-ces/output/dummypluginfolders/20250708_131756/2119/plot.png&quot;: {
+            &quot;timestamp&quot;: 1751980676,
             &quot;size&quot;: 636,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131256_oiutraAd.png&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/dummypluginfolders_20250708_131756_FqgyVbpO.png&quot;
          }
       }
    },
@@ -2074,7 +2074,7 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;4&quot;: &quot;scheduled&quot;
       },
       &quot;id&quot;: 2118,
-      &quot;timestamp&quot;: &quot;2025-07-08T13:12:12&quot;,
+      &quot;timestamp&quot;: &quot;2025-07-08T13:17:13&quot;,
       &quot;tool&quot;: &quot;animator&quot;,
       &quot;version&quot;: &quot;(2022, 7, 15)&quot;,
       &quot;version_details_id&quot;: 124,
@@ -2106,19 +2106,19 @@ For example, while the following Freva command shows the jobs run by you:</p>
          &quot;suffix&quot;: &quot;mp4&quot;,
          &quot;fps&quot;: 5
       },
-      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-3751.out&quot;,
-      &quot;host&quot;: &quot;fv-az790-248&quot;,
+      &quot;slurm_output&quot;: &quot;/tmp/share/slurm/animator/Animator-3803.out&quot;,
+      &quot;host&quot;: &quot;fv-az1696-807&quot;,
       &quot;uid_id&quot;: &quot;runner&quot;,
       &quot;status&quot;: 0,
       &quot;flag&quot;: 0,
       &quot;caption&quot;: &quot;&quot;,
       &quot;result&quot;: {
          &quot;/tmp/eval_conf/work/runner/freva-ces/output/animator/2118/pr_20160902T0000-20160902T2330.mp4&quot;: {
-            &quot;timestamp&quot;: 1751980375,
+            &quot;timestamp&quot;: 1751980675,
             &quot;size&quot;: 1492223,
             &quot;type&quot;: &quot;plot&quot;,
             &quot;todo&quot;: &quot;copy&quot;,
-            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131255_XOhJmAnv.mp4&quot;
+            &quot;preview_path&quot;: &quot;/tmp/share/preview/20250708/animator_20250708_131755_czDVQPzA.mp4&quot;
          }
       }
    }

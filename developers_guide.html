@@ -579,6 +579,19 @@ how to find the plugin by issuing the following command (bash &amp; co):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">EVALUATION_SYSTEM_PLUGINS</span><span class="o">=/</span><span class="n">path1</span><span class="p">,</span><span class="n">plugin1</span><span class="p">:</span><span class="o">/</span><span class="n">path2</span><span class="p">,</span><span class="n">plugin2</span><span class="p">:</span><span class="o">/</span><span class="n">path3</span><span class="p">,</span><span class="n">plugin3</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In python (e.g. jupyter notebook) you will need first to add your plugin(s) as
+an entry in the <code class="docutils literal notranslate"><span class="pre">EVALUATION_SYSTEM_PLUGINS</span></code> environment variable and <em>then</em>
+import the Freva module (not the other way around):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;EVALUATION_SYSTEM_PLUGINS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/path1,plugin1:/path2,plugin2:/path3,plugin3&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">freva</span>
+<span class="n">freva</span><span class="o">.</span><span class="n">get_tools_list</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <p>By telling the system where to find the packages it can find the
 <a class="reference internal" href="#module-evaluation_system.api.plugin" title="evaluation_system.api.plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">evaluation_system.api.plugin</span></code></a> implementations. The system just
 loads the packages and get to the classes using the
