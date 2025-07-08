@@ -1,5 +1,7 @@
 from pathlib import Path
 
+DUMMY_PATH = str(Path(__file__).parent)
+
 TEST_EVAL = """[evaluation_system]
 base_dir=evaluation_system
 project_name=freva-ces
@@ -26,7 +28,7 @@ memory=10G
 [plugin:DummyPlugin]
 python_path={dummy_path}
 module=dummy""".format(
-    dummy_path=Path(__file__).parent
+    dummy_path=DUMMY_PATH
 )
 
 TEST_DRS = """

@@ -31,12 +31,14 @@ except ImportError:  # pragma: no cover
 import lazy_import
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+from django.db.utils import OperationalError
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
 
 import freva
 from evaluation_system.misc import logger
+from evaluation_system.misc.exceptions import ConfigurationException
 from evaluation_system.misc.utils import metadict as meta_type
 
 pm = lazy_import.lazy_module("evaluation_system.api.plugin_manager")
@@ -44,6 +46,7 @@ cancel_command = lazy_import.lazy_callable(
     "evaluation_system.api.workload_manager.cancel_command"
 )
 cfg = lazy_import.lazy_module("evaluation_system.misc.config")
+db_settings = lazy_import.lazy_module("evaluation_system.settings.database")
 
 
 def is_jupyter() -> bool:
@@ -65,8 +68,24 @@ def handled_exception(func: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         """Wrapper function that handles the exception."""
+        wrong_config_msg = {
+            False: (
+                "consult the `freva.config` class to see how to pass a "
+                "valid configuration."
+            ),
+            True: (
+                "export the EVALUATION_SYSTEM_CONFIG_FILE "
+                "environment variable to set a valid configuration file."
+            ),
+        }
         try:
             return func(*args, **kwargs)
+        except (ImproperlyConfigured, OperationalError):  # prgama: no cover
+            # Wrap django error in a more informative exception
+            msg = "Your freva instance doesn't seem to be properly configured: "
+            raise ConfigurationException(
+                msg + wrong_config_msg[logger.is_cli]
+            ) from None
         except BaseException as error:
             exception_handler(error)
 
@@ -78,7 +97,7 @@ def exception_handler(exception: BaseException, cli: bool = False) -> None:
 
     trace_back = exception.__traceback__
     appendix = {
-        False: " - decrease log level via `freva.logger.setLevel`",
+        False: " - decrease log level via `freva.logger.setLevel(10)`",
         True: " - increase verbosity flags (-v)",
     }[cli]
     append_msg = ""
@@ -139,6 +158,8 @@ class PluginStatus:
         hist = freva.history(plugin="dummypluginfolders", limit=1)[:-1]
         res = freva.PluginStatus(hist["id"])
         print(res.status)
+
+    Note: You won't be able to kill running jobs associated to history id's from other users.
     """
 
     def __init__(self, history_id: int) -> None:
@@ -157,7 +178,7 @@ class PluginStatus:
         try:
             hist = cast(
                 List[Dict[str, Any]],
-                freva.history(entry_ids=self._id, return_results=True),
+                freva.history(entry_ids=self._id, return_results=True, user_name="*"),
             )[0]
         except IndexError:
             logger.setLevel(log_level)
@@ -166,6 +187,11 @@ class PluginStatus:
             logger.setLevel(log_level)
         hist["batch_settings"] = pm.get_batch_settings(self._id)
         return hist
+
+    @property
+    def history_id(self) -> int:
+        """Get the ID of this plugin run in the freva history."""
+        return self._id
 
     @property
     def status(self) -> str:
@@ -352,12 +378,16 @@ class config:
     With the help of this class you can not only (temporarily) override
     the default configuration file and use a configuration from another
     project, but you can also set a path to a configuration file if no
-    configuration file has been set.
+    configuration file has been set. Additionally you can set any plugin
+    paths that are not part of the configuration file.
 
     Parameters
     ----------
-    config_file: str | pathlib.Path
+    config_file: str | pathlib.Path, default: None
         Path to the (new) configuration file.
+    plugin_path: str | List[str], default: None
+        New plugins that should be used, use a list of paths if you want
+        export multiple plugins.
 
     Examples
     --------
@@ -382,24 +412,51 @@ class config:
         freva.config("/work/freva/evaluation_system.conf")
         files = sorted(freva.databrowser(project="user-1234", experiment="extremes"))
 
+    Import a new user defined plugin, for example if you have created a plugin
+    called ``MyPlugin`` that is located in ``~/freva/myplugin/plugin.py``
+    you would set to ``plugin_path='~/freva/my_plugin,plugin_module'``.
+
+    ::
+
+        import freva
+        freva.config(plugin_path="~/freva/my_plugin,plugin_module")
+        freva.run_plugin('MyPlugin", variable1=1, variable2="a")
+
+    In the same fashion you can set multiple plugin paths:
+
+    ::
+        import freva
+        freva.config(plugin_path=["~/freva/my_plugin1,plugin_module_b"],
+                                  "~/ freva/my_plugin2,plugin_module_b"])
+
     """
 
     _original_config_env = os.environ.get(
         "EVALUATION_SYSTEM_CONFIG_FILE",
-        cfg.CONFIG_FILE,
     )
+    _original_plugin_env = os.environ.get("EVALUATION_SYSTEM_PLUGINS")
     db_reloaded: List[bool] = [False]
 
-    def __init__(self, config_file: Union[str, Path]) -> None:
-        self._config_file = Path(config_file).expanduser().absolute()
-        os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(self._config_file)
-        cfg.reloadConfiguration(self._config_file)
-        pm.reload_plugins()
+    def __init__(
+        self,
+        config_file: Optional[Union[str, Path]] = None,
+        plugin_path: Optional[Union[str, List[str]]] = None,
+    ) -> None:
+        plugin_path = plugin_path or []
+        if isinstance(plugin_path, str):
+            plugin_path = [plugin_path]
+        if config_file:
+            config_file = Path(config_file).expanduser().absolute()
+            os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = str(config_file)
         try:
             if django_settings.DATABASES:
                 self.db_reloaded[0] = True
-        except (ImproperlyConfigured, AttributeError):
-            pass
+            db_settings.reconfigure_django(config_file)
+        except (ImproperlyConfigured, AttributeError):  # prgama: no cover
+            pass  # prgama: no cover
+        assert isinstance(db_settings.SETTINGS, dict)
+        if plugin_path or config_file:
+            pm.reload_plugins(plugin_path=plugin_path)
 
     def __enter__(self) -> "config":
         return self
@@ -410,7 +467,12 @@ class config:
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:
-        os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
-        cfg.reloadConfiguration(self._original_config_env)
-        pm.reload_plugins()
+        os.environ.pop("EVALUATION_SYSTEM_CONFIG_FILE")
+        if self._original_config_env:
+            os.environ["EVALUATION_SYSTEM_CONFIG_FILE"] = self._original_config_env
+        db_settings.reconfigure_django(self._original_config_env)
+        try:
+            pm.reload_plugins()
+        except Exception:
+            pass
         self.db_reloaded[0] = False

@@ -5,6 +5,70 @@ What's new
    :maxdepth: 0
    :titlesonly:
 
+v2506.0.2
+~~~~~~~~~
+
+Internal Changes
+++++++++++++++++
+- Add deprication warning.
+
+v2506.0.0
+~~~~~~~~~
+
+Internal Changes
+++++++++++++
+- Remove the ``guest`` flag from the ``PluginStatus`` class. The guest flag was
+  used to indicate that the plugin was run by a guest user, but this is no longer
+  relevant as all users are now authenticated.
+
+Bug fixes
++++++++++
+- Fix sig term handler.
+
+v2504.0.0
+~~~~~~~~~
+
+New Features
+++++++++++++
+- Plugin SelectField can receive multiple and custom user input values.
+- ``PluginStatus`` can access the status of ``job_ids`` of any user.
+
+
+v2502.0.1
+~~~~~~~~~
+
+Bug fixes
++++++++++
+- Catch PermissionError when user config dir does not exist.
+
+Documentations
+++++++++++++++
+- Added multi-version queries.
+
+
+
+v2502.0.0
+~~~~~~~~~
+
+New Features
+++++++++++++
+- When submitting a plugin the freva history ID can be queried by
+  accessing the ``history_id`` property of the ``PluginStatus`` response
+  class.
+
+Bug fixes
++++++++++
+- Fixed unique output file bug for interactive plugin jobs.
+
+
+v2408.0.0
+~~~~~~~~~
+
+Internal Changes
+++++++++++++++++
+- Change ``root_dir`` -> ``root_path`` in DRS specs.
+
+
 
 v2406.0.1
 ~~~~~~~~~

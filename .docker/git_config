@@ -6,10 +6,10 @@
 [submodule]
 	active = .
 [remote "origin"]
-	url = git@github.com:FREVA-CLINT/freva.git
+	url = git@github.com:freva-org/freva-legacy.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 [branch "main"]
 	remote = origin
 	merge = refs/heads/main
 [submodule "compose/config"]
-	url = https://github.com/FREVA-CLINT/freva-service-config.git
+	url = https://github.com/freva-org/freva-service-config.git

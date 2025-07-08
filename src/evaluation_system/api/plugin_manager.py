@@ -40,7 +40,18 @@ from datetime import datetime
 from multiprocessing import Pool
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, Iterator, Optional, Sequence, Tuple, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from django.db.models.query import QuerySet
 from PIL import Image, ImageSequence
@@ -147,14 +158,20 @@ class _PluginStateHandle:
 
     def _update_plugin_state_in_db(self):
         """Update the state of a plugin in the db."""
-        self.user.getUserDB().upgradeStatus(
-            self.rowid, self.user.getName(), self.status
-        )
+        try:
+            self.user.getUserDB().upgradeStatus(
+                self.rowid, self.user.getName(), self.status
+            )
+        except Exception as error:
+            log.error("Could not update status %s to db: %s", self.status, error)
 
-    def _update_plugin_state_in_db_and_quit(self, *args):
+    def _update_plugin_state_in_db_and_quit(self, signum: int, *args):
         """Update the plugin state of a plugin and quit."""
-        self._update_plugin_state_in_db()
-        raise KeyboardInterrupt
+        signal_name = signal.Signals(signum).name
+        if self.status > 2:
+            log.warning("Received termination signal: %s (%i)", signal_name, signum)
+            self._update_plugin_state_in_db()
+        sys.exit(signum)
 
 
 T = TypeVar("T")
@@ -183,7 +200,9 @@ def munge(seq: Sequence[T]) -> Iterator[T]:
             yield item
 
 
-def reload_plugins(user_name: Optional[str] = None) -> None:
+def reload_plugins(
+    user_name: Optional[str] = None, plugin_path: Optional[List[str]] = None
+) -> None:
     """Reload all plug-ins.
 
     Plug-ins are then loaded first from the :class:`PLUGIN_ENV`
@@ -193,33 +212,36 @@ def reload_plugins(user_name: Optional[str] = None) -> None:
 
     Parameters
     ----------
-    user_name
-        freva user to load the plugins for, if none, it will load the current user
+    user_name: str, default: None
+        freva user to load the plugins for, if none, it will load the current
+        user
+    plugin_path: List[str], default: None
+        A list of additional plugin paths that should be loaded.
     """
 
     user_name = user_name or User().getName()
-
+    plugin_path = plugin_path or []
+    user_plugins_from_env = [os.getenv(PLUGIN_ENV) or ""]
+    user_plugins = os.pathsep.join(plugin_path + user_plugins_from_env)
     __plugin_modules__: dict[str, str] = {}
     __plugins__ = {}
     __plugins_meta: dict[str, PluginMetadata] = {}
     __plugin_modules_user__[user_name] = {}
     __plugins_meta_user[user_name] = {}
     extra_plugins = []
-    if os.environ.get(PLUGIN_ENV):
-        # now get all modules loaded from the environment
-        for path, module_name in plugin_env_iter(os.environ[PLUGIN_ENV]):
-            # extend path to be exact by resolving all
-            # "user shortcuts" (e.g. '~' or '$HOME')
-            path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
-            if os.path.isdir(path):
-                # we have a plugin_imp with defined api
-                sys.path.append(path)
-                # TODO this is not working like in the previous loop. Though we might
-                # just want to remove it, as there seem to be no use for this info...
-                __plugin_modules__[module_name] = os.path.join(path, module_name)
-                extra_plugins.append(module_name)
-            else:
-                log.warning("Cannot load %s, directory missing: %s", module_name, path)
+    for path, module_name in plugin_env_iter(user_plugins):
+        # extend path to be exact by resolving all
+        # "user shortcuts" (e.g. '~' or '$HOME')
+        path = os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+        if os.path.isdir(path):
+            # we have a plugin_imp with defined api
+            sys.path.append(path)
+            # TODO this is not working like in the previous loop. Though we might
+            # just want to remove it, as there seem to be no use for this info...
+            __plugin_modules__[module_name] = os.path.join(path, module_name)
+            extra_plugins.append(module_name)
+        else:
+            log.warning("Cannot load %s, directory missing: %s", module_name, path)
     # the same for user specific env variable
     if user_name:  # is it possible for User().getName() to be None?
         if PLUGIN_ENV + "_" + user_name in os.environ:
@@ -1176,7 +1198,7 @@ def get_command_string_from_config(
     ]
     for key, value in config["args"].items():
         if isinstance(value, list):
-            result.append(f"{key}={','.join(value)}")
+            result.append(f"{key}={','.join(map(str, value))}")
         elif isinstance(value, bool):
             result.append(f"{key}={str(value).lower()}")
         else:
@@ -1464,7 +1486,7 @@ def dict2conf(
     return conf
 
 
-def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
+def plugin_env_iter(plugin_paths: str) -> Iterator[tuple[str, ...]]:
     """Splits the elements of a plugin env string.
 
     Returns an iterator over all elements in a plugin environment
@@ -1472,7 +1494,7 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
 
     Parameters
     ----------
-    envvar
+    plugin_paths:
         string to split
 
     Returns
@@ -1482,7 +1504,11 @@ def plugin_env_iter(envvar: str) -> Iterator[tuple[str, ...]]:
         The type is variable length but this will only ever return
         a 2 element tuple when given a well formed string.
     """
-    return (i.strip().partition(",")[::2] for i in envvar.split(":") if i.strip())
+    for plugin in plugin_paths.split(os.pathsep):
+        p = plugin.strip()
+        if p:
+            path, _, module = p.partition(",")
+            yield path, module
 
 
 def find_plugin_class(mod: ModuleType) -> type[PluginAbstract]:

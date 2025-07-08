@@ -40,7 +40,7 @@ RUN set -x && \
   --shell /bin/bash --disabled-password freva && \
   usermod -aG solr,mysql freva &&\
   if [ "$binder" = "true" ]; then\
-     /opt/conda/bin/conda create -y -q -c conda-forge cftime make bash_kernel cartopy\
+     /opt/conda/bin/conda create -y -q -c conda-forge cftime make bash_kernel curl mysql-common==8.3.0 mysql-libs=8.3.0 dask==2024.8.0 cartopy\
      h5netcdf netcdf4 ffmpeg pip notebook jupyterlab jupyterhub freva -p /opt/evaluation_system &&\
      /opt/evaluation_system/bin/python -m pip install pint-xarray cf_xarray nc-time-axis &&\
      /opt/evaluation_system/bin/python -m ipykernel install --name freva &&\
@@ -83,7 +83,7 @@ RUN set -x && \
   mv /var/solr ${SOLR_HOME} &&\
   ln -s ${SOLR_HOME} /var/solr &&\
   chown -R freva:freva ${MYSQL_HOME} &&\
-  MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf && \
+  export MARIADB_CONF_FILE=/etc/mysql/conf.d/freva.cnf &&\
   echo "[mariadbd]" > $MARIADB_CONF_FILE &&\
   echo "user            = freva" >> $MARIADB_CONF_FILE &&\
   echo "datadir         = ${MYSQL_DATA_DIR}" >> $MARIADB_CONF_FILE &&\
@@ -98,5 +98,4 @@ RUN set -x && \
 EXPOSE 8888
 USER freva
 WORKDIR /home/freva
-CMD ["/opt/evaluation_system/bin/loadfreva.sh"]
 ENTRYPOINT ["/opt/evaluation_system/bin/docker-entrypoint.sh"]

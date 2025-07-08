@@ -26,7 +26,7 @@ from __future__ import annotations
 import abc
 import logging
 import os
-import re
+import random
 import shlex
 import shutil
 import socket
@@ -39,6 +39,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from contextlib import contextmanager
 from datetime import datetime
 from functools import partial
+from hashlib import sha512
 from pathlib import Path
 from time import time
 from typing import IO, Any, Dict, Iterable, Iterator, Optional, TextIO, Union, cast
@@ -347,7 +348,14 @@ class PluginAbstract(abc.ABC):
                 self._user.getUserSchedulerOutputDir(),
                 plugin_name.lower(),
             )
-            self._plugin_out = Path(log_directory) / f"{plugin_name}-{pid}.local"
+            # We need to make the output file unique, in order to do so
+            # we generate a more or less random sample from the current
+            # hostname and the system time
+            suffix = sha512((socket.gethostname() + str(time())).encode())
+            rand_suffix = "".join(random.choices(suffix.hexdigest(), k=8))
+            self._plugin_out = (
+                Path(log_directory) / f"{plugin_name}-{rand_suffix}-{pid}.local"
+            )
         return self._plugin_out
 
     def _set_interactive_job_as_running(self, rowid: Optional[int]):

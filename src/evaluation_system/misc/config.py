@@ -41,8 +41,11 @@ the future for the next project phase."""
 USER_CONFIG_FILE_LOC = osp.join(
     appdirs.user_config_dir(), "freva", "evaluation_system.conf"
 )
-if Path(USER_CONFIG_FILE_LOC).exists():
-    CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
+try:
+    if Path(USER_CONFIG_FILE_LOC).exists():
+        CONFIG_FILE = _ConfigWrapper(USER_CONFIG_FILE_LOC)
+except PermissionError:
+    pass
 EVALUATION_SYSTEM_HOME = (os.sep).join(osp.abspath(__file__).split(osp.sep)[:-4])
 SPECIAL_VARIABLES = TemplateDict(EVALUATION_SYSTEM_HOME=EVALUATION_SYSTEM_HOME)
 _PUBLIC_KEY_DIR = Path(CONFIG_FILE).parent
@@ -158,21 +161,13 @@ def _get_public_key(
 ) -> str:
     config_ = Path(config_file or _PUBLIC_KEY_DIR / "evaluation_system.conf")
     key_file = os.environ.get("PUBKEY", None) or config_.parent / f"{project_name}.crt"
-    sha = ""
+    sha = hashlib.sha512("".encode()).hexdigest()
     try:
         with Path(key_file).open() as f:
             key = "".join([k.strip() for k in f.readlines() if not k.startswith("-")])
         sha = hashlib.sha512(key.encode()).hexdigest()
     except FileNotFoundError:
-        warnings.warn(
-            (
-                f"{key_file} not found. Secrets are stored in central vault and a"
-                "public key is needed to open the vault. Without the public key"
-                " you won't be probably be able to establish as database "
-                "connection."
-            ),
-            category=Warning,
-        )
+        pass
     return sha
 
 
@@ -363,4 +358,6 @@ def get_drs_config():
     )
     with open(drs_config, "r") as drs_file:
         _drs_config = toml.load(drs_file)
+    for key in _drs_config:
+        _drs_config[key].setdefault("root_path", _drs_config[key].get("root_dir", ""))
     return _drs_config

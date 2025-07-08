@@ -61,7 +61,8 @@ def gather_completion_scripts(tempdir):
     data_files = []
     for shell, target_path in shells.items():
         comp_files = [
-            str(f.relative_to(this_dir)) for f in (COMPLETION_DIR / shell).rglob("*")
+            str(f.relative_to(this_dir))
+            for f in (COMPLETION_DIR / shell).rglob("*")
         ]
         data_files.append((str(target_path), comp_files))
     return data_files + prep_tcsh_completion(tempdir)
@@ -98,7 +99,9 @@ def get_data_files():
     files = []
     for d in dirs:
         target_dir = d.relative_to(this_dir)
-        add_files = [str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()]
+        add_files = [
+            str(f.relative_to(this_dir)) for f in d.rglob("*") if f.is_file()
+        ]
         if add_files:
             files.append((str(target_dir), add_files))
     files.append(("", ["deploy.py"]))
@@ -121,10 +124,10 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     project_urls={
-        "Documentation": "https://freva-clint.github.io/freva/",
-        "Release notes": "https://freva-clint.github.io/freva/whats-new.html",
-        "Issues": "https://github.com/FREVA-CLINT/freva/issues",
-        "Source": "https://github.com/FREVA-CLINT/freva",
+        "Documentation": "https://freva-org.github.io/freva-legacy/",
+        "Release notes": "https://freva-org.github.io/freva-legacy/whats-new.html",
+        "Issues": "https://github.com/freva-org/freva-legacy/issues",
+        "Source": "https://github.com/freva-org/freva-legacy",
     },
     cmdclass={"install": InstallCommand},
     install_requires=[
@@ -145,6 +148,7 @@ setup(
         "PyPDF2!=2.10.1",
         "requests",
         "rich",
+        "setuptools",
         "toml",
         "toolz",
         "typing_extensions",
@@ -169,12 +173,13 @@ setup(
             "pydata-sphinx-theme",
             "pint-xarray",
             "recommonmark",
-            "sphinx",
+            "sphinx==7.3.7",
             "sphinx-togglebutton",
             "sphinx-code-tabs",
             "sphinxcontrib_github_alt",
             "sphinx-execute-code-python3",
             "sphinx-copybutton",
+            "sphinxext-opengraph",
             "xarray",
             "h5netcdf",
             "mock",

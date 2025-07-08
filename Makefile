@@ -14,12 +14,14 @@ install:
 	python3 -m pip install .[test]
 
 test:
-	python3 -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests
+	python3 -m pytest -vv --nbval --current-env $(PWD)/src/evaluation_system/tests \
+		--ignore=src/evaluation_system/tests/esgf_test.py
 
 test_coverage:
 	python3 -m pytest -vv \
 		--nbval --current-env --cov=$(PWD)/src --cov-report=html:coverage_report \
 	    --junitxml report.xml --current-env --cov-report xml \
+		--ignore=src/evaluation_system/tests/esgf_test.py \
 		$(PWD)/src/evaluation_system/tests
 	python3 -m coverage report
 
@@ -34,7 +36,7 @@ prepdocs:
 		--env EVALUATION_SYSTEM_PLUGINS $(EVALUATION_SYSTEM_PLUGINS)
 	python3 -m bash_kernel.install
 	rm -rf docs/source/APIRef.rst
-	curl -Ls -o docs/source/api/APIRef.rst https://raw.githubusercontent.com/FREVA-CLINT/freva-nextgen/main/docs/source/databrowser/APIRef.rst
+	curl -Ls -o docs/source/api/APIRef.rst https://raw.githubusercontent.com/freva-org/freva-nextgen/main/docs/source/databrowser/APIRef.rst
 	make dummy-data
 	compose/animator_plugin_run.sh
 

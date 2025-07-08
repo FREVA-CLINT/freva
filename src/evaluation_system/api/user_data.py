@@ -36,6 +36,9 @@ class DataReader:
     drs_specification: str = "crawl_my_data"
     """The drs holding metadata for user data information."""
 
+    path_key: str = "root_path"
+    """Key that holds the root path."""
+
     def __init__(
         self,
         paths: Union[os.PathLike, Collection[os.PathLike]],
@@ -44,7 +47,7 @@ class DataReader:
         self.paths = paths
         self.defaults = defaults
         drs_config: dict[str, Any] = config.get_drs_config()[self.drs_specification]
-        self.root_dir = Path(drs_config["root_dir"]).expanduser().absolute()
+        self.root_dir = Path(drs_config[self.path_key]).expanduser().absolute()
         self.parts_dir: list[str] = [
             d for d in drs_config["parts_dir"] if d != "file_name"
         ]
@@ -248,7 +251,7 @@ class DataReader:
 def get_output_directory() -> Path:
     """Get the user data output directory."""
     root_dir = (
-        Path(config.get_drs_config()[DataReader.drs_specification]["root_dir"])
+        Path(config.get_drs_config()[DataReader.drs_specification][DataReader.path_key])
         .expanduser()
         .absolute()
     )

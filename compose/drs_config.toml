@@ -1,5 +1,5 @@
 [testdata]
-root_dir = ".docker/data"
+root_path = ".docker/data"
 parts_dir = [
     "project", "product", "institute", "model", "experiment", "time_frequency",
     "realm", "cmor_table", "ensemble", "version", "variable",
