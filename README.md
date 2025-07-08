@@ -9,10 +9,11 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/freva-org/freva-legacy/main?labpath=Readme.ipynb)
 [![BSD](https://anaconda.org/conda-forge/freva/badges/license.svg)](https://github.com/freva-org/freva-legacy)
 
- > 💡 A new version of Freva is on the way! While it’s still under development,
-   you can already start using it. If your primary focus is searching and
-   accessing data, we highly recommend trying out the new Freva client
-   (https://pypi.org/project/freva-client/)
+ > 💡 The code base is deprecated and should only be used if necessary.
+ >  A new version of Freva is on the way! While it’s still under development,
+ >  you can already start using it. If your primary focus is searching and
+ >  accessing data, we highly recommend trying out the new Freva client
+ >  (https://pypi.org/project/freva-client/)
 
 
 
