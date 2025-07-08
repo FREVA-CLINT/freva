@@ -173,6 +173,17 @@ class PluginAbstract(abc.ABC):
 
         export EVALUATION_SYSTEM_PLUGINS=/path1,plugin1:/path2,plugin2:/path3,plugin3
 
+    .. note::
+        In python (e.g. jupyter notebook) you will need first to add your plugin(s) as
+        an entry in the ``EVALUATION_SYSTEM_PLUGINS`` environment variable and *then*
+        import the Freva module (not the other way around)::
+
+            import os
+            os.environ["EVALUATION_SYSTEM_PLUGINS"] = "/path1,plugin1:/path2,plugin2:/path3,plugin3"
+
+            import freva
+            freva.get_tools_list()
+
     By telling the system where to find the packages it can find the
     :class:`evaluation_system.api.plugin` implementations. The system just
     loads the packages and get to the classes using the

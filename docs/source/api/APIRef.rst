@@ -794,7 +794,8 @@ Creating zarr endpoints for streaming data
    endpoints. We constrain the data search by ``key=value`` search pairs.
    The only difference is that we have to authenticate by using an access token.
    You will also have to use a valid access token if you want to access the
-   zarr data via http. Please refer to the :ref:`auth` chapter for more details.
+   zarr data via http. Please refer to the `authentication <https://freva-clint.github.io/freva-nextgen/auth/index.html>`__
+   chapter for more details.
 
    .. sourcecode:: http
 
